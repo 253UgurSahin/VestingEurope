@@ -152,6 +152,9 @@ function measure(){ REM = parseFloat(getComputedStyle(document.documentElement).
 new ResizeObserver(() => { measure(); sizeCanvases(); if(DATA){ clampView(); applyView(); } }).observe(stage);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { baseDirty = true; overDirty = true; });
 
+// offline spelen en installeren: alleen waar service workers bestaan (https of localhost); in een claude.ai-pagina bestaan ze niet
+if('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname))) addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
 window.claude?.hot?.snapshot(() => ({G, V:{...V}, map:MAPNAME, diff:UI.diff}));
 async function boot(data){
   measure(); sizeCanvases();

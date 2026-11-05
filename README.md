@@ -33,6 +33,10 @@ Na het kiezen van een land staan op het startscherm twee knoppen naast het nivea
 
 In het Overzicht staat **Bewaar als bestand**: dat downloadt je spel als een `.json`-bestand. Op het startscherm laadt **Spel laden uit bestand** zo'n bestand weer, ook op een ander apparaat of nadat de browser zijn gegevens heeft gewist. Bestanden groter dan 5 MB en bestanden van een andere versie worden geweigerd met een melding. Downloads werken niet binnen een pagina op claude.ai (daar zijn ze geblokkeerd), wel op een eigen webserver of lokaal.
 
+## Offline spelen en installeren
+
+Op een eigen webserver met https (of lokaal op localhost) werkt het spel na één bezoek zonder internet, en je kunt het installeren als app (Chrome: "Installeren", Safari op iPad en iPhone: "Zet op beginscherm"). Dat regelen `manifest.webmanifest` en `sw.js`. De code (html, js, css) komt eerst van het net, zodat een nieuwe versie meteen binnenkomt; kaarten, lettertypes en iconen komen uit de cache. De Europakaart wordt bij het eerste bezoek bewaard, de wereldkaart (8 MB) zodra je hem een keer hebt gebruikt. Verander het versienummer `CACHE` in `sw.js` als een kaartbestand, lettertype of icoon verandert. Service workers bestaan niet in een pagina op claude.ai: daar werkt het spel gewoon online.
+
 ## Bestanden
 
 | Bestand | Inhoud |
@@ -46,6 +50,7 @@ In het Overzicht staat **Bewaar als bestand**: dat downloadt je spel als een `.j
 | `js/tekenen.js` | De kaart tekenen, camera, muis/aanraking en symbolen |
 | `js/interface.js` | Geluid, meldingen, de balk, de wachtrij en de panelen |
 | `js/start.js` | Laden, opslaan, de hoofdlus en het opstarten |
+| `sw.js`, `manifest.webmanifest`, `icons/` | Offline spelen en installeren |
 | `fonts/` | De lettertypes Barlow en Barlow Condensed (SIL Open Font License) |
 | `europe.json` / `europe-hd.json` | Kaartdata Europa (standaard / hoge resolutie) |
 | `world.json` / `world-hd.json` | Kaartdata wereld (standaard / hoge resolutie) |

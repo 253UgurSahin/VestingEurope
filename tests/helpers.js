@@ -7,7 +7,7 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 const ROOT = path.join(__dirname, '..');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.txt': 'text/plain' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain' };
 const SAVE_KEY = 'vesting-europa-v5';
 const env = { base: null, browser: null };
 let server;
@@ -27,8 +27,9 @@ before(async () => {
 after(async () => { await env.browser?.close(); server?.close(); });
 
 // opent het spel. errors: paginafouten, console-fouten en antwoorden van 400 of hoger
-async function open(t, { storage, viewport, mobile, route, init, device } = {}) {
-  const ctx = await env.browser.newContext(device ? { ...require('playwright').devices[device] } : { viewport: viewport || { width: 1280, height: 800 }, ...(mobile ? { isMobile: true, hasTouch: true } : {}) });
+// sw: true laat de service worker toe (offline spelen); standaard staat hij uit, zodat andere tests niet door zijn cache lopen
+async function open(t, { storage, viewport, mobile, route, init, device, sw, base } = {}) {
+  const ctx = await env.browser.newContext({ serviceWorkers: sw ? 'allow' : 'block', ...(device ? { ...require('playwright').devices[device] } : { viewport: viewport || { width: 1280, height: 800 }, ...(mobile ? { isMobile: true, hasTouch: true } : {}) }) });
   if (route) await ctx.route(route[0], route[1]);
   const page = await ctx.newPage();
   const errors = [];
@@ -37,7 +38,7 @@ async function open(t, { storage, viewport, mobile, route, init, device } = {}) 
   page.on('response', r => { if (r.status() >= 400) errors.push(r.status() + ' ' + r.url()); });
   if (init) await page.addInitScript(init);
   if (storage) await page.addInitScript(s => { if (!sessionStorage.getItem('seeded')) { for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); sessionStorage.setItem('seeded', '1'); } }, storage);
-  await page.goto(env.base);
+  await page.goto(base || env.base);
   await page.waitForFunction(() => window.__VE && !window.__VE.UI.loading && (window.__VE.MAP.PIDS.length > 0 || window.__VE.UI.err));
   t.after(() => ctx.close());
   return { page, errors };

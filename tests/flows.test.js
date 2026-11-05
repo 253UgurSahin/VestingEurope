@@ -2,7 +2,7 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { open, startGame, provincePoint, SAVE_KEY } = require('./helpers');
+const { env, open, startGame, provincePoint, SAVE_KEY } = require('./helpers');
 
 test('F01-H1 met de muis een land kiezen, niveau wisselen en starten', async t => {
   const { page, errors } = await open(t);
@@ -390,4 +390,99 @@ test('C003 een fout of verkeerd bestand geeft een duidelijke melding en breekt n
     assert.equal(await page.locator('#strip button[data-act="import"]').count(), 1, name + ': het startscherm werkt nog');
     assert.deepEqual(errors, [], name);
   }
+});
+
+// C004: installeren en offline spelen
+const inCache = page => page.evaluate(async () => {
+  const names = await caches.keys();
+  if (!names.length) return [];
+  return (await (await caches.open(names[0])).keys()).map(r => new URL(r.url).pathname);
+});
+
+test('C004 het manifest en de iconen kloppen', async t => {
+  const { page, errors } = await open(t);
+  const href = await page.getAttribute('link[rel="manifest"]', 'href');
+  assert.ok(href, 'de pagina verwijst naar een manifest');
+  const m = await (await fetch(new URL(href, env.base))).json();
+  assert.equal(m.name, 'Vesting Europa');
+  assert.equal(m.display, 'standalone');
+  assert.equal(m.lang, 'nl');
+  assert.ok(m.start_url && m.background_color && m.theme_color);
+  const sizes = new Set();
+  for (const icon of m.icons) {
+    const res = await fetch(new URL(icon.src, new URL(href, env.base)));
+    assert.equal(res.status, 200, icon.src);
+    const buf = Buffer.from(await res.arrayBuffer());
+    assert.equal(buf.readUInt32BE(16) + 'x' + buf.readUInt32BE(20), icon.sizes, icon.src + ': echte afmeting klopt met het manifest');
+    sizes.add(icon.sizes + (icon.purpose || ''));
+  }
+  assert.ok([...sizes].some(s => s.startsWith('192x192')) && [...sizes].some(s => s.startsWith('512x512')), 'iconen van 192 en 512 px');
+  assert.ok([...sizes].some(s => s.endsWith('maskable')), 'een maskable icoon');
+  const touch = await page.getAttribute('link[rel="apple-touch-icon"]', 'href');
+  assert.match(touch, /\.png$/, 'iOS wil een png als beginschermicoon');
+  assert.equal((await fetch(new URL(touch, env.base))).status, 200);
+  assert.deepEqual(errors, []);
+});
+
+test('C004 na een bezoek werkt het spel zonder internet', async t => {
+  const { page, errors } = await open(t, { sw: true });
+  await page.waitForFunction(async () => !!navigator.serviceWorker.controller && (await caches.keys()).length > 0, null, { timeout: 30000 });
+  await page.waitForFunction(async () => { const n = await caches.keys(); return (await (await caches.open(n[0])).keys()).length >= 25; }, null, { timeout: 30000 });
+  const have = await inCache(page);
+  const need = await page.evaluate(() => [...document.querySelectorAll('script[src], link[rel="stylesheet"][href], link[rel="manifest"][href]')].map(e => new URL(e.src || e.href).pathname));
+  assert.deepEqual(need.filter(p => !have.includes(p)), [], 'alles waar de pagina om vraagt zit in de cache');
+  for (const f of ['/europe.json', '/europe-hd.json', '/index.html']) assert.ok(have.includes(f) || (f === '/index.html' && have.includes('/')), f + ' in de cache');
+  await page.context().setOffline(true);
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && window.__VE.MAP.PIDS.length > 0 && !window.__VE.UI.err);
+  await startGame(page, 'nl');
+  await page.evaluate(() => { for (let i = 0; i < 20; i++) window.__VE.advance(1); });
+  assert.ok(await page.evaluate(() => window.__VE.G.day) >= 15);
+  assert.equal(await page.evaluate(() => window.__VE.errs), 0);
+  assert.deepEqual(errors, []);
+});
+
+test('C004 de wereldkaart werkt offline zodra hij een keer is geladen', async t => {
+  const { page, errors } = await open(t, { sw: true });
+  await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 30000 });
+  await page.locator('#strip button[data-map="world"]').click();
+  await page.waitForFunction(() => window.__VE.MAP.PIDS.length > 1000 && !window.__VE.UI.loading);
+  await page.waitForFunction(async () => { const n = await caches.keys(); return (await (await caches.open(n[0])).keys()).some(r => r.url.endsWith('/world-hd.json')); }, null, { timeout: 60000 });
+  await page.context().setOffline(true);
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && window.__VE.MAP.PIDS.length > 0);
+  await page.locator('#strip button[data-map="world"]').click();
+  await page.waitForFunction(() => window.__VE.MAP.PIDS.length > 1000 && !window.__VE.UI.loading && !window.__VE.UI.err);
+  assert.deepEqual(errors, []);
+});
+
+test('C004 een nieuwe versie van de code komt binnen als je online bent, en geldt daarna ook offline', async t => {
+  const http = require('node:http');
+  let version = 1;
+  const server = http.createServer((req, res) => {   // zoals de gewone server, maar style.css krijgt een versienummer
+    const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const file = path.join(__dirname, '..', rel === '/' ? 'index.html' : rel);
+    if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end(); return; }
+    let body = fs.readFileSync(file);
+    if (rel === '/style.css') body = Buffer.concat([body, Buffer.from(`\n/* versie ${version} */`)]);
+    const type = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.webmanifest': 'application/manifest+json' }[path.extname(file)] || 'application/octet-stream';
+    res.writeHead(200, { 'content-type': type, 'cache-control': 'max-age=3600' });   // ook met een lange browsercache moet de nieuwe versie binnenkomen
+    res.end(body);
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  t.after(() => server.close());
+  const base = 'http://127.0.0.1:' + server.address().port + '/';
+  const { page, errors } = await open(t, { sw: true, base });
+  await page.waitForFunction(async () => !!navigator.serviceWorker.controller && (await caches.keys()).length > 0, null, { timeout: 30000 });
+  await page.waitForFunction(async () => { const n = await caches.keys(); return (await (await caches.open(n[0])).keys()).length >= 25; }, null, { timeout: 30000 });
+  const css = () => page.evaluate(async () => (await (await fetch('style.css')).text()).match(/versie \d+/)[0]);
+  assert.equal(await css(), 'versie 1');
+  version = 2;
+  await page.reload();
+  assert.equal(await css(), 'versie 2', 'online komt de nieuwe versie binnen');
+  await page.context().setOffline(true);
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && window.__VE.MAP.PIDS.length > 0);
+  assert.equal(await css(), 'versie 2', 'offline geldt de nieuwste versie die is binnengekomen');
+  assert.deepEqual(errors, []);
 });
