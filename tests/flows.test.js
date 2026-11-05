@@ -486,3 +486,164 @@ test('C004 een nieuwe versie van de code komt binnen als je online bent, en geld
   assert.equal(await css(), 'versie 2', 'offline geldt de nieuwste versie die is binnengekomen');
   assert.deepEqual(errors, []);
 });
+
+// C006: bondgenootschap met een AI-land
+const newNl = async (page, cp = 100) => { await startGame(page, 'nl'); await page.evaluate(cp => { window.__VE.G.nations.nl.cp = cp; }, cp); };
+
+test('C006 een bondgenootschap sluiten via de kaart kost bevelpunten en staat in het overzicht', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  const [x, y] = await provincePoint(page, await page.evaluate(() => window.__VE.MAP.CN.be.cap));
+  await page.mouse.click(x, y);
+  const ally = page.locator('#strip button[data-act="ally:be"]');
+  assert.equal(await ally.isEnabled(), true);
+  assert.match(await ally.textContent(), /30/);
+  await ally.click();
+  assert.equal(await page.evaluate(() => 'be' in window.__VE.G.allies), true);
+  assert.equal(await page.evaluate(() => window.__VE.G.nations.nl.cp), 70, 'het kost 30 bevelpunten');
+  assert.equal(await page.locator('#strip button[data-act="decl:be"], #strip button[data-act="war:be"], #strip button[data-act="just:be"]').count(), 0, 'geen oorlogsknoppen tegen een bondgenoot');
+  assert.equal(await page.locator('#strip button[data-act="unally:be"]').count(), 1);
+  await page.getByRole('button', { name: 'Overzicht', exact: true }).click();
+  await page.evaluate(() => { for (const d of document.querySelectorAll('#sheet details')) d.open = true; });
+  const sheet = await page.textContent('#sheet');
+  assert.match(sheet, /Bondgenoten/);
+  assert.match(sheet, /België/);
+  assert.deepEqual(errors, []);
+});
+
+test('C006 het antwoord is altijd hetzelfde en de reden is te zien: geen dobbelsteen', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  const offer = c => page.evaluate(c => allianceOffer(c), c);
+  assert.equal((await offer('be')).ok, true);
+  await page.evaluate(() => { window.__VE.G.ae.be = 40; });
+  assert.match((await offer('be')).why, /bang voor je/);
+  await page.evaluate(() => { window.__VE.G.ae.be = 0; window.__VE.G.nations.nl.cp = 10; });
+  assert.match((await offer('be')).why, /bevelpunten/);
+  await page.evaluate(() => { window.__VE.G.nations.nl.cp = 100; declare('nl', 'de'); });
+  assert.match((await offer('de')).why, /oorlog/);
+  await page.evaluate(() => { proposeAlliance('be'); proposeAlliance('fr'); });
+  assert.match((await offer('gb')).why, /al 2 bondgenoten/);
+  // een land dat in oorlog is met een bondgenoot, wil geen bondgenoot van jou zijn
+  await page.evaluate(() => { declare('be', 'lu'); });
+  assert.match((await offer('lu')).why, /oorlog met je bondgenoot/);
+  // opzeggen: 90 dagen wachten voor je weer dezelfde vraagt
+  await page.evaluate(() => { breakAlliance('fr'); window.__VE.G.nations.nl.cp = 100; });
+  assert.match((await offer('fr')).why, /wacht nog 90 dagen/);
+  await page.evaluate(() => { window.__VE.G.day += 91; });
+  assert.equal((await offer('fr')).ok, true, 'na 90 dagen kan het weer');
+  assert.deepEqual(errors, []);
+});
+
+test('C006 een bondgenoot valt je nooit aan (en zonder bondgenootschap wel)', async t => {
+  const { page, errors } = await open(t);
+  const trial = allied => page.evaluate(allied => {
+    window.__VE.newGame('nl', 1);
+    const G = window.__VE.G; G.paused = true; G.day = 600;   // voorbij de gewenningstijd
+    G.units = G.units.filter(u => u.c !== 'nl'); G.air = G.air.filter(w => w.c !== 'nl');   // jij hebt geen leger: een makkelijke prooi
+    if (allied) { G.nations.nl.cp = 100; proposeAlliance('be'); }
+    const rnd = Math.random; Math.random = () => 0;
+    try { for (let i = 0; i < 4; i++) { aiDeclare('be'); G.day += 31; } } finally { Math.random = rnd; }
+    return atWar('be', 'nl');
+  }, allied);
+  assert.equal(await trial(false), true, 'controle: zonder bondgenootschap valt België aan');
+  assert.equal(await trial(true), false, 'met een bondgenootschap niet');
+  assert.deepEqual(errors, []);
+});
+
+test('C006 een bondgenoot doet mee in jouw oorlogen en stopt als jij vrede sluit', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  await page.evaluate(() => proposeAlliance('be'));
+  await page.evaluate(() => declare('nl', 'de'));
+  assert.equal(await page.evaluate(() => atWar('be', 'de')), true, 'België doet mee tegen Duitsland');
+  await page.evaluate(() => makePeace('nl', 'de'));
+  assert.equal(await page.evaluate(() => atWar('be', 'de')), false, 'na jouw vrede ook voor je bondgenoot');
+  // ook als de ander jou aanvalt
+  await page.evaluate(() => declare('de', 'nl'));
+  assert.equal(await page.evaluate(() => atWar('be', 'de')), true, 'België helpt ook als jij wordt aangevallen');
+  assert.deepEqual(errors, []);
+});
+
+test('C006 je valt geen bondgenoot aan, opzeggen kan en straft: agressie bij de buren en een wachttijd', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  await page.evaluate(() => proposeAlliance('be'));
+  assert.equal(await page.evaluate(() => { declare('nl', 'be'); return atWar('nl', 'be'); }), false, 'declare weigert tegen een bondgenoot');
+  const [x, y] = await provincePoint(page, await page.evaluate(() => window.__VE.MAP.CN.be.cap));
+  await page.mouse.click(x, y);
+  const aeBefore = await page.evaluate(() => window.__VE.G.ae.fr || 0);
+  await page.locator('#strip button[data-act="unally:be"]').click();   // eerst vragen: bevestigen
+  assert.equal(await page.evaluate(() => 'be' in window.__VE.G.allies), true, 'de eerste klik vraagt alleen om bevestiging');
+  await page.locator('#strip button[data-act="unally:be"]').click();
+  assert.equal(await page.evaluate(() => 'be' in window.__VE.G.allies), false);
+  assert.ok(await page.evaluate(() => window.__VE.G.ae.fr || 0) > aeBefore, 'de buren van België schrikken');
+  assert.match(await page.evaluate(() => allianceOffer('be').why), /wacht nog/);
+  assert.equal(await page.locator('#strip button[data-act="decl:be"], #strip button[data-act="war:be"], #strip button[data-act="just:be"]').count() > 0, true, 'oorlogsknoppen zijn er weer');
+  assert.deepEqual(errors, []);
+});
+
+test('C006 een bondgenoot telt niet mee in een coalitie tegen jou', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  const r = await page.evaluate(() => {
+    proposeAlliance('be');
+    for (const c of ['be', 'fr', 'de', 'lu', 'gb', 'dk']) window.__VE.G.ae[c] = 90;
+    coalitionCheck();
+    return { be: atWar('be', 'nl'), others: ['fr', 'de', 'lu', 'gb', 'dk'].filter(c => atWar(c, 'nl')).length };
+  });
+  assert.equal(r.be, false, 'België doet niet mee');
+  assert.ok(r.others >= 3, 'de coalitie is er wel (controle): ' + r.others);
+  assert.deepEqual(errors, []);
+});
+
+test('C006 een bondgenoot die verdwijnt, valt weg uit je bondgenoten', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  await page.evaluate(() => { proposeAlliance('be'); annex('be', 'de'); for (let i = 0; i < 3; i++) window.__VE.advance(1); });
+  assert.equal(await page.evaluate(() => 'be' in window.__VE.G.allies), false);
+  assert.match(await page.textContent('#toasts'), /bondgenoot/i);
+  assert.deepEqual(errors, []);
+});
+
+test('C006 bondgenoten blijven bewaard, en rare waarden in een bewaard spel worden gerepareerd', async t => {
+  const first = await open(t);
+  await newNl(first.page);
+  await first.page.evaluate(() => { proposeAlliance('be'); window.__VE.G.paused = true; dispatchEvent(new Event('pagehide')); });
+  await first.page.reload();
+  await first.page.waitForFunction(() => window.__VE && !window.__VE.UI.loading);
+  await first.page.locator('#strip button[data-act="resume"]').click();
+  await first.page.waitForFunction(() => window.__VE.G);
+  assert.deepEqual(await first.page.evaluate(() => Object.keys(window.__VE.G.allies)), ['be'], 'bondgenoot komt terug');
+  const save = await first.page.evaluate(k => localStorage.getItem(k), SAVE_KEY);
+  for (const mutate of [g => { g.allies = { zz: 5, nl: 3, be: 'x', fr: 4 }; g.allyCd = 'kapot'; g.joined = [1, 2]; }, g => { delete g.allies; delete g.allyCd; delete g.joined; }, g => { g.allies = null; }]) {
+    const o = JSON.parse(save); mutate(o.G);
+    const { page, errors } = await open(t, { storage: { [SAVE_KEY]: JSON.stringify(o) } });
+    await page.locator('#strip button[data-act="resume"]').click();
+    await page.waitForFunction(() => window.__VE.G);
+    const a = await page.evaluate(() => ({ allies: Object.keys(window.__VE.G.allies).sort(), cd: typeof window.__VE.G.allyCd, joined: typeof window.__VE.G.joined }));
+    assert.ok(a.allies.every(c => ['fr', 'be'].includes(c)), 'alleen echte landen: ' + a.allies);
+    assert.ok(!a.allies.includes('nl') && !a.allies.includes('zz'));
+    assert.deepEqual([a.cd, a.joined], ['object', 'object']);
+    assert.deepEqual(errors, []);
+  }
+});
+
+test('C006 een heel spel met bondgenoten in oorlog verloopt zonder fouten, en ze blijven aan jouw kant', async t => {
+  const { page, errors } = await open(t);
+  await newNl(page);
+  const r = await page.evaluate(() => {
+    proposeAlliance('be'); proposeAlliance('fr');
+    declare('nl', 'lu');                                   // een oorlog die je overleeft; de bondgenoten doen mee
+    const joined = ['be', 'fr'].filter(c => atWar(c, 'lu')).length;
+    let betrayed = false;
+    for (let i = 0; i < 400; i++) { window.__VE.advance(1); if (atWar('be', 'nl') || atWar('fr', 'nl')) betrayed = true; }
+    return { joined, betrayed, errs: window.__VE.errs, day: window.__VE.G.day, allies: Object.keys(window.__VE.G.allies).sort() };
+  });
+  assert.equal(r.joined, 2);
+  assert.equal(r.betrayed, false, 'een bondgenoot valt je nooit aan');
+  assert.equal(r.errs, 0);
+  assert.ok(r.day >= 300);
+  assert.ok(r.allies.every(c => ['be', 'fr'].includes(c)));
+  assert.deepEqual(errors, []);
+});

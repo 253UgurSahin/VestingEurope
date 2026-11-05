@@ -580,6 +580,7 @@ function dailyTick(){
   buildIdx();
   airTick();
   battles();
+  allyTick();
   warEnds();
   if(G.over) return;
   buildIdx();

@@ -343,11 +343,21 @@ function renderStrip(){
       if(ae) h = h.replace('</span></div><div class="acts">', '<span class="chip2' + (ae >= COAL_THR()*0.7 ? ' hot' : '') + '" title="Hoe bang ' + esc(cname(c)) + ' voor je is (coalitie bij ' + COAL_THR() + ')">' + ic('agr') + ae + '</span></span></div><div class="acts">');
       if(prepOf(me) === c) h += '<span class="chip2" title="Deel van je leger aan de grens met ' + esc(cname(c)) + '">' + ic('gen') + pct(prepReady(me, c)) + '% klaar</span>';
       else h += '<button class="btn two" data-act="prep:' + c + '" title="De generaal zet je leger klaar aan deze grens">' + ic('gen') + '<span>Voorbereiden<small>leger naar de grens</small></span></button>';
+      const allied = !!G.allies && G.allies[c] != null;
+      if(allied){
+        h += '<span class="chip2 good" title="Bondgenoot: valt je nooit aan en doet mee in je oorlogen">' + ic('vrede') + 'bondgenoot</span>'
+          + '<button class="btn two' + (UI.confirm === 'unally:' + c ? ' war' : '') + '" data-act="unally:' + c + '" title="Zeg het bondgenootschap op: de buren van ' + esc(cname(c)) + ' schrikken en je kunt het 90 dagen niet opnieuw sluiten.">' + ic('oorlog') + '<span>' + (UI.confirm === 'unally:' + c ? 'Bevestig' : 'Zeg op') + '<small>kost agressie</small></span></button>';
+      } else {
+        const off = allianceOffer(c);
+        h += '<button class="btn two" data-act="ally:' + c + '"' + (off.ok ? '' : ' disabled') + ' title="' + (off.ok ? 'Sluit een bondgenootschap: jullie vallen elkaar nooit aan en ' + esc(cname(c)) + ' doet mee in je oorlogen. Kost ' + ALLY_COST + ' bevelpunten.' : esc(cname(c)) + ' ' + esc(off.why)) + '">' + ic('vrede') + '<span>Bondgenootschap<small>' + (off.ok ? ALLY_COST + ' bevelpunten' : 'niet mogelijk') + '</small></span></button>';
+      }
+      if(!allied){
       if(wg) h += '<button class="btn war" data-act="decl:' + c + '">' + ic('oorlog') + 'Verklaar oorlog</button>';
       else if(busy) h += '<span class="chip2">' + ic('tijd') + 'Doel over ' + (G.just.until - G.day) + ' d</span>';
       else {
         h += '<button class="btn two" data-act="just:' + c + '"' + (G.just || nat(me).cp < 25 ? ' disabled' : '') + ' title="Rechtvaardig een oorlogsdoel: 30 dagen en 25 bevelpunten. Daarna halve agressie en geen verlies aan steun.">' + ic('vrede') + '<span>Rechtvaardig<small>' + (G.just ? 'al een doel bezig' : '30 d · ' + '½ agressie') + '</small></span></button>';
         h += '<button class="btn two' + (UI.confirm === 'war:' + c ? ' war' : '') + '" data-act="war:' + c + '" title="Verrassingsaanval: meteen oorlog, maar veel agressie en −10% oorlogssteun.">' + ic('oorlog') + '<span>' + (UI.confirm === 'war:' + c ? 'Bevestig' : 'Verrassing') + '<small>nu · −10% steun</small></span></button>';
+      }
       }
     }
     h += '<button class="btn sm ghost" data-act="clear" aria-label="Sluiten">×</button></div>';
@@ -441,6 +451,8 @@ $('strip').addEventListener('click', async e => {
     if(UI.confirm !== a){ UI.confirm = a; }
     else { UI.confirm = null; delete G.truce[wk(G.player, c)]; for(const x of neighbors(c)) addAE(x, 10); nat(G.player).ws = clamp(nat(G.player).ws - 5, 0, 100); declare(G.player, c); }
   }
+  else if(a.startsWith('ally:')){ proposeAlliance(a.slice(5)); }
+  else if(a.startsWith('unally:')){ const c = a.slice(7); if(UI.confirm === a){ UI.confirm = null; breakAlliance(c); } else UI.confirm = a; }
   else if(a.startsWith('just:')){
     const c = a.slice(5), n = nat(G.player);
     if(!G.just && n.cp >= 25){ n.cp -= 25; G.just = {c, until: G.day + 30}; toast('Oorlogsdoel tegen ' + cname(c) + ': klaar over 30 dagen', 'good'); }
@@ -628,7 +640,12 @@ function renderSheet(){
       b += '<p class="help" style="margin:.45rem 0 0">Bij 75% roept een land de noodtoestand uit, bij 100% geeft het zich over.</p></div>';
     }
     const topM = ens.reduce((m2, e) => Math.max(m2, meterOf(e)), 0);
+    const alc = Object.keys(G.allies || {});
+    const allyB = alc.length
+      ? '<div class="blk">' + alc.map(c => '<div class="war2"><div class="wtop"><span class="cdot" style="background:' + colorOf(c) + '"></span><span class="wn">' + esc(cname(c)) + '</span><span class="wd" title="Bondgenoot sinds">' + ic('tijd') + Math.floor(G.day - G.allies[c]) + ' d</span></div></div>').join('') + '<p class="help" style="margin:.45rem 0 0">Een bondgenoot valt je niet aan en doet mee in je oorlogen. Opzeggen: tik een provincie van het land.</p></div>'
+      : '<div class="blk empty">' + ic('vrede') + '<span>Nog geen bondgenoten. Tik een buurland en kies Bondgenootschap (' + ALLY_COST + ' bevelpunten, hoogstens ' + maxAllies() + ').</span></div>';
     h += det('oorlog', ic('oorlog') + 'Oorlogen<span class="sumv">' + (ens.length ? ens.length + ' · ' + pct(topM) + '%' : 'vrede') + '</span>', b, ens.length > 0);
+    h += det('bond', ic('vrede') + 'Bondgenoten<span class="sumv">' + alc.length + '/' + maxAllies() + '</span>', allyB, alc.length > 0);
     const thr = COAL_THR(), am = maxAE();
     const fear = CIDS.filter(x => x !== me && alive(x) && !atWar(x, me) && (G.ae[x] || 0) >= 5).sort((a2, b2) => G.ae[b2] - G.ae[a2]).slice(0, 6);
     b = '<div class="blk">';

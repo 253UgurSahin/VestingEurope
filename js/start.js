@@ -36,6 +36,9 @@ function validSave(s){
   g.air = Array.isArray(g.air) ? g.air.filter(w => w && P[w.base] && CN[w.c] && AIR[w.t]) : [];
   for(const u of g.units){ if(!(u.hp > 0 && u.hp <= 100)) u.hp = clamp(u.hp || 100, 1, 100); if(!Array.isArray(u.path)) u.path = []; if(!Number.isFinite(u.prog)) u.prog = 0; }
   g.opt = {help:optClean(g.opt && g.opt.help), ai:optClean(g.opt && g.opt.ai)}; g.assisted = g.opt.help > 0 || g.opt.ai < 0;
+  { const al = {}; if(g.allies && typeof g.allies === 'object' && !Array.isArray(g.allies)) for(const c of Object.keys(g.allies)) if(c !== g.player && CN[c] && g.nations[c] && g.nations[c].alive && Number.isFinite(g.allies[c])) al[c] = g.allies[c]; g.allies = al; }
+  { const cd = {}; if(g.allyCd && typeof g.allyCd === 'object' && !Array.isArray(g.allyCd)) for(const c of Object.keys(g.allyCd)) if(CN[c] && Number.isFinite(g.allyCd[c])) cd[c] = g.allyCd[c]; g.allyCd = cd; }
+  { const jo = {}; if(g.joined && typeof g.joined === 'object' && !Array.isArray(g.joined)) for(const k of Object.keys(g.joined)){ const [x, y] = k.split('>'); if(CN[x] && CN[y] && g.allies[x] != null && Number.isFinite(g.joined[k])) jo[k] = g.joined[k]; } g.joined = jo; }
   g.fac ||= {}; g.dmg ||= {}; g.forts ||= {}; g.wars ||= {}; g.battles = []; g.frac = Number.isFinite(g.frac) ? g.frac : 0;
   for(const p of PIDS) if(!Number.isFinite(g.fac[p])) g.fac[p] = 0;
   for(const k of Object.keys(g.wars)){ const [a, b] = k.split('|'); if(!CN[a] || !CN[b] || a === b) delete g.wars[k]; }

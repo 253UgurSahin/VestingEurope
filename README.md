@@ -37,6 +37,10 @@ In het Overzicht staat **Bewaar als bestand**: dat downloadt je spel als een `.j
 
 Op een eigen webserver met https (of lokaal op localhost) werkt het spel na één bezoek zonder internet, en je kunt het installeren als app (Chrome: "Installeren", Safari op iPad en iPhone: "Zet op beginscherm"). Dat regelen `manifest.webmanifest` en `sw.js`. De code (html, js, css) komt eerst van het net, zodat een nieuwe versie meteen binnenkomt; kaarten, lettertypes en iconen komen uit de cache. De Europakaart wordt bij het eerste bezoek bewaard, de wereldkaart (8 MB) zodra je hem een keer hebt gebruikt. Verander het versienummer `CACHE` in `sw.js` als een kaartbestand, lettertype of icoon verandert. Service workers bestaan niet in een pagina op claude.ai: daar werkt het spel gewoon online.
 
+## Bondgenootschap
+
+Tik een buurland en kies **Bondgenootschap** (30 bevelpunten; hoogstens 2 bondgenoten op de Europakaart, 3 op de wereldkaart). Het antwoord staat vast en de reden staat in de knop: een land weigert als het bang voor je is (agressie 20 of meer), in oorlog is met jou of met een van je bondgenoten, of als je het bondgenootschap met dat land net hebt opgezegd (90 dagen wachten). Een bondgenoot valt je nooit aan, doet mee in elke oorlog van jou (ook als de ander jou aanvalt), doet niet mee in een coalitie tegen jou en sluit vrede als jij vrede sluit. Jij kunt een bondgenoot niet aanvallen; **Zeg op** kost agressie bij de buren van dat land. Bondgenoten staan in het Overzicht en blijven bewaard.
+
 ## Bestanden
 
 | Bestand | Inhoud |

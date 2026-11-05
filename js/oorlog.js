@@ -373,8 +373,53 @@ function neighbors(c){
   for(const p of owned(c)) for(const n of ADJ[p]){ const o = G.ctrl[n]; if(o !== c && !LONG.has(ek(p, n))) s.add(o); }
   return NB[c] = [...s].filter(alive);
 }
+/* ================= bondgenootschap met een AI-land =================
+   Jij en je bondgenoot vallen elkaar nooit aan, en de bondgenoot doet mee in elke oorlog van jou. Het antwoord van het land
+   staat vast (geen dobbelsteen) en de reden is te zien: je ziet vooraf of het kan. Opzeggen kost agressie bij de buren. */
+const ALLY_COST = 30, ALLY_COOL = 90, ALLY_FEAR = 20;
+const maxAllies = () => MAPNAME === 'world' ? 3 : 2;
+const isAllied = (x, y) => !!G.allies && ((x === G.player && G.allies[y] != null) || (y === G.player && G.allies[x] != null));   // != null: een bondgenootschap op dag 0 heeft waarde 0
+function allianceOffer(c){
+  const me = G.player;
+  if(c === me || !G.nations[c] || !alive(c)) return {ok:false, why:'bestaat niet meer'};
+  if(G.allies[c] != null) return {ok:false, why:'is al je bondgenoot'};
+  if(atWar(me, c)) return {ok:false, why:'ligt in oorlog met jou'};
+  for(const a of Object.keys(G.allies)) if(atWar(a, c)) return {ok:false, why:'ligt in oorlog met je bondgenoot ' + cname(a)};
+  if(Object.keys(G.allies).length >= maxAllies()) return {ok:false, why:'je hebt al ' + maxAllies() + ' bondgenoten (het maximum)'};
+  if((G.allyCd[c] || 0) > G.day) return {ok:false, why:'wacht nog ' + Math.ceil(G.allyCd[c] - G.day) + ' dagen na het opzeggen'};
+  if((G.ae[c] || 0) >= ALLY_FEAR) return {ok:false, why:'is bang voor je (agressie ' + Math.round(G.ae[c]) + ', vanaf ' + ALLY_FEAR + ' wil het geen bondgenootschap)'};
+  if(nat(me).cp < ALLY_COST) return {ok:false, why:'wil wel, maar je hebt ' + ALLY_COST + ' bevelpunten nodig'};
+  return {ok:true, why:''};
+}
+function proposeAlliance(c){
+  const o = allianceOffer(c);
+  if(!o.ok){ toast(cname(c) + ' ' + o.why, 'war', 'ally' + c); return false; }
+  nat(G.player).cp -= ALLY_COST; G.allies[c] = G.day;
+  toast(cname(c) + ' is nu je bondgenoot', 'good', 'ally' + c); sfx('tap');
+  return true;
+}
+function breakAlliance(c){
+  if(G.allies[c] == null) return;
+  delete G.allies[c]; G.allyCd[c] = G.day + ALLY_COOL;
+  for(const x of neighbors(c)) addAE(x, 8);
+  for(const k of Object.keys(G.joined)) if(k.startsWith(c + '>')) delete G.joined[k];
+  toast('Bondgenootschap met ' + cname(c) + ' opgezegd: de buren schrikken', '', 'ally' + c);
+}
+// jouw oorlog tegen enemy: elke bondgenoot die er nog niet in zit, doet mee
+function allyJoin(enemy){
+  for(const al of Object.keys(G.allies)){
+    if(al === enemy || !G.nations[al] || !alive(al) || !alive(enemy) || atWar(al, enemy)) continue;
+    declare(al, enemy, G.player);
+    if(atWar(al, enemy)) G.joined[al + '>' + enemy] = G.day;
+  }
+}
+function allyTick(){
+  for(const c of Object.keys(G.allies)) if(!G.nations[c] || !alive(c)){ delete G.allies[c]; toast(cname(c) + ' bestaat niet meer: het bondgenootschap is voorbij', 'war', 'ally' + c); }
+}
+
 function declare(a, b, joining){
   if(atWar(a,b) || !alive(a) || !alive(b)) return;
+  if(isAllied(a, b)) return;   // bondgenoten vallen elkaar nooit aan
   if(G.truce && truceLeft(a, b) > 0 && a !== G.player) return;   // bestand na capitulatie
   G.wars[wk(a,b)] = G.day;
   if(G.aggr){
@@ -394,6 +439,7 @@ function declare(a, b, joining){
   if(b === G.player){ toast(cname(a) + (joining ? ' sluit zich aan tegen jou' : ' verklaart jou de oorlog'), 'war'); G.paused = true; shake(); flash(); sfx('war'); }
   else if(a === G.player){ toast('Je bent in oorlog met ' + cname(b), 'war'); sfx('war'); }
   else if(loud) toast(joining ? cname(a) + ' komt ' + cname(joining) + ' te hulp tegen ' + cname(b) : cname(a) + ' verklaart ' + cname(b) + ' de oorlog', joining && joining === G.player ? 'good' : '');
+  if((a === G.player || b === G.player) && joining !== G.player) allyJoin(a === G.player ? b : a);   // jouw bondgenoten doen mee
   if(joining || a === G.player) return;   // tegen de speler werkt de zichtbare agressiemeter, geen dobbelsteen
   // coalitie tussen AI-landen: buren die de agressor vrezen springen bij
   const pa = armyPow(a), pb = armyPow(b);
@@ -403,7 +449,7 @@ function declare(a, b, joining){
   let joined = 0;
   for(const x of pool){
     if(joined >= G.diff + 1) break;
-    if(x === a || x === b || x === G.player || atWar(x, a) || enemiesOf(x).length >= 2 || (G.truce && truceLeft(x, a) > 0)) continue;
+    if(x === a || x === b || x === G.player || isAllied(x, a) || atWar(x, a) || enemiesOf(x).length >= 2 || (G.truce && truceLeft(x, a) > 0)) continue;
     if(MAPNAME === 'world' && distKm(CN[x].cap, CN[b].cap) > 2500 && distKm(CN[x].cap, CN[a].cap) > 2500) continue;
     if(Math.random() < chance){ declare(x, a, b); joined++; }
   }
@@ -411,6 +457,10 @@ function declare(a, b, joining){
 function makePeace(a, b, quiet){
   const me = G.player;
   delete G.wars[wk(a,b)]; if(G.aggr) delete G.aggr[wk(a,b)];
+  if((a === me || b === me) && G.joined){   // jouw vrede is ook de vrede van de bondgenoten die voor jou meevochten
+    const o = a === me ? b : a;
+    for(const k of Object.keys(G.joined)){ const [al, en] = k.split('>'); if(en === o){ delete G.joined[k]; if(atWar(al, o)) makePeace(al, o, true); } }
+  }
   if(G.kill){ delete G.kill[a + '>' + b]; delete G.kill[b + '>' + a]; }
   if(G.wlast) delete G.wlast[wk(a, b)];
   if(G.cards && (a === me || b === me)){ const o = a === me ? b : a; G.cards = G.cards.filter(cd => cd.e !== o); }
@@ -425,6 +475,7 @@ function makePeace(a, b, quiet){
 const COAL_THR = () => D().thr + (MAPNAME === 'world' ? 5 : 0);
 const AE_R = () => MAPNAME === 'world' ? 1500 : 1000;
 function polInit(){
+  G.allies ||= {}; G.allyCd ||= {}; G.joined ||= {};
   G.ae ||= {}; G.wg ||= {}; G.aiJust ||= {}; G.aggr ||= {}; G.stats ||= {lost:0, caps:0, coal:0, wins:0};
   if(G.just === undefined) G.just = null;
   for(const c of CIDS){ const n = nat(c); if(n.ws == null) n.ws = 60; if(n.capX == null) n.capX = 0; }
@@ -458,7 +509,7 @@ function coalitionCheck(){
   // alleen landen die echt in de buurt liggen (hoofdstad dicht bij jouw gebied) doen mee; maximaal 4
   const mine = owned(me);
   const near = x => { const a = P[CN[x].cap].a; for(const p of mine){ const b = P[p].a; if(Math.hypot(a[0]-b[0], a[1]-b[1])*KM < AE_R()) return true; } return false; };
-  const hot = CIDS.filter(x => x !== me && alive(x) && !atWar(x, me) && (G.ae[x] || 0) >= thr && !(G.truce && truceLeft(x, me) > 0) && near(x))
+  const hot = CIDS.filter(x => x !== me && alive(x) && !isAllied(x, me) && !atWar(x, me) && (G.ae[x] || 0) >= thr && !(G.truce && truceLeft(x, me) > 0) && near(x))
     .sort((a, b) => G.ae[b] - G.ae[a]).slice(0, 4);
   if(hot.length < 3) return;
   G.stats.coal++;

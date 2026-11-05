@@ -674,7 +674,7 @@ function aiDeclare(c){
   const share = owned(G.player).length / PIDS.length;
   const feared = share >= 0.12;
   const cands = neighbors(c).filter(x => {
-    if(atWar(c,x) || (G.truce && truceLeft(c, x) > 0)) return false;
+    if(atWar(c,x) || (G.truce && truceLeft(c, x) > 0) || isAllied(c, x)) return false;
     if(x === G.player){
       if(G.day < D().grace) return false;
       return my > (feared ? (D().fear || 1.1) : (D().prey || 2)) * armyPow(x);   // op Makkelijk valt de AI je alleen aan met grote overmacht
