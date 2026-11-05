@@ -198,3 +198,12 @@ test('F10-E1 de tabs in de panelen bevatten alleen tabs (B002)', async t => {
   }
   assert.deepEqual(errors, []);
 });
+
+test('F10-E2 de productiewachtrij heeft een naam die schermlezers voorlezen (B003)', async t => {
+  const { page, errors } = await open(t);
+  await startGame(page);
+  await page.getByRole('button', { name: 'Productie', exact: true }).click();
+  await page.locator('#sheet button[data-q]:not([disabled])').first().click();
+  assert.equal(await page.getByRole('group', { name: 'Productiewachtrij' }).count(), 1);
+  assert.deepEqual(errors, []);
+});
