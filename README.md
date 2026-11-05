@@ -12,6 +12,19 @@ python3 -m http.server 8000
 
 Open daarna http://localhost:8000.
 
+## Toetsenbord
+
+| Toets | Wat het doet |
+|---|---|
+| Tab | Naar de kaart en langs de knoppen |
+| Pijltjes (op de kaart) | Naar de buurprovincie in die richting; de provincie wordt voorgelezen |
+| Enter (op de kaart) | Zoals klikken: land kiezen, eigen divisies selecteren of een bevel geven |
+| + en − | In- en uitzoomen rond de gekozen provincie |
+| Spatie | Pauze / doorgaan (op een knop: de knop indrukken) |
+| 1 tot 4 | Snelheid |
+| M | Geluid aan of uit |
+| Escape | Selectie of paneel sluiten |
+
 ## Bestanden
 
 | Bestand | Inhoud |

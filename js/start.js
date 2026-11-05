@@ -73,6 +73,7 @@ function toPick(){
 function onGameLoaded(focus){
   clearToasts(); warsChanged(); ownDirty = true; POWC = null; AIRBY = null;
   clearSel(); UI.info = null; UI.target = null; UI.sheet = null; UI.confirm = null; UI.winShown = false;
+  KP = null;   // toetsenbord op de kaart begint weer bij de eigen hoofdstad
   RZ = ZONE_KM / KM; computeSupply(true); polInit();
   allFills(); stripSig = null; sheetSig = '';
   if(focus) fitCountry(G.player);

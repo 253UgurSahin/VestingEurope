@@ -97,7 +97,7 @@ test('spatie drukt een knop met focus in, en pauzeert alleen op de kaart (A001)'
 test('een opgeslagen spel komt terug na herladen', async t => {
   const { page } = await open(t);
   await startGame(page, 'pl');
-  await page.evaluate(() => window.__VE.advance(15));
+  await page.evaluate(() => { window.__VE.G.paused = true; window.__VE.advance(15); });
   const day = await G(page, () => window.__VE.G.day);
   await page.evaluate(() => dispatchEvent(new Event('pagehide')));   // slaat op
   await page.reload();
@@ -128,5 +128,41 @@ test('een opgeslagen spel met foute waarden wordt gerepareerd, en de reserve wor
   await page.waitForFunction(() => window.__VE.G);
   const g = await G(page, () => ({ p: window.__VE.G.player, speed: window.__VE.G.speed, hp: window.__VE.G.units.every(u => u.hp > 0 && u.hp <= 100), nid: Number.isFinite(window.__VE.G.nid) }));
   assert.deepEqual(g, { p: 'se', speed: 1, hp: true, nid: true });
+  assert.deepEqual(errors, []);
+});
+
+test('de kaart is met het toetsenbord te spelen (A006)', async t => {
+  const { page, errors } = await open(t);
+  // startscherm: een land kiezen met pijltjes en Enter
+  await page.focus('#over');
+  await page.keyboard.press('ArrowRight');
+  const first = await page.textContent('#mapLive');
+  assert.ok(first.length > 0, 'de gekozen provincie wordt voorgelezen');
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Enter');
+  assert.ok(await G(page, () => window.__VE.UI.pick), 'Enter kiest het land van de provincie');
+  // in het spel: eigen divisies selecteren in de hoofdstad en naar een buurprovincie sturen
+  await startGame(page, 'nl');
+  await page.evaluate(() => { window.__VE.G.paused = true; });
+  await page.focus('#over');
+  await page.keyboard.press('ArrowDown');   // begint bij de hoofdstad
+  const cap = await G(page, () => window.__VE.MAP.CN.nl.cap);
+  const capName = await G(page, () => window.__VE.MAP.P[window.__VE.MAP.CN.nl.cap].n);
+  assert.match(await page.textContent('#mapLive'), new RegExp(capName));
+  await page.keyboard.press('Enter');
+  const sel = await G(page, () => window.__VE.UI.sel.size);
+  assert.ok(sel > 0, 'Enter selecteert de eigen divisies');
+  let moved = false;
+  for (const k of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp']) {
+    await page.keyboard.press(k);
+    const here = await page.textContent('#mapLive');
+    if (here.includes(capName)) continue;
+    await page.keyboard.press('Enter');
+    moved = await page.evaluate(cap => window.__VE.G.units.some(u => u.c === 'nl' && u.path && u.path.length > 0), cap);
+    if (moved) break;
+  }
+  assert.ok(moved, 'een bevel met Enter laat divisies lopen');
+  await page.keyboard.press('Escape');
+  assert.equal(await G(page, () => window.__VE.UI.sel.size), 0, 'Escape heft de selectie op');
   assert.deepEqual(errors, []);
 });

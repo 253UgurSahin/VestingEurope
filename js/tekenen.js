@@ -632,9 +632,9 @@ function togglePause(){ if(!G || G.over) return; if(cardOpen()){ toast('Neem eer
 
 /* ================= tooltip ================= */
 let tipT = 0, HOVER = null;
-function hover(e){
-  const now = performance.now(); if(now - tipT < 50) return; tipT = now;
-  const p = provinceAt(e.clientX, e.clientY);
+function hover(e, kp){
+  const now = performance.now(); if(!kp && now - tipT < 50) return; tipT = now;
+  const p = kp || provinceAt(e.clientX, e.clientY);
   if(p !== HOVER){ HOVER = p; overDirty = true; }
   if(!p){ hideTip(); return; }
   const c = G ? G.ctrl[p] : P[p].c;
@@ -661,6 +661,52 @@ function hover(e){
   tip.style.left = x + 'px'; tip.style.top = y + 'px';
 }
 function hideTip(){ $('tip').hidden = true; }
+
+/* toetsenbord op de kaart: pijltjes kiezen de buurprovincie in die richting, Enter werkt als een klik */
+let KP = null;
+const KDIR = {ArrowRight:[1, 0], ArrowLeft:[-1, 0], ArrowUp:[0, -1], ArrowDown:[0, 1]};
+function kbStart(){
+  if(G && CN[G.player] && P[CN[G.player].cap]) return CN[G.player].cap;
+  const r = stage.getBoundingClientRect();
+  return provinceAt(r.left + r.width/2, r.top + r.height/2) || PIDS[0];
+}
+function kbNext(p, [dx, dy]){
+  const [x0, y0] = P[p].a;
+  let best = null, bs = Infinity;
+  const pick = (list, minCos) => {
+    for(const q of list){
+      if(q === p || !P[q]) continue;
+      const vx = P[q].a[0] - x0, vy = P[q].a[1] - y0, d = Math.hypot(vx, vy) || 1, cos = (vx*dx + vy*dy)/d;
+      if(cos < minCos) continue;
+      const s = d * (2 - cos);
+      if(s < bs){ bs = s; best = q; }
+    }
+  };
+  pick(ADJ[p] || [], 0.35);
+  if(!best) pick(PIDS, 0.5);   // geen buur in die richting (eiland, kust): de dichtstbijzijnde provincie
+  return best;
+}
+function kbFocus(p){
+  KP = p; HOVER = p; overDirty = true;
+  const r = stage.getBoundingClientRect();
+  let [sx, sy] = toScreen(P[p].a[0], P[p].a[1]);
+  if(sx < 40 || sy < 60 || sx > r.width - 40 || sy > r.height - 120){ tweenView(P[p].a[0], P[p].a[1], V.k, true); [sx, sy] = toScreen(P[p].a[0], P[p].a[1]); }
+  hover({clientX: r.left + sx, clientY: r.top + sy}, p);
+  $('mapLive').textContent = $('tip').textContent;
+}
+overC.addEventListener('keydown', e => {
+  if(!DATA || e.altKey || e.ctrlKey || e.metaKey) return;
+  if(KDIR[e.key]){ e.preventDefault(); const q = KP && P[KP] ? kbNext(KP, KDIR[e.key]) : kbStart(); if(q) kbFocus(q); }
+  else if(e.key === 'Enter'){ e.preventDefault(); if(!KP || !P[KP]){ kbFocus(kbStart()); return; } onProvince(KP, e); kbFocus(KP); }
+  else if(e.key === '+' || e.key === '=' || e.key === '-'){
+    e.preventDefault();
+    const r = stage.getBoundingClientRect(), [sx, sy] = KP && P[KP] ? toScreen(P[KP].a[0], P[KP].a[1]) : [r.width/2, r.height/2];
+    zoomAt(r.left + sx, r.top + sy, e.key === '-' ? 1/1.5 : 1.5);
+    if(KP && P[KP]) setTimeout(() => kbFocus(KP), 0);
+  }
+});
+overC.addEventListener('focus', () => { if(KP && P[KP]) kbFocus(KP); });
+overC.addEventListener('blur', () => { hideTip(); if(HOVER === KP){ HOVER = null; overDirty = true; } });
 
 /* ================= symbolen: één set silhouetten voor kaart én menu's ================= */
 const SIL = {

@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
+<div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" tabindex="0" role="application" aria-label="Speelkaart met provincies. Pijltjestoetsen kiezen een provincie, Enter selecteert of geeft een bevel, plus en min zoomen, Escape annuleert" aria-describedby="mapLive"></canvas></div>
 <div id="toasts" aria-live="polite"></div>
 <div id="flash" aria-hidden="true"></div>
 <div id="hero" hidden><b>Vesting Europa</b><span>Kies je land en herschrijf de geschiedenis</span></div>
@@ -27,6 +27,7 @@
 <div id="queue" aria-label="Productiewachtrij"></div>
 <button id="status" class="glass" type="button" aria-label="Status van je land, open het overzicht" hidden></button>
 <div id="tip" class="glass" hidden></div>
+<div id="mapLive" class="sr" aria-live="polite"></div>
 <div id="boxSel" hidden></div>
 
 <div id="dock">
