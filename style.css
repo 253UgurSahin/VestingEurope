@@ -527,6 +527,7 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 #hero span{color:#CFD6DC;font-size:1rem;letter-spacing:.03em}
 #hero b{font:700 clamp(2.2rem, 10vmin, 4.6rem) var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-shadow:0 2px 6px rgba(0,0,0,.8), 0 10px 40px rgba(0,0,0,.6);line-height:1}
 #hero span{color:var(--dim);font-size:.95rem;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+#hero .promise{color:var(--ink);font:600 .95rem var(--f-ui);letter-spacing:.06em;text-wrap:balance;padding:0 1rem}
 /* eindkaart */
 #endcard{position:fixed;z-index:40;left:50%;top:44%;transform:translate(-50%,-50%);width:min(23rem,calc(100vw - 2.2rem));border-radius:1.2rem;padding:1.2rem 1.3rem 1.1rem;display:grid;gap:.75rem;justify-items:center;text-align:center;animation:ecin .3s ease-out}
 @keyframes ecin{from{transform:translate(-50%,-50%) scale(.92);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}

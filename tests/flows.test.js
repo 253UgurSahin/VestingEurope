@@ -237,3 +237,14 @@ test('F11-E2 de Content-Security-Policy staat aan en blokkeert niets van het spe
   assert.ok((await page.evaluate(() => window.__csp)).some(v => v.startsWith('script-src')), 'de browser meldt de blokkade');
   assert.deepEqual(errors.filter(e => !/Content Security Policy|404 /.test(e)), []);
 });
+
+test('C001 het startscherm en de pagina zeggen: gratis, geen account, geen aankopen, geen advertenties', async t => {
+  const { page, errors } = await open(t);
+  await page.waitForSelector('#hero:not([hidden])');
+  const hero = await page.textContent('#hero');
+  for (const word of [/gratis/i, /geen account/i, /geen aankopen/i, /geen advertenties/i, /op dit apparaat/i]) assert.match(hero, word);
+  assert.match(await page.getAttribute('meta[name="description"]', 'content'), /gratis/i);
+  // en het klopt: niets naar andere sites, geen cookies
+  assert.equal((await page.context().cookies()).length, 0, 'geen cookies');
+  assert.deepEqual(errors, []);
+});
