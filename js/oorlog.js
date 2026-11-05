@@ -538,7 +538,7 @@ const bestOf = (m, c) => { try{ return JSON.parse(localStorage.getItem('ve_best'
 function gameOver(kind){
   G.over = kind; G.paused = true; saveBest(); shake(); flash(); sfx('lose');
   clearSel(); UI.target = null; UI.sheet = null;
-  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_KEY + '.bak'); }catch(e){}   // ook de reserve, anders komt het verloren spel terug
   renderAll();
 }
 

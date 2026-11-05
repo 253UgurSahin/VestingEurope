@@ -168,3 +168,20 @@ test('F09-H1 een nieuw spel vraagt eerst om bevestiging en laat het oude spel be
   assert.ok(await page.evaluate(k => !!localStorage.getItem(k), SAVE_KEY), 'het oude spel blijft te hervatten');
   assert.deepEqual(errors, []);
 });
+
+test('F07-E1 een verloren spel komt na herladen niet terug (B001)', async t => {
+  const { page, errors } = await open(t);
+  await startGame(page, 'nl');
+  for (let i = 0; i < 2; i++) await page.evaluate(() => { window.__VE.advance(5); dispatchEvent(new Event('pagehide')); });   // spelstand + reserve
+  await page.evaluate(() => {
+    const G = window.__VE.G;
+    for (const k of Object.keys(G.ctrl)) if (G.ctrl[k] === 'nl') capture(k, 'de');
+    G.units = G.units.filter(u => u.c !== 'nl');
+    for (let i = 0; i < 15 && !G.over; i++) window.__VE.advance(1);
+  });
+  assert.equal(await page.evaluate(() => window.__VE.G.over), 'lost');
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && !window.__VE.UI.loading);
+  assert.equal(await page.locator('#strip button[data-act="resume"]').count(), 0, 'geen "Doorgaan" voor het verloren spel');
+  assert.deepEqual(errors, []);
+});
