@@ -250,12 +250,13 @@ function renderStrip(){
     const seg = '<div class="segrow">'
       + Object.keys(MAPS).map(m => '<button class="btn sm' + (MAPNAME === m ? ' pri' : '') + '" data-map="' + m + '">' + MAPS[m].name + '</button>').join('')
       + '<button class="btn sm" data-act="diff" title="Moeilijkheid">' + DIFF[UI.diff].name + '</button>'
+      + (MAPNAME === 'europe' ? '<button class="btn sm" data-act="year" title="Startjaar: 1936, of 1939 na de Anschluss, München en de inname van Albanië (grenzen bij benadering)">Start: ' + UI.year + '</button>' : '')
       + (UI.pick && !UI.dailyKey ? '<button class="btn sm" data-act="opt:help" title="Jouw voordeel: productie, legerlimiet en gevechtskracht boven op het niveau. Geen is zonder extra; bij groot telt je score niet voor records.">Jouw voordeel: ' + OPT_HELP[UI.opt.help] + '</button><button class="btn sm" data-act="opt:ai" title="Sterkte van de computerlanden: 20% minder of 25% meer productie. Bij zwakker telt je score niet voor records.">AI: ' + OPT_AI[UI.opt.ai] + '</button>' : '')
       + '</div>';
     if(UI.pick){
       const c = UI.pick, cc = CN[c];
       const divs = Math.max(1, Math.round(popE(c)/9 + cc.f*0.25)) + Math.floor(cc.f/5) + Math.floor(cc.f/6) + Math.floor(cc.f/7);
-      const best = bestOf(MAPNAME, c);
+      const best = bestOf(MAPNAME, c, UI.year);
       h = '<div class="sel"><span class="sb"><span class="cdot big" style="background:' + colorOf(c) + '"></span><b style="font:700 1.25rem var(--f-ui)">' + esc(cname(c)) + '</b></span>'
         + '<span class="chips"><span class="chip2" title="Provincies">' + ic('prov') + CPROV[c].length + '</span><span class="chip2" title="Fabrieken">' + ic('fab') + Math.round(cc.f/FAB_ADD) + '</span><span class="chip2" title="Divisies bij de start">' + ic('leger') + divs + '</span>'
         + (best ? '<span class="chip2" title="Je beste score met dit land">' + ic('medaille') + best + '</span>' : '') + '</span>'
@@ -374,13 +375,14 @@ $('strip').addEventListener('click', async e => {
   sfx('tap');
   if(b.dataset.map){ await switchMap(b.dataset.map); return; }
   const a = b.dataset.act;
-  if(a === 'start'){ const c = UI.pick; UI.pick = null; newGame(c, UI.diff, UI.dailyKey ? null : UI.opt); if(UI.dailyKey){ G.daily = UI.dailyKey; UI.dailyKey = null; } onGameLoaded(true); return; }
-  if(a === 'daily'){ const dl = dailyOf(); if(MAPNAME !== dl.map){ await switchMap(dl.map); } UI.diff = dl.diff; UI.opt = {help:0, ai:0}; UI.pick = dl.c; UI.dailyKey = dl.key; fitCountry(dl.c); stripSig = null; renderAll(); return; }
+  if(a === 'start'){ const c = UI.pick; UI.pick = null; newGame(c, UI.diff, UI.dailyKey ? null : UI.opt, UI.dailyKey ? 1936 : UI.year); if(UI.dailyKey){ G.daily = UI.dailyKey; UI.dailyKey = null; } onGameLoaded(true); return; }
+  if(a === 'daily'){ const dl = dailyOf(); if(MAPNAME !== dl.map){ await switchMap(dl.map); } UI.diff = dl.diff; UI.year = 1936; UI.opt = {help:0, ai:0}; UI.pick = dl.c; UI.dailyKey = dl.key; fitCountry(dl.c); stripSig = null; renderAll(); return; }
   if(a === 'resume'){ loadSaved(); return; }
   if(a === 'import'){ $('importFile').click(); return; }
   if(a === 'retry'){ UI.err = null; await switchMap(MAPNAME || 'europe', true); return; }
   if(a === 'new'){ toPick(); return; }
   if(a === 'diff'){ UI.diff = (UI.diff + 1) % DIFF.length; }
+  else if(a === 'year'){ UI.year = UI.year === 1936 ? 1939 : 1936; UI.dailyKey = null; if(UI.pick) UI.pick = ownerNow(CPROV[UI.pick][0]); allFills(); labelsDirty = true; }
   else if(a === 'opt:help' || a === 'opt:ai'){ const k = a.slice(4), v = UI.opt[k]; UI.opt[k] = v === 0 ? 1 : v === 1 ? -1 : 0; }
   else if(a === 'introNext' || a === 'introSkip'){
     if(a === 'introNext' && UI.intro < INTRO.length) UI.intro++;
@@ -599,7 +601,7 @@ function renderSheet(){
     const mineP = owned(me).length;
     const wings = {fi:0, cas:0, bo:0}; for(const w of G.air) if(w.c === me) wings[w.t]++;
     const sc = score(), rk = rankOf(sc);
-    h += '<div class="hero"><span class="cdot big" style="background:' + colorOf(me) + '"></span><span class="hn"><b>' + esc(cname(me)) + '</b><small>' + fmtDay(G.day) + ' · ' + DIFF[G.diff].name + (G.opt && (G.opt.help || G.opt.ai) ? ' · eigen spel' : '') + '</small></span>'
+    h += '<div class="hero"><span class="cdot big" style="background:' + colorOf(me) + '"></span><span class="hn"><b>' + esc(cname(me)) + '</b><small>' + fmtDay(G.day) + ' · ' + DIFF[G.diff].name + (G.opt && (G.opt.help || G.opt.ai) ? ' · eigen spel' : '') + (G.year === 1939 ? ' · start 1939' : '') + '</small></span>'
       + '<span class="medal m-' + rk.split(' ')[0].toLowerCase() + '" title="Score: gebied, doelen en verslagen landen. Geen tijdslimiet.">' + ic('medaille') + '<b>' + sc + '</b></span></div>';
     h += '<div class="tiles">'
       + (G.won
@@ -835,7 +837,7 @@ function renderEnd(){
   $('hero').hidden = !(DATA && !G && !UI.pick && !UI.loading && !UI.err);
   const show = G && (G.over || (G.won && UI.winShown));
   if(!show){ if(!el.hidden) el.hidden = true; endSig = ''; return; }
-  const sc = score(), rk = rankOf(sc), best = bestOf(MAPNAME, G.player);
+  const sc = score(), rk = rankOf(sc), best = bestOf(MAPNAME, G.player, G.year);
   const sh = Math.round(100*owned(G.player).length/PIDS.length);
   const done = G.obj.filter(o => o.done).length;
   const win = G.won && !G.over;
@@ -861,13 +863,13 @@ $('endcard').addEventListener('click', e => {
   const b = e.target.closest('[data-e]'); if(!b) return;
   if(b.dataset.e === 'new'){ toPick(); }
   else if(b.dataset.e === 'share'){
-    const txt = 'Vesting Europa: ' + score() + ' punten (' + rankOf(score()) + ') met ' + cname(G.player) + ' op ' + DIFF[G.diff].name + (G.opt && (G.opt.help || G.opt.ai) ? ' (eigen spel)' : '') + (G.won ? ' — overwinning!' : '') + (G.daily ? ' · uitdaging van ' + G.daily : '') + ' · ' + location.href.split('#')[0];
+    const txt = 'Vesting Europa: ' + score() + ' punten (' + rankOf(score()) + ') met ' + cname(G.player) + ' op ' + DIFF[G.diff].name + (G.opt && (G.opt.help || G.opt.ai) ? ' (eigen spel)' : '') + (G.year === 1939 ? ' (start 1939)' : '') + (G.won ? ' — overwinning!' : '') + (G.daily ? ' · uitdaging van ' + G.daily : '') + ' · ' + location.href.split('#')[0];
     if(navigator.share){ navigator.share({title:'Vesting Europa', text:txt}).catch(() => {}); }
     else if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(() => toast('Score gekopieerd naar het klembord', 'good')).catch(() => toast(txt, '')); }
     else toast(txt, '');
     return;
   }
-  else if(b.dataset.e === 'again'){ const c = G.player, d = G.diff, o = G.opt; clearToasts(); newGame(c, d, o); onGameLoaded(true); }
+  else if(b.dataset.e === 'again'){ const c = G.player, d = G.diff, o = G.opt, y = G.year; clearToasts(); newGame(c, d, o, y); onGameLoaded(true); }
   else { UI.winShown = false; G.paused = false; }
   renderAll();
 });

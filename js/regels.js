@@ -141,6 +141,11 @@ const OPT_HELP = {'-1':'geen', '0':'standaard', '1':'groot'}, OPT_AI = {'-1':'zw
 const ROMAN = ['I','II','III','IV'];
 const DPS = [0, 1.1, 2.4, 5.2, 10.5];
 const START = Date.UTC(1936, 0, 1);
+// startjaren op de Europakaart. 1939: Oostenrijk (Anschluss 1938), Tsjechië (München 1938 en Praag 1939, Slowakije blijft apart) en
+// Albanië (1939) zijn opgegaan in Duitsland en Italië. De grenzen zijn bij benadering: de kaart heeft één provincie-indeling.
+const SCEN = {1939:{europe:{at:'de', cz:'de', al:'it'}}};
+const annexedIn = year => (SCEN[year] && SCEN[year][MAPNAME]) || {};
+const ownerNow = p => G ? G.ctrl[p] : (annexedIn(UI.year)[P[p].c] || P[p].c);   // wie bezit p nu: in het spel G.ctrl, op het startscherm volgens het gekozen jaar
 const MONTHS = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
 const NF = new Intl.NumberFormat('nl-NL', {maximumFractionDigits:1});
 const SAVE_KEY = 'vesting-europa-v5';
@@ -167,7 +172,7 @@ const cname = c => CN[c].name;
 
 /* ================= spelstand ================= */
 let G = null;
-const UI = { hintN:(()=>{ try{ return +localStorage.getItem('ve_hint_sel') || 0; }catch(e){ return 0; } })(), sel:new Set(), selAir:new Set(), info:null, target:null, sheet:null, pick:null, confirm:null, winShown:false, loading:false, err:null, diff:1, opt:{help:0, ai:0} };
+const UI = { hintN:(()=>{ try{ return +localStorage.getItem('ve_hint_sel') || 0; }catch(e){ return 0; } })(), sel:new Set(), selAir:new Set(), info:null, target:null, sheet:null, pick:null, confirm:null, winShown:false, loading:false, err:null, diff:1, year:1936, opt:{help:0, ai:0} };
 let IDX = {};
 const wk = ek;
 // vijanden per land, opnieuw opgebouwd zodra oorlogen veranderen
@@ -205,12 +210,13 @@ const D = () => {
 };
 const optClean = v => (v === 1 || v === -1) ? v : 0;
 
-function newGame(player, diff, opt){
+function newGame(player, diff, opt, year){
   ownDirty = true; warsChanged(); POWC = null; AIRBY = null;
   const o = {help:optClean(opt && opt.help), ai:optClean(opt && opt.ai)};
-  G = { v:5, map:MAPNAME, diff, opt:o, assisted:o.help > 0 || o.ai < 0, day:0, frac:0, speed:1, paused:false, player, over:null, won:false,
+  const yr = year === 1939 && MAPNAME === 'europe' ? 1939 : 1936, ann = annexedIn(yr);
+  G = { v:5, map:MAPNAME, diff, year:yr, opt:o, assisted:o.help > 0 || o.ai < 0, day:0, frac:0, speed:1, paused:false, player, over:null, won:false,
         ctrl:{}, fac:{}, dmg:{}, forts:{}, hold:{}, wars:{}, nations:{}, units:[], air:[], nid:1, battles:[], peaceCd:{}, rally:'cap' };
-  for(const p of PIDS) G.ctrl[p] = P[p].c;
+  for(const p of PIDS) G.ctrl[p] = ann[P[p].c] || P[p].c;
   for(const c of CIDS){
     const f = CN[c].f, provs = CPROV[c], cap = CN[c].cap;
     const ws = provs.reduce((s,p) => s + Math.sqrt(P[p].ar || 1), 0);
@@ -219,19 +225,20 @@ function newGame(player, diff, opt){
   }
   for(const c of CIDS){
     const f = CN[c].f, pe = popE(c);
-    const provs = CPROV[c];
+    const provs = CPROV[c], own = ann[c] || c;   // een opgegaan land: zijn leger is nu van de nieuwe eigenaar
     const border = provs.filter(p => ADJ[p].some(n => P[n].c !== c));
     const order = border.length ? border.concat(provs.filter(p => !border.includes(p))) : provs;
     const nInf = Math.max(1, Math.round(pe/9 + f*0.25));
     let k = 0;
-    for(let i=0; i<nInf; i++) spawn(c, 'inf', order[k++ % order.length]);
-    for(let i=0; i<Math.floor(f/6); i++) spawn(c, 'art', order[k++ % order.length]);
-    for(let i=0; i<Math.floor(f/5); i++) spawn(c, 'tank', CN[c].cap);
-    for(let i=0; i<Math.floor(f/7); i++) spawn(c, 'mot', CN[c].cap);
-    for(let i=0; i<Math.min(6, Math.floor(f/3)); i++) spawnAir(c, 'fi', CN[c].cap);
-    for(let i=0; i<Math.min(4, Math.floor(f/7)); i++) spawnAir(c, 'cas', CN[c].cap);
-    for(let i=0; i<Math.min(4, Math.floor(f/6)); i++) spawnAir(c, 'bo', CN[c].cap);
+    for(let i=0; i<nInf; i++) spawn(own, 'inf', order[k++ % order.length]);
+    for(let i=0; i<Math.floor(f/6); i++) spawn(own, 'art', order[k++ % order.length]);
+    for(let i=0; i<Math.floor(f/5); i++) spawn(own, 'tank', CN[c].cap);
+    for(let i=0; i<Math.floor(f/7); i++) spawn(own, 'mot', CN[c].cap);
+    for(let i=0; i<Math.min(6, Math.floor(f/3)); i++) spawnAir(own, 'fi', CN[c].cap);
+    for(let i=0; i<Math.min(4, Math.floor(f/7)); i++) spawnAir(own, 'cas', CN[c].cap);
+    for(let i=0; i<Math.min(4, Math.floor(f/6)); i++) spawnAir(own, 'bo', CN[c].cap);
   }
+  for(const c in ann){ const n = G.nations[c]; n.alive = false; n.base = []; n.q = []; }
   economy(true);
   ownDirty = true; polInit();
 }

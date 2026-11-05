@@ -35,6 +35,7 @@ function validSave(s){
   g.units = g.units.filter(u => u && P[u.loc] && CN[u.c] && Number.isFinite(u.hp) && (u.tp in ITEMS || FIXT[u.tp] || !u.tp));
   g.air = Array.isArray(g.air) ? g.air.filter(w => w && P[w.base] && CN[w.c] && AIR[w.t]) : [];
   for(const u of g.units){ if(!(u.hp > 0 && u.hp <= 100)) u.hp = clamp(u.hp || 100, 1, 100); if(!Array.isArray(u.path)) u.path = []; if(!Number.isFinite(u.prog)) u.prog = 0; }
+  g.year = g.year === 1939 && s.map === 'europe' ? 1939 : 1936;
   g.opt = {help:optClean(g.opt && g.opt.help), ai:optClean(g.opt && g.opt.ai)}; g.assisted = g.opt.help > 0 || g.opt.ai < 0;
   { const al = {}; if(g.allies && typeof g.allies === 'object' && !Array.isArray(g.allies)) for(const c of Object.keys(g.allies)) if(c !== g.player && CN[c] && g.nations[c] && g.nations[c].alive && Number.isFinite(g.allies[c])) al[c] = g.allies[c]; g.allies = al; }
   { const cd = {}; if(g.allyCd && typeof g.allyCd === 'object' && !Array.isArray(g.allyCd)) for(const c of Object.keys(g.allyCd)) if(CN[c] && Number.isFinite(g.allyCd[c])) cd[c] = g.allyCd[c]; g.allyCd = cd; }
@@ -176,5 +177,5 @@ async function boot(data){
 }
 if(window.claude?.hot?.ready) window.claude.hot.ready(boot);
 else boot(window.claude?.hot?.data ?? {});
-window.__VE = { V, get errs(){ return ERRN; }, orderMove: p => orderMove(p), view: () => { clampView(); applyView(); }, dbgHit: (x, y) => [hitAt(x, y), ownStackAt(x, y)], get groups(){ return GROUPS; }, toScreen: (x, y) => toScreen(x, y), sup: p => SUP[p], cap: c => armyCap(c), get hd(){ return !!HD; }, get cvl(){ return CVL; }, fitAll: () => fitAll(), renderBase: () => { const t = performance.now(); renderBase(); return performance.now() - t; }, get G(){ return G; }, newGame: (c, d, o) => { newGame(c, d ?? 1, o); onGameLoaded(true); }, get D(){ return D(); }, advance: d => advance(d), UI, declare, switchMap, doDrop, orderAir, unitById, meterOf, settle, resolveCard, dealInfo, playerDeal, occBy, starSum, cardOpen, get STAR(){ return STAR; },
+window.__VE = { V, get errs(){ return ERRN; }, orderMove: p => orderMove(p), view: () => { clampView(); applyView(); }, dbgHit: (x, y) => [hitAt(x, y), ownStackAt(x, y)], get groups(){ return GROUPS; }, toScreen: (x, y) => toScreen(x, y), sup: p => SUP[p], cap: c => armyCap(c), get hd(){ return !!HD; }, get cvl(){ return CVL; }, fitAll: () => fitAll(), renderBase: () => { const t = performance.now(); renderBase(); return performance.now() - t; }, get G(){ return G; }, newGame: (c, d, o, y) => { newGame(c, d ?? 1, o, y); onGameLoaded(true); }, get D(){ return D(); }, advance: d => advance(d), UI, declare, switchMap, doDrop, orderAir, unitById, meterOf, settle, resolveCard, dealInfo, playerDeal, occBy, starSum, cardOpen, get STAR(){ return STAR; },
   get MAP(){ return {P, CIDS, PIDS, CN, KM, provinces:P, adj:ADJ}; } };

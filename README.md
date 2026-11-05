@@ -41,6 +41,10 @@ Op een eigen webserver met https (of lokaal op localhost) werkt het spel na éé
 
 Tik een buurland en kies **Bondgenootschap** (30 bevelpunten; hoogstens 2 bondgenoten op de Europakaart, 3 op de wereldkaart). Het antwoord staat vast en de reden staat in de knop: een land weigert als het bang voor je is (agressie 20 of meer), in oorlog is met jou of met een van je bondgenoten, of als je het bondgenootschap met dat land net hebt opgezegd (90 dagen wachten). Een bondgenoot valt je nooit aan, doet mee in elke oorlog van jou (ook als de ander jou aanvalt), doet niet mee in een coalitie tegen jou en sluit vrede als jij vrede sluit. Jij kunt een bondgenoot niet aanvallen; **Zeg op** kost agressie bij de buren van dat land. Bondgenoten staan in het Overzicht en blijven bewaard.
 
+## Startjaar: 1936 of 1939
+
+Op de Europakaart wisselt de knop **Start** tussen 1936 en 1939. In 1939 zijn Oostenrijk (Anschluss 1938), Tsjechië (München 1938 en Praag 1939; Slowakije blijft apart) en Albanië (1939) opgegaan in Duitsland en Italië: hun provincies zijn van de nieuwe eigenaar, en hun legers ook. De kaart toont dat al op het startscherm; tik je een Oostenrijkse provincie, dan kies je Duitsland. De grenzen zijn bij benadering, want de kaart heeft één provincie-indeling (Hongarije en Polen krijgen bijvoorbeeld geen grensgebied erbij). Een spel vanaf 1939 heeft zijn eigen beste score. De uitdaging van de dag en de wereldkaart gebruiken altijd 1936.
+
 ## Bestanden
 
 | Bestand | Inhoud |

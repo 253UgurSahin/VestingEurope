@@ -647,3 +647,97 @@ test('C006 een heel spel met bondgenoten in oorlog verloopt zonder fouten, en ze
   assert.ok(r.allies.every(c => ['be', 'fr'].includes(c)));
   assert.deepEqual(errors, []);
 });
+
+// C007: start in 1939 (Europakaart)
+test('C007 start 1939: Oostenrijk, Tsjechië en Albanië zijn opgegaan in Duitsland en Italië', async t => {
+  const { page, errors } = await open(t);
+  const r = await page.evaluate(() => {
+    const snap = year => {
+      window.__VE.newGame('pl', 1, null, year);
+      const G = window.__VE.G, own = c => window.__VE.MAP.PIDS.filter(p => G.ctrl[p] === c).length;
+      return { year: G.year, alive: ['at', 'cz', 'al', 'sk'].map(c => G.nations[c].alive), de: own('de'), it: own('it'), pl: own('pl'),
+        removedUnits: ['at', 'cz', 'al'].map(c => G.units.filter(u => u.c === c).length + G.air.filter(w => w.c === c).length),
+        deUnits: G.units.filter(u => u.c === 'de').length, itUnits: G.units.filter(u => u.c === 'it').length,
+        placed: G.units.every(u => G.ctrl[u.loc] === u.c) && G.air.every(w => G.ctrl[w.base] === w.c) };
+    };
+    return { y36: snap(1936), y39: snap(1939) };
+  });
+  assert.equal(r.y36.year, 1936);
+  assert.deepEqual(r.y36.alive, [true, true, true, true], '1936: alles bestaat nog');
+  assert.equal(r.y39.year, 1939);
+  assert.deepEqual(r.y39.alive, [false, false, false, true], '1939: Oostenrijk, Tsjechië en Albanië weg, Slowakije blijft');
+  assert.equal(r.y39.de, r.y36.de + 9 + 8, 'Duitsland krijgt de 9 Oostenrijkse en 8 Tsjechische provincies');
+  assert.equal(r.y39.it, r.y36.it + 3, 'Italië krijgt de 3 Albanese provincies');
+  assert.equal(r.y39.pl, r.y36.pl, 'de rest verandert niet');
+  assert.deepEqual(r.y39.removedUnits, [0, 0, 0], 'geen eenheden meer voor verdwenen landen');
+  assert.ok(r.y39.deUnits > r.y36.deUnits && r.y39.itUnits > r.y36.itUnits, 'hun legers gaan naar Duitsland en Italië');
+  assert.equal(r.y39.placed, true, 'elke eenheid staat in een provincie van zijn eigen land');
+  assert.deepEqual(errors, []);
+});
+
+test('C007 het startscherm: Start 1936 of 1939, alleen op de Europakaart, met een voorbeeld van de grenzen', async t => {
+  const { page, errors } = await open(t);
+  const year = page.locator('#strip button[data-act="year"]');
+  assert.match(await year.textContent(), /1936/);
+  await year.click();
+  assert.match(await year.textContent(), /1939/);
+  const [ax, ay] = await provincePoint(page, await page.evaluate(() => window.__VE.MAP.CN.at.cap));
+  await page.mouse.click(ax, ay);
+  assert.equal(await page.evaluate(() => window.__VE.UI.pick), 'de', 'in 1939 kies je met een Oostenrijkse provincie Duitsland');
+  const [px, py] = await provincePoint(page, await page.evaluate(() => window.__VE.MAP.CN.pl.cap));
+  await page.mouse.click(px, py);
+  await page.locator('#strip button[data-act="start"]').click();
+  assert.equal(await page.evaluate(() => window.__VE.G.year), 1939);
+  await page.getByRole('button', { name: 'Overzicht', exact: true }).click();
+  assert.match(await page.textContent('#sheet'), /start 1939/);
+  await page.evaluate(() => window.__VE.G.paused = true);
+  // de uitdaging van de dag blijft 1936, ook als je 1939 had gekozen
+  await page.evaluate(() => { toPick(); });
+  await page.locator('#strip button[data-act="daily"]').click();
+  await page.locator('#strip button[data-act="start"]').click();
+  assert.equal(await page.evaluate(() => window.__VE.G.year), 1936);
+  // de wereldkaart kent geen startjaar
+  await page.evaluate(() => { toPick(); });
+  await page.locator('#strip button[data-map="world"]').click();
+  await page.waitForFunction(() => window.__VE.MAP.PIDS.length > 1000 && !window.__VE.UI.loading);
+  assert.equal(await page.locator('#strip button[data-act="year"]').count(), 0);
+  assert.deepEqual(errors, []);
+});
+
+test('C007 een jaar spelen vanaf 1939 geeft geen fouten', async t => {
+  const { page, errors } = await open(t);
+  const r = await page.evaluate(() => {
+    window.__VE.newGame('de', 1, null, 1939); window.__VE.G.paused = true;
+    for (let i = 0; i < 365; i++) window.__VE.advance(1);
+    const G = window.__VE.G;
+    return { day: G.day, errs: window.__VE.errs, dead: ['at', 'cz', 'al'].every(c => !G.nations[c].alive), over: G.over };
+  });
+  assert.ok(r.day >= 300, 'dag ' + r.day);
+  assert.equal(r.errs, 0);
+  assert.equal(r.dead, true);
+  assert.deepEqual(errors, []);
+});
+
+test('C007 het startjaar blijft bewaard, rare waarden worden gerepareerd, en records zijn apart', async t => {
+  const first = await open(t);
+  await first.page.evaluate(() => { window.__VE.newGame('pl', 1, null, 1939); window.__VE.G.paused = true; dispatchEvent(new Event('pagehide')); });
+  await first.page.reload();
+  await first.page.waitForFunction(() => window.__VE && !window.__VE.UI.loading);
+  await first.page.locator('#strip button[data-act="resume"]').click();
+  await first.page.waitForFunction(() => window.__VE.G);
+  assert.deepEqual(await first.page.evaluate(() => ({ y: window.__VE.G.year, at: window.__VE.G.nations.at.alive })), { y: 1939, at: false });
+  const save = await first.page.evaluate(k => localStorage.getItem(k), SAVE_KEY);
+  for (const [mutate, want] of [[g => { g.year = 'x'; }, 1936], [g => { delete g.year; }, 1936], [g => { g.year = 1939; }, 1939]]) {
+    const o = JSON.parse(save); mutate(o.G);
+    const { page, errors } = await open(t, { storage: { [SAVE_KEY]: JSON.stringify(o) } });
+    await page.locator('#strip button[data-act="resume"]').click();
+    await page.waitForFunction(() => window.__VE.G);
+    assert.equal(await page.evaluate(() => window.__VE.G.year), want);
+    assert.deepEqual(errors, []);
+  }
+  const { page } = await open(t);
+  const keys = await page.evaluate(() => { localStorage.removeItem('ve_best'); window.__VE.newGame('pl', 1, null, 1939); saveBest(); return Object.keys(JSON.parse(localStorage.getItem('ve_best'))); });
+  assert.deepEqual(keys, ['europe:pl@1939'], 'het record van 1939 staat apart van dat van 1936');
+  const obj = await page.evaluate(() => window.__VE.G.obj.find(o => o.k === 'calm').t);
+  assert.doesNotMatch(obj, /1939/, 'de doelen verwijzen niet naar een datum die al voorbij is');
+});

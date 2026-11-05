@@ -111,7 +111,7 @@ function inBuf(p){
 }
 let POLSTALE = true;
 function setFill(p){
-  const c = G ? G.ctrl[p] : P[p].c;
+  const c = ownerNow(p);
   const occ = G && P[p].c !== c;
   FILL[p] = shade(colorOf(c), JIT[p] + (occ ? -0.12 : 0));
   if(G && CV){ if(inBuf(p)){ DIRTYP.add(p); labelsDirty = true; } } else mapDirty = true;
@@ -129,7 +129,7 @@ function computePolitical(){
   if(G) for(const p of PIDS){ const c = G.ctrl[p]; if(c !== G.player && atWar(G.player, c)) WARSET.add(p); }
   const acc = {};
   for(const p of PIDS){
-    const c = G ? G.ctrl[p] : P[p].c;
+    const c = ownerNow(p);
     const w = Math.sqrt(P[p].ar || 1);
     const a = acc[c] ||= {x:0, y:0, w:0, ar:0, ps:[]};
     a.x += P[p].a[0]*w; a.y += P[p].a[1]*w; a.w += w; a.ar += P[p].ar || 0; a.ps.push(p);
@@ -346,7 +346,7 @@ function fitBox(x0, y0, x1, y1, pad, instant){
 }
 function fitAll(instant){ tweenView(W/2, H/2 + 10, kFit(), instant); }
 function fitCountry(c){
-  const ps = PIDS.filter(p => (G ? G.ctrl[p] : P[p].c) === c);
+  const ps = PIDS.filter(p => (ownerNow(p)) === c);
   if(!ps.length) return;
   const cap = CN[c].cap;
   const near = ps.filter(p => dist(p, cap)*KM < 2600);
@@ -576,7 +576,7 @@ function onAirGroup(key, e){
   UI.sel = new Set(); UI.info = null; renderAll();
 }
 function onProvince(p, e){
-  if(!G){ UI.pick = P[p].c; renderAll(); return; }
+  if(!G){ UI.pick = ownerNow(p); renderAll(); return; }
   if(G.over) return;
   if(UI.target){
     if(UI.target === 'drop'){
@@ -637,7 +637,7 @@ function hover(e, kp){
   const p = kp || provinceAt(e.clientX, e.clientY);
   if(p !== HOVER){ HOVER = p; overDirty = true; }
   if(!p){ hideTip(); return; }
-  const c = G ? G.ctrl[p] : P[p].c;
+  const c = ownerNow(p);
   const tip = $('tip');
   let h = '<b>' + esc(P[p].n) + '</b> <span class="mut">· ' + esc(cname(c));
   if(G && P[p].c !== c) h += ' (bezet)';

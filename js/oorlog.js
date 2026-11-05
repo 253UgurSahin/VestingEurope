@@ -543,7 +543,7 @@ function makeObjectives(){
   o.push({k:'pp', v:+(Math.max(2, nat(me).ppd) * 1.6).toFixed(1), t:'Groei naar ' + NF.format(Math.max(2, nat(me).ppd) * 1.6) + ' productie per dag', r:'Legerlimiet +4'});
   o.push({k:'share', v:Math.min(0.5, Math.max(sh*2.2, sh + 0.04)), t:'Beheers ' + Math.round(100*Math.min(0.5, Math.max(sh*2.2, sh + 0.04))) + '% van de kaart', r:'+50 bevelpunten, +15% oorlogssteun'});
   o.push({k:'win', t:'Win een oorlog: laat een land capituleren of sluit vrede met winst', r:'+20% oorlogssteun'});
-  o.push({k:'calm', t:'Geen coalitie tegen je vóór 1 januari 1939', r:'+1 fabriek'});
+  o.push({k:'calm', t:G.year === 1939 ? 'Geen coalitie tegen je in de eerste drie jaar' : 'Geen coalitie tegen je vóór 1 januari 1939', r:'+1 fabriek'});
   return o;
 }
 function addFac(c, n){   // n in capaciteit
@@ -581,12 +581,13 @@ const rankOf = s => s >= 1400 ? 'Goud' : s >= 800 ? 'Zilver' : s >= 350 ? 'Brons
 function saveBest(){
   if(G.assisted) return;   // een spel met extra voordeel of een zwakkere AI telt niet voor records
   try{
-    const b = JSON.parse(localStorage.getItem('ve_best') || '{}'), k = MAPNAME + ':' + G.player, s = score();
+    const b = JSON.parse(localStorage.getItem('ve_best') || '{}'), k = bestKey(MAPNAME, G.player, G.year), s = score();
     if(!b[k] || s > b[k]) b[k] = s;
     localStorage.setItem('ve_best', JSON.stringify(b));
   }catch(e){}
 }
-const bestOf = (m, c) => { try{ return JSON.parse(localStorage.getItem('ve_best') || '{}')[m + ':' + c] || 0; }catch(e){ return 0; } };
+const bestKey = (m, c, y) => m + ':' + c + (y === 1939 ? '@1939' : '');   // een spel vanaf 1939 heeft zijn eigen record
+const bestOf = (m, c, y) => { try{ return JSON.parse(localStorage.getItem('ve_best') || '{}')[bestKey(m, c, y)] || 0; }catch(e){ return 0; } };
 function gameOver(kind){
   G.over = kind; G.paused = true; saveBest(); shake(); flash(); sfx('lose');
   clearSel(); UI.target = null; UI.sheet = null;
