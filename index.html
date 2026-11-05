@@ -3563,6 +3563,8 @@ overC.addEventListener('contextmenu', e => {
 });
 addEventListener('keydown', e => {
   if(!G || G.over) return;
+  // knoppen en invoervelden houden hun eigen toetsen (spatie drukt een knop in)
+  if(e.key !== 'Escape' && e.target.closest && e.target.closest('button,input,select,textarea,[contenteditable]')) return;
   if(e.code === 'Space'){ e.preventDefault(); togglePause(); }
   else if(e.key >= '1' && e.key <= '4'){ G.speed = +e.key; if(!cardOpen()) G.paused = false; renderBar(); }
   else if(e.key === 'Escape'){ clearSel(); UI.target = null; UI.info = null; UI.sheet = null; renderAll(); }
