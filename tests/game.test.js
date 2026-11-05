@@ -9,7 +9,7 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 const ROOT = path.join(__dirname, '..');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.woff2': 'font/woff2', '.txt': 'text/plain' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.txt': 'text/plain' };
 const SAVE_KEY = 'vesting-europa-v5';
 let server, base, browser;
 

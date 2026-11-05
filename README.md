@@ -4,7 +4,7 @@ Een grand-strategyspel in de browser over Europa en de wereld in 1936. Kies een 
 
 ## Spelen
 
-Het spel is één statische pagina zonder buildstap. Omdat de kaartdata met `fetch()` wordt geladen, moet je het via een webserver openen (niet via `file://`):
+Het spel is een statische pagina zonder buildstap: gewone HTML, CSS en JavaScript-bestanden. Omdat de kaartdata met `fetch()` wordt geladen, moet je het via een webserver openen (niet via `file://`):
 
 ```bash
 python3 -m http.server 8000
@@ -16,9 +16,20 @@ Open daarna http://localhost:8000.
 
 | Bestand | Inhoud |
 |---|---|
-| `index.html` | Het volledige spel (HTML, CSS en JavaScript) |
+| `index.html` | De pagina: laadt de stijl en de scripts |
+| `style.css` | Alle opmaak |
+| `js/kaart.js` | Kaartdata laden (gewoon en scherp) |
+| `js/regels.js` | Spelregels, spelstand, tijd, economie, luchtmacht en gevechten |
+| `js/oorlog.js` | Oorlogsverloop, vrede, politiek, doelen, score en onderscheidingen |
+| `js/ai.js` | De computerlanden, zeeroutes en speciale acties |
+| `js/tekenen.js` | De kaart tekenen, camera, muis/aanraking en symbolen |
+| `js/interface.js` | Geluid, meldingen, de balk, de wachtrij en de panelen |
+| `js/start.js` | Laden, opslaan, de hoofdlus en het opstarten |
+| `fonts/` | De lettertypes Barlow en Barlow Condensed (SIL Open Font License) |
 | `europe.json` / `europe-hd.json` | Kaartdata Europa (standaard / hoge resolutie) |
 | `world.json` / `world-hd.json` | Kaartdata wereld (standaard / hoge resolutie) |
+
+De scripts worden in deze volgorde geladen en delen één scope: een script mag bij het laden alleen iets gebruiken uit zichzelf of uit een eerder script.
 
 Voortgang en instellingen worden lokaal in de browser opgeslagen (`localStorage`).
 
