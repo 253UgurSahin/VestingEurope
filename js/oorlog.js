@@ -528,6 +528,7 @@ function score(){
 }
 const rankOf = s => s >= 1400 ? 'Goud' : s >= 800 ? 'Zilver' : s >= 350 ? 'Brons' : 'Geen medaille';
 function saveBest(){
+  if(G.assisted) return;   // een spel met extra voordeel of een zwakkere AI telt niet voor records
   try{
     const b = JSON.parse(localStorage.getItem('ve_best') || '{}'), k = MAPNAME + ':' + G.player, s = score();
     if(!b[k] || s > b[k]) b[k] = s;
@@ -578,8 +579,8 @@ function achCheck(){
 function achOnWin(){
   const me = G.player, start = CPROV[me].length;
   achAward('winE');
-  if(G.diff >= 1) achAward('winN');
-  if(G.diff >= 2) achAward('winH');
+  if(G.diff >= 1 && !G.assisted) achAward('winN');
+  if(G.diff >= 2 && !G.assisted) achAward('winH');
   if(start <= 6) achAward('small');
   if(MAPNAME === 'world') achAward('world');
   if(G.daily){ achAward('daily'); try{ const d = JSON.parse(localStorage.getItem('ve_daily') || '{}'); d[G.daily] = Math.max(d[G.daily] || 0, score()); localStorage.setItem('ve_daily', JSON.stringify(d)); }catch(e){} }

@@ -275,3 +275,58 @@ test('C002 op een iPad zijn alle knoppen minstens 44 px, en niets loopt over het
     assert.deepEqual(errors, [], device);
   }
 });
+
+test('C005 eigen spel: voordeel en AI-sterkte kiezen op het startscherm, en ze blijven bewaard', async t => {
+  const { page, errors } = await open(t);
+  const [x, y] = await provincePoint(page, await page.evaluate(() => window.__VE.MAP.CN.nl.cap));
+  await page.mouse.click(x, y);
+  const help = page.locator('#strip button[data-act="opt:help"]'), ai = page.locator('#strip button[data-act="opt:ai"]');
+  assert.match(await help.textContent(), /standaard/);
+  assert.match(await ai.textContent(), /standaard/);
+  await help.click(); assert.match(await help.textContent(), /groot/);
+  await help.click(); assert.match(await help.textContent(), /geen/);
+  await help.click(); assert.match(await help.textContent(), /standaard/);
+  await ai.click(); assert.match(await ai.textContent(), /sterker/);
+  await help.click();   // groot
+  await page.locator('#strip button[data-act="start"]').click();
+  assert.deepEqual(await page.evaluate(() => window.__VE.G.opt), { help: 1, ai: 1 });
+  await page.evaluate(() => { window.__VE.G.paused = true; dispatchEvent(new Event('pagehide')); });
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && !window.__VE.UI.loading);
+  await page.locator('#strip button[data-act="resume"]').click();
+  await page.waitForFunction(() => window.__VE.G);
+  assert.deepEqual(await page.evaluate(() => window.__VE.G.opt), { help: 1, ai: 1 }, 'de opties komen terug na hervatten');
+  assert.deepEqual(errors, []);
+});
+
+test('C005 de opties veranderen de spelwaarden, en een geholpen spel telt niet voor records', async t => {
+  const { page, errors } = await open(t);
+  const vals = o => page.evaluate(o => { window.__VE.newGame('nl', 1, o); const d = window.__VE.D; return { mePp: d.mePp, meCap: d.meCap, meCbt: d.meCbt, pp: d.pp, assisted: !!window.__VE.G.assisted }; }, o);
+  const std = await vals({ help: 0, ai: 0 });
+  const big = await vals({ help: 1, ai: 0 }), none = await vals({ help: -1, ai: 0 }), strong = await vals({ help: 0, ai: 1 }), weak = await vals({ help: 0, ai: -1 });
+  assert.ok(big.mePp > std.mePp && big.meCap > std.meCap && big.meCbt > std.meCbt && big.pp === std.pp, 'groot voordeel: meer voor jou');
+  assert.deepEqual([none.mePp, none.meCap, none.meCbt], [1, 1, 1], 'geen voordeel: alles op 1');
+  assert.ok(strong.pp > std.pp && weak.pp < std.pp && strong.mePp === std.mePp, 'AI-sterkte verandert alleen de AI');
+  assert.deepEqual([std.assisted, big.assisted, none.assisted, strong.assisted, weak.assisted], [false, true, false, false, true]);
+  const rec = o => page.evaluate(o => { localStorage.removeItem('ve_best'); window.__VE.newGame('nl', 1, o); saveBest(); return localStorage.getItem('ve_best'); }, o);
+  assert.equal(await rec({ help: 1, ai: 0 }), null, 'een geholpen spel telt niet voor je beste score');
+  assert.equal(await rec({ help: 0, ai: -1 }), null, 'zwakkere AI telt ook niet');
+  assert.ok(await rec({ help: 0, ai: 0 }), 'een gewoon spel wel');
+  assert.ok(await rec({ help: -1, ai: 1 }), 'een moeilijker spel wel');
+  assert.deepEqual(errors, []);
+});
+
+test('C005 een opgeslagen spel met rare of ontbrekende opties wordt gerepareerd', async t => {
+  const first = await open(t);
+  await startGame(first.page, 'se');
+  const save = await first.page.evaluate(() => JSON.stringify({ map: 'europe', G: JSON.parse(JSON.stringify(window.__VE.G)) }));
+  for (const mutate of [g => { g.opt = { help: 99, ai: 'x' }; }, g => { delete g.opt; delete g.assisted; }, g => { g.opt = null; }]) {
+    const o = JSON.parse(save); mutate(o.G);
+    const { page, errors } = await open(t, { storage: { [SAVE_KEY]: JSON.stringify(o) } });
+    await page.locator('#strip button[data-act="resume"]').click();
+    await page.waitForFunction(() => window.__VE.G);
+    assert.deepEqual(await page.evaluate(() => window.__VE.G.opt), { help: 0, ai: 0 });
+    assert.equal(await page.evaluate(() => window.__VE.D.mePp), 1.1, 'het gewone niveau, geen foute waarden');
+    assert.deepEqual(errors, []);
+  }
+});

@@ -137,6 +137,7 @@ const DIFF = [
   {name:'Moeilijk',  pp:1.25, need:1.2, coal:0.45, grace:90,  decl:1.3, thr:48, mePp:1,    meCap:1,   meCbt:1,    ae:1.15, win:0.6, desc:'AI +25% productie · coalitie bij 48 agressie · winnen: 60% van Europa, 18% van de wereld'},
   {name:'Zwaar',     pp:1.5,  need:1.1, coal:0.6,  grace:45,  decl:1.6, thr:40, mePp:1,    meCap:1,   meCbt:1,    ae:1.3, win:0.75, desc:'AI +50% productie · coalitie bij 40 agressie · winnen: driekwart van Europa, 23% van de wereld'}
 ];
+const OPT_HELP = {'-1':'geen', '0':'standaard', '1':'groot'}, OPT_AI = {'-1':'zwakker', '0':'standaard', '1':'sterker'};   // eigen spel: namen van de opties
 const ROMAN = ['I','II','III','IV'];
 const DPS = [0, 1.1, 2.4, 5.2, 10.5];
 const START = Date.UTC(1936, 0, 1);
@@ -166,7 +167,7 @@ const cname = c => CN[c].name;
 
 /* ================= spelstand ================= */
 let G = null;
-const UI = { hintN:(()=>{ try{ return +localStorage.getItem('ve_hint_sel') || 0; }catch(e){ return 0; } })(), sel:new Set(), selAir:new Set(), info:null, target:null, sheet:null, pick:null, confirm:null, winShown:false, loading:false, err:null, diff:1 };
+const UI = { hintN:(()=>{ try{ return +localStorage.getItem('ve_hint_sel') || 0; }catch(e){ return 0; } })(), sel:new Set(), selAir:new Set(), info:null, target:null, sheet:null, pick:null, confirm:null, winShown:false, loading:false, err:null, diff:1, opt:{help:0, ai:0} };
 let IDX = {};
 const wk = ek;
 // vijanden per land, opnieuw opgebouwd zodra oorlogen veranderen
@@ -189,11 +190,25 @@ function owned(c){
   return OWN[c] || [];
 }
 const isAI = c => c !== G.player;
-const D = () => DIFF[G.diff];
+// eigen spel: het gekozen niveau, aangepast met de opties van de speler (G.opt: help en ai, elk -1, 0 of 1)
+let DG = null, DD = -1, DH = 0, DA = 0, DVAL = null;
+const D = () => {
+  const o = G.opt, b = DIFF[G.diff];
+  if(!o || (!o.help && !o.ai)) return b;
+  if(DG !== G || DD !== G.diff || DH !== o.help || DA !== o.ai){
+    DG = G; DD = G.diff; DH = o.help; DA = o.ai; DVAL = Object.assign({}, b);
+    if(o.help < 0){ DVAL.mePp = 1; DVAL.meCap = 1; DVAL.meCbt = 1; }                                        // geen voordeel
+    else if(o.help > 0){ DVAL.mePp = b.mePp + 0.3; DVAL.meCap = b.meCap + 0.3; DVAL.meCbt = b.meCbt + 0.2; }  // groot voordeel
+    if(o.ai) DVAL.pp = b.pp * (o.ai > 0 ? 1.25 : 0.8);                                                       // AI sterker of zwakker
+  }
+  return DVAL;
+};
+const optClean = v => (v === 1 || v === -1) ? v : 0;
 
-function newGame(player, diff){
+function newGame(player, diff, opt){
   ownDirty = true; warsChanged(); POWC = null; AIRBY = null;
-  G = { v:5, map:MAPNAME, diff, day:0, frac:0, speed:1, paused:false, player, over:null, won:false,
+  const o = {help:optClean(opt && opt.help), ai:optClean(opt && opt.ai)};
+  G = { v:5, map:MAPNAME, diff, opt:o, assisted:o.help > 0 || o.ai < 0, day:0, frac:0, speed:1, paused:false, player, over:null, won:false,
         ctrl:{}, fac:{}, dmg:{}, forts:{}, hold:{}, wars:{}, nations:{}, units:[], air:[], nid:1, battles:[], peaceCd:{}, rally:'cap' };
   for(const p of PIDS) G.ctrl[p] = P[p].c;
   for(const c of CIDS){
