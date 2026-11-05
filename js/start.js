@@ -44,8 +44,8 @@ function validSave(s){
   return true;
 }
 function autosaveIdle(){ if(window.requestIdleCallback) requestIdleCallback(() => autosave(), {timeout:2000}); else setTimeout(autosave, 0); }
-async function loadSaved(){
-  const s = readSave();
+async function loadSaved(s0){
+  const s = s0 || readSave();
   if(!s || !s.G || s.G.v !== 5 || !MAPS[s.map]){ toast('Opgeslagen spel kon niet worden geladen', 'war'); return; }
   try{
     UI.loading = true; renderAll();
@@ -65,6 +65,30 @@ async function loadSaved(){
     catch(err){ G = prevG; onError(err, 'laden'); if(G) onGameLoaded(false); else { allFills(); fitAll(); renderAll(); } }
   }catch(err){ UI.loading = false; toast('Opgeslagen spel kon niet worden geladen', 'war'); renderAll(); }
 }
+/* een spel als bestand bewaren en weer laden (voor als de browser zijn gegevens wist, of op een ander apparaat) */
+function exportGame(){
+  if(!G) return;
+  try{
+    const name = 'vesting-europa-' + G.player + '-dag' + Math.floor(G.day) + '.json';
+    const body = JSON.stringify({app:'vesting-europa', format:1, exported:new Date().toISOString(), map:MAPNAME, G});
+    const url = URL.createObjectURL(new Blob([body], {type:'application/json'}));
+    const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast('Spel bewaard als bestand: ' + name, 'good');
+  }catch(e){ toast('Bewaren als bestand lukt niet in deze browser', 'war'); }
+}
+async function importGameFile(file){
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ toast('Dit bestand is te groot voor een spel van Vesting Europa', 'war'); return; }
+  let o;
+  try{ o = JSON.parse(await file.text()); }catch(e){ toast('Dit bestand is geen geldig spelbestand (het is geen JSON)', 'war'); return; }
+  if(!o || o.app !== 'vesting-europa' || !o.G || typeof o.G !== 'object' || !MAPS[o.map]){ toast('Dit bestand is geen spel van Vesting Europa', 'war'); return; }
+  if(o.G.v !== 5){ toast('Dit spel komt van een andere versie van Vesting Europa en kan niet worden geladen', 'war'); return; }
+  await loadSaved({map:o.map, G:o.G});
+  if(G) autosave();   // meteen ook in deze browser bewaren
+}
+$('importFile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; importGameFile(f); });
 function clearToasts(){ $('toasts').innerHTML = ''; }
 function toPick(){
   clearToasts();

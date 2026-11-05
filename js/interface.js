@@ -266,6 +266,7 @@ function renderStrip(){
       { const dl = dailyOf();
         h += '<div class="acts"><button class="btn sm' + (dailyDone() ? '' : ' pri') + '" data-act="daily" title="Elke dag hetzelfde land en niveau voor iedereen">' + ic('tijd') + 'Uitdaging van vandaag: ' + esc(dl.name) + ' (' + MAPS[dl.map].name + ') · ' + DIFF[dl.diff].name + (dailyDone() ? ' ✓' : '') + '</button></div>'; }
       if(save && save.G && save.G.player && save.map && MAPS[save.map]) h += '<div class="acts"><button class="btn" data-act="resume">Doorgaan: ' + esc((CACHE[save.map] ? CACHE[save.map].countries[save.G.player].name : save.G.player)) + ', ' + fmtDate(save.G.day) + '</button></div>';
+      h += '<div class="acts"><button class="btn sm" data-act="import" title="Een spel laden dat je eerder als bestand hebt bewaard">Spel laden uit bestand</button></div>';
     }
   } else if(UI.intro){
     const [t, x, icons] = INTRO[UI.intro - 1];
@@ -366,6 +367,7 @@ $('strip').addEventListener('click', async e => {
   if(a === 'start'){ const c = UI.pick; UI.pick = null; newGame(c, UI.diff, UI.dailyKey ? null : UI.opt); if(UI.dailyKey){ G.daily = UI.dailyKey; UI.dailyKey = null; } onGameLoaded(true); return; }
   if(a === 'daily'){ const dl = dailyOf(); if(MAPNAME !== dl.map){ await switchMap(dl.map); } UI.diff = dl.diff; UI.opt = {help:0, ai:0}; UI.pick = dl.c; UI.dailyKey = dl.key; fitCountry(dl.c); stripSig = null; renderAll(); return; }
   if(a === 'resume'){ loadSaved(); return; }
+  if(a === 'import'){ $('importFile').click(); return; }
   if(a === 'retry'){ UI.err = null; await switchMap(MAPNAME || 'europe', true); return; }
   if(a === 'new'){ toPick(); return; }
   if(a === 'diff'){ UI.diff = (UI.diff + 1) % DIFF.length; }
@@ -663,7 +665,7 @@ function renderSheet(){
       + '<label class="vol">' + ic('steun') + '<input type="range" min="0" max="1" step="0.05" value="' + SET.vol + '" data-set="vol" aria-label="Volume"></label>'
       + '<label><input type="checkbox" data-set="cb"' + (SET.cb ? ' checked' : '') + '> Kleurenblind: dikke grenzen en patronen</label></div>';
       h += det('set', ic('bevel') + 'Instellingen', sb, false); }
-    h += '<div class="foot"><button class="btn sm" data-act="focus">' + ic('prov') + 'Mijn land</button><button class="btn sm" data-act="intro">' + ic('info') + 'Snelstart</button>'
+    h += '<div class="foot"><button class="btn sm" data-act="focus">' + ic('prov') + 'Mijn land</button><button class="btn sm" data-act="intro">' + ic('info') + 'Snelstart</button><button class="btn sm" data-act="export" title="Bewaar dit spel als bestand, om het op een ander apparaat of na het wissen van je browsergegevens weer te laden">Bewaar als bestand</button>'
       + (UI.confirm === 'new' ? '<button class="btn sm war" data-act="new">Bevestig nieuw spel</button>' : '<button class="btn sm" data-act="new">' + ic('vlag') + 'Nieuw spel</button>') + '</div>';
   }
   if(h === sheetSig || sheetPress) return;
@@ -727,6 +729,7 @@ $('sheet').addEventListener('click', e => {
   else if(act){
     if(act.dataset.act === 'focus'){ fitCountry(me); }
     else if(act.dataset.act === 'intro'){ UI.intro = 1; UI.sheet = null; G.paused = true; stripSig = null; }
+    else if(act.dataset.act === 'export'){ exportGame(); }
     else if(act.dataset.act === 'endcard'){ UI.winShown = true; G.paused = true; UI.sheet = null; }
     else if(act.dataset.act === 'tdone'){ UI.editT = null; }
     else if(act.dataset.act === 'new'){ if(UI.confirm === 'new'){ UI.confirm = null; toPick(); return; } UI.confirm = 'new'; }

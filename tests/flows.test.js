@@ -330,3 +330,64 @@ test('C005 een opgeslagen spel met rare of ontbrekende opties wordt gerepareerd'
     assert.deepEqual(errors, []);
   }
 });
+
+// C003: een spel als bestand bewaren en weer laden
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const exportGame = async page => {
+  await page.getByRole('button', { name: 'Overzicht', exact: true }).click();
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#sheet button[data-act="export"]').click()]);
+  return dl;
+};
+
+test('C003 een spel bewaren als bestand', async t => {
+  const { page, errors } = await open(t);
+  await startGame(page, 'pl');
+  await page.evaluate(() => { for (let i = 0; i < 12; i++) window.__VE.advance(1); });
+  const dl = await exportGame(page);
+  assert.match(dl.suggestedFilename(), /^vesting-europa-pl-dag\d+\.json$/);
+  const o = JSON.parse(fs.readFileSync(await dl.path(), 'utf8'));
+  assert.equal(o.app, 'vesting-europa');
+  assert.equal(o.map, 'europe');
+  assert.equal(o.G.player, 'pl');
+  assert.ok(o.G.day >= 10);
+  assert.deepEqual(errors, []);
+});
+
+test('C003 een bestand laden op een schone browser geeft hetzelfde spel terug', async t => {
+  const a = await open(t);
+  await startGame(a.page, 'se');
+  await a.page.evaluate(() => window.__VE.advance(30));
+  const day = await a.page.evaluate(() => window.__VE.G.day);
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 've-')), 'spel.json');
+  await (await exportGame(a.page)).saveAs(file);
+  const b = await open(t);   // schone browser: geen opgeslagen spel
+  assert.equal(await b.page.locator('#strip button[data-act="resume"]').count(), 0);
+  const [chooser] = await Promise.all([b.page.waitForEvent('filechooser'), b.page.locator('#strip button[data-act="import"]').click()]);
+  await chooser.setFiles(file);
+  await b.page.waitForFunction(() => window.__VE.G);
+  assert.deepEqual(await b.page.evaluate(() => ({ p: window.__VE.G.player, d: window.__VE.G.day, paused: window.__VE.G.paused })), { p: 'se', d: day, paused: true });
+  assert.ok(await b.page.evaluate(k => !!localStorage.getItem(k), SAVE_KEY), 'het geladen spel is meteen ook in de browser bewaard');
+  assert.deepEqual(b.errors, []);
+});
+
+test('C003 een fout of verkeerd bestand geeft een duidelijke melding en breekt niets', async t => {
+  const bad = [
+    ['kapot.json', '{niet json', /geen geldig spelbestand/],
+    ['leeg.json', '', /geen geldig spelbestand/],
+    ['ander.json', JSON.stringify({ hallo: 1 }), /geen spel van Vesting Europa/],
+    ['oud.json', JSON.stringify({ app: 'vesting-europa', map: 'europe', G: { v: 4 } }), /andere versie/],
+    ['groot.json', 'x'.repeat(6 * 1024 * 1024), /te groot/],
+  ];
+  for (const [name, content, msg] of bad) {
+    const { page, errors } = await open(t);
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('#strip button[data-act="import"]').click()]);
+    await chooser.setFiles({ name, mimeType: 'application/json', buffer: Buffer.from(content) });
+    await page.waitForSelector('#toasts .toast');
+    assert.match(await page.textContent('#toasts'), msg, name);
+    assert.equal(await page.evaluate(() => window.__VE.G), null, name + ': geen spel geladen');
+    assert.equal(await page.locator('#strip button[data-act="import"]').count(), 1, name + ': het startscherm werkt nog');
+    assert.deepEqual(errors, [], name);
+  }
+});

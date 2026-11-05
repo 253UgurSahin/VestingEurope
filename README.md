@@ -29,6 +29,10 @@ Open daarna http://localhost:8000.
 
 Na het kiezen van een land staan op het startscherm twee knoppen naast het niveau: **Jouw voordeel** (geen, standaard, groot) en **AI** (zwakker, standaard, sterker). Ze passen de waarden van het gekozen niveau aan: geen voordeel zet productie, legerlimiet en gevechtskracht van jouw land op 1; groot voegt er 0,3, 0,3 en 0,2 aan toe; de AI krijgt 20% minder of 25% meer productie. Een spel met groot voordeel of een zwakkere AI telt niet mee voor beste scores en onderscheidingen voor een niveau. De uitdaging van de dag blijft voor iedereen gelijk en gebruikt de opties niet.
 
+## Een spel als bestand bewaren
+
+In het Overzicht staat **Bewaar als bestand**: dat downloadt je spel als een `.json`-bestand. Op het startscherm laadt **Spel laden uit bestand** zo'n bestand weer, ook op een ander apparaat of nadat de browser zijn gegevens heeft gewist. Bestanden groter dan 5 MB en bestanden van een andere versie worden geweigerd met een melding. Downloads werken niet binnen een pagina op claude.ai (daar zijn ze geblokkeerd), wel op een eigen webserver of lokaal.
+
 ## Bestanden
 
 | Bestand | Inhoud |
