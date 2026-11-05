@@ -21,3 +21,15 @@ Open daarna http://localhost:8000.
 | `world.json` / `world-hd.json` | Kaartdata wereld (standaard / hoge resolutie) |
 
 Voortgang en instellingen worden lokaal in de browser opgeslagen (`localStorage`).
+
+## Tests
+
+De tests starten zelf een kleine webserver en spelen het spel in een headless browser. Je hebt Node.js 20 of nieuwer nodig, plus Playwright met Chromium. Het spel zelf heeft geen packages nodig.
+
+```bash
+npm install --no-save playwright && npx playwright install chromium
+```
+
+```bash
+node --test tests/*.test.js
+```
