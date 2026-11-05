@@ -4,7 +4,7 @@ Een grand-strategyspel in de browser over Europa en de wereld in 1936. Kies een 
 
 ## Spelen
 
-Het spel is één statische pagina zonder buildstap. Omdat de kaartdata met `fetch()` wordt geladen, moet je het via een webserver openen (niet via `file://`):
+Het spel is een statische pagina zonder buildstap: gewone HTML, CSS en JavaScript-bestanden. Omdat de kaartdata met `fetch()` wordt geladen, moet je het via een webserver openen (niet via `file://`):
 
 ```bash
 python3 -m http.server 8000
@@ -12,12 +12,69 @@ python3 -m http.server 8000
 
 Open daarna http://localhost:8000.
 
+## Toetsenbord
+
+| Toets | Wat het doet |
+|---|---|
+| Tab | Naar de kaart en langs de knoppen |
+| Pijltjes (op de kaart) | Naar de buurprovincie in die richting; de provincie wordt voorgelezen |
+| Enter (op de kaart) | Zoals klikken: land kiezen, eigen divisies selecteren of een bevel geven |
+| + en − | In- en uitzoomen rond de gekozen provincie |
+| Spatie | Pauze / doorgaan (op een knop: de knop indrukken) |
+| 1 tot 4 | Snelheid |
+| M | Geluid aan of uit |
+| Escape | Selectie of paneel sluiten |
+
+## Eigen spel
+
+Na het kiezen van een land staan op het startscherm twee knoppen naast het niveau: **Jouw voordeel** (geen, standaard, groot) en **AI** (zwakker, standaard, sterker). Ze passen de waarden van het gekozen niveau aan: geen voordeel zet productie, legerlimiet en gevechtskracht van jouw land op 1; groot voegt er 0,3, 0,3 en 0,2 aan toe; de AI krijgt 20% minder of 25% meer productie. Een spel met groot voordeel of een zwakkere AI telt niet mee voor beste scores en onderscheidingen voor een niveau. De uitdaging van de dag blijft voor iedereen gelijk en gebruikt de opties niet.
+
+## Een spel als bestand bewaren
+
+In het Overzicht staat **Bewaar als bestand**: dat downloadt je spel als een `.json`-bestand. Op het startscherm laadt **Spel laden uit bestand** zo'n bestand weer, ook op een ander apparaat of nadat de browser zijn gegevens heeft gewist. Bestanden groter dan 5 MB en bestanden van een andere versie worden geweigerd met een melding. Downloads werken niet binnen een pagina op claude.ai (daar zijn ze geblokkeerd), wel op een eigen webserver of lokaal.
+
+## Offline spelen en installeren
+
+Op een eigen webserver met https (of lokaal op localhost) werkt het spel na één bezoek zonder internet, en je kunt het installeren als app (Chrome: "Installeren", Safari op iPad en iPhone: "Zet op beginscherm"). Dat regelen `manifest.webmanifest` en `sw.js`. De code (html, js, css) komt eerst van het net, zodat een nieuwe versie meteen binnenkomt; kaarten, lettertypes en iconen komen uit de cache. De Europakaart wordt bij het eerste bezoek bewaard, de wereldkaart (8 MB) zodra je hem een keer hebt gebruikt. Verander het versienummer `CACHE` in `sw.js` als een kaartbestand, lettertype of icoon verandert. Service workers bestaan niet in een pagina op claude.ai: daar werkt het spel gewoon online.
+
+## Bondgenootschap
+
+Tik een buurland en kies **Bondgenootschap** (30 bevelpunten; hoogstens 2 bondgenoten op de Europakaart, 3 op de wereldkaart). Het antwoord staat vast en de reden staat in de knop: een land weigert als het bang voor je is (agressie 20 of meer), in oorlog is met jou of met een van je bondgenoten, of als je het bondgenootschap met dat land net hebt opgezegd (90 dagen wachten). Een bondgenoot valt je nooit aan, doet mee in elke oorlog van jou (ook als de ander jou aanvalt), doet niet mee in een coalitie tegen jou en sluit vrede als jij vrede sluit. Jij kunt een bondgenoot niet aanvallen; **Zeg op** kost agressie bij de buren van dat land. Bondgenoten staan in het Overzicht en blijven bewaard.
+
+## Startjaar: 1936 of 1939
+
+Op de Europakaart wisselt de knop **Start** tussen 1936 en 1939. In 1939 zijn Oostenrijk (Anschluss 1938), Tsjechië (München 1938 en Praag 1939; Slowakije blijft apart) en Albanië (1939) opgegaan in Duitsland en Italië: hun provincies zijn van de nieuwe eigenaar, en hun legers ook. De kaart toont dat al op het startscherm; tik je een Oostenrijkse provincie, dan kies je Duitsland. De grenzen zijn bij benadering, want de kaart heeft één provincie-indeling (Hongarije en Polen krijgen bijvoorbeeld geen grensgebied erbij). Een spel vanaf 1939 heeft zijn eigen beste score. De uitdaging van de dag en de wereldkaart gebruiken altijd 1936.
+
 ## Bestanden
 
 | Bestand | Inhoud |
 |---|---|
-| `index.html` | Het volledige spel (HTML, CSS en JavaScript) |
+| `index.html` | De pagina: laadt de stijl en de scripts |
+| `style.css` | Alle opmaak |
+| `js/kaart.js` | Kaartdata laden (gewoon en scherp) |
+| `js/regels.js` | Spelregels, spelstand, tijd, economie, luchtmacht en gevechten |
+| `js/oorlog.js` | Oorlogsverloop, vrede, politiek, doelen, score en onderscheidingen |
+| `js/ai.js` | De computerlanden, zeeroutes en speciale acties |
+| `js/tekenen.js` | De kaart tekenen, camera, muis/aanraking en symbolen |
+| `js/interface.js` | Geluid, meldingen, de balk, de wachtrij en de panelen |
+| `js/start.js` | Laden, opslaan, de hoofdlus en het opstarten |
+| `sw.js`, `manifest.webmanifest`, `icons/` | Offline spelen en installeren |
+| `fonts/` | De lettertypes Barlow en Barlow Condensed (SIL Open Font License) |
 | `europe.json` / `europe-hd.json` | Kaartdata Europa (standaard / hoge resolutie) |
 | `world.json` / `world-hd.json` | Kaartdata wereld (standaard / hoge resolutie) |
 
+De scripts worden in deze volgorde geladen en delen één scope: een script mag bij het laden alleen iets gebruiken uit zichzelf of uit een eerder script.
+
 Voortgang en instellingen worden lokaal in de browser opgeslagen (`localStorage`).
+
+## Tests
+
+De tests starten zelf een kleine webserver en spelen het spel in een headless browser. Je hebt Node.js 20 of nieuwer nodig, plus Playwright met Chromium. Het spel zelf heeft geen packages nodig.
+
+```bash
+npm install --no-save playwright@1.63.0 && npx playwright install chromium
+```
+
+```bash
+node --test tests/*.test.js
+```

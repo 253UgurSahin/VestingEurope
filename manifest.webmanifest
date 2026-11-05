@@ -1,0 +1,19 @@
+{
+  "name": "Vesting Europa",
+  "short_name": "Vesting Europa",
+  "description": "Grand strategy in de browser: kies een land in 1936, bouw je industrie, leid je leger of laat de generaal het doen, en herschrijf de geschiedenis.",
+  "lang": "nl",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0A1117",
+  "theme_color": "#0A1117",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
