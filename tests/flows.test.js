@@ -525,7 +525,7 @@ test('C006 het antwoord is altijd hetzelfde en de reden is te zien: geen dobbels
   await page.evaluate(() => { proposeAlliance('be'); proposeAlliance('fr'); });
   assert.match((await offer('gb')).why, /al 2 bondgenoten/);
   // een land dat in oorlog is met een bondgenoot, wil geen bondgenoot van jou zijn
-  await page.evaluate(() => { declare('be', 'lu'); });
+  await page.evaluate(() => { const rnd = Math.random; Math.random = () => 0.99; try { declare('be', 'lu'); } finally { Math.random = rnd; } });   // geen dobbelsteen: geen buurland springt bij
   assert.match((await offer('lu')).why, /oorlog met je bondgenoot/);
   // opzeggen: 90 dagen wachten voor je weer dezelfde vraagt
   await page.evaluate(() => { breakAlliance('fr'); window.__VE.G.nations.nl.cp = 100; });
