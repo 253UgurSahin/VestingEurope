@@ -217,3 +217,23 @@ test('F08-E4 de foutmelding bij een kaart die niet laadt is in het Nederlands (B
   assert.match(txt, /verbinding/);
   assert.deepEqual(errors, []);
 });
+
+test('F11-E2 de Content-Security-Policy staat aan en blokkeert niets van het spel zelf (X001)', async t => {
+  const { page, errors } = await open(t, { init: () => { window.__csp = []; document.addEventListener('securitypolicyviolation', e => window.__csp.push(e.violatedDirective + ' ' + e.blockedURI)); } });
+  const csp = await page.getAttribute('meta[http-equiv="Content-Security-Policy"]', 'content');
+  assert.match(csp, /script-src 'self'(;|$)/, 'scripts alleen van de eigen site, zonder unsafe-inline');
+  assert.match(csp, /object-src 'none'/);
+  await page.locator('#strip button[data-act="daily"]').click();
+  await page.locator('#strip button[data-act="start"]').click();
+  for (const name of ['Productie', 'Speciale acties', 'Overzicht']) await page.getByRole('button', { name, exact: true }).click();
+  await page.evaluate(() => { for (let i = 0; i < 30; i++) window.__VE.advance(1); });
+  await page.focus('#over');
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(800);   // ook de scherpe kaart en de lettertypes
+  assert.deepEqual(await page.evaluate(() => window.__csp), [], 'geen geblokkeerde onderdelen');
+  // een script dat er toch in komt, wordt tegengehouden
+  const ran = await page.evaluate(() => { window.__inj = false; document.getElementById('tip').innerHTML = '<img src=x onerror="window.__inj=true">'; return new Promise(r => setTimeout(() => r(window.__inj), 300)); });
+  assert.equal(ran, false, 'een ingevoegd script mag niet draaien');
+  assert.ok((await page.evaluate(() => window.__csp)).some(v => v.startsWith('script-src')), 'de browser meldt de blokkade');
+  assert.deepEqual(errors.filter(e => !/Content Security Policy|404 /.test(e)), []);
+});
