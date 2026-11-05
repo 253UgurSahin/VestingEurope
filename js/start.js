@@ -25,9 +25,21 @@ function autosave(){
   }
 }
 // is dit een bruikbaar opgeslagen spel voor de geladen kaart? Repareert kleine gebreken, weigert kapotte data
+// tekst uit een bewaard of geladen spel komt later als HTML in de pagina (namen, doelen, land-id's): haal de tekens weg waarmee je
+// er elementen van kunt maken, en de sleutel __proto__. Zo kan een bestand van een ander geen HTML of prototype-vervuiling inbrengen.
+function cleanStrings(o, depth){
+  if(!o || typeof o !== 'object' || (depth || 0) > 8) return;
+  for(const k of Object.keys(o)){
+    if(k === '__proto__'){ delete o[k]; continue; }
+    const v = o[k];
+    if(typeof v === 'string') o[k] = v.replace(/[<>"]/g, '');
+    else if(v && typeof v === 'object') cleanStrings(v, (depth || 0) + 1);
+  }
+}
 function validSave(s){
   if(!s || typeof s !== 'object' || !s.G || typeof s.G !== 'object' || s.G.v !== 5 || !MAPS[s.map]) return false;
   const g = s.G;
+  cleanStrings(g);
   if(!g.ctrl || !g.nations || !Array.isArray(g.units) || !CN[g.player]) return false;
   if(!PIDS.every(p => p in g.ctrl && CN[g.ctrl[p]])) return false;
   if(!CIDS.every(c => g.nations[c] && typeof g.nations[c] === 'object')) return false;
@@ -36,6 +48,9 @@ function validSave(s){
   g.air = Array.isArray(g.air) ? g.air.filter(w => w && P[w.base] && CN[w.c] && AIR[w.t]) : [];
   for(const u of g.units){ if(!(u.hp > 0 && u.hp <= 100)) u.hp = clamp(u.hp || 100, 1, 100); if(!Array.isArray(u.path)) u.path = []; if(!Number.isFinite(u.prog)) u.prog = 0; }
   g.year = g.year === 1939 && s.map === 'europe' ? 1939 : 1936;
+  { const def = defTmpl(), t = Array.isArray(g.tmpl) && g.tmpl.length === 3 ? g.tmpl : null;   // eenheidsontwerpen: de naam volgt uit de samenstelling (zoals in de editor, hoogstens 9 bataljons)
+    g.tmpl = def.map((d, i) => { const T = t && t[i], comp = {}; if(T && T.comp && typeof T.comp === 'object') for(const k of UTYPES){ const v = T.comp[k]; if(Number.isInteger(v) && v > 0 && v <= 9) comp[k] = v; } return Object.keys(comp).length && totBat(comp) <= 9 ? {name:autoName(comp), comp} : d; }); }
+  if(typeof g.daily !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(g.daily)) delete g.daily;
   g.opt = {help:optClean(g.opt && g.opt.help), ai:optClean(g.opt && g.opt.ai)}; g.assisted = g.opt.help > 0 || g.opt.ai < 0;
   { const al = {}; if(g.allies && typeof g.allies === 'object' && !Array.isArray(g.allies)) for(const c of Object.keys(g.allies)) if(c !== g.player && CN[c] && g.nations[c] && g.nations[c].alive && Number.isFinite(g.allies[c])) al[c] = g.allies[c]; g.allies = al; }
   { const cd = {}; if(g.allyCd && typeof g.allyCd === 'object' && !Array.isArray(g.allyCd)) for(const c of Object.keys(g.allyCd)) if(CN[c] && Number.isFinite(g.allyCd[c])) cd[c] = g.allyCd[c]; g.allyCd = cd; }

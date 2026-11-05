@@ -741,3 +741,50 @@ test('C007 het startjaar blijft bewaard, rare waarden worden gerepareerd, en rec
   const obj = await page.evaluate(() => window.__VE.G.obj.find(o => o.k === 'calm').t);
   assert.doesNotMatch(obj, /1939/, 'de doelen verwijzen niet naar een datum die al voorbij is');
 });
+
+test('X008 tekst in een geladen bestand kan geen HTML in de pagina zetten', async t => {
+  const a = await open(t);
+  await startGame(a.page, 'nl');
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 've-')), 'kwaad.json');
+  await (await exportGame(a.page)).saveAs(file);
+  const o = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const evil = '<img src=x data-evil=1 onerror="window.__xss=1">';
+  o.G.tmpl[0].name = evil;                       // naam van een eenheidsontwerp: staat in het productiepaneel
+  o.G.obj[0].t = evil; o.G.obj[0].r = evil;      // doelen: staan in het overzicht
+  o.G.gen = { mode: 'bal', prep: '"><img src=x data-evil=1>' };   // een land-id dat in een knop terechtkomt
+  o.G.daily = evil;
+  o.G['__proto__'] = { polluted: true };
+  fs.writeFileSync(file, JSON.stringify(o).replace('"G":{', '"G":{"__proto__":{"polluted":true},'));
+  const b = await open(t);
+  const [chooser] = await Promise.all([b.page.waitForEvent('filechooser'), b.page.locator('#strip button[data-act="import"]').click()]);
+  await chooser.setFiles(file);
+  await b.page.waitForFunction(() => window.__VE.G);
+  const look = () => b.page.evaluate(() => { for (const d of document.querySelectorAll('#sheet details')) d.open = true; return { evil: document.querySelectorAll('[data-evil], img[src="x"]').length, polluted: ({}).polluted === true, xss: window.__xss === 1 }; });
+  const clean = { evil: 0, polluted: false, xss: false };
+  // de gegevens zelf zijn schoon gemaakt
+  const data = await b.page.evaluate(() => ({ tmpl: window.__VE.G.tmpl[0].name, obj: window.__VE.G.obj[0].t + window.__VE.G.obj[0].r, prep: window.__VE.G.gen && window.__VE.G.gen.prep, daily: String(window.__VE.G.daily), proto: Object.keys(window.__VE.G).includes('__proto__') }));
+  for (const [k, v] of Object.entries({ tmpl: data.tmpl, obj: data.obj, prep: data.prep, daily: data.daily })) assert.doesNotMatch(String(v), /[<>"]/, k + ': geen < > of " meer in tekst uit het bestand');
+  assert.equal(data.proto, false, '__proto__ is weggehaald');
+  // en niets komt als HTML in een paneel of op het startscherm
+  for (const name of ['Productie', 'Speciale acties', 'Overzicht']) {
+    await b.page.getByRole('button', { name, exact: true }).click();
+    assert.deepEqual(await look(), clean, 'paneel ' + name);
+    if (name === 'Productie') { await b.page.locator('#sheet [data-edit]').first().click(); assert.deepEqual(await look(), clean, 'ontwerp bewerken'); }
+  }
+  await b.page.evaluate(() => { toPick(); });
+  assert.deepEqual(await look(), clean, 'startscherm');
+  assert.deepEqual(b.errors.filter(e => !/Content Security Policy/.test(e)), []);
+});
+
+test('X008 een eigen eenheidsontwerp blijft behouden na bewaren en laden', async t => {
+  const { page, errors } = await open(t);
+  await startGame(page, 'nl');
+  await page.evaluate(() => { const T = window.__VE.G.tmpl[1]; T.comp = { inf: 3, art: 2, aa: 1 }; T.name = autoName(T.comp); dispatchEvent(new Event('pagehide')); });
+  const before = await page.evaluate(() => JSON.stringify(window.__VE.G.tmpl));
+  await page.reload();
+  await page.waitForFunction(() => window.__VE && !window.__VE.UI.loading);
+  await page.locator('#strip button[data-act="resume"]').click();
+  await page.waitForFunction(() => window.__VE.G);
+  assert.equal(await page.evaluate(() => JSON.stringify(window.__VE.G.tmpl)), before);
+  assert.deepEqual(errors, []);
+});
