@@ -27,7 +27,7 @@ Voortgang en instellingen worden lokaal in de browser opgeslagen (`localStorage`
 De tests starten zelf een kleine webserver en spelen het spel in een headless browser. Je hebt Node.js 20 of nieuwer nodig, plus Playwright met Chromium. Het spel zelf heeft geen packages nodig.
 
 ```bash
-npm install --no-save playwright && npx playwright install chromium
+npm install --no-save playwright@1.63.0 && npx playwright install chromium
 ```
 
 ```bash
