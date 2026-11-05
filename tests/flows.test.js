@@ -185,3 +185,16 @@ test('F07-E1 een verloren spel komt na herladen niet terug (B001)', async t => {
   assert.equal(await page.locator('#strip button[data-act="resume"]').count(), 0, 'geen "Doorgaan" voor het verloren spel');
   assert.deepEqual(errors, []);
 });
+
+test('F10-E1 de tabs in de panelen bevatten alleen tabs (B002)', async t => {
+  const { page, errors } = await open(t);
+  await startGame(page);
+  for (const name of ['Productie', 'Speciale acties', 'Overzicht']) {
+    await page.getByRole('button', { name, exact: true }).click();
+    const bad = await page.evaluate(() => [...document.querySelectorAll('[role="tablist"] > *')].filter(el => el.getAttribute('role') !== 'tab').map(el => el.outerHTML.slice(0, 60)));
+    assert.deepEqual(bad, [], name);
+    assert.equal(await page.getByRole('tab', { name: 'Productie' }).count(), 1);
+    assert.equal(await page.getByRole('button', { name: 'Sluiten' }).count(), 1, 'de sluitknop blijft er');
+  }
+  assert.deepEqual(errors, []);
+});

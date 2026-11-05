@@ -518,9 +518,9 @@ function renderSheet(){
   const dd = k => Math.ceil(itemCost(me,k) / Math.max(0.1, n.ppd));
   const tsub = k => ic('tijd') + dd(k) + ' d';
   const divs = UCNT[me] != null ? UCNT[me] : G.units.filter(u => u.c === me).length, cap = armyCap(me);
-  let h = '<div class="tabs" role="tablist">'
+  let h = '<div class="tabs"><div class="tabl" role="tablist">'
     + [['prod','Productie','fab'],['spec','Acties','bevel'],['info','Overzicht','vlag']].map(([k,l,i]) => '<button class="tab' + (UI.sheet === k ? ' on' : '') + '" role="tab" aria-selected="' + (UI.sheet === k) + '" data-tab="' + k + '">' + ic(i) + '<span>' + l + '</span></button>').join('')
-    + '<button class="xclose" data-tab="" aria-label="Sluiten">×</button></div>';
+    + '</div><button class="xclose" data-tab="" aria-label="Sluiten">×</button></div>';
   if(UI.sheet === 'prod' && UI.editT != null){
     // de divisieontwerper: stel je divisie samen uit bataljons
     const T = G.tmpl[UI.editT], tpk = 'p' + UI.editT, nb = totBat(T.comp), ts = tstat(me, tpk), cost = tplCost(tpk);
