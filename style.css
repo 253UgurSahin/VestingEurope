@@ -618,3 +618,8 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 #card.k-conf{animation:cfin .2s ease-out;max-height:min(60vh,36rem)}
 @media (min-width:900px){ #card.k-conf{left:auto;right:max(1.5rem, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%)} }
 @media (max-width:899px){ #card.k-conf{top:auto;bottom:calc(4.4rem + env(safe-area-inset-bottom, 0px));transform:translateX(-50%)} }
+/* tablets en andere grote touchschermen: knoppen minstens 44 px (Apple en WCAG 2.5.5), telefoons en computers blijven zoals ze waren */
+@media (hover:none) and (pointer:coarse) and (min-width:600px){
+  button:not(.sw), #sheet .setrow label{min-width:44px;min-height:44px}
+  .sw::before{content:"";position:absolute;inset:-14px -8px}
+}

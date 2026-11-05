@@ -248,3 +248,30 @@ test('C001 het startscherm en de pagina zeggen: gratis, geen account, geen aanko
   assert.equal((await page.context().cookies()).length, 0, 'geen cookies');
   assert.deepEqual(errors, []);
 });
+
+test('C002 op een iPad zijn alle knoppen minstens 44 px, en niets loopt over het scherm', async t => {
+  for (const device of ['iPad Mini', 'iPad Mini landscape']) {
+    const { page, errors } = await open(t, { device });
+    await startGame(page);
+    await page.waitForFunction(() => !document.getElementById('strip').hidden);
+    for (const sheet of [null, 'prod', 'spec', 'info']) {
+      if (sheet) await page.locator(`button[data-sheet="${sheet}"]`).click();
+      await page.evaluate(() => { for (const d of document.querySelectorAll('#sheet details')) d.open = true; });
+      const bad = await page.evaluate(() => {
+        const out = [];
+        for (const e of document.querySelectorAll('button:not(.sw), #sheet .setrow label')) {
+          if (!e.offsetParent || e.disabled) continue;
+          const r = e.getBoundingClientRect();
+          if (r.width < 43.5 || r.height < 43.5) out.push((e.dataset.act || e.dataset.sheet || e.dataset.tab || e.dataset.q || e.id || e.className || e.tagName) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height));
+        }
+        return out;
+      });
+      assert.deepEqual(bad, [], `${device}, paneel ${sheet}: te kleine knoppen`);
+      // de aan/uit-schakelaars blijven klein om te zien, maar 14 px erboven en eronder raakt een vinger ze nog
+      const sw = await page.evaluate(() => [...document.querySelectorAll('.sw')].filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; return document.elementFromPoint(x, y - 20) === e && document.elementFromPoint(x, y + 20) === e; }));
+      assert.ok(sw.every(Boolean), `${device}, paneel ${sheet}: schakelaar met te klein raakvlak`);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), device + ': horizontaal scrollen');
+    }
+    assert.deepEqual(errors, [], device);
+  }
+});

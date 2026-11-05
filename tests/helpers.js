@@ -27,8 +27,8 @@ before(async () => {
 after(async () => { await env.browser?.close(); server?.close(); });
 
 // opent het spel. errors: paginafouten, console-fouten en antwoorden van 400 of hoger
-async function open(t, { storage, viewport, mobile, route, init } = {}) {
-  const ctx = await env.browser.newContext({ viewport: viewport || { width: 1280, height: 800 }, ...(mobile ? { isMobile: true, hasTouch: true } : {}) });
+async function open(t, { storage, viewport, mobile, route, init, device } = {}) {
+  const ctx = await env.browser.newContext(device ? { ...require('playwright').devices[device] } : { viewport: viewport || { width: 1280, height: 800 }, ...(mobile ? { isMobile: true, hasTouch: true } : {}) });
   if (route) await ctx.route(route[0], route[1]);
   const page = await ctx.newPage();
   const errors = [];
