@@ -242,7 +242,7 @@ function renderStrip(){
   const el = $('strip');
   let h = '';
   if(UI.err){
-    h = '<div class="txt"><b>Kaart laden mislukt</b><span class="mut">' + esc(UI.err) + '</span></div><div class="acts"><button class="btn" data-act="retry">Opnieuw</button></div>';
+    h = '<div class="txt"><b>Kaart laden mislukt</b><span class="mut" title="' + esc(UI.err) + '">Controleer je internetverbinding en probeer het opnieuw.</span></div><div class="acts"><button class="btn" data-act="retry">Opnieuw</button></div>';
   } else if(UI.loading || !DATA){
     h = '<div class="txt"><b>Kaart laden…</b></div>';
   } else if(!G){

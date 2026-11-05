@@ -207,3 +207,13 @@ test('F10-E2 de productiewachtrij heeft een naam die schermlezers voorlezen (B00
   assert.equal(await page.getByRole('group', { name: 'Productiewachtrij' }).count(), 1);
   assert.deepEqual(errors, []);
 });
+
+test('F08-E4 de foutmelding bij een kaart die niet laadt is in het Nederlands (B004)', async t => {
+  const { page, errors } = await open(t, { route: ['**/europe.json', r => r.abort()] });
+  await page.waitForSelector('#strip button[data-act="retry"]');
+  const txt = await page.textContent('#strip');
+  assert.match(txt, /Kaart laden mislukt/);
+  assert.doesNotMatch(txt, /Failed|fetch|HTTP/i, txt);
+  assert.match(txt, /verbinding/);
+  assert.deepEqual(errors, []);
+});
