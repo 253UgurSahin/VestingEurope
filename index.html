@@ -1371,6 +1371,16 @@ body.paused #clock{background:linear-gradient(180deg,#2C4690,#20326C)}
 .vbar{height:.5rem;border-radius:999px;background:rgba(8,15,44,.55)}
 .vbar::after{border-radius:999px}
 /* ---- kaart dimmen onder een beslissing: lichter dan voorheen ---- */
+/* ---- liggende telefoon: kaartknoppen klein houden, geen minimap (er is geen plek) ---- */
+@media (max-height:520px){
+  #mapui{flex-direction:row-reverse;align-items:flex-end;gap:.3rem}
+  #mapmodes:not(.open){border-radius:999px;padding:0}
+  #mapmodes:not(.open) .mmb:not(.mmx), #mapmodes:not(.open) #mapleg{display:none}
+  .mmb.mmx{display:grid;color:var(--ink);border-radius:999px}
+  #minimap{padding:0;border-radius:999px}
+  #minimap #mmc{display:none}
+  #minimap #mmtog{position:static;width:2.15rem;height:2.15rem;border:0;background:transparent;color:var(--ink)}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
