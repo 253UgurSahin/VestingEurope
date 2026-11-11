@@ -1677,6 +1677,47 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
   #ezSheet{max-height:calc(100vh - var(--hud-h) - 4rem)}
 }
 @media (max-width:360px){ .ez-me b{font-size:.9rem} #ezTop .ez-stat{padding:0 .35rem} #ezTop .ez-spd{padding:0 .45rem;font-size:.8rem} #ezTop .ez-play{padding:0 .55rem} }
+
+/* ---- iconen in plaats van zinnen: meters, tekens en iconknoppen ---- */
+.ezx-row{display:flex;align-items:center;gap:.45rem;padding:.25rem .4rem}
+.ezx-row > .ez-flag{flex:none}
+.ezx-nm{flex:1 1 auto;min-width:0;padding:0;border:0;background:none;color:var(--ink);font:600 .9rem var(--f-ui);letter-spacing:.03em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.ezx-nm:hover{color:var(--accent)}
+.ezx-str,.ezx-rel{flex:none;display:inline-flex;align-items:flex-end;gap:2px;height:.85rem}
+.ezx-str i{width:3px;background:var(--a3)}
+.ezx-str i:nth-child(1){height:30%} .ezx-str i:nth-child(2){height:45%} .ezx-str i:nth-child(3){height:62%} .ezx-str i:nth-child(4){height:80%} .ezx-str i:nth-child(5){height:100%}
+.ezx-str.g i.on{background:var(--ok)} .ezx-str.y i.on{background:var(--accent)} .ezx-str.r i.on{background:var(--war)}
+.ezx-rel{align-items:center;gap:2px}
+.ezx-rel i{width:5px;height:5px;border-radius:50%;background:var(--a3)}
+.ezx-rel.r1 i.on,.ezx-rel.r2 i.on{background:var(--war)} .ezx-rel.r3 i.on{background:var(--dim)} .ezx-rel.r4 i.on,.ezx-rel.r5 i.on{background:var(--ok)}
+.ezx-tags{flex:none;display:inline-flex;gap:2px}
+.ezx-tag{display:grid;place-items:center;width:1.15rem;height:1.15rem;border-radius:var(--r-s);background:var(--a1)}
+.ezx-tag .ez-ic{width:.8rem;height:.8rem}
+.ezx-tag.war{color:var(--war)} .ezx-tag.ok{color:var(--ok)} .ezx-tag.warn{color:var(--accent)}
+.ezx-row .kbtn{flex:none;min-height:calc(var(--ctl) - .2rem);padding:.1rem .55rem;font-size:.74rem}
+.ezx-hide{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ezx-head{display:flex;align-items:center;gap:.6rem;margin:.1rem 0 .45rem}
+.ezx-war{display:flex;align-items:center;gap:.45rem;margin:0 0 .5rem;font:500 .8rem var(--f-ui)}
+.ezx-war .ez-goalbar{flex:1 1 auto;display:block}
+.ezx-war .ez-goalbar i{background:var(--accent)}
+.ezx-war span{display:inline-flex;align-items:center;gap:.25rem;font-variant-numeric:tabular-nums}
+.ezx-war .ez-ic{width:.85rem;height:.85rem}
+.ezx-war .warc{color:var(--war)}
+.ezx-acts{display:grid;grid-template-columns:repeat(auto-fill, minmax(4.4rem, 1fr));gap:.3rem}
+.ezx-b{display:grid;justify-items:center;align-content:center;gap:.15rem;min-height:calc(var(--ctl) + 1rem);padding:.3rem .2rem;border:1px solid var(--a2);border-radius:var(--r-m);background:var(--a1);color:var(--ink);font:500 .66rem/1.1 var(--f-ui);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.ezx-b .ez-ic{width:1.15rem;height:1.15rem;color:var(--dim)}
+.ezx-b:hover{border-color:var(--a4);background:var(--a2)}
+.ezx-b.ok .ez-ic{color:var(--ok)} .ezx-b.war .ez-ic{color:var(--war)}
+.ezx-b.on{border-color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)} .ezx-b.on .ez-ic{color:var(--accent)}
+.ezx-b[aria-disabled="true"]{opacity:.4;cursor:default}
+.ezx-b:focus-visible,.ezx-nm:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ez-pill .ez-flag{width:1.05rem;height:.72rem}
+.ezx-pnm{max-width:6.5rem;overflow:hidden;text-overflow:ellipsis}
+.ezx-pbar{display:inline-block;width:2.4rem;height:.3rem;background:rgba(0,0,0,.35)}
+.ezx-pbar i{display:block;height:100%;background:#F0D9A0}
+.ez-tile small{display:inline-flex;align-items:center;gap:.2rem}
+.ez-tile small .ez-ic{width:.75rem;height:.75rem;color:var(--dim)}
+@media (pointer:coarse){ .ezx-tag{width:1.3rem;height:1.3rem} .ezx-b{min-height:max(3rem, 44px)} }
 </style>
 <style id="skin">
 /* ================= strakke skin: rustig, compact, volwassen (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
@@ -9937,13 +9978,13 @@ function ezTopR(){
     + '<span class="ez-spds" role="group" aria-label="Hoe snel de tijd loopt"><button type="button" class="kbtn ez-spd ' + (G.speed < 2 ? 'gold' : 'ghost') + '" data-eza="slow" aria-pressed="' + (G.speed < 2) + '" aria-label="Langzaam"><span class="ez-w">Langzaam</span><span class="ez-n" aria-hidden="true">1×</span></button><button type="button" class="kbtn ez-spd ' + (G.speed >= 2 ? 'gold' : 'ghost') + '" data-eza="fast" aria-pressed="' + (G.speed >= 2) + '" aria-label="Snel"><span class="ez-w">Snel</span><span class="ez-n" aria-hidden="true">2×</span></button></span>');
   // waarschuwingen in gewone taal: je oorlogen, een geplande aanval en wat er echt misgaat
   const z = ezG(), w = [], ens = enemiesOf(me);
-  for(const e of ens.slice(0, 3)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + e + '">' + ezIc('zwaard') + '<span>Oorlog met ' + ezNm(e) + ': ' + ezWarTxt(e) + '</span></button>');
+  for(const e of ens.slice(0, 3)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + e + '" title="Oorlog met ' + ezNm(e) + ': ' + ezWarTxt(e) + '">' + ezIc('zwaard') + ezFlag(e) + '<span class="ezx-pnm">' + ezNm(e) + '</span><span class="ezx-pbar"><i style="width:' + pct(meterOf(e)) + '%"></i></span></button>');
   if(ens.length > 3) w.push('<span class="ez-pill war">en nog ' + (ens.length - 3) + '</span>');
-  if(!ens.length && z.atk && CN[z.atk]) w.push('<button type="button" class="ez-pill gold" data-eza="land:' + z.atk + '">' + ezIc('zwaard') + '<span>Aanval op ' + ezNm(z.atk) + ' over ' + ezDays(ezAtkLeft(z.atk)) + '</span></button>');
-  if(ens.length && meterOf(me) >= 0.5) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Je verliest de oorlog</span></span>');
-  if(n.ws < 25) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Lage oorlogssteun</span></span>');
-  for(const x of Object.keys(G.aiJust || {}).slice(0, 2)) if(CN[x] && alive(x) && !atWar(x, me)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + x + '">' + ezIc('agr') + '<span>' + ezNm(x) + ' bereidt een aanval voor</span></button>');
-  if(hotCount(COAL_THR() * 0.7) >= 2) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Hoge spanning: coalitie dreigt</span></span>');
+  if(!ens.length && z.atk && CN[z.atk]) w.push('<button type="button" class="ez-pill gold" data-eza="land:' + z.atk + '">' + ezIc('zwaard') + ezFlag(z.atk) + '<span>' + ezAtkLeft(z.atk) + ' d</span></button>');
+  if(ens.length && meterOf(me) >= 0.5) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Verliezend</span></span>');
+  if(n.ws < 25) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Steun ' + Math.round(n.ws) + '%</span></span>');
+  for(const x of Object.keys(G.aiJust || {}).slice(0, 2)) if(CN[x] && alive(x) && !atWar(x, me)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + x + '">' + ezIc('agr') + ezFlag(x) + '<span>dreigt</span></button>');
+  if(hotCount(COAL_THR() * 0.7) >= 2) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Coalitie dreigt</span></span>');
   ezPut(ch[6], 'warn', w.join('')); ch[6].hidden = !w.length;
   document.body.classList.toggle('ez-warned', w.length > 0);   // meldingen schuiven dan onder de rij met waarschuwingen
 }
@@ -9962,19 +10003,75 @@ function ezAdvR(){
 }
 
 /* ---- de bladen: Aanvallen, Vrienden, Bouwen, Hulp en het kaartje van één land ---- */
+/* ---- iconen in plaats van zinnen: sterktemeter, statustekens en een rij iconknoppen per land (alles wat de volledige stand ook kan) ---- */
+function ezxStr(c){   // vijf streepjes: hoe sterk land c is tegenover jou
+  const [r, g] = ezFoe(c), L = ezLight(r), n = r < 0.4 ? 1 : r < 0.7 ? 2 : r < 1.15 ? 3 : r < 1.7 ? 4 : 5;
+  const t = 'Sterkte: ' + NF.format(r) + '× jouw leger (' + L[1] + ')' + (g ? ', met de garantie van ' + cname(g) + ' meegerekend' : '');
+  return '<span class="ezx-str ' + L[0] + '" title="' + esc(t) + '" aria-label="' + esc(t) + '">' + [1, 2, 3, 4, 5].map(i => '<i' + (i <= n ? ' class="on"' : '') + '></i>').join('') + '</span>';
+}
+function ezxRel(c){   // vijf puntjes: de relatie
+  const v = relOf(c).v, n = v >= 40 ? 5 : v >= 15 ? 4 : v > -15 ? 3 : v > -40 ? 2 : 1, t = 'Relatie ' + sgn(v) + ' (' + relWord(v) + ')';
+  return '<span class="ezx-rel r' + n + '" title="' + esc(t) + '" aria-label="' + esc(t) + '">' + [1, 2, 3, 4, 5].map(i => '<i' + (i <= n ? ' class="on"' : '') + '></i>').join('') + '</span>';
+}
+function ezxTags(c){   // kleine tekens: oorlog, bondgenoot, verdrag, doorgang, garantie, dreiging
+  const me = G.player, T = [], tag = (icon, cls, t) => T.push('<span class="ezx-tag ' + cls + '" title="' + esc(t) + '" aria-label="' + esc(t) + '">' + ezIc(icon) + '</span>');
+  if(atWar(me, c)) tag('zwaard', 'war', 'In oorlog: ' + ezWarTxt(c));
+  if(isAlly(c)) tag('schild', 'ok', 'Bondgenoot');
+  else if(hasPact(c)) tag('vrede', 'ok', 'Niet-aanvalsverdrag, nog ' + (G.pact[c] - G.day) + ' d');
+  if(hasAccess(c)) tag('prov', 'ok', 'Doorgangsrecht');
+  const g = G.prot && G.prot[c]; if(g && CN[g] && alive(g) && g !== me) tag('schild', 'warn', 'Gegarandeerd door ' + cname(g) + ': een aanval betekent ook oorlog met ' + cname(g));
+  if(G.aiJust && G.aiJust[c] != null && !atWar(me, c)) tag('agr', 'war', cname(c) + ' bereidt een aanval op jou voor');
+  if(ezG().atk === c) tag('tijd', 'warn', 'Aanval in voorbereiding: begint over ' + ezAtkLeft(c) + ' d');
+  else if(genCfg().prep === c && !atWar(me, c)) tag('gen', 'warn', 'Je leger staat klaar aan deze grens');
+  return T.join('');
+}
+// één iconknop: icoon + één woord; uitleg en (als het niet kan) de reden in de tooltip
+function ezxB(attr, icon, word, tip, dis, cls){
+  return '<button type="button" class="ezx-b' + (cls ? ' ' + cls : '') + '" ' + attr + (dis ? ' aria-disabled="true"' : '') + ' title="' + esc(tip) + '" aria-label="' + esc(word + ': ' + tip) + '">' + ezIc(icon) + '<span>' + word + '</span></button>';
+}
+function ezxActs(c){
+  const me = G.player, n = nat(me), z = ezG(), B = [], dip = (k, icon, word, okTip, kind, e) => {
+    const ev = dipEval(kind, c, e), cost = DCP[kind] || 0, low = n.cp < cost;
+    B.push(ezxB('data-dip="' + k + ':' + c + (e ? ':' + e : '') + '"', icon, word, ev.ok ? (low ? 'Te weinig bevelpunten (' + cost + ' nodig, je hebt ' + Math.floor(n.cp) + ')' : okTip + (cost ? ' · ' + cost + ' bevelpunten' : '')) : evWhy(ev), !ev.ok || low, ev.ok && !low ? 'ok' : ''));
+  };
+  if(atWar(me, c)){
+    const d = dealInfo(c);
+    B.push(ezxB('data-eza="deal:keep:' + c + '"', 'vrede', 'Vrede', d.keep.length ? 'Vrede: jij houdt ' + ezGb(d.keep.length) : c + ' wil nu geen vrede waarbij jij land houdt', !d.keep.length, d.keep.length ? 'ok' : ''));
+    B.push(ezxB('data-eza="deal:white:' + c + '"', 'wit', 'Wit', d.white ? 'Witte vrede: grenzen als voor de oorlog' : 'Witte vrede kan nu niet', !d.white));
+    B.push(ezxB('data-eza="deal:give:' + c + '"', 'vlag', 'Opgeven', d.give.length ? 'Geef op: jij staat ' + ezGb(d.give.length) + ' af' : 'Opgeven kan nu niet', !d.give.length, 'war'));
+    for(const a in G.ally || {}) if(isAlly(a) && alive(a) && !atWar(a, c)){ const ev = dipEval('call', a, c); B.push(ezxB('data-dip="call:' + a + ':' + c + '"', 'zwaard', 'Te wapen', ev.ok ? 'Roep ' + cname(a) + ' te wapen tegen ' + cname(c) + ' · ' + DCP.call + ' bevelpunten' : cname(a) + ': ' + evWhy(ev), !ev.ok || n.cp < DCP.call)); break; }
+    return B.join('');
+  }
+  const why = ezCanAtk(c);
+  if(z.atk === c) B.push(ezxB('data-eza="stop:' + c + '"', 'stop', 'Stop', 'Breek de voorbereide aanval af', false));
+  else B.push(ezxB('data-eza="atk:' + c + '"', 'zwaard', 'Val aan', why || 'Oorlogsdoel maken, leger naar de grens en daarna de oorlog verklaren', !!why, why ? '' : 'war'));
+  const prep = genCfg().prep === c;
+  B.push(ezxB('data-eza="prep:' + c + '"', 'gen', prep ? 'Klaar' : 'Opmars', prep ? 'Je leger staat klaar aan deze grens. Tik om te stoppen.' : 'Zet je leger klaar aan de grens zonder aan te vallen', false, prep ? 'on' : ''));
+  if(!isAlly(c)){
+    if(!hasPact(c)) dip('pact', 'vrede', 'Verdrag', 'Niet-aanvalsverdrag: twee jaar geen oorlog', 'pact');
+    dip('ally', 'schild', 'Bondgenoot', 'Bondgenootschap: jullie vechten mee in elkaars oorlogen; doorgang inbegrepen', 'ally');
+    if(!hasAccess(c)) dip('access', 'prov', 'Doorgang', 'Doorgangsrecht: je divisies mogen door hun land', 'access');
+  }
+  { const cdl = (G.dipCd['imp:' + c] || 0) - G.day, cap = ((G.relM[c] || {}).verb || 0) >= 40;
+    B.push(ezxB('data-dip="imp:' + c + '"', 'steun', 'Relatie', cdl > 0 ? 'Gezanten onderweg, weer over ' + cdl + ' d' : cap ? 'Gezanten kunnen niet meer doen' : 'Relatie verbeteren: +12 · ' + DCP.imp + ' bevelpunten', cdl > 0 || cap || n.cp < DCP.imp)); }
+  { const ev = dipEval('ask', c); B.push(ezxB('data-dip="ask:' + c + '"', 'fab', 'Steun', ev.ok ? 'Vraag steun: 10% van hun productie, 90 dagen' : evWhy(ev), !ev.ok)); }
+  const can = dipCanAid(c), cur = G.lend.find(l => l.from === me && l.to === c);
+  B.push(ezxB('data-dip="lend:' + c + ':' + (cur ? 0 : 20) + '"', 'fab', cur ? 'Stop hulp' : 'Lend-lease', cur ? 'Stop de lend-lease aan ' + cname(c) : can ? 'Lend-lease: 20% van je productie, 90 dagen' : 'Alleen aan bondgenoten en aan wie tegen jouw vijand vecht', !cur && !can, cur ? 'on' : ''));
+  return B.join('');
+}
 function ezAtkRow(c){
   const me = G.player, z = ezG();
   let sub, btn = '', cls = '';
-  if(atWar(me, c)){ sub = '<span class="ez-light r"><i></i>Oorlog: ' + ezWarTxt(c) + '</span>'; btn = '<button type="button" class="kbtn ghost" data-eza="land:' + c + '">Bekijk</button>'; }
+  if(atWar(me, c)){ sub = '<span class="ez-light r"><i></i>Oorlog: ' + ezWarTxt(c) + '</span>'; btn = '<button type="button" class="kbtn ghost" data-eza="land:' + c + '" title="Vrede, steun en de stand van de oorlog">' + ezIc('vrede') + 'Vrede</button>'; }
   else {
     const why = ezCanAtk(c), [r, g] = ezFoe(c), L = ezLight(r);
     cls = ' ' + L[0];
     sub = '<span class="ez-light ' + L[0] + '"><i></i>' + L[1] + '</span>' + (g ? '<small>Let op: ' + ezNm(g) + ' garandeert dit land.</small>' : '');
-    if(z.atk === c){ sub += '<small>De aanval begint over ' + ezDays(ezAtkLeft(c)) + '.</small>'; btn = '<button type="button" class="kbtn ghost" data-eza="stop:' + c + '">Stop</button>'; }
-    else if(why){ sub = '<small>' + esc(why) + '</small>'; cls = ''; }
-    else btn = '<button type="button" class="kbtn war" data-eza="atk:' + c + '">' + ezIc('zwaard') + 'Val aan</button>';
+    if(z.atk === c) btn = '<button type="button" class="kbtn ghost" data-eza="stop:' + c + '" title="Breek de voorbereide aanval af">' + ezIc('tijd') + ezAtkLeft(c) + ' d</button>';
+    else if(why){ btn = '<button type="button" class="kbtn ghost" aria-disabled="true" data-eza="land:' + c + '" title="' + esc(why) + '">' + ezIc('stop') + '<span class="ezx-hide">' + esc(why) + '</span></button>'; cls = ''; }
+    else btn = '<button type="button" class="kbtn war" data-eza="atk:' + c + '" title="Oorlogsdoel maken, leger naar de grens en daarna de oorlog verklaren">' + ezIc('zwaard') + 'Val aan</button>';
   }
-  return '<div class="ez-land' + cls + '">' + ezFlag(c, 1) + '<div class="ez-lt"><b>' + ezNm(c) + '</b>' + sub + '</div>' + btn + '</div>';
+  return '<div class="ez-land ezx-row' + cls + '">' + ezFlag(c, 1) + '<button type="button" class="ezx-nm" data-eza="land:' + c + '" title="Alle mogelijkheden met ' + ezNm(c) + '">' + ezNm(c) + '</button>' + (atWar(me, c) ? '' : ezxStr(c)) + '<span class="ezx-tags">' + ezxTags(c) + '</span>' + btn + '</div>';
 }
 function ezRel(c){   // [gezichtje, zin] over hoe land c over jou denkt
   const st = dipState(c), rel = relOf(c).v;
@@ -9984,40 +10081,27 @@ function ezRel(c){   // [gezichtje, zin] over hoe land c over jou denkt
 function ezFrBtn(c){
   const me = G.player;
   if(atWar(me, c)) return '';
-  if(isAlly(c)) return enemiesOf(me).length && ezHelpFind(c) ? '<button type="button" class="kbtn go" data-eza="help:' + c + '">Vraag steun</button>' : '';
+  if(isAlly(c)) return enemiesOf(me).length && ezHelpFind(c) ? '<button type="button" class="kbtn go" data-eza="help:' + c + '" title="Vraag je bondgenoot om steun in de oorlog">' + ezIc('zwaard') + 'Steun</button>' : '';
   const o = ezFriendOpt(c);
   if(!o.k) return '';
-  const lab = o.k === 'ally' ? 'Sluit bondgenootschap' : o.k === 'pact' ? 'Sluit verdrag' : 'Verbeter relatie';
-  return o.wait ? '<button type="button" class="kbtn ghost ez-wait" data-eza="fr:' + c + '"><span>' + lab + '</span><small>kan over ' + ezDays(o.wait) + '</small></button>' : '<button type="button" class="kbtn go" data-eza="fr:' + c + '">' + ezIc('vrede') + lab + '</button>';
+  const lab = o.k === 'ally' ? 'Bondgenoot' : o.k === 'pact' ? 'Verdrag' : 'Relatie', icon = o.k === 'ally' ? 'schild' : o.k === 'pact' ? 'vrede' : 'steun';
+  const tip = o.k === 'ally' ? 'Sluit een bondgenootschap' : o.k === 'pact' ? 'Sluit een niet-aanvalsverdrag' : 'Verbeter de relatie';
+  return o.wait ? '<button type="button" class="kbtn ghost ez-wait" data-eza="fr:' + c + '" title="' + tip + ': kan over ' + ezDays(o.wait) + '"><span>' + ezIc('tijd') + o.wait + ' d</span></button>' : '<button type="button" class="kbtn go" data-eza="fr:' + c + '" title="' + tip + '">' + ezIc(icon) + lab + '</button>';
 }
 function ezFrRow(c){
   const [f, t] = ezRel(c), btn = atWar(G.player, c) ? '<button type="button" class="kbtn ghost" data-eza="land:' + c + '">Bekijk</button>' : ezFrBtn(c);
-  return '<div class="ez-land">' + ezFace(f) + '<div class="ez-lt"><b>' + ezFlag(c) + ezNm(c) + '</b><span>' + t + '</span></div>' + btn + '</div>';
+  return '<div class="ez-land ezx-row">' + ezFlag(c, 1) + '<button type="button" class="ezx-nm" data-eza="land:' + c + '" title="' + esc(t) + ' Tik voor alle mogelijkheden.">' + ezNm(c) + '</button>' + ezxRel(c) + '<span class="ezx-tags">' + ezxTags(c) + '</span>' + btn + '</div>';
 }
 function ezLandH(c){
   const me = G.player, z = ezG();
-  if(c === me) return '<p class="ez-p">Je eigen land. Je hebt ' + ezGb(owned(me).length) + '.</p><div class="ez-acts"><button type="button" class="kbtn gold big" data-eza="sheet:build">' + ezIc('hamer') + 'Bouwen</button><button type="button" class="kbtn big war" data-eza="sheet:atk">' + ezIc('zwaard') + 'Aanvallen</button></div>';
+  if(c === me) return '<div class="ezx-acts">' + ezxB('data-eza="sheet:build"', 'hamer', 'Productie', 'Bestel divisies of fabrieken', false) + ezxB('data-eza="sheet:atk"', 'zwaard', 'Aanvallen', 'Kies een land om aan te vallen', false) + ezxB('data-eza="sheet:fr"', 'vrede', 'Diplomatie', 'Verdragen en bondgenoten', false) + '</div>';
   if(!alive(c)) return '<p class="ez-p">Dit land bestaat niet meer.</p>';
-  const [f, t] = ezRel(c);
-  let h = '<div class="ez-land">' + ezFace(f) + '<div class="ez-lt"><span>' + t + '</span></div></div>';
+  let h = '<div class="ezx-head">' + (atWar(me, c) ? '' : ezxStr(c)) + ezxRel(c) + '<span class="ezx-tags">' + ezxTags(c) + '</span></div>';
   if(atWar(me, c)){
-    const d = dealInfo(c), mE = meterOf(c);
-    h += '<div class="ez-warbar"><span>Zo ver is ' + ezNm(c) + ' verslagen:</span><div class="ez-goalbar"><i style="width:' + pct(mE) + '%"></i></div><b>' + ezWarTxt(c) + '</b></div><div class="ez-acts col">';
-    if(d.keep.length) h += '<button type="button" class="kbtn go big wide" data-eza="deal:keep:' + c + '">Sluit vrede: jij krijgt ' + ezGb(d.keep.length) + '</button>';
-    if(d.white) h += '<button type="button" class="kbtn big wide" data-eza="deal:white:' + c + '">Witte vrede: grenzen als voor de oorlog</button>';
-    if(d.give.length) h += '<button type="button" class="kbtn ghost wide" data-eza="deal:give:' + c + '">Geef op: jij geeft ' + ezGb(d.give.length) + ' weg</button>';
-    if(!d.keep.length && !d.white && !d.give.length) h += '<p class="ez-p">' + ezNm(c) + ' weigert vrede. De oorlog gaat door.</p>';
-    if(ezHelpFind()) h += '<button type="button" class="kbtn ghost wide" data-eza="help">Vraag bondgenoten om steun</button>';
-    return h + '</div>';
+    const mE = meterOf(c), mM = meterOf(me);
+    h += '<div class="ezx-war" title="Hoe ver ' + ezNm(c) + ' verslagen is (links) en hoe ver jij verslagen bent (rechts)"><span>' + ezIc('vlag') + pct(mE) + '%</span><div class="ez-goalbar"><i style="width:' + pct(mE) + '%"></i></div><span class="warc">' + pct(mM) + '%</span></div>';
   }
-  const why = ezCanAtk(c), [r, g] = ezFoe(c), L = ezLight(r), fb = ezFrBtn(c);
-  if(!isAlly(c)) h += '<div class="ez-land ' + L[0] + '"><span class="ez-light big ' + L[0] + '"><i></i></span><div class="ez-lt"><span>Dit land is <b>' + L[1] + '</b>.' + (g ? ' Let op: ' + ezNm(g) + ' garandeert dit land.' : '') + '</span></div></div>';
-  if(z.atk === c) h += '<p class="ez-p">De aanval wordt voorbereid. Over ' + ezDays(ezAtkLeft(c)) + ' begint de aanval.</p>';
-  else if(why) h += '<p class="ez-p">' + esc(why) + '</p>';
-  h += '<div class="ez-acts">';
-  if(z.atk === c) h += '<button type="button" class="kbtn ghost big" data-eza="stop:' + c + '">Breek de aanval af</button>';
-  else if(!why) h += '<button type="button" class="kbtn war big" data-eza="atk:' + c + '">' + ezIc('zwaard') + 'Val aan</button>';
-  return h + fb.replace('class="kbtn go"', 'class="kbtn go big"') + '</div>';
+  return h + '<div class="ezx-acts">' + ezxActs(c) + '</div>';
 }
 function ezSheetH(){
   const k = UI.ezSheet, me = G.player, n = nat(me);
@@ -10025,22 +10109,22 @@ function ezSheetH(){
   const tip = t => '<div class="ez-tip">' + EZ_GEN + '<span>' + t + '</span></div>';
   if(k === 'atk'){
     const ens = enemiesOf(me), nb = ezNbrs().filter(c => !atWar(me, c)).sort((a, b) => (ezCanAtk(a) ? 1 : 0) - (ezCanAtk(b) ? 1 : 0) || ezFoe(a)[0] - ezFoe(b)[0]);
-    return head(ezIc('zwaard'), 'Aanvallen') + tip(UI.ezTut === 5 ? ezTutSay().t : ens.length ? 'Je bent al in oorlog. Rond die eerst af.' : 'Groen: zwakker dan jij. Rood: sterker.')
+    return head(ezIc('zwaard'), 'Aanvallen') + tip(UI.ezTut === 5 ? ezTutSay().t : ens.length ? 'Je bent al in oorlog. Rond die eerst af.' : 'Streepjes: hun sterkte tegenover jou. Tik op een land voor alle mogelijkheden.')
       + '<div class="ez-list">' + ens.map(ezAtkRow).join('') + nb.map(ezAtkRow).join('') + (!ens.length && !nb.length ? '<p class="ez-p">Er is nu geen land binnen bereik.</p>' : '') + '</div>';
   }
   if(k === 'fr'){
     const s = new Set(ezNbrs()); for(const c in G.ally || {}) s.add(c); for(const c in G.pact || {}) if(hasPact(c)) s.add(c); for(const c of enemiesOf(me)) s.add(c);
     const rank = c => { const st = dipState(c); return st === 'ally' ? 0 : st === 'pact' ? 1 : st === 'war' ? 3 : 2; };
     const list = [...s].filter(c => CN[c] && alive(c) && c !== me).sort((a, b) => rank(a) - rank(b) || relOf(b).v - relOf(a).v);
-    return head(ezIc('vrede'), 'Diplomatie') + tip(enemiesOf(me).length ? 'Een bondgenoot kan je in de oorlog steunen.' : 'Een verdrag voorkomt een aanval. Een bondgenoot vecht ook mee.')
+    return head(ezIc('vrede'), 'Diplomatie') + tip('Tik op een land voor alle mogelijkheden.')
       + '<div class="ez-list">' + (list.length ? list.map(ezFrRow).join('') : '<p class="ez-p">Er zijn nu geen landen in de buurt.</p>') + '</div>';
   }
   if(k === 'build'){
     const tiles = EZB.map(([key, nm, txt]) => { const why = ezCanBuild(key);
-      return '<button type="button" class="ez-tile' + (why ? ' off' : '') + '" data-eza="build:' + key + '" aria-disabled="' + !!why + '">' + ezIc(key) + '<b>' + nm + '</b><span>' + (why || txt) + '</span>' + (why ? '' : '<small>Klaar over ongeveer ' + ezDays(ezBuildDays(key)) + '</small>') + '</button>'; }).join('');
+      return '<button type="button" class="ez-tile' + (why ? ' off' : '') + '" data-eza="build:' + key + '" aria-disabled="' + !!why + '" title="' + esc(why || txt) + '">' + ezIc(key) + '<b>' + nm + '</b><small>' + (why ? '<span>' + esc(why) + '</span>' : ezIc('tijd') + ezBuildDays(key) + ' d') + '</small></button>'; }).join('');
     let acc = 0;
     const q = n.q.slice(0, 4).map(it => { acc += itemCost(me, it.k) - it.p; const kd = ezQKind(it.k); return '<span class="ez-qi">' + ezIc(kd === 'tech' ? 'tech' : kd) + '<span>' + (EZQN[kd] || 'Bestelling') + '<small>' + (it.wait ? 'wacht' : 'nog ' + ezDays(Math.max(1, Math.ceil(acc / Math.max(0.1, n.ppd))))) + '</small></span></span>'; }).join('');
-    return head(ezIc('hamer'), 'Productie') + tip('Kies een extra bestelling. De rest van de productie loopt automatisch.') + '<div class="ez-tiles">' + tiles + '</div>'
+    return head(ezIc('hamer'), 'Productie') + tip('Extra bestelling; de rest loopt automatisch.') + '<div class="ez-tiles">' + tiles + '</div>'
       + '<div class="ez-q"><b>Nu in de maak</b>' + (q || '<span class="ez-qi"><span>Nog niets</span></span>') + '</div>';
   }
   if(k === 'help'){
@@ -10074,6 +10158,7 @@ function ezAct(a){
   else if(k === 'land'){ if(CN[v]){ UI.sheet = null; UI.ezSheet = 'land:' + v; if(owned(v).length) fitCountry(v); } }
   else if(k === 'atk'){ ezAttack(v); if(ezG().atk === v || atWar(me, v)) UI.ezSheet = null; }
   else if(k === 'stop') ezStop(v, true);
+  else if(k === 'prep'){ const g = genCfg(); if(CN[v] && !atWar(me, v)){ g.prep = g.prep === v ? null : v; if(g.prep){ nat(me).auto = true; ezMsg('Opmars naar de grens met ' + cname(v) + '.', 'good'); } else ezMsg('Opmars gestopt.', ''); } }
   else if(k === 'fr') ezFriend(v);
   else if(k === 'help') ezHelp(v || null);
   else if(k === 'build') ezBuild(v);
@@ -10116,6 +10201,8 @@ document.addEventListener('click', e => {
   if(m){ sfx('tap'); ezSetMode(m.dataset.ezmode === '1'); return; }
   const b = t.closest('[data-eza]');
   if(b){ if(b.getAttribute('aria-disabled') === 'true'){ const s = b.querySelector('span'); if(s) ezMsg(s.textContent, ''); return; } sfx('tap'); ezAct(b.dataset.eza); return; }
+  const d = t.closest('#ezSheet [data-dip]');
+  if(d && G && !G.over){ if(d.getAttribute('aria-disabled') === 'true'){ ezMsg(d.title, ''); return; } sfx('tap'); dipAct(d.dataset.dip); EZ.sig = {}; EZ.advK = null; sheetSig = ''; renderAll(); return; }
   const c = t.closest('[data-ezc]');
   if(c && G && cardOpen()) ezCardAct(c.dataset.ezc);
 });
