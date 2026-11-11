@@ -3984,7 +3984,8 @@ function aiArmy(c){
   // inzet naar wat de vijand waard is: tegen een dwergstaat zonder leger marcheert niet het hele leger op.
   // Drie divisies per vijandelijke divisie, plus bezettingstroepen; de rest blijft waar hij staat (grenzen, reserve)
   { let eDiv = 0, eProv = 0; for(const e of ens){ eDiv += UCNT[e] || 0; eProv += owned(e).length; }
-    const kC = Math.min(1, Math.ceil(3*eDiv + 4 + Math.min(front.length, eProv) + 0.15*eProv) / Math.max(1, land.length));
+    let kC = Math.min(1, Math.ceil(3*eDiv + 4 + Math.min(front.length, eProv) + 0.15*eProv) / Math.max(1, land.length));
+    if((nat(c).stall || 0) >= 10) kC = 1;   // al weken vastgelopen: dan toch alles erheen
     nH *= kC; nS *= kC; if(kC < 1) farFirst = false; }
   let sT = 0, sW = 0, sO = 0;
   for(const f of alloc){ sT += threat[f]; sW += wid[f]; sO += opp[f]; }
