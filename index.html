@@ -1972,6 +1972,53 @@ body{background:#1B2224}
 #veil{background:#14150F}
 /* adviesregel: een ster in messing */
 .ez-gen::before{background:var(--accent)}
+
+/* ================= meldingen bovenaan, als een toast: nooit midden op de kaart ================= */
+/* één melding tegelijk, één regel, direct onder de balk */
+body #toasts,body.ez #toasts{top:calc(var(--hud-h) + var(--sat) + .35rem);padding:0 var(--pr) 0 var(--pl);gap:0;z-index:26}
+.toast,body.ez .toast{max-width:min(30rem, calc(100vw - 16px));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:.25rem .7rem .25rem .5rem;font-size:.8rem;pointer-events:auto;cursor:pointer}
+.toast span{overflow:hidden;text-overflow:ellipsis}
+body.ez.ez-warned #toasts{top:calc(var(--hud-h) + var(--sat) + 2.3rem)}
+@media (min-width:900px){ body:not(.ez) #toasts{top:calc(var(--hud-h) + var(--sat) + 3.1rem)} }   /* volledige stand: onder de knoppenrij */
+/* beslissingen: bovenaan in het midden, compact; ingeklapt één regel */
+#card.ntf-top{left:50%;right:auto;top:calc(var(--hud-h) + var(--sat) + .35rem);bottom:auto;transform:translateX(-50%);width:min(24rem, calc(100vw - 16px));max-height:min(60vh, 34rem);animation:none;padding:.55rem .65rem;gap:.4rem}
+#card.ntf-top.k-conf{max-height:min(70vh, 40rem)}
+body.ez.ez-warned #card.ntf-top{top:calc(var(--hud-h) + var(--sat) + 2.3rem)}
+@media (min-width:900px){ body:not(.ez) #card.ntf-top{top:calc(var(--hud-h) + var(--sat) + 3.1rem)} }
+@media (max-width:899px){ #card.ntf-top{max-height:45vh} #card.ntf-top.k-conf{max-height:62vh} }
+body:has(#card:not([hidden])) #toasts{opacity:0;pointer-events:none}
+#card .cmin{position:absolute;right:.35rem;top:.35rem;z-index:2;display:inline-flex;align-items:center;gap:.2rem;height:1.6rem;padding:0 .3rem;border:1px solid var(--a3);border-radius:var(--r-s);background:var(--a1);color:var(--dim);cursor:pointer;font:600 .7rem var(--f-ui)}
+#card .cmin svg{width:1rem;height:1rem}
+#card .cmin i{font-style:normal;color:var(--accent)}
+#card.ntf-top:not(.k-surr):not(.k-conf):not(.k-mysurr):not(.k-nuke) .chead,#card.ntf-top:not(.k-surr):not(.k-conf):not(.k-mysurr):not(.k-nuke) .ez-ch{padding-right:2.6rem}
+#card.mini{padding:.35rem .5rem;cursor:pointer;max-height:none}
+#card.mini > :not(.chead):not(.ez-ch):not(.cmin){display:none!important}
+#card.mini .chead,#card.mini .ez-ch{padding-bottom:0;border-bottom:0}
+#card.mini .ct small{display:none}
+#card.mini .ct b,#card.mini .ez-ct{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#card.mini .eico{width:1.6rem;height:1.6rem}
+#card.mini .eico .ic{width:1rem;height:1rem}
+#card .ez-ct{font-size:.95rem}
+#card .ez-cp{font-size:.82rem;line-height:1.3}
+#card .ez-cadv{padding:.4rem;gap:.35rem}
+#card .chead{padding-bottom:.4rem}
+/* groot moment (als het aangezet is): ook bovenaan */
+#fxjm{place-items:start center;padding:calc(var(--hud-h) + var(--sat) + 3rem) 16px 0}
+
+/* ================= volledige stand: minder tekst en minder beeld ================= */
+#pausetag{display:none!important}   /* de Start/Pauze-knop laat de stand al zien */
+#clock #playBtn.pulse{animation:none}
+.btn.two small,.fsb small{display:none}   /* tweede regel: in de tooltip */
+.btn.two{min-height:var(--ctl)}
+.copt small{font-size:.74rem}
+p.help.fux-long{display:none} p.help.fux-long.fux-open{display:block}
+.fux-i{display:inline-grid;place-items:center;width:1.1rem;height:1.1rem;margin:.2rem 0;padding:0;border:1px solid var(--a3);border-radius:50%;background:none;color:var(--dim);font:600 .7rem var(--f-ui);cursor:pointer}
+.fux-i:hover{color:var(--accent);border-color:var(--accent)}
+/* eerste stappen: vier kleine iconen met een vinkje, geen brede strook over de kaart */
+.fsrow{gap:.25rem;flex-wrap:nowrap}
+.fsrow .fst b{font-size:.72rem}
+.fsb{min-height:calc(var(--ctl) - .2rem);padding:.15rem .45rem;font-size:.72rem}
+@media (max-width:899px){ .fsb span{display:none} .fsb{padding:.2rem .4rem} }
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -3356,12 +3403,22 @@ function playerDeal(e, kind){
 function queueCard(cd){
   G.cards ||= [];
   if(G.cards.some(x => x.k === cd.k && x.e === cd.e)) return;
-  cd.day = G.day; G.cards.push(cd);
+  cd.day = G.day; ntfAdd(cd);
   sfx(cd.k === 'mysurr' ? 'lose' : 'card');
-  if(!G.paused){ G.paused = true; G.cardPause = true; }
   cardSig = '';
 }
 const cardOpen = () => !!(G && G.cards && G.cards.length);
+/* ---- beslissingen bovenaan als een melding: alleen wat dringend is pauzeert en klapt open; de rest staat als één regel bovenaan ---- */
+// dringend: een vijand capituleert (en de conferentie), je eigen capitulatie, bevestiging van een kernaanval
+const ntfUrg = cd => !!cd && !cd.dip && (cd.k === 'surr' || cd.k === 'conf' || cd.k === 'mysurr' || cd.k === 'nuke');
+const cardBlock = () => cardOpen() && ntfUrg(G.cards[0]);   // houdt de rest van de interface tegen
+const NTF_TTL = 14;   // onbeantwoord na zoveel dagen = afgeslagen
+function ntfAdd(cd, front){
+  G.cards ||= [];
+  const urg = ntfUrg(cd), i = front ? 0 : urg ? G.cards.findIndex(x => !ntfUrg(x)) : -1;
+  if(i >= 0) G.cards.splice(i, 0, cd); else G.cards.push(cd);
+  if(urg && !G.paused){ G.paused = true; G.cardPause = true; }
+}
 function resolveCard(choice){
   const cd = G.cards && G.cards[0]; if(!cd) return;
   const me = G.player, e = cd.e;
@@ -3380,7 +3437,7 @@ function resolveCard(choice){
   }
   else if(T){ const r = applyTerms(T); if(r) peaceCard((cd.k === 'arm' ? 'Wapenstilstand met ' : 'Vrede met ') + cname(e), [r]); }
   else if(cd.k === 'nuke' && choice === 'yes') nukeStrike(me, cd.p);
-  if(!G.cards.length && G.cardPause){ G.cardPause = false; if(!(G.won && UI.winShown)) G.paused = false; }   // achter het eindverslag blijft het spel staan
+  if(!cardBlock() && G.cardPause){ G.cardPause = false; if(!(G.won && UI.winShown)) G.paused = false; }   // achter het eindverslag blijft het spel staan
 }
 // dagelijks: laatste verzet, overgave en volledige verovering
 function warEnds(){
@@ -4239,8 +4296,7 @@ const dipSel = () => [...UI.sel].map(unitById).filter(u => u && u.c === G.player
 function dipCard(cd){
   G.cards ||= [];
   if(G.cards.some(x => x.k === cd.k && x.x === cd.x && x.y === cd.y)) return;
-  cd.dip = 1; cd.day = G.day; G.cards.push(cd); sfx('card');
-  if(!G.paused){ G.paused = true; G.cardPause = true; }
+  cd.dip = 1; cd.day = G.day; ntfAdd(cd); sfx('card');
   cardSig = '';
 }
 function dipCardOk(cd){
@@ -5601,13 +5657,13 @@ function applyTerms(T){
 // een beslissingskaart toevoegen (vooraan als hij bij de zojuist genomen beslissing hoort)
 function pushCard(cd, front){
   G.cards ||= []; cd.day = G.day;
-  if(front) G.cards.unshift(cd); else G.cards.push(cd);
-  if(!G.paused){ G.paused = true; G.cardPause = true; }
+  ntfAdd(cd, front);
   cardSig = '';
 }
 // na het tekenen: de samenvatting van wat er getekend is en wat er meteen gebeurde
 function peaceCard(title, parts){
   if(!parts.length) return;
+  if(!SET.treatyCard){ const r = parts.reduce((a, p) => a.concat(p.lines || []), []).filter(Boolean); toast(title + (r.length ? ': ' + String(r[0]).replace(/<[^>]+>/g, '') : ''), 'good', 'treaty'); return; }
   pushCard({k:'treaty', t:title, o:parts[0].o,
     h: parts.map(p => (parts.length > 1 ? '<div class="tvn"><span class="cdot" style="background:' + colorOf(p.o) + '"></span>' + esc(cname(p.o)) + '</div>' : '') + p.html).join(''),
     r: parts.reduce((a, p) => a.concat(p.lines), [])}, true);
@@ -6937,7 +6993,7 @@ function orderMove(p){
   renderAll();
 }
 function clearSel(){ UI.sel = new Set(); UI.selAir = new Set(); }
-function togglePause(){ if(!G || G.over) return; if(cardOpen()){ toast('Neem eerst een beslissing', '', 'beslis'); return; } G.paused = !G.paused; if(!G.paused) UI.winShown = false; renderBar(); }
+function togglePause(){ if(!G || G.over) return; if(cardBlock()){ toast('Neem eerst een beslissing', '', 'beslis'); return; } G.paused = !G.paused; if(!G.paused) UI.winShown = false; renderBar(); }
 
 /* ================= tooltip ================= */
 let tipT = 0, HOVER = null;
@@ -7743,6 +7799,7 @@ function flash(col){ if(SET.fx === false) return; const f = $('flash'); f.style.
 function toast(msg, kind, key){
   if(SET.easy && G && (msg = ezSay(msg, kind, key)) == null) return;   // eenvoudige stand: meldingen in gewone taal
   if(SET.easy && G && key !== 'ez' && !ezMine(msg)){ logAdd(msg, kind, key); return; }   // nieuws over andere landen staat alleen in het logboek
+  if(G && !window.event && !ntfShow(msg, kind, key)){ logAdd(msg, kind, key); return; }   // routine en nieuws over anderen: alleen logboek
   if(logAdd(msg, kind, key)) return;   // logboek en nieuwsregel; grote gebeurtenissen krijgen een banier in plaats van een melding
   const host = $('toasts');
   if(key && toastKeys[key] && toastKeys[key].isConnected){
@@ -7756,9 +7813,27 @@ function toast(msg, kind, key){
   const icn = TK[key] || (key && key.startsWith('just') ? 'agr' : key && key.startsWith('ls') ? 'schild' : key && key.startsWith('surr') ? 'vlag' : kind === 'war' ? 'oorlog' : kind === 'good' ? 'check' : 'info');
   el.innerHTML = ic(icn) + '<span></span>'; el.lastChild.textContent = msg;
   host.appendChild(el);
-  while(host.children.length > (SET.easy && G ? 1 : 2)) host.firstChild.remove();
+  while(host.children.length > 1) host.firstChild.remove();   // één melding tegelijk
   el._t = setTimeout(() => fade(el), kind === 'war' ? 5200 : 3800);
   if(key) toastKeys[key] = el;
+}
+// welke meldingen verschijnen bovenaan? Wat de speler direct raakt; routine (productie, onderzoek, integratie, tellingen) en wat
+// tussen andere landen gebeurt gaat alleen naar het logboek. Antwoorden op een eigen klik verschijnen altijd (window.event).
+const NTF_QUIET = /gereed|geïntegreerd|ontwikkeld|Onderzoek afgerond|^Onderscheiding|^Doel behaald|zoekt.*bescherming|garandeert|sabotage|beschadigd|offensief|noodtoestand|instorten|mobilis|Mobilisatie|provincies? ingenomen|ingenomen$|veroverd\.?$|^Nieuwe (fabriek|divisie|eskader)|Eerste stappen|Welkom/i;
+function ntfShow(msg, kind, key){
+  if(typeof msg !== 'string') return true;
+  if(key === 'ez' || key === 'treaty' || key === 'beslis') return true;
+  if(NTF_QUIET.test(msg)) return false;
+  return ezMine(msg);
+}
+// minder tekst in de volledige stand: de tweede regel van een knop en lange uitlegregels gaan naar de tooltip (aanwijzen of lang drukken)
+function fuxTitles(el){
+  for(const b of el.querySelectorAll('.btn.two, .fsb')){
+    const sm = b.querySelector('small'); if(!sm) continue;
+    const t = sm.textContent.trim(); if(t && !b.title) b.title = t;
+    if(!b.getAttribute('aria-label')) b.setAttribute('aria-label', b.textContent.replace(t, '').trim() + (t ? ': ' + t : ''));
+  }
+  for(const p of el.querySelectorAll('p.help')){ const t = p.textContent.trim(); if(t.length < 70) continue; p.classList.add('fux-long'); const i = document.createElement('button'); i.type = 'button'; i.className = 'fux-i'; i.title = t; i.setAttribute('aria-label', 'Uitleg: ' + t); i.textContent = 'i'; i.onclick = ev => { ev.stopPropagation(); p.classList.toggle('fux-open'); }; p.before(i); }
 }
 function fade(el){ if(!el) return; el.classList.add('out'); setTimeout(() => el.remove(), 420); }
 
@@ -7897,7 +7972,7 @@ const FS = [
   {k:'gen', t:'Zet de generaal aan', s:'Hij regelt de rest', ic:'gen', done: () => !!nat(G.player).auto}
 ];
 const fsDone = () => FS.every(f => f.done());
-const fsOpen = () => G && !G.over && !UI.winShown && !UI.target && !UI.selAir.size && !UI.sel.size && !UI.info && !cardOpen() && !G.fsHide && G.day < 365 && !fsDone();
+const fsOpen = () => G && !G.over && !UI.winShown && !UI.target && !UI.selAir.size && !UI.sel.size && !UI.info && !cardBlock() && !G.fsHide && G.day < 365 && !fsDone();
 function fsH(){
   const n = FS.filter(f => f.done()).length;
   return '<div class="fsrow"><span class="fst"><b>Eerste stappen</b><small>' + n + '/' + FS.length + '</small></span>'
@@ -8011,7 +8086,7 @@ function renderStrip(){
   el.hidden = !h;
   if(h === stripSig || stripPress) return;
   stripSig = h;
-  el.innerHTML = h;
+  el.innerHTML = h; fuxTitles(el);
 }
 $('strip').addEventListener('pointerdown', () => { stripPress = true; });
 { const rel = () => { stripPress = false; sheetPress = false; }; addEventListener('pointerup', rel); addEventListener('pointercancel', rel); }   // een veeg om te scrollen eindigt met pointercancel, niet met pointerup
@@ -8031,7 +8106,7 @@ $('strip').addEventListener('click', async e => {
     if(a === 'introNext' && UI.intro < INTRO.length) UI.intro++;
     else { UI.intro = 0; G.paused = false; try{ localStorage.setItem('ve_intro_seen', '1'); }catch(e){} }
   }
-  else if(a === 'cont'){ UI.winShown = false; if(cardOpen()) G.cardPause = true; else G.paused = false; }
+  else if(a === 'cont'){ UI.winShown = false; if(cardBlock()) G.cardPause = true; else G.paused = false; }
   else if(a === 'cancelT'){ UI.target = null; }
   else if(a.startsWith('fs:')){
     const k = a.slice(3), me = G.player;
@@ -8334,7 +8409,7 @@ function renderSheet(){
   if(h === sheetSig || sheetPress) return;
   sheetSig = h;
   const st = el.scrollTop;
-  el.innerHTML = h; el.hidden = false; el.scrollTop = st;
+  el.innerHTML = h; fuxTitles(el); el.hidden = false; el.scrollTop = st;
 }
 $('sheet').addEventListener('pointerdown', () => { sheetPress = true; });
 $('sheet').addEventListener('change', e => {
@@ -8733,9 +8808,12 @@ function renderCard(){
   if(e && (!alive(e) || !atWar(me, e))){ G.cards.shift(); UI.conf = null; cardSig = ''; renderCard(); return; }
   if(cd.dip && !dipCardOk(cd)){ G.cards.shift(); cardSig = ''; renderCard(); return; }
   if(cd.k === 'mysurr' && !enemiesOf(me).length){ G.cards.shift(); cardSig = ''; renderCard(); return; }   // verouderde capitulatiekaart (de oorlog is al voorbij)
+  if(!ntfUrg(cd) && G.day - (cd.day || 0) > NTF_TTL){ logAdd('Niet beantwoord, vervallen: ' + (cd.dip ? 'voorstel van ' + cname(cd.x) : cd.k === 'arm' ? 'wapenstilstand met ' + cname(e) : 'aanbod van ' + cname(e)), '', 'ntfx'); resolveCard('no'); cardSig = ''; renderCard(); return; }
+  const mini = !ntfUrg(cd) && !cd.open;
+  if(G.cardPause && !cardBlock()){ G.cardPause = false; if(!(G.won && UI.winShown)) G.paused = false; }
   if(cd.k === 'conf' && !UI.conf) UI.conf = confInit(e);
   // de kaart schuift mee: het betrokken gebied komt in het vrije deel van het scherm, naast of boven de beslissing
-  { const fk = cd.k + ':' + (e || cd.o || '') + ':' + cd.day; if(UI.cardFit !== fk){ UI.cardFit = fk; if(cd.k !== 'surr') fitDeal(); } }
+  if(!mini){ const fk = cd.k + ':' + (e || cd.o || '') + ':' + cd.day; if(UI.cardFit !== fk){ UI.cardFit = fk; if(cd.k !== 'surr') fitDeal(); } }
   const head = (icon, t, sub, cls) => '<div class="chead"><span class="eico ' + (cls || '') + '">' + ic(icon) + '</span><span class="ct"><b>' + t + '</b><small>' + sub + '</small></span></div>';
   const opt = (k, icon, t, sub, cls) => '<button class="copt ' + (cls || '') + '" data-c="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
   const nm = e ? esc(cname(e)) : '';
@@ -8789,12 +8867,18 @@ function renderCard(){
     h = nukeCardH(cd, head, opt);
   }
   if(G.cards.length > 1) h += '<div class="cmore">Nog ' + (G.cards.length - 1) + (G.cards.length > 2 ? ' beslissingen' : ' beslissing') + '</div>';
+  if(!ntfUrg(cd)){   // in- en uitklappen; ingeklapt is het één regel bovenaan
+    const left = Math.max(0, NTF_TTL - (G.day - (cd.day || 0)));
+    h = '<button type="button" class="cmin" data-cmin="1" aria-expanded="' + !mini + '" title="' + (mini ? 'Openen' : 'Inklappen') + ' · vervalt over ' + left + ' d" aria-label="' + (mini ? 'Beslissing openen' : 'Beslissing inklappen') + '">' + (G.cards.length > 1 ? '<i>' + G.cards.length + '</i>' : '') + '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="' + (mini ? 'M7 9.5 12 14.5 17 9.5 18.4 10.9 12 17.3 5.6 10.9z' : 'M7 14.5 12 9.5 17 14.5 18.4 13.1 12 6.7 5.6 13.1z') + '"/></svg></button>' + h;
+  }
   if(h === cardSig) return;
-  cardSig = h; el.className = 'glass k-' + cd.k + (cd.k === 'surr' ? '' : ' dock'); el.innerHTML = h; el.hidden = false; overDirty = true;
+  cardSig = h; el.className = 'glass k-' + cd.k + ' dock ntf-top' + (mini ? ' mini' : ''); el.innerHTML = h; el.hidden = false; overDirty = true;
 }
 $('card').addEventListener('click', e => {
+  if(G && cardOpen() && !ntfUrg(G.cards[0]) && !G.cards[0].open && !e.target.closest('button')){ sfx('tap'); G.cards[0].open = true; cardSig = ''; renderCard(); return; }   // tik op de ingeklapte regel: openen
   const b = e.target.closest('button'); if(!b || !G || !cardOpen()) return;
   sfx('tap');
+  if(b.dataset.cmin){ const cd = G.cards[0]; cd.open = !cd.open; cardSig = ''; renderCard(); return; }
   const c = UI.conf;
   if(b.dataset.c) resolveCard(b.dataset.c);
   else if(c && b.dataset.cp) confPreset(c, b.dataset.cp);
@@ -8811,7 +8895,7 @@ $('card').addEventListener('click', e => {
 let endSig = '';
 function renderEnd(){
   const el = $('endcard');
-  const show = G && (G.over || (G.won && UI.winShown && !cardOpen()));   // één venster tegelijk: eerst de openstaande beslissing, dan het eindverslag
+  const show = G && (G.over || (G.won && UI.winShown && !cardBlock()));   // één venster tegelijk: eerst de openstaande beslissing, dan het eindverslag
   if(!show){ if(!el.hidden) el.hidden = true; endSig = ''; return; }
   const sc = score(), rk = rankOf(sc), best = bestOf(MAPNAME, G.player);
   const sh = Math.round(100*owned(G.player).length/PIDS.length);
@@ -8850,7 +8934,7 @@ $('endcard').addEventListener('click', e => {
     return;
   }
   else if(b.dataset.e === 'again'){ const c = G.player, d = G.diff; clearToasts(); newGame(c, d); onGameLoaded(true); }
-  else { UI.winShown = false; if(cardOpen()) G.cardPause = true; else G.paused = false; }   // doorspelen: met een open beslissing pas na die beslissing
+  else { UI.winShown = false; if(cardBlock()) G.cardPause = true; else G.paused = false; }   // doorspelen: met een open beslissing pas na die beslissing
   renderAll();
 });
 
@@ -9196,7 +9280,7 @@ function hudSheet(el){
   if(h === sheetSig || sheetPress) return true;
   sheetSig = h;
   const st = hudK === k ? el.scrollTop : 0;
-  el.innerHTML = h; el.hidden = false; el.scrollTop = st; hudK = k;
+  el.innerHTML = h; fuxTitles(el); el.hidden = false; el.scrollTop = st; hudK = k;
   return true;
 }
 function hudAct(a){
@@ -9419,9 +9503,9 @@ function renderHud(){
   if(mode !== lastMode){ if((mode === 'menu' || mode === 'pick') && !UI.pick) homeFit(mode, lastMode === 'load' || lastMode === undefined); lastMode = mode; }
   if(mode === 'load'){ if(!v.classList.contains('on') || v.classList.contains('thru')){ v.querySelector('b').textContent = 'Vesting Europa'; $('veilT').textContent = 'Kaart laden…'; v.classList.remove('thru'); v.classList.add('on'); } }
   else if(performance.now() >= veilHold) v.classList.remove('on');
-  const paused = !!(G && G.paused && !G.over), ptag = paused && !cardOpen() && !UI.intro && !UI.winShown;
+  const paused = !!(G && G.paused && !G.over), ptag = paused && !cardBlock() && !UI.intro && !UI.winShown;
   b.classList.toggle('paused', paused); b.classList.toggle('ptag', ptag); b.classList.toggle('has-sheet', !!(G && UI.sheet && !G.over));
-  b.classList.toggle('has-card', !!(G && (G.over || (G.won && UI.winShown) || (cardOpen() && G.cards[0].k !== 'conf'))));   // beslissing of eindkaart: de kaart dimt
+  b.classList.toggle('has-card', !!(G && (G.over || (G.won && UI.winShown) || (cardBlock() && G.cards[0].k !== 'conf'))));   // beslissing of eindkaart: de kaart dimt
   $('pausetag').hidden = !ptag;
   $('hud').hidden = !G;
   $('hero').hidden = !(mode === 'pick' && !UI.pick);
@@ -9483,14 +9567,14 @@ function hudKey(e){
   if(dg && (e.shiftKey || e.ctrlKey) && !e.altKey && !e.metaKey){ if(UI.sel.size){ e.preventDefault(); groupSave(+dg[1]); } return; }
   if(e.ctrlKey || e.metaKey || e.altKey) return;   // sneltoetsen van de browser met rust laten
   if(e.code === 'Space'){ e.preventDefault(); if(tn === 'BUTTON') tg.blur(); togglePause(); }
-  else if(k >= '1' && k <= '4'){ G.speed = +k; if(!cardOpen() && !UI.intro && !UI.winShown) G.paused = false; renderBar(); }   // achter het eindverslag of de Snelstart loopt het spel niet
+  else if(k >= '1' && k <= '4'){ G.speed = +k; if(!cardBlock() && !UI.intro && !UI.winShown) G.paused = false; renderBar(); }   // achter het eindverslag of de Snelstart loopt het spel niet
   else if(k === '+' || k === '='){ setSpeed(G.speed + 1); }
   else if(k === '-' || k === '_'){ setSpeed(G.speed - 1); }
   else if(k === 'Escape'){
     if(UI.target) UI.target = null;
     else if(UI.sheet){ UI.sheet = null; UI.editT = null; UI.armAct = null; }
     else if(UI.sel.size || UI.selAir.size || UI.info){ clearSel(); UI.info = null; UI.confirm = null; }
-    else if(!cardOpen() && !UI.intro && !UI.winShown) UI.sheet = 'set';
+    else if(!cardBlock() && !UI.intro && !UI.winShown) UI.sheet = 'set';
     sheetSig = ''; stripSig = null; renderAll();
   }
   else if(lk === 'm'){ const on = !(SET.sound || SET.music); setSound(on); setMusic(on); sheetSig = ''; toast(on ? 'Geluid aan' : 'Geluid uit', '', 'mute'); }
@@ -9868,7 +9952,7 @@ function ezAdvice(){
 }
 
 /* ---- de korte uitleg bij het eerste spel: de adviseur wijst aan waar je moet tikken ---- */
-function ezTutStart(){ UI.ezTut = 1; UI.ezFold = false; UI.ezSheet = null; if(G && !cardOpen()) G.paused = true; if(!EZ.loop){ EZ.loop = true; requestAnimationFrame(ezRingLoop); } }
+function ezTutStart(){ UI.ezTut = 1; UI.ezFold = false; UI.ezSheet = null; if(G && !cardBlock()) G.paused = true; if(!EZ.loop){ EZ.loop = true; requestAnimationFrame(ezRingLoop); } }
 function ezTutOff(){ UI.ezTut = 0; EZ.ring.hidden = true; }
 function ezTutEnd(done){ ezTutOff(); SET.ezTut = 1; saveSettings(); if(done) ezMsg('Uitleg afgerond. Hier verschijnt advies zodra er iets te beslissen valt.', 'good'); }
 function ezTutStep(){   // gaat vanzelf verder zodra je het gevraagde gedaan hebt
@@ -9892,7 +9976,7 @@ function ezTutSay(){
 // de aanwijzer: een pulserende ring om het echte bedieningselement (of om je land op de kaart)
 function ezRingAt(){
   const r = EZ.ring, t = UI.ezTut;
-  if(!t || !SET.easy || !G || G.over || cardOpen() || UI.sheet || hudMode() !== 'game'){ r.hidden = true; return; }
+  if(!t || !SET.easy || !G || G.over || cardBlock() || UI.sheet || hudMode() !== 'game'){ r.hidden = true; return; }
   let x, y, w, h, dot = false;
   if(t === 1){
     const a = P[CN[G.player].cap].a, s = toScreen(a[0], a[1]), sr = stage.getBoundingClientRect(), d = Math.max(64, 5 * REM);
@@ -9931,7 +10015,7 @@ function ezHud(mode){
   }
   if(UI.intro){ UI.intro = 0; ezTutStart(); }   // "Snelstart" in het menu: hier de eigen uitleg
   if(UI.sel.size || UI.selAir.size) clearSel();
-  const co = cardOpen() || !!UI.winShown;
+  const co = cardBlock() || !!UI.winShown;
   if(UI.sheet || co) UI.ezSheet = null;
   if(EZ.wasCo && !co && EZ.lastCard === 'treaty' && alive(G.player)) fitCountry(G.player);   // na een vrede: terug naar je eigen land
   EZ.wasCo = co; if(!co) EZ.lastCard = null;
@@ -10150,7 +10234,7 @@ function ezAct(a){
   if(k === 'play') togglePause();
   else if(k === 'slow') G.speed = 1;
   else if(k === 'fast') G.speed = 2;
-  else if(k === 'go'){ G.speed = 2; if(!cardOpen()) G.paused = false; }
+  else if(k === 'go'){ G.speed = 2; if(!cardBlock()) G.paused = false; }
   else if(k === 'menu'){ UI.ezSheet = null; UI.sheet = UI.sheet === 'set' ? null : 'set'; }
   else if(k === 'log'){ UI.ezSheet = null; UI.sheet = 'log'; }
   else if(k === 'sheet'){ UI.sheet = null; UI.ezSheet = UI.ezSheet === v ? null : v; }
@@ -10174,7 +10258,7 @@ function ezAct(a){
 // tik op de kaart: een eenvoudig kaartje van dat land met dezelfde keuzes
 function ezProvince(p){
   const c = G.ctrl[p], k = 'land:' + c;
-  if(cardOpen()) return;
+  if(cardBlock()) return;
   sfx('tap'); UI.sheet = null; UI.info = null;
   UI.ezSheet = UI.ezSheet === k ? null : k;
   renderAll();
@@ -10188,7 +10272,7 @@ function ezKey(e, lk, tn){
   }
   if(k === 'Tab') return true;   // Tab loopt hier gewoon langs de knoppen
   const m = {a:'atk', v:'fr', b:'build', h:'help', p:'build', d:'fr', o:'help'}[lk];
-  if(m){ if(!cardOpen() && !UI.winShown){ sfx('tap'); UI.sheet = null; UI.ezSheet = UI.ezSheet === m ? null : m; sheetSig = ''; renderAll(); } return true; }
+  if(m){ if(!cardBlock() && !UI.winShown){ sfx('tap'); UI.sheet = null; UI.ezSheet = UI.ezSheet === m ? null : m; sheetSig = ''; renderAll(); } return true; }
   if(k === 'Enter' && tn !== 'BUTTON' && tn !== 'SUMMARY'){ const b = !EZ.adv.hidden && EZ.adv.querySelector('[data-ezadv]'); if(b){ e.preventDefault(); b.click(); return true; } }
   return 'fgc'.includes(lk);   // bevelen aan een selectie bestaan hier niet
 }
