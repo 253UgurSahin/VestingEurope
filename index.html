@@ -5875,7 +5875,7 @@ function renderBase(coarse){
   outlineNear(ctx, vx0, vy0, vx1, vy1, hd, Math.max(lv, lodFor(2.5*px)));
   ctx.lineJoin = 'miter';
   for(let i = 0; i < vis.length; i++){ ctx.fillStyle = FILL[vis[i]]; ctx.fill(vp[i], 'evenodd'); }
-  if(V.k < 1.4){ terrainScale(s); for(let i = 0; i < vis.length; i++) fillTerrain(ctx, vis[i], vp[i]); }
+  if(V.k < 1.4 && !(SET.easy && G)){ terrainScale(s); for(let i = 0; i < vis.length; i++) fillTerrain(ctx, vis[i], vp[i]); }   // eenvoudige stand: effen kleuren, rustiger beeld
   if(G && SET.cb){   // eigen land: stippen, zodat je het zonder kleur herkent
     OWNPAT ||= ownPattern(); if(OWNPAT.setTransform) OWNPAT.setTransform(new DOMMatrix().scale(Q/s));
     ctx.fillStyle = OWNPAT; const me0 = G.player;
@@ -5916,7 +5916,7 @@ function paintProvinces(){
     const group = [p, ...ADJ[p]].filter(q => { const bb = BBOX[q]; return !(bb[2] < b[0]-pad || bb[0] > b[2]+pad || bb[3] < b[1]-pad || bb[1] > b[3]+pad); });
     for(const q of group){
       ctx.fillStyle = FILL[q]; ctx.fill(pathOf(q), 'evenodd');
-      if(CV.k < 1.4){ terrainScale(s); fillTerrain(ctx, q, pathOf(q)); }
+      if(CV.k < 1.4 && !(SET.easy && G)){ terrainScale(s); fillTerrain(ctx, q, pathOf(q)); }
       const c = G.ctrl[q];
       if(SET.cb && c === me){ OWNPAT ||= ownPattern(); if(OWNPAT.setTransform) OWNPAT.setTransform(new DOMMatrix().scale(Q/s)); ctx.fillStyle = OWNPAT; ctx.fill(pathOf(q), 'evenodd'); }
       if(mode === 'pol' && c !== me && atWar(me, c)){ if(!HATCH || HATCHCB !== SET.cb) HATCH = hatchPattern(); ctx.fillStyle = HATCH; ctx.fill(pathOf(q), 'evenodd'); }
@@ -6233,7 +6233,7 @@ function starPath(ctx, x, y, r){ ctx.beginPath(); for(let k = 0; k < 10; k++){ c
 function drawCities(ctx, cam, bw, bh, x0, y0, x1, y1, taken, part){
   const k = cam.k, u = REM/16;
   if(k > 2.6) return;
-  const capNames = k < 0.85, cityDots = k < 1.0, cityNames = k < 0.52, provNames = k < 0.3, m = (part ? 280 : 60)*k;   // bij deeltekenen ruim kijken: namen ernaast bepalen mee wat past
+  const ez = SET.easy && !!G, capNames = k < 0.85, cityDots = !ez && k < 1.0, cityNames = !ez && k < 0.52, provNames = !ez && k < 0.3, m = (part ? 280 : 60)*k;   // bij deeltekenen ruim kijken: namen ernaast bepalen mee wat past
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
   // namen mogen elkaar (en de landnamen) niet overlappen: wie eerst komt, staat; hoofdsteden gaan voor
   const hit = (ax, ay, bx, by) => { for(const r of taken) if(ax < r[2] && bx > r[0] && ay < r[3] && by > r[1]) return true; return false; };
@@ -6785,7 +6785,12 @@ function targetSet(){
   return tgtCache.list;
 }
 function drawHighlights(){ overDirty = true; }
-function fx(p, kind){ if(fxjFx(p, kind)) return; FX.push({p, kind, t0:performance.now()}); overDirty = true; }
+function fx(p, kind){
+  if(fxjFx(p, kind)) return;
+  // wat tussen andere landen gebeurt (bombardement, luchtlanding, bunker) blijft buiten beeld, tenzij 'Extra veel effecten' aan staat
+  if(G && kind !== 'nuke' && !fxjMore()){ const me = G.player, c = G.ctrl[p]; if(c !== me && !atWar(me, c) && !isAlly(c)) return; }
+  FX.push({p, kind, t0:performance.now()}); overDirty = true;
+}
 
 function renderOver(){
   overDirty = false;
@@ -6988,7 +6993,7 @@ function renderOver(){
     }
   }
   // --- sterren: steden die tellen voor de overgave (vijand altijd, de rest als je inzoomt) ---
-  if(G){
+  if(G && !SET.easy){
     const myWar = enemiesOf(me).length > 0;
     for(const p of STARP){
       const c = G.ctrl[p], war = c !== me && atWar(me, c);
@@ -7408,6 +7413,7 @@ function shake(){ if(SET.fx === false) return; const s = $('stage'); s.classList
 function flash(col){ if(SET.fx === false) return; const f = $('flash'); f.style.setProperty('--fc', col || 'rgba(255,94,87,.55)'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
 function toast(msg, kind, key){
   if(SET.easy && G && (msg = ezSay(msg, kind, key)) == null) return;   // eenvoudige stand: meldingen in gewone taal
+  if(SET.easy && G && key !== 'ez' && !ezMine(msg)){ logAdd(msg, kind, key); return; }   // nieuws over andere landen staat alleen in het logboek
   if(logAdd(msg, kind, key)) return;   // logboek en nieuwsregel; grote gebeurtenissen krijgen een banier in plaats van een melding
   const host = $('toasts');
   if(key && toastKeys[key] && toastKeys[key].isConnected){
@@ -7421,7 +7427,7 @@ function toast(msg, kind, key){
   const icn = TK[key] || (key && key.startsWith('just') ? 'agr' : key && key.startsWith('ls') ? 'schild' : key && key.startsWith('surr') ? 'vlag' : kind === 'war' ? 'oorlog' : kind === 'good' ? 'check' : 'info');
   el.innerHTML = ic(icn) + '<span></span>'; el.lastChild.textContent = msg;
   host.appendChild(el);
-  while(host.children.length > 3) host.firstChild.remove();
+  while(host.children.length > (SET.easy && G ? 1 : 2)) host.firstChild.remove();
   el._t = setTimeout(() => fade(el), kind === 'war' ? 5200 : 3800);
   if(key) toastKeys[key] = el;
 }
@@ -8591,7 +8597,7 @@ function logAdd(msg, kind, key){
     }
     newsSig = null;
   }
-  if(big && SET.banner !== false){ showBanner(big[1], msg, kind || big[2]); return true; }
+  if(big && SET.banner !== false && fxjBigOk(big[1])){ showBanner(big[1], msg, kind || big[2]); return true; }
   return false;
 }
 function jumpTo(p){ const [x, y] = P[p].a, m = Math.max(60, 420 / KM); fitBox(x - m, y - m, x + m, y + m, 1); }
@@ -8797,6 +8803,7 @@ function settingsH(){
     + '<label class="vol">' + ic('steun') + '<input type="range" min="0" max="1" step="0.05" value="' + SET.vol + '" data-set="vol" aria-label="Volume"></label>'
     + chk('data-set', 'cb', SET.cb, 'Kleurenblind: dikke grenzen en patronen')
     + chk('data-set2', 'fx', SET.fx !== false, 'Effecten: beweging op de kaart, confetti en schudden')
+    + chk('data-set2', 'fxmore', SET.fxmore === true, 'Extra veel effecten: ook andere landen, golven, rook en sporen')
     + chk('data-set2', 'banner', SET.banner !== false, 'Groot moment bij belangrijke gebeurtenissen')
     + chk('data-set2', 'tips', SET.tips !== false, 'Uitleg bij aanwijzen in spelstijl')
     + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>' + ezSetH();   // + speelstijl Eenvoudig / Volledig
@@ -9333,7 +9340,7 @@ function ezApply(){
   if(UI.sheet && UI.sheet !== 'set' && UI.sheet !== 'log') UI.sheet = null;
 }
 function ezSetMode(on){
-  SET.easy = !!on; saveSettings();
+  SET.easy = !!on; saveSettings(); baseDirty = true;   // de kaart tekent in de eenvoudige stand rustiger
   UI.ezSheet = null; UI.ezFull = false; ezTutOff();
   if(G && !G.over && on) ezApply();
   if(!G && !UI.dailyKey) UI.diff = on ? 0 : 1;   // landkeuze: Eenvoudig begint op Makkelijk
@@ -9479,7 +9486,7 @@ function ezBuild(k){
 function ezAdvice(){
   const me = G.player, n = nat(me), z = ezG(), ens = enemiesOf(me);
   // wachten: de tijd moet lopen (Start), of mag sneller
-  const wait = t => G.paused ? {t:t + ' Druk op Start.', b:'Start', a:'play'} : G.speed < 3 ? {t, b:'Sneller', a:'go'} : {t};
+  const wait = t => G.paused ? {t:t + ' Druk op Start.', b:'Start', a:'play'} : G.speed < 2 ? {t, b:'Sneller', a:'go'} : {t};
   const busy = !!(n.q[0] && (ITEMS[n.q[0].k] || {}).kind === 'unit' && n.q[0].ez);
   const soldiers = t => busy ? wait(t + ' Er komen nieuwe soldaten aan.') : ezCanBuild('inf') ? wait(t + ' Je legers doen hun best.') : {t:t + ' Bouw snel meer soldaten!', b:'Bouw soldaten', a:'build:inf'};
   if(ens.length){
@@ -9638,7 +9645,7 @@ function ezTopR(){
   ezPut(ch[2], 'stats', '<span class="ez-stat">' + ezIc('leger') + '<b>' + divs + '</b><small>' + (divs === 1 ? 'leger' : 'legers') + '</small></span><span class="ez-stat">' + ezIc('fab') + '<b>' + fabs + '</b><small>' + (fabs === 1 ? 'fabriek' : 'fabrieken') + '</small></span>');
   ezPut(ch[3], 'date', '<b>Dag ' + Math.floor(G.day) + '</b><small>jaar ' + (Math.floor(G.day / 365) + 1) + '</small>');
   ezPut(ch[4], 'clock', '<button type="button" class="kbtn big ez-play ' + (run ? 'gold' : 'go ez-blink') + '" data-eza="play" aria-label="' + (run ? 'Pauze: zet de tijd stil' : 'Start: laat de tijd lopen') + '">' + ezIc(run ? 'pauze' : 'speel') + '<span>' + (run ? 'Pauze' : 'Start') + '</span></button>'
-    + '<span class="ez-spds" role="group" aria-label="Hoe snel de tijd loopt"><button type="button" class="kbtn ez-spd ' + (G.speed < 3 ? 'gold' : 'ghost') + '" data-eza="slow" aria-pressed="' + (G.speed < 3) + '">Langzaam</button><button type="button" class="kbtn ez-spd ' + (G.speed >= 3 ? 'gold' : 'ghost') + '" data-eza="fast" aria-pressed="' + (G.speed >= 3) + '">Snel</button></span>');
+    + '<span class="ez-spds" role="group" aria-label="Hoe snel de tijd loopt"><button type="button" class="kbtn ez-spd ' + (G.speed < 2 ? 'gold' : 'ghost') + '" data-eza="slow" aria-pressed="' + (G.speed < 2) + '">Langzaam</button><button type="button" class="kbtn ez-spd ' + (G.speed >= 2 ? 'gold' : 'ghost') + '" data-eza="fast" aria-pressed="' + (G.speed >= 2) + '">Snel</button></span>');
   // waarschuwingen in gewone taal: je oorlogen, een geplande aanval en wat er echt misgaat
   const z = ezG(), w = [], ens = enemiesOf(me);
   for(const e of ens.slice(0, 3)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + e + '">' + ezIc('zwaard') + '<span>Oorlog met ' + ezNm(e) + ': ' + ezWarTxt(e) + '</span></button>');
@@ -9768,8 +9775,8 @@ function ezAct(a){
   const me = G.player, i = a.indexOf(':'), k = i < 0 ? a : a.slice(0, i), v = i < 0 ? '' : a.slice(i + 1);
   if(k === 'play') togglePause();
   else if(k === 'slow') G.speed = 1;
-  else if(k === 'fast') G.speed = 3;
-  else if(k === 'go'){ G.speed = 3; if(!cardOpen()) G.paused = false; }
+  else if(k === 'fast') G.speed = 2;
+  else if(k === 'go'){ G.speed = 2; if(!cardOpen()) G.paused = false; }
   else if(k === 'menu'){ UI.ezSheet = null; UI.sheet = UI.sheet === 'set' ? null : 'set'; }
   else if(k === 'log'){ UI.ezSheet = null; UI.sheet = 'log'; }
   else if(k === 'sheet'){ UI.sheet = null; UI.ezSheet = UI.ezSheet === v ? null : v; }
@@ -10002,6 +10009,13 @@ const EZ_SAY = [
 const EZ_WORDS = [[/\bdivisies\b/g, 'legers'], [/\bdivisie\b/g, 'leger'], [/\bDivisie\b/g, 'Leger'], [/\bprovincies\b/g, 'gebieden'], [/\bprovincie\b/g, 'gebied'], [/\bcapituleert\b/g, 'geeft zich over'], [/\boorlogssteun\b/gi, 'de moed van je volk'],
   [/\bagressie\b/gi, 'boosheid van andere landen'], [/\bbondgenootschap\b/gi, 'vriendschap'], [/\bbondgenoten\b/g, 'vrienden'], [/\bbondgenoot\b/g, 'vriend'], [/\bniet-aanvalsverdrag\b/gi, 'afspraak om niet aan te vallen'], [/\beskaders\b/g, 'groepen vliegtuigen'], [/\beskader\b/g, 'groep vliegtuigen'],
   [/\blend-lease\b/gi, 'hulp'], [/\bherstelbetalingen\b/gi, 'betalingen'], [/\bwapenstilstand\b/g, 'stoppen met vechten'], [/\bbevelpunten\b/g, 'punten']];
+// gaat deze melding over de speler (of over een land waarmee hij in oorlog of bevriend is)?
+function ezMine(msg){
+  if(typeof msg !== 'string' || /\b(je|jij|jou|jouw|jullie)\b/i.test(msg)) return true;
+  const me = G.player; if(msg.includes(cname(me))) return true;
+  for(const c of CIDS) if(c !== me && (atWar(me, c) || isAlly(c)) && msg.includes(cname(c))) return true;
+  return false;
+}
 function ezSay(msg, kind, key){
   if(key === 'ez' || typeof msg !== 'string') return msg;
   if(key === 'dip' || key === 'odds' || key === 'sel' || key === 'fs') return null;   // de eenvoudige stand zegt dit zelf, of het hoort bij bediening die hier niet bestaat
@@ -10009,7 +10023,7 @@ function ezSay(msg, kind, key){
     if(!re.test(msg)) continue;
     if(to == null) return null;
     const m = re.exec(msg), t = ezDot(to.replace(/\$(\d)/g, (_, i) => m[+i] || '')).replace(' helpt ' + cname(G.player) + ' tegen ', ' helpt jou tegen ');
-    if(big && SET.banner !== false){ logAdd(t, kind, key); showBanner(big, t, kind === 'war' ? 'war' : 'good'); return null; }
+    if(big && SET.banner !== false && fxjBigOk(big)){ logAdd(t, kind, key); showBanner(big, t, kind === 'war' ? 'war' : 'good'); return null; }
     return t;
   }
   let t = msg; for(const [re, to] of EZ_WORDS) t = t.replace(re, to);
@@ -10168,6 +10182,9 @@ addEventListener('pagehide', () => autosave());
 const FXJ = [], FXJ_MAX = 120, FXJ_FILL = 16;
 const fxjRM = matchMedia('(prefers-reduced-motion: reduce)');
 const fxjOn = () => SET.fx !== false;
+const fxjMore = () => SET.fxmore === true;   // standaard rustig: alleen wat de speler zelf aangaat; 'Extra veel effecten' zet de rest aan
+const fxjBigOk = h => fxjMore() || /^(Oorlog|Coalitie|Veroverd|Capitulatie)$/.test(h);   // alleen dit krijgt nog een groot moment; de rest is een gewone melding
+let fxjPlusT = 0;
 let fxjSeed = 20240607;
 const fxjRand = () => (fxjSeed = (fxjSeed * 1664525 + 1013904223) >>> 0) / 4294967296;   // eigen toeval: Math.random blijft van de simulatie
 const fxjRnd = (s, i) => { const v = Math.sin(s * 12.9898 + i * 78.233) * 43758.5453; return v - Math.floor(v); };
@@ -10185,38 +10202,39 @@ Object.assign(SIL, {duif:{p:'M2.2 9.6 5.3 8.5C6 6.6 7.9 5.8 9.7 6.6L11 8C11.5 4.
 // ---- haakjes vanuit de simulatie: allemaal begrensd, zonder beeld stapelt er niets op ----
 function fxjFx(p, kind){   // de oude ringen voor inname, verlies en nieuwe troepen neemt deze laag over
   if(!fxjOn() || (kind !== 'cap' && kind !== 'loss' && kind !== 'spawn')) return false;
-  if(kind === 'spawn' && G && P[p]){ const w = G.air[G.air.length - 1]; fxjPush({k:'pop', x:P[p].a[0], y:P[p].a[1], d:1500, ic:w && w.id === G.nid - 1 && SIL[w.t] ? w.t : 'leger'}); }
+  if(kind === 'spawn' && fxjMore() && G && P[p]){ const w = G.air[G.air.length - 1]; fxjPush({k:'pop', x:P[p].a[0], y:P[p].a[1], d:1500, ic:w && w.id === G.nid - 1 && SIL[w.t] ? w.t : 'leger'}); }
   return true;
 }
 function fxjCap(p, c, prev){   // verovering: provincie licht op, ring, vlaggetje, +1 of −1
   if(!fxjOn() || !G || !P[p] || !CN[c] || c === prev) return;
   const me = G.player, mine = c === me, lost = prev === me, a = P[p].a;
-  if(!mine && !lost && (fxjBusy() || !fxjVis(a[0], a[1], 60))) return;
-  fxjPush({k:'cap', p, x:a[0], y:a[1], d:mine || lost ? 1500 : 1000, col:colorOf(c), hi:shade(colorOf(c), 0.45), mine, lost});
-  if(CN[prev] && CN[prev].cap === p) fxjPush({k:'stars', x:a[0], y:a[1], d:1800, n:18, bad:lost});   // hoofdstad gevallen
+  if(!mine && !lost && (!fxjMore() || fxjBusy() || !fxjVis(a[0], a[1], 60))) return;
+  const nowP = performance.now(), plus = fxjMore() || nowP - fxjPlusT > 800; if(plus && (mine || lost)) fxjPlusT = nowP;
+  fxjPush({k:'cap', p, x:a[0], y:a[1], d:mine || lost ? 1300 : 1000, col:colorOf(c), hi:shade(colorOf(c), 0.45), mine:mine && plus, lost:lost && plus});
+  if(CN[prev] && CN[prev].cap === p && (mine || lost || fxjMore())) fxjPush({k:'stars', x:a[0], y:a[1], d:1800, n:18, bad:lost});   // hoofdstad gevallen
 }
 function fxjFall(c, by){   // land verslagen: sterrenregen rond de hoofdstad
   if(!fxjOn() || !G || !CN[c] || !P[CN[c].cap]) return;
   const a = P[CN[c].cap].a, me = G.player;
   if(by === me) sfx('zege');
-  if(by !== me && c !== me && (fxjBusy() || !fxjVis(a[0], a[1], 80))) return;
+  if(by !== me && c !== me && (!fxjMore() || fxjBusy() || !fxjVis(a[0], a[1], 80))) return;
   fxjPush({k:'stars', x:a[0], y:a[1], d:2300, n:by === me ? 30 : 18, big:1, bad:c === me});
 }
 function fxjBuilt(c, k, p){   // bouw klaar: icoon springt op bij de provincie
-  if(!fxjOn() || !G || c !== G.player || !P[p]) return;
+  if(!fxjOn() || !fxjMore() || !G || c !== G.player || !P[p]) return;
   fxjPush({k:'pop', x:P[p].a[0], y:P[p].a[1], d:1500, ic:k});
 }
 function fxjWar(a, b){   // oorlog verklaard: rode schokringen en zwaarden bij beide hoofdsteden
   if(!fxjOn() || !G || !CN[a] || !CN[b]) return;
   const me = G.player, inv = a === me || b === me;
-  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'war', x:q.a[0], y:q.a[1], d:1500, big:inv}); }
+  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (!fxjMore() || fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'war', x:q.a[0], y:q.a[1], d:1500, big:inv}); }
 }
 function fxjPeace(a, b){   // vrede: belletje, witte ringen en een duif bij beide hoofdsteden
   if(!G || !CN[a] || !CN[b]) return;
   const me = G.player, inv = a === me || b === me;
   if(inv) sfx('vrede');
   if(!fxjOn()) return;
-  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'peace', x:q.a[0], y:q.a[1], d:1700, big:inv}); }
+  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (!fxjMore() || fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'peace', x:q.a[0], y:q.a[1], d:1700, big:inv}); }
 }
 let FXJB = {}, fxjBG = null;   // gevechten van de vorige dag: doel → [aanvaller, verdediger]
 function fxjBattles(){   // beslissing in een gevecht: korte knal-ster
@@ -10227,7 +10245,7 @@ function fxjBattles(){   // beslissing in een gevecht: korte knal-ster
     for(const t in FXJB){
       if(cur[t] || !P[t]) continue;
       const o = FXJB[t], a = P[t].a, inv = o[0] === me || o[1] === me, won = G.ctrl[t] !== o[1];
-      if(!inv && (fxjBusy() || !fxjVis(a[0], a[1], 30))) continue;
+      if(!fxjMore() || (!inv && (fxjBusy() || !fxjVis(a[0], a[1], 30)))) continue;
       fxjPush({k:'boom', x:a[0], y:a[1], d:650, tone:!inv ? 0 : (won ? o[0] === me : o[1] === me) ? 1 : 2});
     }
   }
@@ -10293,9 +10311,10 @@ function fxjFights(ctx, u, t, calm){
     const x = b.air ? B[0] : (A[0] + B[0])/2, y = b.air ? B[1] + 12*u : (A[1] + B[1])/2;
     if((x < -40 || x > CW + 40 || y < -40 || y > CH + 40) && (B[0] < -40 || B[0] > CW + 40 || B[1] < -40 || B[1] > CH + 40)) continue;
     const mine = b.att === me || b.def === me, sd = fxjHash(b.t);
-    if(!mine && ++nOther > 24) continue;
-    if(!calm && (mine || few) && nPuff++ < 16) fxjPuffs(ctx, B[0], B[1], u, sd, mine ? 4 : 2);
-    fxjSwords(ctx, x, y, (mine ? 1 : 0.66)*u, calm ? 0.4 : t/1000*5.4 + sd, mine, '#E5484D');
+    const more = fxjMore();
+    if(!mine && (!more || ++nOther > 24)) continue;
+    if(more && !calm && (mine || few) && nPuff++ < 16) fxjPuffs(ctx, B[0], B[1], u, sd, mine ? 4 : 2);
+    fxjSwords(ctx, x, y, (mine ? 1 : 0.66)*u, calm ? 0.4 : more ? t/1000*5.4 + sd : t/1000*1.6 + sd, mine, '#E5484D');
   }
 }
 // marsspoor: wie onderweg is laat stippen achter (op afstand, niet op tijd: bij pauze komt er niets bij)
@@ -10393,13 +10412,13 @@ function fxjDraw(ctx, e, a, u, calm){
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   switch(e.k){
     case 'cap': {
-      if(!calm){   // uitdijende ring in de kleur van de nieuwe eigenaar
+      if(!calm && fxjMore()){   // uitdijende ring in de kleur van de nieuwe eigenaar
         const r = (5 + 32*fxjOut(a))*u; ctx.globalAlpha = Math.max(0, 1 - a*1.3);
         ctx.lineWidth = (3.4 - 2.2*a)*u; ctx.strokeStyle = e.hi; ctx.beginPath(); ctx.arc(x, y, r, 0, FXJ_TAU); ctx.stroke();
         ctx.lineWidth = 1*u; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, r + 2.4*u, 0, FXJ_TAU); ctx.stroke();
       }
       const up = calm ? 1 : fxjBack(a/0.26), f = 1.4*u, by = y - 11*u, fy = by - 3*f - 12*f*up, wv = calm ? 0 : Math.sin(a*30)*1.6*f;   // vlaggetje springt op (boven het fiche)
-      ctx.globalAlpha = fade(0.72);
+      ctx.globalAlpha = fxjMore() ? fade(0.72) : 0;
       ctx.strokeStyle = 'rgba(10,15,20,.9)'; ctx.lineWidth = 3.6*f; ctx.beginPath(); ctx.moveTo(x, by); ctx.lineTo(x, fy - 10*f); ctx.stroke();
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.8*f; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x + 0.9*f, fy - 9.5*f); ctx.quadraticCurveTo(x + 6.5*f, fy - 11.5*f + wv, x + 12.5*f, fy - 9*f); ctx.lineTo(x + 12.5*f, fy - 1.5*f); ctx.quadraticCurveTo(x + 6.5*f, fy - 4*f + wv, x + 0.9*f, fy - 1.5*f); ctx.closePath();
@@ -10474,7 +10493,7 @@ function fxjFrame(t){
   if(run) fxjClock += dt * (1 + 0.2*(G.speed - 1));
   for(let i = FXJ.length - 1; i >= 0; i--) if(now - FXJ[i].t0 > FXJ[i].d) FXJ.splice(i, 1);
   fxjLite = FT > 36 || FXJ.length > 60 || (!!G && G.speed === 4);   // druk of traag: minder en goedkopere effecten
-  const amb = !calm && FT < 34, busy = FXJ.length > 0 || fxjDust.length > 0 || (live && G.battles && G.battles.length > 0) || run;
+  const amb = fxjMore() && !calm && FT < 34, busy = FXJ.length > 0 || fxjDust.length > 0 || (live && G.battles && G.battles.length > 0) || run;
   if(amb) fxjSeaStep();
   if(!busy && !amb){ if(fxjDirty) clear(); return; }
   const vw = V.cx + ':' + V.cy + ':' + V.k;
@@ -10497,7 +10516,7 @@ function fxjFrame(t){
   if(nf){ ctx.globalAlpha = 1; ctx.setTransform(Q2, 0, 0, Q2, 0, 0); }
   if(!live || calm) fxjDust.length = 0;
   if(live){
-    if(!calm) fxjTrail(ctx, u, now, run);
+    if(!calm && fxjMore()) fxjTrail(ctx, u, now, run); else fxjDust.length = 0;
     if(amb) fxjFlag(ctx, t, u);
     fxjFights(ctx, u, t, calm);
   }
@@ -10568,7 +10587,7 @@ function fxjMNext(){
   el.querySelector('.fxj-ms').textContent = m.msg.startsWith(m.head + ': ') ? m.msg.slice(m.head.length + 2) : m.msg;
   el.hidden = false;
   if(!still){
-    if(mood === 'good' || mood === 'peace') fxjConfetti(mood === 'good' ? 54 : 30, innerWidth/2, innerHeight*0.36, -Math.PI/2, 2.7, 640);
+    if((mood === 'good' || mood === 'peace') && (fxjMore() || m.head === 'Veroverd')) fxjConfetti(mood === 'good' ? 54 : 30, innerWidth/2, innerHeight*0.36, -Math.PI/2, 2.7, 640);
     else if(mood === 'bad') shake();
   }
   fxjMT = setTimeout(fxjMOut, FXJQ.length ? 1400 : 2300);
@@ -10644,7 +10663,7 @@ function fxjStatus(){
     if(pv != null && Math.abs(v - pv) >= FXJ_NUM[key]) fxjNum.f[key] = {up:v > pv, t:now};
     if(pv == null || Math.abs(v - pv) >= FXJ_NUM[key]) fxjNum.v[key] = v;
     const f = fxjNum.f[key];
-    if(f && now - f.t < 700 && fxjOn()){ b.classList.add(f.up ? 'fxj-up' : 'fxj-dn'); b.style.animationDelay = (f.t - now).toFixed(0) + 'ms'; }
+    if(f && now - f.t < 700 && fxjOn() && fxjMore()){ b.classList.add(f.up ? 'fxj-up' : 'fxj-dn'); b.style.animationDelay = (f.t - now).toFixed(0) + 'ms'; }
   }
 }
 new MutationObserver(fxjStatus).observe($('status'), {childList:true});
