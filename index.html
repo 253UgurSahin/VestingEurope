@@ -1192,6 +1192,48 @@ body.has-card #stage::after{background:rgba(4,7,10,.5)}
 #flash.nuke.on{animation:flash 1.6s ease-out}
 #stage.shake.big{animation:shake .3s ease-out 4}
 @media (prefers-reduced-motion: reduce){ #flash.nuke.on{animation:none} #stage.shake.big{animation:none} }
+/* ===== effecten en spelgevoel: effectenlaag op de kaart, grote momenten, confetti, eindscherm, voelbare knoppen en getallen ===== */
+#fxj{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#fxjc{position:fixed;inset:0;width:100%;height:100%;z-index:46;pointer-events:none}
+#fxjc[hidden],#fxjm[hidden]{display:none}
+/* groot moment: rond embleem dat inveert, korte titel, één zin; vangt geen klikken op */
+#fxjm{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:0 16px 14vh;pointer-events:none;transition:opacity .18s ease, scale .18s ease}
+#fxjm.out{opacity:0;scale:.92}
+.fxj-mb{position:relative;display:grid;justify-items:center;gap:.25rem;text-align:center;max-width:min(30rem, calc(100vw - 32px));padding:1.3rem 2.2rem 1.5rem;--mc:var(--accent,#E3A23C)}
+.fxj-mb::before{content:"";position:absolute;inset:-1.8rem -2.8rem;z-index:-1;border-radius:50%;background:radial-gradient(closest-side, rgba(7,12,18,.92), rgba(7,12,18,.76) 58%, rgba(7,12,18,0))}
+#fxjm.war .fxj-mb,#fxjm.bad .fxj-mb{--mc:var(--war,#D4553F)}
+#fxjm.peace .fxj-mb{--mc:var(--go,#3FB45B)}
+.fxj-me{position:relative;display:grid;place-items:center;width:6rem;height:6rem;border-radius:50%;background:var(--mc);color:#fff;--plate:var(--mc);border:.3rem solid #fff;box-shadow:0 .35rem 0 rgba(0,0,0,.3), 0 0 0 .4rem rgba(255,255,255,.16);animation:fxj-pop .6s cubic-bezier(.2,1.5,.4,1) both}
+.fxj-me .ic{width:3.3rem;height:3.3rem;filter:drop-shadow(0 .12rem 0 rgba(0,0,0,.25))}
+.fxj-rays{position:absolute;inset:-2.4rem;z-index:-1;border-radius:50%;background:repeating-conic-gradient(from 0deg, var(--mc) 0 11deg, transparent 11deg 30deg);opacity:.5;-webkit-mask:radial-gradient(closest-side, #000 50%, transparent 100%);mask:radial-gradient(closest-side, #000 50%, transparent 100%);animation:fxj-spin 10s linear infinite}
+#fxjm.war .fxj-rays,#fxjm.bad .fxj-rays{display:none}
+.fxj-mc{position:absolute;right:-.55rem;bottom:-.35rem;width:1.9rem;height:1.9rem;border-radius:50%;border:.22rem solid #fff;box-shadow:0 .15rem 0 rgba(0,0,0,.3)}
+.fxj-mt{margin-top:.6rem;font:700 2.3rem/1.05 var(--f-ui);color:#fff;text-shadow:0 .14rem 0 rgba(0,0,0,.45);animation:fxj-rise .4s .12s ease-out both}
+.fxj-ms{font:600 1.02rem/1.3 var(--f-body);color:#EEF3F0;max-width:26rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,.6);animation:fxj-rise .4s .22s ease-out both}
+#fxjm.bad .fxj-mb{animation:fxj-shk .45s .08s ease-out}
+#fxjm.still *{animation:none!important}
+@keyframes fxj-pop{0%{scale:0;rotate:-28deg;opacity:0}55%{opacity:1}100%{scale:1;rotate:0deg;opacity:1}}
+@keyframes fxj-rise{0%{opacity:0;translate:0 .9rem}100%{opacity:1;translate:0 0}}
+@keyframes fxj-spin{to{rotate:360deg}}
+@keyframes fxj-shk{15%{translate:-7px 2px}30%{translate:6px -2px}45%{translate:-4px 1px}60%{translate:3px 0}75%{translate:-2px 0}100%{translate:0 0}}
+@media (max-width:640px){ .fxj-me{width:4.8rem;height:4.8rem} .fxj-me .ic{width:2.6rem;height:2.6rem} .fxj-mt{font-size:1.85rem} .fxj-ms{font-size:.95rem} .fxj-mb{padding:1rem 1.2rem 1.2rem} .fxj-mb::before{inset:-1.2rem -1rem} }
+/* knoppen die meegeven en getallen die opveren */
+.fxj-tap{animation:fxj-tap .28s ease-out}
+@keyframes fxj-tap{0%{scale:1}30%{scale:.92}65%{scale:1.05}100%{scale:1}}
+.hc b.fxj-up,.hc b.fxj-dn{transform-origin:0 60%;animation:fxj-num .7s ease-out both}
+.hc b.fxj-up{--nc:var(--go,#5FD07A)} .hc b.fxj-dn{--nc:var(--war,#E5604B)}
+@keyframes fxj-num{0%{scale:1;color:var(--nc)}25%{scale:1.32;color:var(--nc)}55%{scale:.96;color:var(--nc)}100%{scale:1}}
+/* eindscherm: beker of witte vlag, sterren */
+#endcard .eico.fxj-eico{position:relative;width:7rem;height:7rem;margin-top:.5rem;border-radius:50%;background:none;box-shadow:none}
+#endcard .eico.fxj-eico svg{position:relative;width:100%;height:100%;filter:drop-shadow(0 .3rem 0 rgba(0,0,0,.28));animation:fxj-pop .7s cubic-bezier(.2,1.5,.4,1) both, fxj-bob 2.8s .8s ease-in-out infinite}
+#endcard.win .eico.fxj-eico::before{content:"";position:absolute;inset:-2.2rem;border-radius:50%;background:repeating-conic-gradient(from 0deg, #FFC93C 0 11deg, transparent 11deg 30deg);opacity:.32;-webkit-mask:radial-gradient(closest-side, #000 45%, transparent 100%);mask:radial-gradient(closest-side, #000 45%, transparent 100%);animation:fxj-spin 12s linear infinite}
+.fxj-stars{display:flex;align-items:flex-end;justify-content:center;gap:.35rem;margin:.1rem 0 -.2rem}
+.fxj-stars svg{width:2.2rem;height:2.2rem;fill:rgba(255,255,255,.13);stroke:rgba(255,255,255,.3);stroke-width:1.3;stroke-linejoin:round}
+.fxj-stars svg:nth-child(2){width:2.9rem;height:2.9rem;margin-bottom:.35rem}
+.fxj-stars svg.lit{fill:#FFD23F;stroke:#fff;filter:drop-shadow(0 .15rem 0 rgba(0,0,0,.3));animation:fxj-star .5s cubic-bezier(.2,1.6,.4,1) both}
+#endcard.fxj-still .fxj-eico svg,#endcard.fxj-still .fxj-eico::before,#endcard.fxj-still .fxj-stars svg{animation:none}
+@keyframes fxj-star{0%{scale:.2;rotate:-40deg}100%{scale:1;rotate:0deg}}
+@keyframes fxj-bob{50%{translate:0 -.3rem}}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -1952,6 +1994,7 @@ function capture(p, c){
   const prev = G.ctrl[p];
   c = dipCapFor(p, c, prev);   // bevrijde provincie van een bondgenoot gaat terug naar die bondgenoot
   setCtrl(p, c);
+  fxjCap(p, c, prev);   // effect: provincie licht op, vlaggetje, +1 of −1
   if(c === G.player) fx(p, 'cap'); else if(prev === G.player) fx(p, 'loss');
   if(G.nations[prev]){
     const st = starOf(p);
@@ -2111,6 +2154,7 @@ function complete(c, k, at){
   else if(k === 'fab'){
     const tgt = at && G.ctrl[at] === c && slotFree(at) >= FAB_MIN ? at : bestFab(c);
     if(tgt){ const add = Math.min(1, slotFree(tgt)); G.fac[tgt] += FAB_ADD*add; where = ' · ' + P[tgt].n + ' (' + NF.format(facN(tgt)) + '/' + SLOTS[tgt] + ' plekken, +' + NF.format(FAB_ADD*add*0.6*yieldOf(tgt)) + ' productie per dag)'; }
+    if(tgt) fxjBuilt(c, 'fab', tgt);
   }
   else if(it.kind === 'tech'){ n.tech[it.tech] = Math.min(3, n.tech[it.tech] + 1); TPC[c] = null; }
   if(c === G.player){
@@ -2281,6 +2325,7 @@ function battles(){
   }
   if(G.player && G.battles.some(b => (b.att === G.player || b.def === G.player) && !PREVB[b.t])) sfx('battle');
   PREVB = {}; for(const b of G.battles) PREVB[b.t] = 1;
+  fxjBattles();   // effect: knal-ster waar een gevecht beslist is
   if(G.units.some(u => u.dead)){
     G.units = G.units.filter(u => !u.dead);
     for(const id of [...UI.sel]) if(!unitById(id)) UI.sel.delete(id);
@@ -2405,6 +2450,7 @@ function settle(a, b, keepA, keepB, days){
 }
 function annex(c, by){
   const n = nat(c), me = G.player;
+  fxjFall(c, by);   // effect: sterrenregen rond de hoofdstad
   dipOnFall(c);
   if(by === me && n.total) annexAE(c, occBy(me, c));
   // wie de provincies nu heeft, houdt ze voorgoed
@@ -2676,6 +2722,7 @@ function declare(a, b, joining){
     delete G.aiJust[a];
   }
   warsChanged();
+  fxjWar(a, b);
   if(a === G.player || b === G.player) baseDirty = true;
   const loud = a === G.player || b === G.player || MAPNAME === 'europe' || MAJORS.has(a) || MAJORS.has(b);
   if(b === G.player){ toast(cname(a) + (joining ? ' sluit zich aan tegen jou' : ' verklaart jou de oorlog'), 'war'); G.paused = true; shake(); flash(); sfx('war'); }
@@ -2704,6 +2751,7 @@ function makePeace(a, b, quiet){
   if(G.cards && (a === me || b === me)){ const o = a === me ? b : a; G.cards = G.cards.filter(cd => cd.e !== o); }
   warsChanged();
   dipOnPeace(a, b);   // bondgenoten die voor jou meevochten sluiten ook vrede
+  fxjPeace(a, b);
   if(a === me || b === me) baseDirty = true;
   for(const u of G.units) if(u.att && (u.c === a || u.c === b)){ const o = G.ctrl[u.att]; if(o === a || o === b){ u.att = null; u.air = false; u.path = []; } }
   for(const w of G.air) if(w.zone && (w.c === a || w.c === b)){ const o = G.ctrl[w.zone]; if(o === a || o === b) w.zone = null; }
@@ -6172,7 +6220,7 @@ function targetSet(){
   return tgtCache.list;
 }
 function drawHighlights(){ overDirty = true; }
-function fx(p, kind){ FX.push({p, kind, t0:performance.now()}); overDirty = true; }
+function fx(p, kind){ if(fxjFx(p, kind)) return; FX.push({p, kind, t0:performance.now()}); overDirty = true; }
 
 function renderOver(){
   overDirty = false;
@@ -6751,6 +6799,7 @@ function sfx(k){
   if(!SET.sound || !AC || AC.state !== 'running') return;
   const now = performance.now(); if(now - (SFX_LAST[k] || -1e9) < (SFX_MIN[k] || 100)) return; SFX_LAST[k] = now;
   const t = AC.currentTime + 0.01;
+  fxjSfx(k, t);   // extra lagen en nieuwe geluiden (blok effecten en spelgevoel)
   switch(k){
     case 'tap': tone(900, t, 0.04, 'triangle', 0.08); break;
     case 'order': tone(660, t, 0.06, 'triangle', 0.1); tone(880, t + 0.06, 0.07, 'triangle', 0.1); break;
@@ -7880,6 +7929,7 @@ function renderEnd(){
     + '<div class="ebtns2"><button class="btn sm ghost" data-e="share" title="Deel je score">' + ic('steun') + 'Deel je score</button><button class="btn sm ghost" data-e="menu">' + ic('deur') + 'Hoofdmenu</button></div>';
   if(h === endSig) return;
   endSig = h; el.className = 'glass ' + (win ? 'win' : 'lose'); el.innerHTML = h; el.hidden = false;
+  fxjEnd(el, win, sc);   // beker of witte vlag, score die optelt, sterren, confetti
 }
 $('endcard').addEventListener('click', e => {
   const b = e.target.closest('[data-e]'); if(!b) return;
@@ -7991,15 +8041,8 @@ function renderNews(){
   el.title = 'Laatste melding · klik voor het logboek (L)';
 }
 let bannerT = 0;
-function showBanner(head, msg, kind){
-  const el = $('banner');
-  el.className = kind === 'war' ? 'war' : 'good';
-  el.innerHTML = '<span class="bnk">' + ic(kind === 'war' ? 'oorlog' : 'ster') + head + '</span><span class="bnm"></span>';
-  el.lastChild.textContent = msg.startsWith(head + ': ') ? msg.slice(head.length + 2) : msg;
-  el.hidden = false; void el.offsetWidth; el.classList.add('on');
-  clearTimeout(bannerT); bannerT = setTimeout(hideBanner, 4600);
-}
-function hideBanner(){ const el = $('banner'); clearTimeout(bannerT); el.classList.remove('on'); bannerT = setTimeout(() => { el.hidden = true; }, 320); }
+function showBanner(head, msg, kind){ fxjMoment(head, msg, kind); }   // groot moment in plaats van de oude banier (blok effecten en spelgevoel)
+function hideBanner(){ fxjMClear(); const el = $('banner'); clearTimeout(bannerT); el.classList.remove('on'); el.hidden = true; }
 $('banner').addEventListener('click', () => { const L = G && G.log, e = L && L[L.length - 1]; hideBanner(); if(e){ logJump(e); renderAll(); } });
 
 /* ---- trend in de topbalk: steekproeven om de 5 dagen, het pijltje vergelijkt met ruim een maand geleden ---- */
@@ -8181,8 +8224,8 @@ function settingsH(){
   return '<div class="setrow">' + chk('data-set', 'sound', SET.sound, 'Geluidseffecten') + chk('data-set', 'music', SET.music, 'Muziek')
     + '<label class="vol">' + ic('steun') + '<input type="range" min="0" max="1" step="0.05" value="' + SET.vol + '" data-set="vol" aria-label="Volume"></label>'
     + chk('data-set', 'cb', SET.cb, 'Kleurenblind: dikke grenzen en patronen')
-    + chk('data-set2', 'fx', SET.fx !== false, 'Schudden en flitsen bij oorlog en verlies')
-    + chk('data-set2', 'banner', SET.banner !== false, 'Grote banier bij belangrijke gebeurtenissen')
+    + chk('data-set2', 'fx', SET.fx !== false, 'Effecten: beweging op de kaart, confetti en schudden')
+    + chk('data-set2', 'banner', SET.banner !== false, 'Groot moment bij belangrijke gebeurtenissen')
     + chk('data-set2', 'tips', SET.tips !== false, 'Uitleg bij aanwijzen in spelstijl')
     + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>';
 }
@@ -8686,6 +8729,524 @@ function onGameLoaded(focus){
 }
 addEventListener('visibilitychange', () => { if(document.hidden) autosave(); });
 addEventListener('pagehide', () => autosave());
+
+/* ================= effecten en spelgevoel ================= */
+// Puur beeld en geluid: niets hiervan komt in de spelstand G en niets beïnvloedt de simulatie (eigen toeval, eigen klok).
+// - #fxj: eigen canvas boven de kaart. Kortlevende effecten in kaartcoördinaten (lijst FXJ, hard begrensd), gevechten,
+//   marssporen en de levende kaart (golfjes, wolkenschaduwen, vlag op je hoofdstad). Elk beeld getekend en opgeruimd.
+// - #fxjm: grote momenten als kort toneel (wachtrij, vangt geen klikken op), #fxjc: confetti.
+// - knoppen en getallen die antwoord geven, en de extra geluiden (fxjSfx).
+// Uit met de instelling Effecten (SET.fx); bij prefers-reduced-motion alleen de rustige varianten.
+const FXJ = [], FXJ_MAX = 120, FXJ_FILL = 16;
+const fxjRM = matchMedia('(prefers-reduced-motion: reduce)');
+const fxjOn = () => SET.fx !== false;
+let fxjSeed = 20240607;
+const fxjRand = () => (fxjSeed = (fxjSeed * 1664525 + 1013904223) >>> 0) / 4294967296;   // eigen toeval: Math.random blijft van de simulatie
+const fxjRnd = (s, i) => { const v = Math.sin(s * 12.9898 + i * 78.233) * 43758.5453; return v - Math.floor(v); };
+const fxjBack = a => { a = Math.max(0, Math.min(1, a)) - 1; return 1 + a * a * (2.9 * a + 1.9); };   // uitschieten en terugveren
+const fxjOut = a => 1 - (1 - a) * (1 - a);
+const fxjVis = (x, y, m) => { if(!CW) return false; const s = toScreen(x, y); return s[0] > -m && s[0] < CW + m && s[1] > -m && s[1] < CH + m; };
+const fxjBusy = () => FXJ.length > FXJ_MAX * 0.6 || (G && G.speed === 4 && FXJ.length > FXJ_MAX * 0.3);
+function fxjPush(e){
+  const now = performance.now();
+  if(FXJ.length >= FXJ_MAX){ for(let i = FXJ.length - 1; i >= 0; i--) if(now - FXJ[i].t0 > FXJ[i].d) FXJ.splice(i, 1); while(FXJ.length >= FXJ_MAX) FXJ.shift(); }
+  e.t0 = now; e.s = fxjRand() * 97; FXJ.push(e); return e;
+}
+Object.assign(SIL, {duif:{p:'M2.2 9.6 5.3 8.5C6 6.6 7.9 5.8 9.7 6.6L11 8C11.5 4.9 13.7 2.6 17.4 1.8 16.5 4.4 16.6 6.8 17.7 8.9 19.4 9.4 20.8 10.3 21.9 11.6L18.5 12.4C17.7 15.6 15 17.7 11.6 17.7 8.1 17.7 5.5 15 5.4 11.6L5.3 10.4z'}});
+
+// ---- haakjes vanuit de simulatie: allemaal begrensd, zonder beeld stapelt er niets op ----
+function fxjFx(p, kind){   // de oude ringen voor inname, verlies en nieuwe troepen neemt deze laag over
+  if(!fxjOn() || (kind !== 'cap' && kind !== 'loss' && kind !== 'spawn')) return false;
+  if(kind === 'spawn' && G && P[p]){ const w = G.air[G.air.length - 1]; fxjPush({k:'pop', x:P[p].a[0], y:P[p].a[1], d:1500, ic:w && w.id === G.nid - 1 && SIL[w.t] ? w.t : 'leger'}); }
+  return true;
+}
+function fxjCap(p, c, prev){   // verovering: provincie licht op, ring, vlaggetje, +1 of −1
+  if(!fxjOn() || !G || !P[p] || !CN[c] || c === prev) return;
+  const me = G.player, mine = c === me, lost = prev === me, a = P[p].a;
+  if(!mine && !lost && (fxjBusy() || !fxjVis(a[0], a[1], 60))) return;
+  fxjPush({k:'cap', p, x:a[0], y:a[1], d:mine || lost ? 1500 : 1000, col:colorOf(c), hi:shade(colorOf(c), 0.45), mine, lost});
+  if(CN[prev] && CN[prev].cap === p) fxjPush({k:'stars', x:a[0], y:a[1], d:1800, n:18, bad:lost});   // hoofdstad gevallen
+}
+function fxjFall(c, by){   // land verslagen: sterrenregen rond de hoofdstad
+  if(!fxjOn() || !G || !CN[c] || !P[CN[c].cap]) return;
+  const a = P[CN[c].cap].a, me = G.player;
+  if(by === me) sfx('zege');
+  if(by !== me && c !== me && (fxjBusy() || !fxjVis(a[0], a[1], 80))) return;
+  fxjPush({k:'stars', x:a[0], y:a[1], d:2300, n:by === me ? 30 : 18, big:1, bad:c === me});
+}
+function fxjBuilt(c, k, p){   // bouw klaar: icoon springt op bij de provincie
+  if(!fxjOn() || !G || c !== G.player || !P[p]) return;
+  fxjPush({k:'pop', x:P[p].a[0], y:P[p].a[1], d:1500, ic:k});
+}
+function fxjWar(a, b){   // oorlog verklaard: rode schokringen en zwaarden bij beide hoofdsteden
+  if(!fxjOn() || !G || !CN[a] || !CN[b]) return;
+  const me = G.player, inv = a === me || b === me;
+  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'war', x:q.a[0], y:q.a[1], d:1500, big:inv}); }
+}
+function fxjPeace(a, b){   // vrede: belletje, witte ringen en een duif bij beide hoofdsteden
+  if(!G || !CN[a] || !CN[b]) return;
+  const me = G.player, inv = a === me || b === me;
+  if(inv) sfx('vrede');
+  if(!fxjOn()) return;
+  for(const c of [a, b]){ const q = P[CN[c].cap]; if(!q || (!inv && (fxjBusy() || !fxjVis(q.a[0], q.a[1], 40)))) continue; fxjPush({k:'peace', x:q.a[0], y:q.a[1], d:1700, big:inv}); }
+}
+let FXJB = {}, fxjBG = null;   // gevechten van de vorige dag: doel → [aanvaller, verdediger]
+function fxjBattles(){   // beslissing in een gevecht: korte knal-ster
+  if(fxjBG !== G){ fxjBG = G; FXJB = {}; }
+  const cur = {}; for(const b of G.battles) cur[b.t] = [b.att, b.def];
+  if(fxjOn()){
+    const me = G.player;
+    for(const t in FXJB){
+      if(cur[t] || !P[t]) continue;
+      const o = FXJB[t], a = P[t].a, inv = o[0] === me || o[1] === me, won = G.ctrl[t] !== o[1];
+      if(!inv && (fxjBusy() || !fxjVis(a[0], a[1], 30))) continue;
+      fxjPush({k:'boom', x:a[0], y:a[1], d:650, tone:!inv ? 0 : (won ? o[0] === me : o[1] === me) ? 1 : 2});
+    }
+  }
+  FXJB = cur;
+}
+
+// ---- de laag zelf ----
+const fxjC = document.createElement('canvas'); fxjC.id = 'fxj'; fxjC.setAttribute('aria-hidden', 'true'); stage.appendChild(fxjC);
+const fxjX = fxjC.getContext('2d');
+const FXJ_TAU = Math.PI * 2;
+function fxjStar(ctx, x, y, r, rot, n, inner){   // pad van een ster met n punten
+  ctx.beginPath();
+  for(let k = 0; k < 2*n; k++){ const a = rot - Math.PI/2 + k*Math.PI/n, rr = k % 2 ? r*(inner || 0.45) : r; ctx.lineTo(x + rr*Math.cos(a), y + rr*Math.sin(a)); }
+  ctx.closePath();
+}
+const FXJ_BLADE = new Path2D('M-1.35 3V-7.2L0 -10.4 1.35 -7.2V3z'), FXJ_GUARD = new Path2D('M-3.7 3h7.4v1.8h-7.4z'), FXJ_GRIP = new Path2D('M-1 4.8h2v3.4h-2z');
+// twee gekruiste zwaarden die tegen elkaar slaan; badge = rond schildje eronder (eigen gevechten)
+function fxjSwords(ctx, x, y, s, ph, badge, col){
+  const sn = Math.sin(ph), pu = 1 + 0.06*Math.sin(ph*0.5), ang = 0.74 + 0.2*sn;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s*pu, s*pu);
+  if(badge){
+    ctx.beginPath(); ctx.arc(0, 1.3, 12, 0, FXJ_TAU); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, 12, 0, FXJ_TAU); ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 1.9; ctx.strokeStyle = '#fff'; ctx.stroke();
+  }
+  ctx.lineJoin = 'round';
+  for(const sg of [-1, 1]){
+    ctx.save(); ctx.rotate(sg*ang); ctx.scale(1.12, 1.12); ctx.translate(0, 1.1);
+    if(!badge){ ctx.lineWidth = 2.6; ctx.strokeStyle = 'rgba(10,15,20,.85)'; ctx.stroke(FXJ_BLADE); ctx.stroke(FXJ_GUARD); ctx.stroke(FXJ_GRIP); }
+    ctx.fillStyle = '#fff'; ctx.fill(FXJ_BLADE); ctx.fillStyle = '#FFD75E'; ctx.fill(FXJ_GUARD); ctx.fillStyle = '#F1E3C4'; ctx.fill(FXJ_GRIP);
+    ctx.restore();
+  }
+  if(sn < -0.6){ ctx.fillStyle = '#FFF6C8'; fxjStar(ctx, 0, -1, 4.6*(-sn - 0.6)/0.4, ph, 4, 0.3); ctx.fill(); }   // vonk als de klingen sluiten
+  ctx.restore();
+}
+// rook en flitsen: geen lijst maar uitgerekend uit de klok (staat stil bij pauze, kan dus nooit opstapelen)
+let fxjClock = 0;
+function fxjPuffs(ctx, x, y, u, seed, n){
+  for(let i = 0; i < n; i++){
+    const T = 780 + 230*i, ph = (fxjClock + seed*611 + i*357) / T, cyc = Math.floor(ph), f = ph - cyc;
+    const ra = fxjRnd(seed + cyc, i), rb = fxjRnd(seed + cyc, i + 5), an = ra*FXJ_TAU, rad = (9 + 13*rb)*u;
+    const px = x + Math.cos(an)*rad, py = y + Math.sin(an)*rad*0.65 - 3*u;
+    if(f > 0.12){   // rookpufje stijgt op en lost op
+      const a2 = (f - 0.12)/0.88, r = (3.4 + 6*a2)*u, sx = px + 3*u*a2, sy = py - 13*u*a2;
+      ctx.globalAlpha = 0.78*(1 - a2); ctx.fillStyle = '#D9DCE0'; ctx.strokeStyle = 'rgba(30,36,44,.5)'; ctx.lineWidth = 0.9*u;
+      ctx.beginPath(); ctx.arc(sx, sy, r, 0, FXJ_TAU); ctx.arc(sx + r*0.9, sy + r*0.35, r*0.7, 0, FXJ_TAU); ctx.fill(); ctx.stroke();
+    }
+    if(f < 0.24){   // flits
+      const a1 = f/0.24, r = (5.5 + 6.5*a1)*u; ctx.globalAlpha = 1 - a1*a1;
+      ctx.fillStyle = '#FF9A3D'; fxjStar(ctx, px, py, r, ra*3, 6, 0.42); ctx.fill();
+      ctx.fillStyle = '#FFF6C8'; fxjStar(ctx, px, py, r*0.58, ra*3 + 0.5, 6, 0.42); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+const FXJH = {};
+const fxjHash = id => FXJH[id] ??= (() => { let h = 7; for(let i = 0; i < id.length; i++) h = (h*31 + id.charCodeAt(i)) % 9973; return h / 97; })();
+function fxjFights(ctx, u, t, calm){
+  const bs = G.battles; if(!bs || !bs.length) return;
+  const me = G.player, few = bs.length <= 14 && !fxjLite; let nOther = 0, nPuff = 0;   // veel gevechten of snelheid 4: alleen eigen gevechten roken
+  for(const b of bs){
+    if(!P[b.t] || !P[b.from]) continue;
+    const A = toScreen(P[b.from].a[0], P[b.from].a[1]), B = toScreen(P[b.t].a[0], P[b.t].a[1]);
+    const x = b.air ? B[0] : (A[0] + B[0])/2, y = b.air ? B[1] + 12*u : (A[1] + B[1])/2;
+    if((x < -40 || x > CW + 40 || y < -40 || y > CH + 40) && (B[0] < -40 || B[0] > CW + 40 || B[1] < -40 || B[1] > CH + 40)) continue;
+    const mine = b.att === me || b.def === me, sd = fxjHash(b.t);
+    if(!mine && ++nOther > 24) continue;
+    if(!calm && (mine || few) && nPuff++ < 16) fxjPuffs(ctx, B[0], B[1], u, sd, mine ? 4 : 2);
+    fxjSwords(ctx, x, y, (mine ? 1 : 0.66)*u, calm ? 0.4 : t/1000*5.4 + sd, mine, '#E5484D');
+  }
+}
+// marsspoor: wie onderweg is laat stippen achter (op afstand, niet op tijd: bij pauze komt er niets bij)
+const fxjDust = []; let fxjTrk = new Map();
+function fxjTrail(ctx, u, now, run){
+  if(run){
+    const nt = new Map(), gap = (G.speed === 4 ? 16 : 10)*u*V.k;
+    for(const key in GROUPS){
+      if(key.indexOf('>') < 0) continue;
+      const g = GROUPS[key]; if(!g || !g.n) continue;
+      const x = g.x/g.n, y = g.y/g.n, o = fxjTrk.get(key);
+      if(!o){ nt.set(key, [x, y]); continue; }
+      const d = Math.hypot(x - o[0], y - o[1]);
+      if(d < gap){ nt.set(key, o); continue; }
+      if(d < 5*gap && fxjDust.length < 70 && fxjVis(o[0], o[1], 20)) fxjDust.push([o[0], o[1], now]);
+      nt.set(key, [x, y]);
+    }
+    fxjTrk = nt;
+  }
+  for(let i = fxjDust.length - 1; i >= 0; i--){
+    const q = fxjDust[i], a = (now - q[2])/1400;
+    if(a >= 1){ fxjDust.splice(i, 1); continue; }
+    const s = toScreen(q[0], q[1]);
+    ctx.globalAlpha = 0.85*(1 - a*a); ctx.beginPath(); ctx.arc(s[0], s[1] + 9*u, (2.6 + 1.6*a)*u, 0, FXJ_TAU);
+    ctx.fillStyle = '#FFF3D6'; ctx.fill(); ctx.lineWidth = 1*u; ctx.strokeStyle = 'rgba(40,30,20,.7)'; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+// ---- levende kaart: golfjes op zee, wolkenschaduwen, vlag op de eigen hoofdstad ----
+let fxjSea = null, fxjCloudS = null;
+function fxjSeaStep(){   // zeepunten zoeken, een beetje per beeld (isLand is duur op de wereldkaart)
+  if(!fxjSea || fxjSea.d !== DATA){ const st = Math.max(W, H) / 46; fxjSea = {d:DATA, st, nx:Math.ceil(W/st), ny:Math.ceil(H/st), g:[], i:0}; }
+  const S = fxjSea, n = S.nx*S.ny; if(S.i >= n) return;
+  const t0 = performance.now();
+  while(S.i < n && performance.now() - t0 < 0.8){
+    const i = S.i % S.nx, j = Math.floor(S.i / S.nx), x = (i + 0.2 + 0.6*fxjRnd(i, j))*S.st, y = (j + 0.2 + 0.6*fxjRnd(j, i + 9))*S.st, d = S.st*0.45;
+    let sea = false;
+    try{ sea = !isLand(x, y, true) && !isLand(x - d, y, true) && !isLand(x + d, y, true) && !isLand(x, y - d*0.6, true) && !isLand(x, y + d*0.6, true); }catch(_){}
+    S.g[S.i++] = sea ? [x, y, fxjRnd(i*7 + 1, j*3 + 2)] : null;
+  }
+}
+function fxjWaves(ctx, t, u){
+  const S = fxjSea; if(!S) return;
+  const k = V.k, hw = CW/2*k, hh = CH/2*k, stp = Math.max(1, Math.ceil(58*u*k / S.st));   // minstens ~58 px tussen de golfjes
+  const i0 = Math.max(0, Math.floor((V.cx - hw)/S.st)), i1 = Math.min(S.nx - 1, Math.floor((V.cx + hw)/S.st)), j0 = Math.max(0, Math.floor((V.cy - hh)/S.st)), j1 = Math.min(S.ny - 1, Math.floor((V.cy + hh)/S.st));
+  const pp = [new Path2D(), new Path2D(), new Path2D()], w = 4.6*u, h = 2.1*u; let n = 0;
+  for(let j = j0 - j0 % stp; j <= j1 && n < 120; j += stp) for(let i = i0 - i0 % stp; i <= i1; i += stp){
+    const q = S.g[j*S.nx + i]; if(!q) continue;
+    const ph = (t/5600 + q[2]) % 1, al = Math.sin(Math.PI*ph); if(al < 0.2) continue;
+    const sx = (q[0] - V.cx)/k + CW/2 + (ph - 0.5)*18*u, sy = (q[1] - V.cy)/k + CH/2, p2 = pp[al > 0.8 ? 2 : al > 0.5 ? 1 : 0];
+    p2.moveTo(sx - 2*w, sy); p2.quadraticCurveTo(sx - 1.5*w, sy - h, sx - w, sy); p2.quadraticCurveTo(sx - 0.5*w, sy + h, sx, sy); p2.quadraticCurveTo(sx + 0.5*w, sy - h, sx + w, sy); p2.quadraticCurveTo(sx + 1.5*w, sy + h, sx + 2*w, sy);
+    n++;
+  }
+  ctx.lineCap = 'round'; ctx.lineWidth = 1.3*u; ctx.strokeStyle = '#fff';
+  for(let b = 0; b < 3; b++){ ctx.globalAlpha = 0.08 + 0.07*b; ctx.stroke(pp[b]); }
+  ctx.globalAlpha = 1;
+}
+function fxjCloudSprite(){
+  const c = document.createElement('canvas'); c.width = 240; c.height = 140; const x = c.getContext('2d');
+  for(const [cx, cy, r] of [[70, 80, 46], [118, 62, 58], [166, 82, 46], [122, 92, 50], [94, 60, 38]]){
+    const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, 'rgba(0,8,18,.46)'); g.addColorStop(0.6, 'rgba(0,8,18,.24)'); g.addColorStop(1, 'rgba(0,8,18,0)');
+    x.fillStyle = g; x.fillRect(cx - r, cy - r, 2*r, 2*r);
+  }
+  return c;
+}
+function fxjClouds(ctx, t){
+  fxjCloudS ||= fxjCloudSprite();
+  const k = V.k, cwm = Math.max(1300 / KM, W*0.11), chm = cwm*140/240, span = W + 2*cwm;
+  ctx.globalAlpha = 0.27;
+  for(let i = 0; i < 5; i++){
+    const mx = ((fxjRnd(i, 3)*span + t*0.001*cwm/34*(0.75 + 0.5*fxjRnd(i, 5))) % span) - cwm, my = (-0.05 + 0.95*fxjRnd(i, 11))*H;
+    const sx = (mx - V.cx)/k + CW/2, sy = (my - V.cy)/k + CH/2, w = cwm/k, h = chm/k;
+    if(sx > CW || sy > CH || sx + w < 0 || sy + h < 0) continue;
+    ctx.drawImage(fxjCloudS, sx, sy, w, h);
+  }
+  ctx.globalAlpha = 1;
+}
+function fxjFlag(ctx, t, u){
+  const me = G.player, cp = CN[me] && CN[me].cap; if(!cp || !P[cp] || G.ctrl[cp] !== me) return;
+  const s = toScreen(P[cp].a[0], P[cp].a[1]), x = s[0] - 1*u, y = s[1] - 8*u;
+  if(x < -30 || x > CW + 30 || y < -10 || y > CH + 40) return;
+  const top = y - 19*u, w1 = Math.sin(t/270)*1.5*u, w2 = Math.sin(t/270 - 1.5)*1.9*u;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = 'rgba(10,15,20,.85)'; ctx.lineWidth = 3.4*u; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top - 1.5*u); ctx.stroke();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.7*u; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 0.9*u, top - 0.5*u); ctx.bezierCurveTo(x + 5*u, top - 2.5*u + w1, x + 9*u, top + 1.5*u + w2, x + 14*u, top - 0.5*u + w2*0.6);
+  ctx.lineTo(x + 14*u, top + 8*u + w2*0.6); ctx.bezierCurveTo(x + 9*u, top + 10*u + w2, x + 5*u, top + 6*u + w1, x + 0.9*u, top + 8*u); ctx.closePath();
+  ctx.fillStyle = colorOf(me); ctx.fill(); ctx.lineWidth = 1.3*u; ctx.strokeStyle = '#fff'; ctx.stroke();
+}
+// ---- één effect tekenen; a = voortgang 0..1, u = schermpixels per fiche-eenheid, calm = rustige variant ----
+function fxjDraw(ctx, e, a, u, calm){
+  const s = toScreen(e.x, e.y), x = s[0], y = s[1], m = (e.k === 'stars' ? 200 : 70)*u;
+  if(x < -m || x > CW + m || y < -m || y > CH + m) return;
+  const fade = (from) => a > from ? 1 - (a - from)/(1 - from) : 1;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  switch(e.k){
+    case 'cap': {
+      if(!calm){   // uitdijende ring in de kleur van de nieuwe eigenaar
+        const r = (5 + 32*fxjOut(a))*u; ctx.globalAlpha = Math.max(0, 1 - a*1.3);
+        ctx.lineWidth = (3.4 - 2.2*a)*u; ctx.strokeStyle = e.hi; ctx.beginPath(); ctx.arc(x, y, r, 0, FXJ_TAU); ctx.stroke();
+        ctx.lineWidth = 1*u; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, r + 2.4*u, 0, FXJ_TAU); ctx.stroke();
+      }
+      const up = calm ? 1 : fxjBack(a/0.26), f = 1.4*u, by = y - 11*u, fy = by - 3*f - 12*f*up, wv = calm ? 0 : Math.sin(a*30)*1.6*f;   // vlaggetje springt op (boven het fiche)
+      ctx.globalAlpha = fade(0.72);
+      ctx.strokeStyle = 'rgba(10,15,20,.9)'; ctx.lineWidth = 3.6*f; ctx.beginPath(); ctx.moveTo(x, by); ctx.lineTo(x, fy - 10*f); ctx.stroke();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.8*f; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 0.9*f, fy - 9.5*f); ctx.quadraticCurveTo(x + 6.5*f, fy - 11.5*f + wv, x + 12.5*f, fy - 9*f); ctx.lineTo(x + 12.5*f, fy - 1.5*f); ctx.quadraticCurveTo(x + 6.5*f, fy - 4*f + wv, x + 0.9*f, fy - 1.5*f); ctx.closePath();
+      ctx.lineWidth = 3.4*f; ctx.strokeStyle = 'rgba(10,15,20,.9)'; ctx.stroke(); ctx.fillStyle = e.col; ctx.fill(); ctx.lineWidth = 1.4*f; ctx.strokeStyle = '#fff'; ctx.stroke();
+      if(e.mine || e.lost){   // +1 drijft omhoog, −1 in het rood
+        const ty = y - 44*u - (calm ? 0 : 24*u*fxjOut(a)), sc = calm ? 1 : 0.55 + 0.45*fxjBack(a/0.22), tx = e.mine ? '+1' : '−1';
+        ctx.globalAlpha = fade(0.62); ctx.font = '700 ' + (23*u*sc).toFixed(1) + 'px ' + FONT_UI; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.lineWidth = 5*u; ctx.strokeStyle = 'rgba(8,13,18,.9)'; ctx.strokeText(tx, x + 26*u, ty);
+        ctx.fillStyle = e.mine ? '#7BE08A' : '#FF6B5E'; ctx.fillText(tx, x + 26*u, ty);
+      }
+      break; }
+    case 'boom': {   // knal-ster bij een beslissing
+      if(calm) break;
+      const r = (6 + 15*fxjOut(a))*u, c1 = e.tone === 1 ? '#FFD75E' : e.tone === 2 ? '#FF7A5C' : '#FFE9B0';
+      ctx.globalAlpha = 1 - a*a; ctx.fillStyle = c1; fxjStar(ctx, x, y, r, e.s, 8, 0.5); ctx.fill();
+      ctx.lineWidth = 1.2*u; ctx.strokeStyle = 'rgba(10,15,20,.55)'; ctx.stroke();
+      ctx.fillStyle = '#fff'; fxjStar(ctx, x, y, r*0.52, e.s + 0.4, 8, 0.5); ctx.fill();
+      ctx.strokeStyle = c1; ctx.lineWidth = 1.8*u; ctx.beginPath();
+      for(let i = 0; i < 6; i++){ const an = e.s + i*FXJ_TAU/6, r0 = r*1.15, r1 = r0 + 7*u*(1 - a); ctx.moveTo(x + r0*Math.cos(an), y + r0*Math.sin(an)); ctx.lineTo(x + r1*Math.cos(an), y + r1*Math.sin(an)); }
+      ctx.stroke();
+      break; }
+    case 'stars': {   // sterrenregen: hoofdstad gevallen of land verslagen
+      const ts = a*e.d/1000, col = e.bad ? '#FF7A5C' : '#FFD75E', R = e.big ? 1.35 : 1;
+      if(calm){ ctx.globalAlpha = fade(0.5); ctx.fillStyle = col; fxjStar(ctx, x, y - 16*u, 9*u*R, 0, 5); ctx.fill(); ctx.lineWidth = 1.4*u; ctx.strokeStyle = '#fff'; ctx.stroke(); break; }
+      for(let i = 0; i < 2; i++){ const b = a*1.5 - i*0.22; if(b <= 0 || b >= 1) continue; ctx.globalAlpha = (1 - b)*0.9; ctx.lineWidth = (3 - i)*u; ctx.strokeStyle = i ? '#fff' : col; ctx.beginPath(); ctx.arc(x, y, (8 + 62*R*fxjOut(b))*u, 0, FXJ_TAU); ctx.stroke(); }
+      ctx.lineWidth = 1*u; ctx.strokeStyle = '#fff'; ctx.fillStyle = col;
+      for(let i = 0; i < e.n; i += fxjLite ? 2 : 1){
+        const r1 = fxjRnd(e.s, i), r2 = fxjRnd(e.s, i + 40), r3 = fxjRnd(e.s, i + 80), dl = r3*0.25, tt = ts - dl*(e.big ? 1.6 : 0.6); if(tt <= 0) continue;
+        const an = -Math.PI/2 + (r1 - 0.5)*(e.big ? 4.6 : 3.2), v = (70 + 95*r2)*R*u, px = x + Math.cos(an)*v*tt, py = y + Math.sin(an)*v*tt + 85*u*tt*tt;
+        ctx.globalAlpha = Math.max(0, Math.min(1, 1.25 - tt/(e.d/1000)*1.25));
+        fxjStar(ctx, px, py, (4.6 + 4.6*r3)*u*R*(0.75 + 0.25*Math.sin(tt*13 + i)), tt*(r1 - 0.5)*9, e.bad ? 3 : 5, e.bad ? 0.3 : 0.45); ctx.fill(); ctx.stroke();
+      }
+      break; }
+    case 'pop': {   // bouw klaar: rond groen schildje met icoon springt op
+      const up = calm ? 1 : fxjBack(a/0.24), sc = calm ? 1 : 0.4 + 0.6*fxjBack(a/0.2), py = y - 8*u - 24*u*up - (calm ? 0 : 6*u*a), r = 12.5*u*sc;
+      ctx.globalAlpha = fade(0.7);
+      ctx.beginPath(); ctx.arc(x, py + 1.4*u, r, 0, FXJ_TAU); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x, py, r, 0, FXJ_TAU); ctx.fillStyle = '#3FB45B'; ctx.fill(); ctx.lineWidth = 1.9*u; ctx.strokeStyle = '#fff'; ctx.stroke();
+      drawSil(ctx, e.ic, x, py, 16*u*sc, '#3FB45B', '#fff');
+      if(!calm && a < 0.45){ const b = a/0.45; ctx.globalAlpha = 1 - b; ctx.fillStyle = '#FFF2B0'; for(let i = 0; i < 3; i++){ const an = -2.4 + i*0.9; fxjStar(ctx, x + Math.cos(an)*(r + 9*u*b), py + Math.sin(an)*(r + 9*u*b), 3*u*(1 - b*0.5), b*3, 4, 0.34); ctx.fill(); } }
+      break; }
+    case 'war': case 'peace': {   // schokringen en een schildje dat inveert
+      const war = e.k === 'war', col = war ? '#E5484D' : '#FFFFFF', R = e.big ? 1 : 0.7;
+      if(!calm) for(let i = 0; i < 2; i++){ const b = a*1.6 - i*0.28; if(b <= 0 || b >= 1) continue; ctx.globalAlpha = (1 - b)*0.85; ctx.lineWidth = (3.2 - i)*u*R; ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(x, y, (8 + 48*R*fxjOut(b))*u, 0, FXJ_TAU); ctx.stroke(); }
+      const sc = (calm ? 1 : fxjBack(a/0.25))*R, py = y - 24*u*R;
+      ctx.globalAlpha = fade(0.7);
+      if(war) fxjSwords(ctx, x, py, u*sc*1.1, calm ? 0.4 : a*22, true, '#E5484D');
+      else {
+        ctx.beginPath(); ctx.arc(x, py + 1.4*u, 12*u*sc, 0, FXJ_TAU); ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, py, 12*u*sc, 0, FXJ_TAU); ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 1.9*u; ctx.strokeStyle = '#3FB45B'; ctx.stroke();
+        drawSil(ctx, 'duif', x, py, 15*u*sc, '#fff', '#3FB45B');
+      }
+      break; }
+  }
+  ctx.globalAlpha = 1;
+}
+// ---- hoofdlus van de laag (eigen requestAnimationFrame: de fiches hoeven niet mee te tekenen) ----
+let fxjLast = 0, fxjDirty = false, fxjTog = 0, fxjErr = 0, fxjG = null, fxjVw = '', fxjPS = null, fxjLite = false;
+function fxjFrame(t){
+  const dt = Math.min(100, t - fxjLast); fxjLast = t;
+  fxjConfDraw(dt);
+  const now = performance.now();
+  if(G){   // eigen geluidje voor Start/Pauze en de snelheid (alleen direct na een klik of toets)
+    if(fxjPS && fxjPS.g === G && now - fxjUserT < 450){ if(G.paused !== fxjPS.p && !G.over) sfx(G.paused ? 'pauze' : 'start'); if(G.speed !== fxjPS.s) sfx('tempo'); }
+    fxjPS = {g:G, p:G.paused, s:G.speed};
+  }
+  if(fxjG !== G){ fxjG = G; FXJ.length = 0; fxjDust.length = 0; fxjTrk = new Map(); }
+  if(fxjC.width !== overC.width || fxjC.height !== overC.height){ fxjC.width = overC.width; fxjC.height = overC.height; fxjDirty = false; }
+  const ctx = fxjX, clear = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, fxjC.width, fxjC.height); fxjDirty = false; };
+  if(!fxjOn() || !DATA || !CW || UI.loading){ if(fxjDirty) clear(); FXJ.length = 0; fxjDust.length = 0; return; }
+  const calm = fxjRM.matches, run = !!G && !G.paused && !G.over, live = !!G && !G.over;
+  if(run) fxjClock += dt * (1 + 0.2*(G.speed - 1));
+  for(let i = FXJ.length - 1; i >= 0; i--) if(now - FXJ[i].t0 > FXJ[i].d) FXJ.splice(i, 1);
+  fxjLite = FT > 36 || FXJ.length > 60 || (!!G && G.speed === 4);   // druk of traag: minder en goedkopere effecten
+  const amb = !calm && FT < 34, busy = FXJ.length > 0 || fxjDust.length > 0 || (live && G.battles && G.battles.length > 0) || run;
+  if(amb) fxjSeaStep();
+  if(!busy && !amb){ if(fxjDirty) clear(); return; }
+  const vw = V.cx + ':' + V.cy + ':' + V.k;
+  if(!busy && vw === fxjVw && ++fxjTog % (isTouch ? 3 : 2)) return;   // alleen de levende kaart: op halve snelheid tekenen
+  fxjVw = vw;
+  clear(); fxjDirty = true;
+  const u = REM / 16 * (V.k > 1.8 ? 0.92 : 1.05);
+  ctx.setTransform(Q2, 0, 0, Q2, 0, 0);
+  if(amb){ fxjClouds(ctx, t); fxjWaves(ctx, t, u); }
+  // veroverde provincies lichten op (in kaartruimte)
+  let nf = 0;
+  for(const e of FXJ){
+    if(e.k !== 'cap' || nf >= (fxjLite ? 6 : FXJ_FILL)) continue;
+    const a = (now - e.t0)/e.d/0.8, bb = BBOX[e.p]; if(a >= 1 || !PATH[e.p] || !bb) continue;
+    const k = V.k; if(bb[2] < V.cx - CW/2*k || bb[0] > V.cx + CW/2*k || bb[3] < V.cy - CH/2*k || bb[1] > V.cy + CH/2*k) continue;
+    if(!nf++) ctx.setTransform(Q2/k, 0, 0, Q2/k, (CW/2 - V.cx/k)*Q2, (CH/2 - V.cy/k)*Q2);
+    ctx.globalAlpha = 0.85*(1 - a)*(calm ? 1 : 0.75 + 0.25*Math.cos(a*19)); ctx.fillStyle = e.hi; ctx.fill(PATH[e.p], 'evenodd');
+    if(!fxjLite){ ctx.globalAlpha = 1 - a; ctx.lineWidth = 2.2*k; ctx.strokeStyle = '#fff'; ctx.lineJoin = 'round'; ctx.stroke(PATH[e.p]); }
+  }
+  if(nf){ ctx.globalAlpha = 1; ctx.setTransform(Q2, 0, 0, Q2, 0, 0); }
+  if(!live || calm) fxjDust.length = 0;
+  if(live){
+    if(!calm) fxjTrail(ctx, u, now, run);
+    if(amb) fxjFlag(ctx, t, u);
+    fxjFights(ctx, u, t, calm);
+  }
+  for(const e of FXJ) fxjDraw(ctx, e, Math.max(0, (now - e.t0)/e.d), u, calm);
+}
+function fxjLoop(t){
+  try{ fxjFrame(t); }catch(err){ fxjErr++; try{ console.error('[Vesting Europa] effecten:', err); fxjX.setTransform(1, 0, 0, 1, 0, 0); fxjX.clearRect(0, 0, fxjC.width, fxjC.height); }catch(_){} }
+  if(fxjErr < 3) requestAnimationFrame(fxjLoop);   // bij herhaalde fouten stopt alleen deze laag, het spel loopt door
+}
+requestAnimationFrame(fxjLoop);
+
+// ---- confetti (eigen canvas boven alles, vangt geen klikken) ----
+const fxjCC = document.createElement('canvas'); fxjCC.id = 'fxjc'; fxjCC.setAttribute('aria-hidden', 'true'); fxjCC.hidden = true; document.body.appendChild(fxjCC);
+const fxjCX = fxjCC.getContext('2d'), FXJ_CONF = [], FXJ_CCOL = ['#FFD75E', '#FF6B5E', '#4FD06A', '#4DA3FF', '#FFFFFF', '#C77DFF'];
+function fxjConfetti(n, x, y, ang, spread, pow){   // n snippers vanaf (x, y) in schermpixels; ang = richting, spread = waaier (rad), pow = snelheid
+  if(!fxjOn() || fxjRM.matches) return;
+  const now = performance.now(), cols = G && CN[G.player] ? FXJ_CCOL.concat(colorOf(G.player)) : FXJ_CCOL;
+  for(let i = 0; i < n && FXJ_CONF.length < 260; i++){
+    const a = ang + (fxjRand() - 0.5)*spread, v = pow*(0.4 + 0.8*fxjRand());
+    FXJ_CONF.push({x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, r:fxjRand()*FXJ_TAU, vr:(fxjRand() - 0.5)*14, w:6 + 5*fxjRand(), h:4 + 4*fxjRand(), c:cols[Math.floor(fxjRand()*cols.length)], t0:now, life:1500 + 1300*fxjRand(), ph:fxjRand()*FXJ_TAU});
+  }
+}
+function fxjConfDraw(dt){
+  if(!FXJ_CONF.length){ if(!fxjCC.hidden) fxjCC.hidden = true; return; }
+  const dpr = Math.min(devicePixelRatio || 1, 2), w = innerWidth, h = innerHeight, ctx = fxjCX, now = performance.now(), s = dt/1000;
+  if(fxjCC.hidden || fxjCC.width !== Math.round(w*dpr) || fxjCC.height !== Math.round(h*dpr)){ fxjCC.width = Math.round(w*dpr); fxjCC.height = Math.round(h*dpr); fxjCC.hidden = false; }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+  for(let i = FXJ_CONF.length - 1; i >= 0; i--){
+    const c = FXJ_CONF[i], age = now - c.t0;
+    if(age > c.life || c.y > h + 30 || !fxjOn()){ FXJ_CONF.splice(i, 1); continue; }
+    c.vy += 820*s; c.vx *= 1 - 1.5*s; c.vy *= 1 - 0.9*s; c.x += (c.vx + Math.sin(age/170 + c.ph)*40)*s; c.y += c.vy*s; c.r += c.vr*s;
+    ctx.globalAlpha = Math.min(1, (c.life - age)/350);
+    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.scale(1, Math.cos(age/110 + c.ph)); ctx.fillStyle = c.c; ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h); ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+  if(!FXJ_CONF.length){ ctx.clearRect(0, 0, w, h); fxjCC.hidden = true; }
+}
+
+// ---- grote momenten: kort toneel in plaats van een banier (showBanner komt hier uit) ----
+// Rond embleem dat inveert, titel van één of twee woorden, één zin. Hooguit ~2,5 s, één tegelijk (wachtrij), weg met een tik
+// waar dan ook; het vangt zelf geen klikken op (pointer-events:none) en het spel loopt gewoon door.
+const FXJ_M = {   // kop van de melding → [titel, icoon, toon]
+  'Oorlog':['Oorlog!', 'oorlog', 'war'], 'Coalitie':['Coalitie!', 'agr', 'bad'], 'Overgave':['Overgave!', 'wit', 'good'], 'Vrede':['Vrede!', 'duif', 'peace'],
+  'Veroverd':['Veroverd!', 'vlag', 'good'], 'Capitulatie':['Verslagen', 'wit', 'bad'], 'Onderscheiding':['Onderscheiding!', 'medaille', 'good'], 'Doel behaald':['Doel behaald!', 'doel', 'good']
+};
+const fxjM = document.createElement('div'); fxjM.id = 'fxjm'; fxjM.setAttribute('role', 'status'); fxjM.hidden = true; document.body.appendChild(fxjM);
+const FXJQ = []; let fxjMCur = null, fxjMT = 0, fxjMT0 = 0, fxjMGo = false;
+function fxjMoment(head, msg, kind){
+  if(!head || (G && (G.over || (G.won && UI.winShown)))) return;   // het eindscherm is zelf het moment
+  msg = String(msg || '');
+  if((fxjMCur && fxjMCur.msg === msg) || FXJQ.some(m => m.msg === msg)) return;
+  const L = G && G.log, le = L && L[L.length - 1];
+  while(FXJQ.length >= 3) FXJQ.shift();   // nooit een rij die achterloopt op het spel
+  FXJQ.push({head, msg, kind, c:le && le.m === msg && le.c && CN[le.c] ? le.c : null});
+  if(!fxjMCur) fxjMNext();
+  else if(!fxjMGo){ clearTimeout(fxjMT); fxjMT = setTimeout(fxjMOut, Math.max(200, 1400 - (performance.now() - fxjMT0))); }   // er wacht er nog een: de huidige korter
+}
+function fxjMNext(){
+  clearTimeout(fxjMT); fxjMGo = false;
+  const m = FXJQ.shift(), el = fxjM;
+  if(!m){ fxjMCur = null; el.hidden = true; el.innerHTML = ''; return; }
+  const d = FXJ_M[m.head] || [m.head, m.kind === 'war' ? 'oorlog' : 'ster', m.kind === 'war' ? 'war' : 'good'];
+  const mood = d[2] === 'war' && !/^Je bent in oorlog/.test(m.msg) ? 'bad' : d[2], still = !fxjOn() || fxjRM.matches;
+  fxjMCur = m; fxjMT0 = performance.now();
+  el.className = mood + (d[2] === 'war' ? ' war' : '') + (still ? ' still' : '');
+  el.innerHTML = '<div class="fxj-mb"><span class="fxj-me"><i class="fxj-rays"></i>' + ic(d[1]) + (m.c ? '<i class="fxj-mc" style="background:' + colorOf(m.c) + '"></i>' : '') + '</span><b class="fxj-mt"></b><span class="fxj-ms"></span></div>';
+  el.querySelector('.fxj-mt').textContent = d[0];
+  el.querySelector('.fxj-ms').textContent = m.msg.startsWith(m.head + ': ') ? m.msg.slice(m.head.length + 2) : m.msg;
+  el.hidden = false;
+  if(!still){
+    if(mood === 'good' || mood === 'peace') fxjConfetti(mood === 'good' ? 54 : 30, innerWidth/2, innerHeight*0.36, -Math.PI/2, 2.7, 640);
+    else if(mood === 'bad') shake();
+  }
+  fxjMT = setTimeout(fxjMOut, FXJQ.length ? 1400 : 2300);
+}
+function fxjMOut(){ if(!fxjMCur || fxjMGo) return; clearTimeout(fxjMT); fxjMGo = true; fxjM.classList.add('out'); fxjMT = setTimeout(fxjMNext, 190); }
+function fxjMClear(){ FXJQ.length = 0; clearTimeout(fxjMT); fxjMCur = null; fxjMGo = false; fxjM.hidden = true; fxjM.innerHTML = ''; }
+
+// ---- eindscherm: beker of witte vlag, score die optelt, sterren, confetti (inhoud en knoppen blijven van renderEnd) ----
+const FXJ_CUP = '<svg viewBox="0 0 96 96" aria-hidden="true"><defs><linearGradient id="fxjg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFEE9C"/><stop offset=".55" stop-color="#FFC93C"/><stop offset="1" stop-color="#E8961A"/></linearGradient></defs>'
+  + '<path d="M24 24H11c0 14 6 22 17 25M72 24h13c0 14-6 22-17 25" fill="none" stroke="#E8961A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'
+  + '<path d="M22 12h52v24c0 16-11 27-26 27S22 52 22 36z" fill="url(#fxjg)"/><path d="M43 61h10v11H43z" fill="#E8961A"/><path d="M31 71h34a4 4 0 0 1 4 4v9H27v-9a4 4 0 0 1 4-4z" fill="url(#fxjg)"/>'
+  + '<path d="M48 20l4.1 8.4 9.3 1.3-6.7 6.5 1.6 9.2L48 41l-8.3 4.4 1.6-9.2-6.7-6.5 9.3-1.3z" fill="#fff" opacity=".92"/><path d="M27 16h6v20c0 7 2 12 6 17-8-3-12-9-12-17z" fill="#fff" opacity=".38"/></svg>';
+const FXJ_WFLAG = '<svg viewBox="0 0 96 96" aria-hidden="true"><ellipse cx="34" cy="86" rx="20" ry="4.5" fill="rgba(0,0,0,.28)"/><path d="M28 12v72" fill="none" stroke="#C9D3DC" stroke-width="6" stroke-linecap="round"/>'
+  + '<path d="M31 16c14-6 22 6 37 1 6-2 9-1 11 0v34c-2-1-5-2-11 0-15 5-23-7-37-1z" fill="#fff" stroke="#C9D3DC" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+const FXJ_STARP = 'M12 2.2l2.9 6.2 6.8.8-5 4.7 1.3 6.7L12 17.3l-6 3.3 1.3-6.7-5-4.7 6.8-.8z';
+let fxjEndKey = '';
+function fxjEnd(el, win, sc){
+  fxjMClear();
+  const ico = el.querySelector('.eico'), es = el.querySelector('.escore'), key = (win ? 'w' : 'l') + (G ? G.day + ':' + G.player : '') + ':' + sc, first = key !== fxjEndKey;
+  fxjEndKey = key;
+  if(ico){ ico.classList.add('fxj-eico'); ico.innerHTML = win ? FXJ_CUP : FXJ_WFLAG; }
+  const stars = sc >= 1400 ? 3 : sc >= 800 ? 2 : 1; let row = null;
+  if(win && es){
+    row = document.createElement('div'); row.className = 'fxj-stars'; row.setAttribute('role', 'img'); row.setAttribute('aria-label', stars + ' van de 3 sterren');
+    row.innerHTML = [0, 1, 2].map(() => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + FXJ_STARP + '"/></svg>').join(''); es.before(row);
+  }
+  const light = i => { const s = row && row.children[i]; if(s) s.classList.add('lit'); };
+  if(!first || !fxjOn() || fxjRM.matches){ el.classList.add('fxj-still'); for(let i = 0; i < stars; i++) light(i); return; }
+  if(win){ fxjConfetti(70, 0, innerHeight, -Math.PI/3, 0.8, 1250); fxjConfetti(70, innerWidth, innerHeight, -2*Math.PI/3, 0.8, 1250); }
+  const tn = es && es.firstChild && es.firstChild.nodeType === 3 ? es.firstChild : null, t0 = performance.now(), dur = clamp(sc*1.5, 450, 1300);
+  const after = i => {
+    if(!el.isConnected || el.hidden || !row || !row.isConnected) return;
+    if(i < stars){ light(i); sfx('ting'); setTimeout(after, 300, i + 1); }
+    else fxjConfetti(90, innerWidth/2, innerHeight*0.3, -Math.PI/2, 3.4, 760);
+  };
+  const step = () => {
+    if(!tn || !tn.isConnected || el.hidden){ return; }
+    const a = Math.min(1, (performance.now() - t0)/dur);
+    tn.nodeValue = String(Math.round(sc*(1 - Math.pow(1 - a, 3))));
+    if(a < 1){ sfx('tel'); requestAnimationFrame(step); } else { tn.nodeValue = String(sc); setTimeout(after, 150, 0); }
+  };
+  if(tn){ tn.nodeValue = '0'; requestAnimationFrame(step); } else after(0);
+}
+
+// ---- voelbare knoppen: indrukken, tik-geluid, eigen geluid voor Start/Pauze en snelheid ----
+let fxjUserT = 0;
+addEventListener('pointerdown', e => {
+  fxjUserT = performance.now();
+  if(fxjMCur && fxjUserT - fxjMT0 > 380) fxjMOut();   // een tik waar dan ook haalt het moment weg (en doet verder gewoon zijn werk)
+  if(!fxjOn() || fxjRM.matches) return;
+  const b = e.target && e.target.closest && e.target.closest('button,.tile,.copt,.hc,summary');
+  if(!b || b.disabled) return;
+  b.classList.remove('fxj-tap'); void b.offsetWidth; b.classList.add('fxj-tap'); clearTimeout(b._fxj); b._fxj = setTimeout(() => b.classList.remove('fxj-tap'), 300);
+}, {capture:true, passive:true});
+addEventListener('click', e => {
+  fxjUserT = performance.now();
+  const b = e.target && e.target.closest && e.target.closest('button,.tile,.copt,summary,label');
+  if(!b || b.disabled) return;
+  if(b.closest('#playBtn,#speedBtn,#spdUp,#spdDn,#pausetag')){ SFX_LAST.tap = fxjUserT; return; }   // die krijgen hun eigen geluidje (zie fxjFrame)
+  sfx('tap');
+}, true);
+addEventListener('keydown', () => { fxjUserT = performance.now(); }, true);
+
+// ---- getallen in de topbalk: wat verandert veert kort op en kleurt groen of rood ----
+const FXJ_NUM = {'gebied':1, 'per dag':0.3, 'leger':1, 'lucht':1, 'score':3}, fxjNum = {g:null, v:{}, f:{}};
+function fxjStatus(){
+  const el = $('status'); if(!el || el.hidden || !G) return;
+  const now = performance.now(), fresh = fxjNum.g !== G;
+  if(fresh){ fxjNum.g = G; fxjNum.v = {}; fxjNum.f = {}; }
+  for(const c of el.querySelectorAll('.hc')){
+    const sm = c.querySelector('small'), b = c.querySelector('b'), key = sm && sm.textContent; if(!b || !(key in FXJ_NUM) || !b.firstChild) continue;
+    const v = parseFloat(String(b.firstChild.nodeValue || '').replace(/\./g, '').replace(',', '.')), pv = fxjNum.v[key]; if(isNaN(v)) continue;
+    if(pv != null && Math.abs(v - pv) >= FXJ_NUM[key]) fxjNum.f[key] = {up:v > pv, t:now};
+    if(pv == null || Math.abs(v - pv) >= FXJ_NUM[key]) fxjNum.v[key] = v;
+    const f = fxjNum.f[key];
+    if(f && now - f.t < 700 && fxjOn()){ b.classList.add(f.up ? 'fxj-up' : 'fxj-dn'); b.style.animationDelay = (f.t - now).toFixed(0) + 'ms'; }
+  }
+}
+new MutationObserver(fxjStatus).observe($('status'), {childList:true});
+
+// ---- extra geluiden (aangeroepen vanuit sfx, dus na de controle op SET.sound en de begrenzing SFX_MIN) ----
+Object.assign(SFX_MIN, {vrede:1500, zege:1500, start:120, pauze:120, tempo:70, tel:60, ting:150});
+function fxjWhoosh(t){   // zachte veeg: ruis door een banddoorlaat die omhoog en weer omlaag schuift
+  const dur = 0.3, n = Math.floor(AC.sampleRate*dur), b = AC.createBuffer(1, n, AC.sampleRate), d = b.getChannelData(0);
+  for(let i = 0; i < n; i++) d[i] = Math.random()*2 - 1;
+  const s = AC.createBufferSource(), fl = AC.createBiquadFilter(), e = AC.createGain();
+  s.buffer = b; fl.type = 'bandpass'; fl.Q.value = 1.1; fl.frequency.setValueAtTime(420, t); fl.frequency.exponentialRampToValueAtTime(2100, t + 0.14); fl.frequency.exponentialRampToValueAtTime(700, t + dur);
+  e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(0.085, t + 0.11); e.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(fl); fl.connect(e); e.connect(MASTER); s.start(t); s.stop(t + dur + 0.02);
+}
+function fxjSfx(k, t){
+  switch(k){
+    case 'order': case 'attack': fxjWhoosh(t); break;   // marsbevel
+    case 'build': tone(988, t + 0.05, 0.07, 'square', 0.03); tone(1319, t + 0.12, 0.24, 'square', 0.03); break;   // munt
+    case 'lossmin': case 'loss': tone(96, t, 0.3, 'sine', 0.2, 42); noise(t, 0.18, 0.12, 220); break;   // doffe dreun
+    case 'war': for(let i = 0; i < 10; i++) noise(t + 0.06 + i*0.05 - i*i*0.0012, 0.05, 0.03 + i*0.011, 1900); noise(t + 0.56, 0.22, 0.17, 520); tone(84, t + 0.56, 0.32, 'sine', 0.2, 48); break;   // tromgeroffel
+    case 'win': [392, 392, 392].forEach((f, i) => tone(f, t + 0.78 + i*0.11, 0.09, 'square', 0.04)); [523, 659, 784].forEach(f => tone(f, t + 1.12, 0.75, 'triangle', 0.075)); tone(262, t + 1.12, 0.75, 'square', 0.03); noise(t + 1.12, 0.5, 0.04, 6500); break;   // fanfare
+    case 'vrede': tone(1047, t, 1.3, 'sine', 0.1); tone(2094, t, 0.8, 'sine', 0.045); tone(3150, t, 0.45, 'sine', 0.02); tone(784, t + 0.32, 1.2, 'sine', 0.07); tone(1568, t + 0.32, 0.7, 'sine', 0.03); break;   // belletje
+    case 'zege': [523, 659, 784].forEach((f, i) => tone(f, t + i*0.1, 0.1, 'triangle', 0.1)); tone(1047, t + 0.3, 0.5, 'triangle', 0.11); tone(523, t + 0.3, 0.5, 'square', 0.025); break;
+    case 'start': tone(520, t, 0.06, 'triangle', 0.09); tone(780, t + 0.06, 0.1, 'triangle', 0.09); break;
+    case 'pauze': tone(700, t, 0.06, 'triangle', 0.09); tone(466, t + 0.06, 0.11, 'triangle', 0.09); break;
+    case 'tempo': { const s = G ? G.speed : 1; for(let i = 0; i < s; i++) tone(520 + 110*s, t + i*0.05, 0.035, 'square', 0.03); break; }
+    case 'tel': tone(1250, t, 0.025, 'square', 0.018); break;
+    case 'ting': tone(1568, t, 0.28, 'sine', 0.09); tone(3136, t, 0.16, 'sine', 0.03); break;
+  }
+}
 
 /* ================= hoofdlus ================= */
 let lastT = performance.now(), lastOver = 0, lastUI = 0, lastPaint = 0, overCost = 0, FT = 16;
