@@ -1196,6 +1196,226 @@ body.has-card #stage::after{background:rgba(4,7,10,.5)}
 #flash.nuke.on{animation:flash 1.6s ease-out}
 #stage.shake.big{animation:shake .3s ease-out 4}
 @media (prefers-reduced-motion: reduce){ #flash.nuke.on{animation:none} #stage.shake.big{animation:none} }
+/* ================= eenvoudige stand (body.ez): eigen balk, grote knoppen, bladen met tegels, adviseur, uitleg ================= */
+/* In deze stand verdwijnen topbalk, knoppenbalk, strook, wachtrij en waarschuwingen; de onderdelen hieronder nemen het over. */
+body.ez{--hud-h:var(--ez-top, 4.6rem);--bar-h:0rem}
+body.ez #hud,body.ez #bar,body.ez #strip,body.ez #queue,body.ez #alerts,body.ez #pausetag,body.ez #mapmodes{display:none!important}
+body.ez .toast{font-size:1rem;border-radius:var(--r-m);padding:.5rem 1rem .5rem .75rem;pointer-events:none}   /* meldingen mogen geen tik op de kaart tegenhouden */
+body.ez.ez-co #toasts{opacity:.0;pointer-events:none}
+.ez-ic{width:1.5rem;height:1.5rem;flex:none}
+.ez-face{width:2.6rem;height:2.6rem;flex:none}
+.ez-flag{display:inline-block;width:2.1rem;height:1.45rem;flex:none;border-radius:.35rem;background:var(--c,#8E9CA5);border:.14rem solid #fff;box-shadow:0 .14rem 0 rgba(0,0,0,.4);box-sizing:border-box;vertical-align:middle}
+.ez-flag.big{width:3rem;height:2.1rem;border-radius:.5rem}
+.ez-light{display:inline-flex;align-items:center;gap:.4rem;font-weight:800}
+.ez-light i{width:1rem;height:1rem;flex:none;border-radius:50%;background:currentColor;box-shadow:inset 0 -.18rem 0 rgba(0,0,0,.25), 0 0 .5rem currentColor}
+.ez-light.big i{width:1.9rem;height:1.9rem}
+.ez-light.g{color:var(--go)} .ez-light.y{color:var(--accent)} .ez-light.r{color:var(--war)}
+
+/* --- de eenvoudige balk --- */
+#ezTop{position:fixed;z-index:22;left:var(--pl);right:var(--pr);top:calc(.45rem + var(--sat));display:flex;align-items:center;gap:.45rem .7rem;flex-wrap:wrap;box-sizing:border-box;padding:.45rem .6rem;color:var(--ink);font-family:var(--f-body);
+  border-radius:var(--r-l);background:linear-gradient(var(--panel-2),var(--panel));border:.16rem solid var(--edge);box-shadow:0 .3rem 0 rgba(0,0,0,.35), 0 .7rem 1.4rem rgba(0,0,0,.35)}
+.ez-me{display:flex;align-items:center;gap:.5rem;min-width:0;flex:0 1 auto;max-width:14.5rem}
+.ez-me b{font:600 1.3rem var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ez-goal{flex:1 0 19rem;min-width:0;display:grid;gap:.12rem}
+.ez-goalbar{height:1.05rem;border-radius:999px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.16);overflow:hidden}
+.ez-goalbar i{display:block;height:100%;min-width:1rem;border-radius:999px;background:linear-gradient(#9AF0A6,var(--go));box-shadow:inset 0 -.2rem 0 rgba(0,0,0,.18);transition:width .5s ease}
+.ez-goaltxt{font:500 .98rem var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ez-goaltxt b{color:var(--accent);font-weight:700}
+.ez-stats{display:flex;gap:.4rem}
+.ez-stat,.ez-date{display:flex;align-items:center;gap:.35rem;padding:.2rem .6rem;min-height:2.5rem;box-sizing:border-box;border-radius:var(--r-m);background:rgba(0,0,0,.25);white-space:nowrap}
+.ez-stat .ez-ic{color:var(--accent)}
+.ez-stat b,.ez-date b{font:600 1.25rem var(--f-ui);font-variant-numeric:tabular-nums}
+.ez-stat small,.ez-date small{font-size:.85rem;color:var(--dim)}
+.ez-clock{display:flex;align-items:center;gap:.4rem}
+.ez-spds{display:flex;gap:.25rem}
+#ezTop .kbtn{min-height:max(44px, 2.7rem);min-width:44px}
+#ezTop .ez-play{min-height:max(48px, 3rem);min-width:7.6rem;padding:.4rem 1rem .5rem;font-size:1.25rem;border-radius:var(--r-m)}
+#ezTop .ez-spd{padding:.3rem .7rem .4rem;font-size:1rem}
+#ezTop .ez-menu{padding:.3rem .8rem .4rem;font-size:1rem}
+.ez-blink{animation:ezblink 1.1s ease-in-out infinite}
+@keyframes ezblink{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}
+.ez-warn{flex:1 1 100%;display:flex;gap:.4rem;flex-wrap:wrap}
+.ez-pill{display:inline-flex;align-items:center;gap:.4rem;min-height:max(44px, 2.3rem);padding:.2rem .8rem;border:0;border-radius:999px;font:600 .98rem var(--f-ui);color:#fff;background:var(--war-d);box-shadow:0 .16rem 0 rgba(0,0,0,.35);text-align:left}
+button.ez-pill{cursor:pointer}
+.ez-pill.gold{background:var(--accent);color:var(--accent-ink)}
+.ez-pill .ez-ic{width:1.15rem;height:1.15rem}
+
+/* --- vier grote knoppen --- */
+#ezNav{display:flex;justify-content:center;gap:.6rem}
+#ezNav .kbtn{min-width:9.2rem}
+#ezNav .kbtn.on{filter:brightness(1.15);transform:translateY(.12rem)}
+#ezNav .ez-ic{width:1.7rem;height:1.7rem}
+#ezNav .kbtn.ghost{background:linear-gradient(var(--panel-2),var(--panel));box-shadow:0 .28rem 0 rgba(0,0,0,.45), 0 .5rem .9rem rgba(0,0,0,.28)}
+
+/* --- bladen met grote tegels --- */
+#ezSheet{width:min(42rem, calc(100vw - 1rem));max-height:min(70vh, 42rem);overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:.7rem .8rem .9rem;color:var(--ink);font-family:var(--f-body);
+  border-radius:var(--r-l);background:linear-gradient(var(--panel-2),var(--panel));border:.16rem solid var(--edge);box-shadow:0 .3rem 0 rgba(0,0,0,.35), 0 1rem 2rem rgba(0,0,0,.45);animation:ezup .18s ease-out;scrollbar-width:thin}
+@keyframes ezup{from{opacity:0;transform:translateY(.8rem)}to{opacity:1;transform:none}}
+.ez-sh{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.ez-sh > b{flex:1;min-width:0;font:600 1.5rem var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ez-sh > .ez-ic{width:1.9rem;height:1.9rem;color:var(--accent)}
+.ez-x{flex:none;width:max(44px, 2.7rem);height:max(44px, 2.7rem);display:grid;place-items:center;border:0;border-radius:50%;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.12);box-shadow:0 .2rem 0 rgba(0,0,0,.3)}
+.ez-x:hover{background:var(--war);color:#fff}
+.ez-x:focus-visible,.ez-tile:focus-visible,.ez-rec:focus-visible,.ez-seg:focus-visible,.ez-chip:focus-visible,.ez-pill:focus-visible,.ez-gen:focus-visible,.ez-skip:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.ez-tip{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;padding:.4rem .8rem .4rem .5rem;border-radius:var(--r-m);background:#fff;color:#1C2440;font-weight:700;font-size:1rem;line-height:1.3}
+.ez-tip .ez-gsvg{width:2.6rem;height:2.6rem;flex:none}
+.ez-list{display:grid;gap:.5rem}
+.ez-land{display:flex;align-items:center;gap:.7rem;padding:.55rem .7rem;border-radius:var(--r-m);background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.08)}
+.ez-land > .ez-ic{width:2.2rem;height:2.2rem;color:var(--accent)}
+#ezSheet > .ez-land{margin-bottom:.5rem}
+.ez-minigen{width:2.4rem;height:2.4rem;flex:none} .ez-minigen svg{width:100%;height:100%}
+.ez-lt{flex:1;min-width:0;display:grid;gap:.12rem;line-height:1.3}
+.ez-lt > b{font:600 1.22rem var(--f-ui);display:flex;align-items:center;gap:.45rem}
+.ez-lt > span{font-size:1rem}
+.ez-lt small{font-size:.9rem;color:var(--dim)}
+.ez-land .kbtn.ez-wait{display:grid;gap:0;line-height:1.1;filter:grayscale(.6) brightness(.85)} .ez-land .kbtn.ez-wait small{font:500 .78rem var(--f-body)}
+.ez-land .kbtn{flex:none;min-height:max(44px, 2.8rem);padding:.4rem .9rem .5rem;font-size:1.05rem}
+.ez-p{margin:.3rem 0 .6rem;font-size:1.05rem;line-height:1.4}
+.ez-acts{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.7rem}
+.ez-acts.col{display:grid}
+#ezSheet .kbtn,#ezAdv .kbtn,#card .ez-cadv .kbtn,#card > .kbtn,#endcard .ez-end .kbtn,#pickcard .ez-acts .kbtn,#pickcard .ez-pgo .kbtn{min-height:max(44px, 2.9rem)}
+.ez-warbar{display:grid;gap:.3rem;margin:.6rem 0;font-size:1rem}
+.ez-warbar b{font:600 1.1rem var(--f-ui);color:var(--accent)}
+.ez-warbar .ez-goalbar i{background:linear-gradient(#FFD768,var(--accent))}
+.ez-tiles{display:grid;grid-template-columns:repeat(auto-fill, minmax(10.5rem, 1fr));gap:.6rem}
+.ez-tile{display:grid;justify-items:center;align-content:start;gap:.2rem;text-align:center;padding:.8rem .6rem .9rem;border:0;border-radius:var(--r-l);cursor:pointer;color:#fff;font-family:var(--f-body);
+  background:linear-gradient(#4E6FB8,#3D5A9C);box-shadow:0 .3rem 0 #263C70, 0 .6rem 1rem rgba(0,0,0,.3);transition:transform .07s ease, box-shadow .07s ease, filter .12s ease}
+.ez-tile:hover{filter:brightness(1.08)}
+.ez-tile:active{transform:translateY(.2rem);box-shadow:0 .1rem 0 #263C70}
+.ez-tile .ez-ic{width:3.2rem;height:3.2rem;color:var(--accent)}
+.ez-tile b{font:600 1.3rem var(--f-ui)}
+.ez-tile span{font-size:.95rem;line-height:1.25}
+.ez-tile small{font-size:.85rem;color:#D5E0FF}
+.ez-tile.off{filter:grayscale(.8) brightness(.75);cursor:default}
+.ez-q{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;padding-top:.6rem;border-top:.12rem dashed rgba(255,255,255,.18)}
+.ez-q > b{font:600 1.05rem var(--f-ui);flex:1 1 100%}
+.ez-qi{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:var(--r-m);background:rgba(0,0,0,.25);font-size:.95rem;line-height:1.15}
+.ez-qi .ez-ic{color:var(--accent)}
+.ez-qi small{display:block;color:var(--dim);font-size:.82rem}
+
+/* --- de adviseur --- */
+#ezAdv{display:flex;align-items:flex-end;gap:.6rem;width:min(30rem, calc(100vw - 1rem));box-sizing:border-box;pointer-events:none!important}
+#ezAdv > *{pointer-events:auto}
+.ez-gen{flex:none;width:max(64px, 4.3rem);height:max(64px, 4.3rem);padding:0;border-radius:50%;border:.2rem solid #fff;cursor:pointer;overflow:hidden;background:radial-gradient(circle at 50% 30%, #9BDBFF, #3F7FDB);box-shadow:0 .3rem 0 rgba(0,0,0,.4), 0 .6rem 1rem rgba(0,0,0,.35);transition:transform .1s ease}
+.ez-gen:hover{transform:scale(1.05)}
+.ez-gen{position:relative}
+.ez-gen[aria-expanded="false"]{overflow:visible}
+.ez-gen[aria-expanded="false"] .ez-gsvg{border-radius:50%}
+.ez-gen[aria-expanded="false"]::after{content:"!";position:absolute;right:-.35rem;top:-.35rem;width:1.5rem;height:1.5rem;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 1.05rem var(--f-ui);box-shadow:0 .12rem 0 rgba(0,0,0,.4);animation:ezblink 1.1s ease-in-out infinite}
+.ez-gsvg{display:block;width:100%;height:100%}
+.ez-bub{position:relative;flex:0 1 auto;min-width:0;display:grid;gap:.45rem;padding:.6rem .85rem .7rem;border-radius:var(--r-l);background:#fff;color:#1C2440;font:700 1.08rem/1.3 var(--f-body);box-shadow:0 .3rem 0 rgba(0,0,0,.3), 0 .8rem 1.4rem rgba(0,0,0,.35);animation:ezup .18s ease-out}
+.ez-bub::before{content:"";position:absolute;left:-.6rem;bottom:1.4rem;border:.65rem solid transparent;border-left:0;border-right-color:#fff}
+.ez-bt b{color:#B4441A}
+.ez-bb{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.ez-bb .kbtn{min-height:max(44px, 2.8rem)}
+.ez-skip{min-height:max(44px, 2.6rem);padding:0 .4rem;border:0;background:none;color:#55618C;font:700 .95rem var(--f-body);text-decoration:underline;cursor:pointer}
+
+/* --- de aanwijzer van de uitleg --- */
+#ezRing{position:fixed;z-index:45;pointer-events:none;box-sizing:border-box;border:.3rem solid var(--accent);border-radius:var(--r-l);box-shadow:0 0 0 .35rem rgba(255,196,58,.3), 0 0 1.8rem rgba(255,196,58,.9);animation:ezpulse 1s ease-in-out infinite}
+#ezRing.dot{border-radius:50%}
+#ezRing::after{content:"";position:absolute;left:50%;top:-2.1rem;margin-left:-.9rem;border:.9rem solid transparent;border-bottom:0;border-top:1.2rem solid var(--accent);filter:drop-shadow(0 .15rem 0 rgba(0,0,0,.5));animation:ezbob .7s ease-in-out infinite alternate}
+#ezRing.low::after{top:auto;bottom:-2.1rem;border-top:0;border-bottom:1.2rem solid var(--accent)}
+@keyframes ezpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes ezbob{from{transform:translateY(-.35rem)}to{transform:translateY(.2rem)}}
+
+/* --- beslissingskaarten in gewone taal --- */
+#card .ez-ch{display:flex;align-items:center;gap:.7rem}
+#card .ez-ct{font:600 1.5rem/1.2 var(--f-ui);text-transform:none;letter-spacing:0}
+#card .ez-cp{margin:0;font-size:1.08rem;line-height:1.4}
+#card .ez-cp b{color:var(--accent)}
+#card .ez-cadv{display:grid;gap:.5rem;padding:.55rem;border-radius:var(--r-l);background:#fff;color:#1C2440}
+#card .ez-cav{display:flex;align-items:center;gap:.6rem;font-size:1rem;line-height:1.3;font-weight:600}
+#card .ez-cav b{font-weight:800;color:#B4441A}
+#card .ez-cav .ez-gsvg{width:3.2rem;height:3.2rem;flex:none;border-radius:50%;background:radial-gradient(circle at 50% 30%, #9BDBFF, #3F7FDB)}
+
+#endcard .ez-end{display:grid;justify-items:center;gap:.6rem;padding-top:1.2rem;text-align:center;width:100%}
+#endcard .ez-ct{font:600 1.7rem/1.2 var(--f-ui)}
+#endcard .ez-cp{margin:0;font-size:1.08rem;line-height:1.4} #endcard .ez-cp b{color:var(--accent)}
+#endcard .ez-cb{display:grid;gap:.6rem;width:100%;margin-top:.4rem}
+#endcard .ez-endi{width:4.5rem;height:4.5rem;color:var(--accent)}
+#endcard .ez-endg{width:4.5rem;height:4.5rem;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%, #9BDBFF, #3F7FDB)}
+#card .ez-cb{display:grid;gap:.6rem}
+
+/* --- landkeuze en instellingen --- */
+.ez-row{display:flex;align-items:center;gap:.4rem .6rem;flex-wrap:wrap;margin:.55rem 0}
+.ez-rl{flex:none;min-width:5.4rem;font:600 1rem var(--f-ui);color:var(--dim)}
+.ez-segs{display:flex;gap:.35rem;flex-wrap:wrap}
+.ez-seg{min-height:max(44px, 2.6rem);padding:.3rem .85rem .4rem;border:0;border-radius:var(--r-m);cursor:pointer;font:600 1rem var(--f-ui);color:var(--ink);background:rgba(255,255,255,.12);box-shadow:0 .2rem 0 rgba(0,0,0,.3)}
+.ez-seg.on{background:linear-gradient(#FFD768,var(--accent));color:var(--accent-ink);box-shadow:0 .2rem 0 var(--gold-d)}
+.ez-rec{display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;padding:.6rem .8rem .7rem;border:0;border-radius:var(--r-l);cursor:pointer;color:#fff;font-family:var(--f-body);background:linear-gradient(#4E6FB8,#3D5A9C);box-shadow:0 .3rem 0 #263C70, 0 .5rem .9rem rgba(0,0,0,.28);transition:transform .07s ease, filter .12s ease}
+.ez-rec:hover{filter:brightness(1.08)} .ez-rec:active{transform:translateY(.2rem);box-shadow:0 .1rem 0 #263C70}
+.ez-rec .ez-light{font-size:.95rem;background:rgba(0,0,0,.35);border-radius:999px;padding:.05rem .6rem .1rem .4rem;justify-self:start}
+.ez-rec .ez-lt b{font-size:1.35rem} .ez-rec small{color:#D5E0FF}
+.ez-pstats{display:flex;gap:.4rem;flex-wrap:wrap;margin:.6rem 0}
+.ez-nb{display:grid;gap:.25rem;margin:.6rem 0}
+.ez-nb > b{font:600 1.05rem var(--f-ui)} .ez-nb > small{color:var(--dim);font-size:.9rem}
+.ez-nbl{display:flex;gap:.35rem;flex-wrap:wrap}
+.ez-chip{display:inline-flex;align-items:center;gap:.35rem;min-height:max(44px, 2.3rem);padding:.2rem .7rem;border:0;border-radius:999px;font:600 .98rem var(--f-ui);color:var(--ink);background:rgba(255,255,255,.1)}
+button.ez-chip{cursor:pointer}
+.ez-more{margin:.3rem 0}
+.ez-more summary{display:flex;align-items:center;gap:.4rem;min-height:max(44px, 2.6rem);cursor:pointer;font:600 1rem var(--f-ui);color:var(--dim);list-style:none}
+.ez-more summary::before{content:"+";display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:rgba(255,255,255,.14);color:var(--ink)}
+.ez-more[open] summary::before{content:"–"}
+.ez-more summary::-webkit-details-marker{display:none}
+.ez-pgo{position:sticky;bottom:-.85rem;margin:.4rem -.3rem -.4rem;padding:.6rem .3rem .9rem;background:linear-gradient(to top, var(--panel) 70%, transparent)}
+#pickcard .ez-sh{padding-top:.8rem}
+
+/* --- breed scherm: de adviseur staat vast linksonder; smal: alles onder elkaar boven de knoppen --- */
+@media (min-width:1280px){
+  #ezAdv{position:fixed;z-index:21;left:var(--pl);bottom:calc(.8rem + var(--sab));width:21.5rem}
+  #ezNav{padding-left:1.5rem}
+}
+@media (max-width:1279px){
+  body.ez-sh #ezAdv{display:none}
+  #ezAdv{align-self:flex-start;margin-left:var(--pl)}
+  #ezTop .ez-menu span{display:none}
+  #ezTop .ez-stat{display:grid;grid-template-columns:auto auto;align-items:center;gap:0 .3rem;padding:.1rem .45rem;line-height:1.05}
+  #ezTop .ez-stat .ez-ic{grid-row:1 / 3;width:1.4rem;height:1.4rem} #ezTop .ez-stat b{font-size:1.15rem} #ezTop .ez-stat small{font-size:.8rem}
+  .ez-goal{flex:1 1 14rem}
+  .ez-me{max-width:10rem}
+  #ezTop .ez-play{min-width:6.6rem;padding-left:.8rem;padding-right:.8rem}
+}
+@media (min-width:1024px) and (max-width:1279px){ .ez-date small{display:none} }
+@media (max-width:1023px){   /* smal: de balk in drie regels (land en aantallen, de voortgang, de tijd) */
+  #ezTop{padding:.4rem .45rem;gap:.35rem .4rem}
+  .ez-me{order:1;flex:1 1 0;max-width:none} .ez-me b{font-size:1.2rem}
+  .ez-stats{order:2;gap:.25rem}
+  #ezTop .ez-stat{padding:.1rem .4rem}
+  #ezTop .ez-menu{order:3}
+  .ez-goal{order:4;flex:1 1 100%}
+  .ez-date{order:5} .ez-date small{display:inline}
+  .ez-clock{order:6;margin-left:auto;gap:.3rem}
+  #ezTop .ez-play{min-width:6.6rem;padding:.3rem .7rem .4rem}
+  #ezTop .ez-spd{padding:.3rem .55rem .4rem}
+  .ez-warn{order:7;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -.2rem;padding:0 .2rem .25rem} .ez-warn::-webkit-scrollbar{display:none}
+  .ez-pill{flex:none;white-space:nowrap}
+  .ez-goaltxt{font-size:1.02rem}
+}
+@media (max-width:899px){
+  #ezTop{left:max(6px, env(safe-area-inset-left, 0px));right:max(6px, env(safe-area-inset-right, 0px));top:calc(6px + var(--sat))}
+  #ezNav{width:100%;box-sizing:border-box;gap:.35rem;padding:0 max(.45rem, env(safe-area-inset-right, 0px)) calc(.55rem + var(--sab)) max(.45rem, env(safe-area-inset-left, 0px))}
+  #ezNav .kbtn{flex:1 1 0;min-width:0;flex-direction:column;gap:.1rem;min-height:max(56px, 4rem);padding:.4rem .15rem .5rem;font-size:1.05rem;border-radius:var(--r-m)}
+  #ezSheet{width:calc(100% - 12px);max-height:min(58vh, calc(100vh - var(--hud-h) - 6.5rem));padding:.6rem .6rem .8rem}
+  #ezAdv{width:calc(100% - 12px);margin-left:6px;align-self:flex-start}
+  .ez-bub{font-size:1.1rem}
+  .ez-tiles{grid-template-columns:1fr 1fr}
+  .ez-land{gap:.5rem;padding:.5rem .55rem}
+  .ez-land .kbtn{padding:.4rem .7rem .5rem}
+  .ez-rl{min-width:4.6rem}
+  .ez-seg{padding:.3rem .65rem .4rem}
+}
+@media (max-width:899px) and (max-height:520px){   /* telefoon liggend: de balk op één regel, alles wat lager */
+  #ezTop{flex-wrap:nowrap}
+  .ez-me{order:1;flex:0 1 auto;max-width:8rem} .ez-goal{order:2;flex:1 1 6rem} .ez-stats{order:3} .ez-date{order:4} .ez-clock{order:5;margin-left:0} #ezTop .ez-menu{order:6}
+  .ez-warn{display:none}
+  .ez-date small{display:none}
+  #ezTop .ez-play{min-width:0}
+  #ezNav .kbtn{flex-direction:row;min-height:max(44px, 3rem);gap:.35rem}
+  #ezAdv{width:min(30rem, calc(100% - 12px))}
+  #ezSheet{max-height:calc(100vh - var(--hud-h) - 4.6rem)}
+  body.ez-sh #ezNav{display:none}
+}
+@media (max-width:360px){ .ez-date small{display:none} #ezTop .ez-spd{padding:.3rem .4rem .4rem;font-size:.95rem} #ezTop .ez-play{min-width:5.4rem;padding-left:.5rem;padding-right:.5rem} }
 </style>
 <style id="skin">
 /* ================= speelse skin (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
@@ -2029,6 +2249,7 @@ function dailyTick(){
   // gestrande troepen (land dat bij een vrede of conferentie van eigenaar wisselde): terug naar eigen gebied
   { const st = new Set(); for(const u of G.units) if(G.ctrl[u.loc] !== u.c && !u.att && !friendly(u.c, G.ctrl[u.loc])) st.add(u.c); for(const c of st) relocate(c); }
   if(G.day % 5 === 2) aiCards();
+  ezTick();   // eenvoudige stand: productie en de bestelde aanval lopen vanzelf
   if(G.day % (MAPNAME === 'world' ? 30 : 10) === 0) autosaveIdle();
 }
 
@@ -5797,6 +6018,7 @@ const ptrs = new Map();
 let moved = 0, multi = false, box = null, dragOrd = null, lpTimer = 0, lpDone = false, lastTap = null;
 function ownStackAt(x, y){
   if(!G || G.over || UI.target) return null;
+  if(SET.easy) return null;   // eenvoudige stand: geen troepen selecteren of slepen
   const h = hitAt(x, y);
   if(h && h.ctr){ const g = GROUPS[h.ctr]; if(g && g.c === G.player) return {kind:'land', g}; }
   if(h && h.air){ const g = AGROUPS[h.air]; if(g && g.c === G.player) return {kind:'air', g}; }
@@ -5931,6 +6153,7 @@ overC.addEventListener('contextmenu', e => {
 });
 addEventListener('keydown', e => hudKey(e));   // alle sneltoetsen: zie het blok "spelschil"
 function boxSelect(b){
+  if(SET.easy) return;
   const r = stage.getBoundingClientRect();
   const x0 = Math.min(b.x0, b.x1) - r.left, x1 = Math.max(b.x0, b.x1) - r.left, y0 = Math.min(b.y0, b.y1) - r.top, y1 = Math.max(b.y0, b.y1) - r.top;
   const ids = [];
@@ -5943,12 +6166,14 @@ function boxSelect(b){
 function onSea(){
   if(!G){ UI.pick = null; renderAll(); return; }
   if(UI.target){ UI.target = null; renderAll(); return; }
+  if(SET.easy) UI.ezSheet = null;
   clearSel(); UI.info = null; renderAll();
 }
 function onCounter(key, e){
   if(!G || G.over) return;
   const g = GROUPS[key];
   if(!g) return;
+  if(SET.easy){ onProvince(g.loc, e); return; }   // eenvoudige stand: geen troepen selecteren
   if(g.c !== G.player || UI.target || UI.selAir.size){ onProvince(g.loc, e); return; }
   if(e.shiftKey){ g.ids.forEach(id => UI.sel.add(id)); }
   else {
@@ -5961,6 +6186,7 @@ function onAirGroup(key, e){
   if(!G || G.over) return;
   const g = AGROUPS[key];
   if(!g) return;
+  if(SET.easy){ onProvince(g.loc, e); return; }
   if(g.c !== G.player || UI.target){ onProvince(g.loc, e); return; }
   if(UI.selAir.size && !e.shiftKey && g.ids.every(id => UI.selAir.has(id))){ UI.selAir = new Set(); }
   else { if(!e.shiftKey) UI.selAir = new Set(); g.ids.forEach(id => UI.selAir.add(id)); }
@@ -5969,6 +6195,7 @@ function onAirGroup(key, e){
 function onProvince(p, e){
   if(!G){ UI.pick = P[p].c; renderAll(); return; }
   if(G.over) return;
+  if(SET.easy){ ezProvince(p); return; }   // eenvoudige stand: het kaartje van dit land
   if(UI.target){
     if(UI.target === 'drop'){
       let n = 0;
@@ -6817,6 +7044,7 @@ const toastKeys = {};
 function shake(){ if(SET.fx === false) return; const s = $('stage'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); }
 function flash(col){ if(SET.fx === false) return; const f = $('flash'); f.style.setProperty('--fc', col || 'rgba(212,85,63,.55)'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
 function toast(msg, kind, key){
+  if(SET.easy && G && (msg = ezSay(msg, kind, key)) == null) return;   // eenvoudige stand: meldingen in gewone taal
   if(logAdd(msg, kind, key)) return;   // logboek en nieuwsregel; grote gebeurtenissen krijgen een banier in plaats van een melding
   const host = $('toasts');
   if(key && toastKeys[key] && toastKeys[key].isConnected){
@@ -7014,6 +7242,7 @@ function renderStrip(){
         h += '<div class="acts"><button class="btn sm' + (dailyDone() ? '' : ' pri') + '" data-act="daily" title="Elke dag hetzelfde land en niveau voor iedereen">' + ic('tijd') + 'Uitdaging van vandaag: ' + esc(dl.name) + ' (' + MAPS[dl.map].name + ') · ' + DIFF[dl.diff].name + (dailyDone() ? ' ✓' : '') + '</button></div>'; }
       if(save && save.G && save.G.player && save.map && MAPS[save.map]) h += '<div class="acts"><button class="btn" data-act="resume">Doorgaan: ' + esc((CACHE[save.map] ? CACHE[save.map].countries[save.G.player].name : save.G.player)) + ', ' + fmtDate(save.G.day) + '</button></div>';
     }
+  } else if(SET.easy){ h = '';   // eenvoudige stand: de adviseur en het landkaartje nemen de strook over
   } else if(UI.intro){
     const [t, x, icons] = INTRO[UI.intro - 1];
     h = '<div class="intro"><span class="iicons">' + icons.map(k => ic(k)).join('') + '</span><span class="ib2"><b>' + t + '</b><span>' + x + '</span><span class="dots">' + INTRO.map((_, i) => '<i' + (i === UI.intro - 1 ? ' class="on"' : '') + '></i>').join('') + '</span></span></div>'
@@ -7247,6 +7476,7 @@ const det = (k, sum, body, def) => { const open = UI.od && UI.od[k] !== undefine
 function renderSheet(){
   const el = $('sheet');
   if(!G || !UI.sheet || G.over){ el.hidden = true; sheetSig = ''; return; }
+  if(SET.easy && UI.sheet !== 'set' && UI.sheet !== 'log'){ UI.sheet = null; el.hidden = true; sheetSig = ''; return; }   // eenvoudige stand: alleen menu en logboek
   if(hudSheet(el)) return;   // logboek en menu: zie het blok "spelschil"
   const n = nat(G.player), me = G.player;
   const full = n.q.length >= 10;
@@ -7810,6 +8040,7 @@ function renderCard(){
   const opt = (k, icon, t, sub, cls) => '<button class="copt ' + (cls || '') + '" data-c="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
   const nm = e ? esc(cname(e)) : '';
   let h = '';
+  if(SET.easy && (h = ezCardH(cd))){ /* eenvoudige stand: de kaart in gewone taal */ } else
   if(cd.dip) h = dipCardH(cd, head, opt); else
   if(cd.k === 'surr'){
     const occ = occBy(me, e), kills = (G.kill || {})[me + '>' + e] || 0;
@@ -8208,7 +8439,7 @@ function settingsH(){
     + chk('data-set2', 'fx', SET.fx !== false, 'Schudden en flitsen bij oorlog en verlies')
     + chk('data-set2', 'banner', SET.banner !== false, 'Grote banier bij belangrijke gebeurtenissen')
     + chk('data-set2', 'tips', SET.tips !== false, 'Uitleg bij aanwijzen in spelstijl')
-    + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>';
+    + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>' + ezSetH();   // + speelstijl Eenvoudig / Volledig
 }
 // wijzigingen in de instellingen; all = ook de bestaande sleutels (in het paneel doet de eigen luisteraar van het vel die al)
 function setChange(i, all){
@@ -8390,6 +8621,7 @@ function renderPick(mode){
   const el = $('pickcard');
   if(mode !== 'pick'){ if(!el.hidden){ el.hidden = true; pickSig = null; } return; }
   renderStrip();   // de (hier verborgen) strook levert de uitlegregel van het landkeuzescherm
+  if(SET.easy){ ezPick(el); return; }   // eenvoudige stand: drie aanraders en de uitleg ingeklapt
   const R = powRank(), c = UI.pick && CN[UI.pick] ? UI.pick : null, dl = dailyOf(), hint = $('strip').querySelector('.hint2');
   const seg = '<div class="gord"><span class="gl">Kaart</span><span class="gsegs">' + Object.keys(MAPS).map(m => '<button class="gseg' + (MAPNAME === m ? ' on' : '') + '" data-pm="' + m + '">' + MAPS[m].name + '</button>').join('') + '</span></div>'
     + '<div class="gord"><span class="gl">Niveau</span><span class="gsegs">' + DIFF.map((d, i) => '<button class="gseg' + (UI.diff === i ? ' on' : '') + '" data-pd="' + i + '">' + d.name + '</button>').join('') + '</span></div>'
@@ -8423,6 +8655,7 @@ function renderPick(mode){
       + '<div class="pkinfo">' + pickInfoH(c, UI.diff) + '</div>'
       + seg + '<button class="btn pri wide pgo" data-pk="start">' + ic('vlag') + 'Speel</button>';
   }
+  h = ezPickFull(h);   // de keuze Eenvoudig / Volledig
   if(h === pickSig) return;
   const keep = pickSig !== null && el.dataset.c === (c || '');
   pickSig = h; const st = el.scrollTop; el.innerHTML = h; el.hidden = false; el.dataset.c = c || ''; el.scrollTop = keep ? st : 0;
@@ -8505,6 +8738,7 @@ function renderHud(){
     const un = (G.logN || 0) - (UI.logSeen || 0), bd = $('logBadge'), bt = un > 9 ? '9+' : '' + un;
     bd.hidden = un <= 0; if(bd.textContent !== bt) bd.textContent = bt;
   } else hudG = null;
+  ezHud(mode);   // eenvoudige stand: eigen balk, knoppen, adviseur en bladen
   renderAlerts(); renderMenu(mode); renderPick(mode);
 }
 
@@ -8542,6 +8776,7 @@ function hudKey(e){
     return;
   }
   if(G.over) return;
+  if(SET.easy && ezKey(e, lk, tn)) return;   // eenvoudige stand: eigen toetsen
   const dg = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || '');
   if(dg && e.altKey && !e.ctrlKey && !e.metaKey){ e.preventDefault(); groupPick(+dg[1]); return; }
   if(dg && (e.shiftKey || e.ctrlKey) && !e.altKey && !e.metaKey){ if(UI.sel.size){ e.preventDefault(); groupSave(+dg[1]); } return; }
@@ -8626,6 +8861,849 @@ if(!isTouch){
   if(SET.ui && SET.ui !== 1) applyUiScale();
 }
 
+/* ================= eenvoudige stand ================= */
+/* Speelstijl Eenvoudig (SET.easy, standaard aan): het spel speelt mee. De generaal voert het leger en de productie loopt
+   vanzelf; de speler kiest alleen wie hij aanvalt, met wie hij vrienden wordt en wanneer het vrede wordt.
+   In plaats van topbalk, panelen en contextstrook: een eenvoudige balk (#ezTop), vier grote knoppen (#ezNav), bladen met
+   tegels (#ezSheet), een adviseur met tekstballon (#ezAdv) en een korte speelbare uitleg (#ezRing wijst aan).
+   Bewaard: SET.easy en SET.ezTut (uitleg gezien); in het spel G.ez = {atk: het land dat je wilt aanvallen}.
+   Interface-toestand: UI.ezSheet (open blad: atk, fr, build, help of land:<id>), UI.ezTut (stap van de uitleg),
+   UI.ezFold (ballon ingeklapt), UI.ezFull (conferentie zelf invullen), UI.ezMore (landkeuze: meer uitleg open).
+   De rest van het spel roept alleen de haakjes aan: ezHud, ezTick, ezLoaded, ezProvince, ezCardH, ezPick, ezPickFull,
+   ezSetH, ezSay en ezKey. Staat SET.easy uit, dan doet dit blok niets. */
+if(SET.easy == null) SET.easy = true;
+const ezMk = (id, tag, host) => { const el = document.createElement(tag); el.id = id; el.hidden = true; host.appendChild(el); return el; };
+const EZ = { top:ezMk('ezTop', 'header', document.body), adv:ezMk('ezAdv', 'div', $('dock')), sheet:ezMk('ezSheet', 'div', $('dock')), nav:ezMk('ezNav', 'nav', $('dock')), ring:ezMk('ezRing', 'div', document.body), sig:{}, press:false, conf:null, rec:null, advK:null, advV:null, topH:0 };
+EZ.nav.setAttribute('aria-label', 'Wat wil je doen'); EZ.adv.setAttribute('aria-label', 'Je generaal'); EZ.ring.setAttribute('aria-hidden', 'true');
+EZ.sheet.setAttribute('role', 'dialog'); EZ.sheet.setAttribute('aria-label', 'Keuzes');
+
+/* ---- plaatjes: eigen eenvoudige iconen, gezichtjes voor de relatie en de generaal ---- */
+const EZI = {
+  hart:'M12 21.3 3.5 12.6a5.3 5.3 0 0 1 7.5-7.5l1 1 1-1a5.3 5.3 0 0 1 7.5 7.5z',
+  hamer:'M3.6 8.8 9.6 2.8l4.2 4.2-2 2 9.4 9.4-2.8 2.8L9 11.8l-2 2z',
+  speel:'M7 4.2v15.6l13-7.8z', pauze:'M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z',
+  menu:'M3 5h18v3H3zM3 10.5h18v3H3zM3 16h18v3H3z',
+  kruis:'M6.3 4.2 12 9.9l5.7-5.7 2.1 2.1-5.7 5.7 5.7 5.7-2.1 2.1-5.7-5.7-5.7 5.7-2.1-2.1 5.7-5.7-5.7-5.7z',
+  vraag:'M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20zm-1.2 13.6h2.4V18h-2.4zm1.4-9.8c2.3 0 3.9 1.4 3.9 3.3 0 1.4-.7 2.2-1.8 2.9-.9.6-1.2 1-1.2 1.9v.4h-2.3v-.6c0-1.4.5-2.2 1.6-2.9.9-.6 1.3-1 1.3-1.7s-.6-1.2-1.5-1.2c-1 0-1.7.6-1.8 1.6H8c.1-2.2 1.8-3.7 4.2-3.7z',
+  snel:'M3 5l8 7-8 7zM12 5l8 7-8 7z'
+};
+const ezIc = (k, cls) => { const s = SIL[k], d = EZI[k] || (s && s.p) || ''; return '<svg class="ez-ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="' + d + '"/>' + (!EZI[k] && s && s.d ? '<path fill="rgba(0,0,0,.38)" d="' + s.d + '"/>' : '') + '</svg>'; };
+// gezichtje: 0 boos, 1 gewoon, 2 aardig, 3 beste vriend, 4 oorlog
+function ezFace(m){
+  const col = ['#FF9A62', '#FFD44F', '#B9E56B', '#6DDB7B', '#FF5E57'][m], mouth = ['M8 16.6q4-3 8 0', 'M8.4 15.6h7.2', 'M8 14.6q4 3.2 8 0', 'M7.2 13.8q4.8 5.4 9.6 0', 'M8 16.8q4-3.4 8 0'][m];
+  return '<svg class="ez-face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6" fill="' + col + '" stroke="rgba(0,0,0,.28)" stroke-width="1.1"/><circle cx="8.6" cy="10.2" r="1.5" fill="#2A2233"/><circle cx="15.4" cy="10.2" r="1.5" fill="#2A2233"/>'
+    + '<path d="' + mouth + '" fill="none" stroke="#2A2233" stroke-width="1.8" stroke-linecap="round"/>' + (m === 0 || m === 4 ? '<path d="M6.2 6.8l3.6 1.6M17.8 6.8l-3.6 1.6" fill="none" stroke="#2A2233" stroke-width="1.6" stroke-linecap="round"/>' : '') + '</svg>';
+}
+// de adviseur: een vriendelijke generaal met pet en snor (eigen tekening)
+const EZ_GEN = '<svg class="ez-gsvg" viewBox="0 0 64 64" aria-hidden="true">'
+  + '<path d="M8 66c0-12 10-19 24-19s24 7 24 19z" fill="#3F8A55"/><path d="M26 46h12v5l-6 5-6-5z" fill="#F1C59B"/><path d="M24 49l8 7 8-7 3 3-11 9-11-9z" fill="#2F6B41"/>'
+  + '<rect x="9" y="51" width="12" height="5" rx="2.5" fill="#FFC43A"/><rect x="43" y="51" width="12" height="5" rx="2.5" fill="#FFC43A"/>'
+  + '<circle cx="16.5" cy="32" r="3.4" fill="#F1C59B"/><circle cx="47.5" cy="32" r="3.4" fill="#F1C59B"/><circle cx="32" cy="31" r="15.5" fill="#F9D7B3"/>'
+  + '<path d="M13.5 22C13.5 10.5 22 5 32 5s18.5 5.500 18.500 17z" fill="#3F8A55"/><path d="M12.500 21h39v4.200c0 1-.8 1.800-1.800 1.800H14.300c-1 0-1.800-.8-1.800-1.800z" fill="#2F6B41"/>'
+  + '<path d="M17 27c9 3.600 21 3.600 30 0l1.600 2.600c-10 4-23.200 4-33.200 0z" fill="#1E2B4A"/><path d="M32 8.200l1.900 3.800 4.200.6-3 3 .7 4.200-3.800-2-3.800 2 .7-4.200-3-3 4.200-.6z" fill="#FFC43A"/>'
+  + '<circle cx="25.600" cy="33.500" r="2.300" fill="#2A2233"/><circle cx="38.400" cy="33.500" r="2.300" fill="#2A2233"/><circle cx="26.300" cy="32.800" r=".8" fill="#fff"/><circle cx="39.100" cy="32.800" r=".8" fill="#fff"/>'
+  + '<circle cx="21.500" cy="38.500" r="2.800" fill="#F5A79B" opacity=".75"/><circle cx="42.500" cy="38.500" r="2.800" fill="#F5A79B" opacity=".75"/>'
+  + '<path d="M32 38.200c-3.400-2.800-8.800-2.200-11 2.400 3.600 1.800 8 1.400 11-.9 3 2.300 7.400 2.700 11 .9-2.200-4.600-7.600-5.200-11-2.400z" fill="#8A5A34"/><path d="M28.500 43.600q3.500 2.600 7 0" fill="none" stroke="#A9573F" stroke-width="1.700" stroke-linecap="round"/></svg>';
+
+/* ---- kleine hulpjes ---- */
+const ezG = () => (G.ez ||= {atk:null});
+const ezDot = t => t.replace(/\.\.(?=[\s<]|$)/g, '.');   // landnamen die op een punt eindigen: geen dubbele punt
+const ezMsg = (t, kind) => toast(ezDot(t), kind || '', 'ez');
+const ezDays = n => n + (n === 1 ? ' dag' : ' dagen');
+const ezGb = n => n + (n === 1 ? ' gebied' : ' gebieden');
+const ezNm = c => esc(cname(c));
+const ezWg = c => G.wg[c] != null && G.wg[c] >= G.day && G.day > 0;   // is er een geldig oorlogsdoel tegen c?
+const ezMapNm = () => MAPNAME === 'world' ? 'de wereld' : 'Europa';
+const ezPow = c => Math.max(1, armyPow(c) * (c === G.player ? (D().meCbt || 1) : 1));   // jouw leger telt met de bonus van het niveau
+const ezDivs = () => { const me = G.player; return UCNT[me] != null ? UCNT[me] : G.units.reduce((s, u) => s + (u.c === me), 0); };
+const ezFlag = (c, big) => '<span class="ez-flag' + (big ? ' big' : '') + '" style="--c:' + colorOf(c) + '"></span>';
+const ezShare = () => { const sh = owned(G.player).length / PIDS.length; return sh > 0 && sh < 0.001 ? 'minder dan 0,1' : NF.format(Math.floor(sh * 1000) / 10); };
+const ezGoal = () => NF.format(Math.round(winShare() * 1000) / 10);
+// de buren die je kunt aanvallen of te vriend kunt houden. Lange zeeroutes tellen niet mee (daar komt de generaal niet
+// vlot overheen), behalve voor een eiland dat anders helemaal geen buren heeft
+function ezNbrs(){
+  const me = G.player, k = G.day + ':' + CTRLV;
+  if(EZ.nbK === k && EZ.nbG === G) return EZ.nb;
+  let nb = neighbors(me);
+  if(!nb.length){ const s = new Set(); for(const p of owned(me)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && alive(o)) s.add(o); } nb = [...s]; }
+  EZ.nbK = k; EZ.nbG = G;
+  return EZ.nb = nb;
+}
+// grenst land c over land aan jou? (anders moet je over zee: dat is zwaarder)
+const ezLandNb = c => { const me = G.player; return owned(c).some(p => ADJ[p].some(q => G.ctrl[q] === me && !SEA.has(ek(p, q)))); };
+// kun je bij land c komen? buren, en landen aan de overkant van een zeeroute
+const ezReach = c => ezNbrs().includes(c);
+// hoe sterk is land c tegenover jou als je het aanvalt? [verhouding, beschermer die dan meedoet]
+function ezFoe(c){
+  if(EZ.foeD !== G.day || EZ.foeG !== G || EZ.foeW !== WARV + ':' + CTRLV + ':' + DIPV){ EZ.foeD = G.day; EZ.foeG = G; EZ.foeW = WARV + ':' + CTRLV + ':' + DIPV; EZ.foe = {}; }
+  if(EZ.foe[c]) return EZ.foe[c];
+  const me = G.player, g = G.prot && G.prot[c], gp = g && g !== me && CN[g] && alive(g) && !atWar(me, g) && !isAlly(g) ? g : null;
+  return EZ.foe[c] = [(armyPow(c) + (gp ? armyPow(gp) : 0)) / ezPow(me) * (ezLandNb(c) ? 1 : 1.4), gp];
+}
+const ezLight = r => r < 0.7 ? ['g', 'zwakker dan jij'] : r < 1.15 ? ['y', 'even sterk als jij'] : ['r', 'sterker dan jij — pas op'];
+// mag je land c aanvallen? '' = ja, anders de reden in gewone taal
+function ezCanAtk(c){
+  const me = G.player;
+  if(c === me || !CN[c] || !alive(c)) return 'Dat kan niet.';
+  if(atWar(me, c)) return 'Jullie hebben al oorlog.';
+  if(isAlly(c)) return cname(c) + ' is je beste vriend. Vrienden val je niet aan.';
+  if(hasPact(c)) return 'Jullie hebben beloofd elkaar niet aan te vallen.';
+  const tl = truceLeft(me, c); if(tl > 0) return 'Jullie hebben net vrede gesloten. Je moet nog ' + ezDays(Math.ceil(tl)) + ' wachten.';
+  if(!ezReach(c)) return cname(c) + ' ligt te ver weg. Je legers kunnen er niet komen.';
+  return '';
+}
+// hoe gaat de oorlog met land c? near (bijna verslagen), win, lose, strong (nog niets beslist, jij bent sterker), weak, even
+function ezWarState(c){
+  const mE = meterOf(c), mM = meterOf(G.player), r = armyPow(c) / ezPow(G.player);
+  return mE >= 0.75 ? 'near' : mE >= mM + 0.15 ? 'win' : mM >= mE + 0.15 ? 'lose' : r < 0.7 ? 'strong' : r > 1.3 ? 'weak' : 'even';
+}
+const ezWarTxt = c => ({near:'bijna verslagen', win:'je bent aan het winnen', lose:'je bent aan het verliezen', strong:'jij bent sterker', weak:'zij zijn sterker', even:'het gaat gelijk op'})[ezWarState(c)];
+
+/* ---- aan- en uitzetten ---- */
+// de generaal en de automatische productie aan; losse bevelen en selecties vervallen
+function ezApply(){
+  const me = G.player, n = nat(me), g = genCfg(); ezG();
+  n.auto = true; g.prod = g.air = g.act = true;
+  for(const u of G.units) if(u.c === me && (u.man || u.hold || u.gst || u.g)){ u.man = false; u.hold = false; u.gst = false; u.g = null; }
+  clearSel(); UI.info = null; UI.target = null; UI.confirm = null; UI.intro = 0; UI.editT = null;
+  if(UI.sheet && UI.sheet !== 'set' && UI.sheet !== 'log') UI.sheet = null;
+}
+function ezSetMode(on){
+  SET.easy = !!on; saveSettings();
+  UI.ezSheet = null; UI.ezFull = false; ezTutOff();
+  if(G && !G.over && on) ezApply();
+  if(!G && !UI.dailyKey) UI.diff = on ? 0 : 1;   // landkeuze: Eenvoudig begint op Makkelijk
+  EZ.sig = {}; EZ.advK = null; EZ.rec = null; pickSig = null; menuSig = null; sheetSig = ''; stripSig = null; cardSig = ''; statusSig = ''; qSig = null; endSig = ''; EZ.endS = '';
+  renderAll();
+}
+// na het starten of laden van een spel; true = nieuw spel in de eenvoudige stand (de gewone welkomstmelding vervalt)
+function ezLoaded(){
+  UI.ezSheet = null; UI.ezFull = false; UI.ezFold = false; ezTutOff(); EZ.sig = {}; EZ.advK = null; EZ.conf = null;
+  if(!SET.easy || !G) return false;
+  ezApply();
+  const fresh = G.day === 0;
+  if(fresh){ G.paused = true; if(!SET.ezTut) ezTutStart(); }
+  renderAll();
+  return fresh;
+}
+
+/* ---- elke dag: productie die vanzelf loopt en de aanval die je besteld hebt ---- */
+function ezTick(){
+  if(!SET.easy || !G || G.over) return;
+  const me = G.player, n = nat(me);
+  if(!n.alive) return;
+  if(!n.auto || !genCfg().prod) ezApply();
+  for(const u of UBY[me] || []) if(u.man || u.hold || u.gst){ u.man = false; u.hold = false; u.gst = false; u.g = null; }
+  // een bestelling die niet af kan (limiet bereikt, geen plek): opzij, het werk gaat naar de volgende
+  const head = n.q[0];
+  if(head && head.wait){ n.q.shift(); const nx = n.q[0]; if(nx && head.p) nx.p = Math.min(itemCost(me, nx.k), (nx.p || 0) + head.p); qSig = null; }
+  ezProduce(me);
+  ezAtkStep();
+}
+// een verstandige mix: in vredestijd altijd één fabriek in de rij (als er plek is), de rest kiest de generaal (aiProduce)
+function ezProduce(c){
+  const n = nat(c);
+  if(n.q.length < 4 && !enemiesOf(c).length && !n.q.some(q => q.k === 'fab') && fabSpots(c) > 0 && (UCNT[c] || 0) >= 0.5 * armyCap(c)) n.q.push({k:'fab', p:0});
+  if(n.q.length < 2) aiProduce(c);
+}
+
+/* ---- aanvallen: het spel regelt het oorlogsdoel, het wachten en de oorlogsverklaring ---- */
+function ezAtkLeft(c){   // over hoeveel dagen begint de aanval?
+  const n = nat(G.player);
+  if(ezWg(c)) return 0;
+  if(G.just && G.just.c === c) return Math.max(1, Math.ceil(G.just.until - G.day));
+  return (G.just ? Math.max(1, Math.ceil(G.just.until - G.day)) : 0) + Math.max(0, Math.ceil((25 - n.cp) / 0.5)) + 30;
+}
+function ezAttack(c){
+  const me = G.player, z = ezG(), why = ezCanAtk(c);
+  if(why){ ezMsg(why, 'war'); return; }
+  if(z.atk && z.atk !== c) ezStop(z.atk);
+  z.atk = c; genCfg().prep = c;
+  ezAtkStep();
+  if(z.atk === c) ezMsg('Je generaals maken een plan. Over ' + ezDays(ezAtkLeft(c)) + ' begint de aanval op ' + cname(c) + '.', 'good');
+}
+function ezStop(c, say){
+  const z = ezG(), n = nat(G.player);
+  if(z.atk === c) z.atk = null;
+  if(G.just && G.just.c === c){ G.just = null; n.cp = Math.min(100, n.cp + 25); }
+  delete G.wg[c];
+  if(genCfg().prep === c) genCfg().prep = null;
+  dipChanged();
+  if(say) ezMsg('Het plan is gestopt. Je valt ' + cname(c) + ' niet aan.', '');
+}
+function ezAtkStep(){
+  const z = ezG(), c = z.atk, me = G.player, n = nat(me);
+  if(!c) return;
+  if(ezCanAtk(c)){ z.atk = null; if(genCfg().prep === c) genCfg().prep = null; return; }
+  if(ezWg(c)){ z.atk = null; if(genCfg().prep === c) genCfg().prep = null; declare(me, c); return; }
+  if(!G.just && n.cp >= 25){ n.cp -= 25; G.just = {c, until:G.day + 30}; dipChanged(); }
+}
+
+/* ---- vrienden: verdrag, bondgenootschap of eerst een cadeau; en hulp vragen ---- */
+function ezFriendOpt(c){   // wat kan er nu? {k: ally | pact | imp | null, wait: dagen tot het kan}
+  const me = G.player, n = nat(me);
+  if(!CN[c] || !alive(c) || atWar(me, c) || isAlly(c)) return {k:null};
+  const need = k => n.cp >= DCP[k] ? 0 : Math.ceil((DCP[k] - n.cp) / 0.5);
+  if(dipEval('ally', c).ok) return {k:'ally', wait:need('ally')};
+  if(!hasPact(c) && dipEval('pact', c).ok) return {k:'pact', wait:need('pact')};
+  if(((G.relM[c] || {}).verb || 0) < 40) return {k:'imp', wait:Math.max(need('imp'), Math.ceil((G.dipCd['imp:' + c] || 0) - G.day), 0)};
+  return {k:null};
+}
+function ezFriend(c){
+  const me = G.player, z = ezG(), nm = cname(c);
+  if(!CN[c] || !alive(c)) return;
+  if(atWar(me, c)){ ezMsg('Jullie hebben oorlog. Sluit eerst vrede.', 'war'); return; }
+  if(isAlly(c)){ ezMsg(nm + ' is al je beste vriend.', 'good'); return; }
+  if(z.atk === c || (G.just && G.just.c === c) || G.wg[c] != null) ezStop(c);   // wie vrienden wil worden, maakt geen aanvalsplan
+  const o = ezFriendOpt(c);
+  if(!o.k){ ezMsg(nm + ' wil nu niet meer dan dit. Probeer het later nog eens.', ''); return; }
+  if(o.wait){ ezMsg('Je boodschapper is nog onderweg. Probeer het over ' + ezDays(o.wait) + ' nog eens.', ''); return; }
+  dipDo(o.k, c);
+  if(o.k === 'ally') ezMsg(isAlly(c) ? nm + ' is nu je beste vriend. Jullie helpen elkaar.' : nm + ' wil dat nu toch niet.', isAlly(c) ? 'good' : '');
+  else if(o.k === 'pact') ezMsg(hasPact(c) ? 'Jij en ' + nm + ' zijn nu vrienden. Jullie vallen elkaar niet aan.' : nm + ' wil dat nu toch niet.', hasPact(c) ? 'good' : '');
+  else { const o2 = ezFriendOpt(c); ezMsg('Je stuurt een cadeau naar ' + nm + '. ' + (o2.k && o2.k !== 'imp' ? 'Nu willen ze vrienden worden!' : 'Ze vinden je nu aardiger.'), 'good'); }
+}
+// wie kan je te hulp komen? [land, soort, vijand] of null
+function ezHelpFind(only){
+  const me = G.player, n = nat(me), ens = enemiesOf(me).slice().sort((a, b) => armyPow(b) - armyPow(a));
+  if(!ens.length) return null;
+  const cands = only ? [only] : Object.keys(G.ally || {});
+  if(!only) for(const e of ens) for(const y of enemiesOf(e)) if(y !== me && !cands.includes(y)) cands.push(y);
+  for(const y of cands){
+    if(!CN[y] || !alive(y) || atWar(me, y)) continue;
+    if(isAlly(y) && n.cp >= DCP.call) for(const e of ens) if(dipEval('call', y, e).ok) return [y, 'call', e];
+    if(dipEval('ask', y).ok) return [y, 'ask'];
+  }
+  return null;
+}
+function ezHelp(only){
+  const h = ezHelpFind(only);
+  if(!h){ ezMsg(!enemiesOf(G.player).length ? 'Je hebt geen oorlog. Hulp is niet nodig.' : only ? cname(only) + ' kan je nu niet helpen.' : 'Niemand kan je nu helpen.', ''); return; }
+  dipDo(h[1], h[0], h[2]);
+  if(h[1] === 'ask') ezMsg(cname(h[0]) + ' stuurt je hulp.', 'good');
+}
+
+/* ---- bouwen: één ding vooraan in de rij ---- */
+const EZB = [
+  ['inf', 'Soldaten', 'Ze beschermen je land en vallen aan.'],
+  ['tank', 'Tanks', 'Sterk en snel in de aanval.'],
+  ['art', 'Kanonnen', 'Helpen bij het veroveren van steden.'],
+  ['fi', 'Vliegtuigen', 'Beschermen je legers vanuit de lucht.'],
+  ['fab', 'Fabriek', 'Daarmee bouw je alles sneller.']
+];
+const EZQN = {inf:'Soldaten', mot:'Snelle soldaten', tank:'Tanks', art:'Kanonnen', mar:'Zeesoldaten', para:'Parachutisten', aa:'Luchtafweer', fi:'Vliegtuigen', cas:'Vliegtuigen', bo:'Bommenwerpers', fab:'Fabriek', rocket:'Raket', nuke:'Zware bom', tech:'Betere wapens'};
+const ezQKind = k => { const it = ITEMS[k]; return !it ? 'inf' : it.kind === 'tech' ? 'tech' : it.kind === 'unit' ? domOfKey(k) : k; };
+function ezBuildKey(k){ if(ITEMS[k].kind !== 'unit' || !G.tmpl) return k; for(let i = 0; i < G.tmpl.length; i++) if(domOf(G.tmpl[i].comp) === k) return 'p' + i; return k; }
+function ezCanBuild(k){   // '' = mag, anders waarom niet
+  const me = G.player, n = nat(me), kind = ITEMS[k].kind;
+  if(n.q.length >= 10) return 'Er wordt al genoeg gebouwd. Wacht even.';
+  if(kind === 'unit' && ezDivs() + unitsQueued(me) >= armyCap(me)) return 'Je land kan niet meer legers aan. Verover eerst meer land.';
+  if(kind === 'air'){ let a = ACNT[me] || 0; for(const q of n.q) if((ITEMS[q.k] || {}).kind === 'air') a++; if(a >= airCap(me)) return 'Je hebt genoeg vliegtuigen. Bouw eerst fabrieken.'; }
+  if(k === 'fab' && fabSpots(me) <= 0) return 'Er is geen plek meer voor fabrieken. Verover eerst meer land.';
+  return '';
+}
+const ezBuildDays = k => Math.max(1, Math.ceil(itemCost(G.player, ezBuildKey(k)) / Math.max(0.1, nat(G.player).ppd)));
+function ezBuild(k){
+  const n = nat(G.player), why = ezCanBuild(k), row = EZB.find(b => b[0] === k);
+  if(!row) return;
+  if(why){ ezMsg(why, ''); return; }
+  n.q.unshift({k:ezBuildKey(k), p:0, ez:1}); qSig = null;
+  ezMsg(row[1] + ' in de maak. Klaar over ongeveer ' + ezDays(ezBuildDays(k)) + '.', 'good');
+}
+
+/* ---- de adviseur: altijd één korte zin over een goede zet, met een knop die het meteen doet ---- */
+function ezAdvice(){
+  const me = G.player, n = nat(me), z = ezG(), ens = enemiesOf(me);
+  // wachten: de tijd moet lopen (Start), of mag sneller
+  const wait = t => G.paused ? {t:t + ' Druk op Start.', b:'Start', a:'play'} : G.speed < 3 ? {t, b:'Sneller', a:'go'} : {t};
+  const busy = !!(n.q[0] && (ITEMS[n.q[0].k] || {}).kind === 'unit' && n.q[0].ez);
+  const soldiers = t => busy ? wait(t + ' Er komen nieuwe soldaten aan.') : ezCanBuild('inf') ? wait(t + ' Je legers doen hun best.') : {t:t + ' Bouw snel meer soldaten!', b:'Bouw soldaten', a:'build:inf'};
+  if(ens.length){
+    const mM = meterOf(me); let ep = 0; for(const e of ens) ep += armyPow(e);
+    const byPow = ens.slice().sort((a, b) => armyPow(b) - armyPow(a)), top = ens.slice().sort((a, b) => meterOf(b) - meterOf(a))[0], mE = meterOf(top);
+    const hard = ep > 1.8 * ezPow(me) && mE < 0.3;   // een veel sterkere vijand: niet wachten tot het misgaat
+    if(mM >= 0.4 || (mM >= 0.15 && mM > mE + 0.1 && ep > 1.3 * ezPow(me)) || hard){   // een nederlaag dreigt: vrede, hulp of soldaten
+      for(const e of byPow){
+        const d = dealInfo(e);
+        if(d.white) return {t:(hard && mM < 0.15 ? ezNm(e) + ' is veel sterker dan jij.' : 'We verliezen van ' + ezNm(e) + '.') + ' Sluit nu vrede, dan houd je je land.', b:'Sluit vrede', a:'deal:white:' + e};
+        if(d.give.length) return {t:'We verliezen van ' + ezNm(e) + '. Geef ' + ezGb(d.give.length) + ' weg, dan stopt de oorlog.', b:'Sluit vrede', a:'deal:give:' + e};
+      }
+      const h = ezHelpFind();
+      if(h) return {t:'We verliezen deze oorlog. Vraag ' + ezNm(h[0]) + ' om hulp!', b:'Vraag om hulp', a:'help'};
+      return soldiers('Het gaat slecht in de oorlog.');
+    }
+    if(mE >= 0.75) return wait(ezNm(top) + ' is bijna verslagen! Even geduld.');
+    for(const e of ens){   // een oorlog die al lang stilligt
+      const k = wk(me, e), dur = G.day - (G.wars[k] ?? G.day), quiet = G.day - Math.max(G.wars[k] ?? G.day, (G.wlast || {})[k] || 0);
+      if(dur < 200 || quiet < 90) continue;
+      const d = dealInfo(e);
+      if(d.keep.length) return {t:'De oorlog met ' + ezNm(e) + ' staat stil. Sluit vrede: jij krijgt ' + ezGb(d.keep.length) + '.', b:'Sluit vrede', a:'deal:keep:' + e};
+      if(d.white) return {t:'De oorlog met ' + ezNm(e) + ' staat al lang stil. Zullen we vrede sluiten?', b:'Sluit vrede', a:'deal:white:' + e};
+    }
+    const us = UBY[me] || []; let hp = 0; for(const u of us) hp += u.hp;
+    if(us.length && hp / us.length < 55 && !busy && !ezCanBuild('inf')) return {t:'Je legers zijn moe. Bouw er een paar bij.', b:'Bouw soldaten', a:'build:inf'};
+    const ws = ezWarState(top);
+    if(ws === 'win') return wait('Je wint deze oorlog! Even geduld.');
+    if(ws === 'strong' && ep < 0.8 * ezPow(me)) return wait('Je legers zijn sterker dan die van ' + ezNm(top) + '. Even geduld.');
+    return wait('Je legers vechten tegen ' + ezNm(byPow[0]) + '. Even geduld.');
+  }
+  if(z.atk && CN[z.atk]) return wait('Je generaals maken een plan. Over ' + ezDays(ezAtkLeft(z.atk)) + ' begint de aanval op ' + ezNm(z.atk) + '.');
+  let thr = null; for(const x in G.aiJust || {}) if(CN[x] && alive(x) && !atWar(x, me) && (!thr || armyPow(x) > armyPow(thr))) thr = x;
+  if(thr) return busy || ezCanBuild('inf') ? wait(ezNm(thr) + ' wil je aanvallen! Je legers staan klaar.') : {t:ezNm(thr) + ' wil je aanvallen! Bouw extra soldaten.', b:'Bouw soldaten', a:'build:inf'};
+  if(n.ws < 30) return wait('Je volk is moe van oorlog. Wacht even met aanvallen.');
+  if(hotCount(COAL_THR() * 0.7) >= 2 || maxAE().m >= COAL_THR() * 0.9) return wait('Andere landen zijn boos op je. Wacht even met aanvallen, anders vallen ze je samen aan.');
+  const nb = ezNbrs(); let best = null, br = 99, big = null;
+  for(const c of nb){
+    if(ezCanAtk(c)) continue;
+    const r = ezFoe(c)[0];
+    if(r < br){ br = r; best = c; }
+    if(r >= 1.15 && (!big || armyPow(c) > armyPow(big))){ const o = ezFriendOpt(c); if(o.k && !o.wait) big = c; }
+  }
+  if(best && br < 0.7 && ezDivs() > 0) return {t:ezNm(best) + ' is zwakker dan jij. Zullen we aanvallen?', b:'Val aan', a:'atk:' + best};
+  if(big){ const o = ezFriendOpt(big); return o.k === 'imp' ? {t:ezNm(big) + ' is sterker dan jij. Stuur een cadeau, dan vinden ze je aardiger.', b:'Stuur een cadeau', a:'fr:' + big} : {t:ezNm(big) + ' is sterker dan jij. Word vrienden, dan vallen ze je niet aan.', b:'Word vrienden', a:'fr:' + big}; }
+  if(ezDivs() < 0.6 * armyCap(me) && !ezCanBuild('inf')) return busy ? wait('Je leger groeit. Er komen nieuwe soldaten aan.') : {t:'Je leger is nog klein. Bouw soldaten, dan word je sterker.', b:'Bouw soldaten', a:'build:inf'};
+  if(!n.q.some(q => q.k === 'fab') && !ezCanBuild('fab')) return {t:'Bouw een fabriek. Dan word je sterker.', b:'Bouw een fabriek', a:'build:fab'};
+  return wait(best ? 'Je buren zijn nu te sterk om aan te vallen. Je land bouwt verder.' : 'Alles gaat goed. Je land bouwt rustig verder.');
+}
+
+/* ---- de korte uitleg bij het eerste spel: de adviseur wijst aan waar je moet tikken ---- */
+function ezTutStart(){ UI.ezTut = 1; UI.ezFold = false; UI.ezSheet = null; if(G && !cardOpen()) G.paused = true; if(!EZ.loop){ EZ.loop = true; requestAnimationFrame(ezRingLoop); } }
+function ezTutOff(){ UI.ezTut = 0; EZ.ring.hidden = true; }
+function ezTutEnd(done){ ezTutOff(); SET.ezTut = 1; saveSettings(); if(done) ezMsg('Goed zo! Ik zeg het wel als er iets te doen is.', 'good'); }
+function ezTutStep(){   // gaat vanzelf verder zodra je het gevraagde gedaan hebt
+  let t = UI.ezTut; if(!t) return;
+  const me = G.player;
+  if(t <= 3 && !G.paused) t = 4;
+  if(t === 4 && UI.ezSheet === 'atk') t = 5;
+  if(t === 5 && UI.ezSheet !== 'atk') t = 4;
+  if(t >= 4 && (ezG().atk || enemiesOf(me).length)){ ezTutEnd(true); return; }
+  if(t >= 4 && !ezNbrs().some(c => !ezCanAtk(c))){ ezTutEnd(false); return; }
+  UI.ezTut = t;
+}
+function ezTutSay(){
+  const t = UI.ezTut, me = G.player;
+  return t === 1 ? {t:'Hallo! Ik ben je generaal. Dit is jouw land: <b>' + ezNm(me) + '</b>.', b:'Verder', a:'tut:next'}
+    : t === 2 ? {t:'Maak je land groter. Heb je <b>' + ezGoal() + '%</b> van ' + ezMapNm() + '? Dan win je!', b:'Verder', a:'tut:next'}
+    : t === 3 ? {t:'Druk op <b>Start</b>. Dan gaat de tijd lopen.'}
+    : t === 4 ? {t:'Tik op <b>Aanvallen</b> en kies een buurland.'}
+    : {t:'Kies een land met een <b>groen</b> lichtje en tik op <b>Val aan</b>.'};
+}
+// de aanwijzer: een pulserende ring om het echte bedieningselement (of om je land op de kaart)
+function ezRingAt(){
+  const r = EZ.ring, t = UI.ezTut;
+  if(!t || !SET.easy || !G || G.over || cardOpen() || UI.sheet || hudMode() !== 'game'){ r.hidden = true; return; }
+  let x, y, w, h, dot = false;
+  if(t === 1){
+    const a = P[CN[G.player].cap].a, s = toScreen(a[0], a[1]), sr = stage.getBoundingClientRect(), d = Math.max(64, 5 * REM);
+    x = s[0] + sr.left - d / 2; y = s[1] + sr.top - d / 2; w = h = d; dot = true;
+  } else {
+    const el = t === 2 ? EZ.top.querySelector('.ez-goal') : t === 3 ? EZ.top.querySelector('[data-eza="play"]') : t === 4 ? EZ.nav.querySelector('[data-eza="sheet:atk"]') : (EZ.sheet.querySelector('.ez-land.g [data-eza^="atk:"]') || EZ.sheet.querySelector('[data-eza^="atk:"]'));
+    if(!el){ r.hidden = true; return; }
+    const b = el.getBoundingClientRect(), pad = 0.35 * REM;
+    if(!b.width || b.bottom < 0 || b.top > innerHeight){ r.hidden = true; return; }
+    x = b.left - pad; y = b.top - pad; w = b.width + 2 * pad; h = b.height + 2 * pad;
+  }
+  const st = 'left:' + Math.round(x) + 'px;top:' + Math.round(y) + 'px;width:' + Math.round(w) + 'px;height:' + Math.round(h) + 'px';
+  if(EZ.ringS !== st){ EZ.ringS = st; r.style.cssText = st; }
+  r.className = (dot ? 'dot' : '') + (y + h / 2 < innerHeight * 0.3 ? ' low' : '');
+  r.hidden = false;
+}
+function ezRingLoop(){ if(UI.ezTut && SET.easy && G){ ezRingAt(); requestAnimationFrame(ezRingLoop); } else { EZ.loop = false; EZ.ring.hidden = true; } }
+
+/* ---- tekenen: balk, knoppen, adviseur en bladen (aangeroepen vanuit renderHud) ---- */
+// alleen opnieuw opbouwen als er iets veranderd is en er niet net op gedrukt wordt; de focus blijft op dezelfde knop
+function ezPut(el, k, h){
+  if(EZ.sig[k] === h || EZ.press) return;
+  EZ.sig[k] = h;
+  const act = document.activeElement, fa = act && el.contains(act) ? act.getAttribute('data-eza') : null, st = el.scrollTop;
+  el.innerHTML = h; el.scrollTop = st;
+  if(fa){ const nb = el.querySelector('[data-eza="' + fa + '"]'); if(nb) nb.focus({preventScroll:true}); }
+}
+function ezHud(mode){
+  const b = document.body, on = !!(SET.easy && G);
+  if(b.classList.contains('ez') !== on){ b.classList.toggle('ez', on); EZ.sig = {}; EZ.topH = 0; if(!on) b.style.removeProperty('--ez-top'); }
+  if(!on || mode !== 'game'){
+    EZ.top.hidden = EZ.nav.hidden = EZ.adv.hidden = EZ.sheet.hidden = EZ.ring.hidden = true;
+    b.classList.remove('ez-sh', 'ez-co');
+    if(on) ezEnd();
+    return;
+  }
+  if(UI.intro){ UI.intro = 0; ezTutStart(); }   // "Snelstart" in het menu: hier de eigen uitleg
+  if(UI.sel.size || UI.selAir.size) clearSel();
+  const co = cardOpen() || !!UI.winShown;
+  if(UI.sheet || co) UI.ezSheet = null;
+  if(EZ.wasCo && !co && EZ.lastCard === 'treaty' && alive(G.player)) fitCountry(G.player);   // na een vrede: terug naar je eigen land
+  EZ.wasCo = co; if(!co) EZ.lastCard = null;
+  ezEnd();
+  b.classList.toggle('ez-co', co); b.classList.toggle('ez-sh', !!UI.ezSheet);
+  EZ.top.hidden = false; ezTopR();
+  EZ.nav.hidden = co; EZ.adv.hidden = co || !!UI.sheet; EZ.sheet.hidden = co || !UI.ezSheet;
+  if(!co){
+    ezTutStep();
+    ezPut(EZ.nav, 'nav', [['atk', 'war', 'zwaard', 'Aanvallen'], ['fr', '', 'hart', 'Vrienden'], ['build', 'gold', 'hamer', 'Bouwen'], ['help', 'ghost', 'vraag', 'Hulp']].map(([k, cls, icon, l]) => '<button type="button" class="kbtn big ' + cls + (UI.ezSheet === k ? ' on' : '') + '" data-eza="sheet:' + k + '" aria-pressed="' + (UI.ezSheet === k) + '">' + ezIc(icon) + '<span>' + l + '</span></button>').join(''));
+    ezAdvR();
+    if(UI.ezSheet) ezPut(EZ.sheet, 'sheet', ezSheetH());
+  }
+  const th = EZ.top.offsetTop + EZ.top.offsetHeight;
+  if(th && Math.abs(th - EZ.topH) > 1){ EZ.topH = th; b.style.setProperty('--ez-top', th + 'px'); }
+  ezRingAt();
+}
+// de eindkaart (gewonnen of verslagen) in gewone taal; de knoppen zijn die van de gewone eindkaart
+function ezEnd(){
+  const el = $('endcard');
+  if(!(G.over || (G.won && UI.winShown))){ EZ.endS = ''; return; }
+  renderEnd(); if(el.hidden) return;
+  const win = G.won && !G.over, sc = score(), rk = rankOf(sc);
+  const medal = rk === 'Goud' ? ' Je krijgt een gouden medaille!' : rk === 'Zilver' ? ' Je krijgt een zilveren medaille!' : rk === 'Brons' ? ' Je krijgt een bronzen medaille!' : '';
+  const h = '<div class="ez-end">' + (win ? ezIc('ster', 'ez-endi') : '<span class="ez-endg">' + EZ_GEN + '</span>') + '<b class="ez-ct">' + (win ? 'Je hebt gewonnen!' : 'Je land is verslagen.') + '</b>'
+    + '<p class="ez-cp">' + (win ? 'Je hebt <b>' + ezShare() + '%</b> van ' + ezMapNm() + '. Knap gedaan!' : 'Jammer! Je vijanden waren te sterk. Probeer het nog een keer.') + '</p>'
+    + '<p class="ez-cp">Je score: <b>' + sc + '</b> punten.' + medal + '</p><div class="ez-cb">'
+    + (win ? '<button type="button" class="kbtn go big wide" data-e="cont">Speel verder</button><button type="button" class="kbtn big wide" data-e="new">Nieuw spel</button>'
+      : '<button type="button" class="kbtn go big wide" data-e="again">Opnieuw met ' + ezNm(G.player) + '</button><button type="button" class="kbtn big wide" data-e="new">Kies een ander land</button>')
+    + '<button type="button" class="kbtn ghost wide" data-e="menu">Hoofdmenu</button></div></div>';
+  if(EZ.endS !== h || !el.querySelector('.ez-end')){ EZ.endS = h; el.innerHTML = h; }
+}
+function ezTopR(){
+  const me = G.player, n = nat(me), T = EZ.top;
+  if(!T.firstChild) T.innerHTML = '<div class="ez-me"></div><div class="ez-goal"></div><div class="ez-stats"></div><div class="ez-date"></div><div class="ez-clock"></div><button class="kbtn ghost ez-menu" data-eza="menu" type="button" aria-label="Menu">' + ezIc('menu') + '<span>Menu</span></button><div class="ez-warn"></div>';
+  const ch = T.children, sh = owned(me).length / PIDS.length, pc = pct(sh / winShare()), run = !G.paused;
+  ezPut(ch[0], 'me', ezFlag(me) + '<b>' + ezNm(me) + '</b>');
+  ezPut(ch[1], 'goal', '<div class="ez-goalbar" role="progressbar" aria-label="Hoe dicht je bij de overwinning bent" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc + '"><i style="width:' + pc + '%"></i></div>'
+    + '<span class="ez-goaltxt">' + (G.won ? 'Je hebt gewonnen! Je mag verder spelen.' : 'Je hebt <b>' + ezShare() + '%</b> van ' + ezMapNm() + ' — doel <b>' + ezGoal() + '%</b>') + '</span>');
+  const divs = ezDivs(), fabs = Math.round(slotTot(me)[0]);
+  ezPut(ch[2], 'stats', '<span class="ez-stat">' + ezIc('leger') + '<b>' + divs + '</b><small>' + (divs === 1 ? 'leger' : 'legers') + '</small></span><span class="ez-stat">' + ezIc('fab') + '<b>' + fabs + '</b><small>' + (fabs === 1 ? 'fabriek' : 'fabrieken') + '</small></span>');
+  ezPut(ch[3], 'date', '<b>Dag ' + Math.floor(G.day) + '</b><small>jaar ' + (Math.floor(G.day / 365) + 1) + '</small>');
+  ezPut(ch[4], 'clock', '<button type="button" class="kbtn big ez-play ' + (run ? 'gold' : 'go ez-blink') + '" data-eza="play" aria-label="' + (run ? 'Pauze: zet de tijd stil' : 'Start: laat de tijd lopen') + '">' + ezIc(run ? 'pauze' : 'speel') + '<span>' + (run ? 'Pauze' : 'Start') + '</span></button>'
+    + '<span class="ez-spds" role="group" aria-label="Hoe snel de tijd loopt"><button type="button" class="kbtn ez-spd ' + (G.speed < 3 ? 'gold' : 'ghost') + '" data-eza="slow" aria-pressed="' + (G.speed < 3) + '">Langzaam</button><button type="button" class="kbtn ez-spd ' + (G.speed >= 3 ? 'gold' : 'ghost') + '" data-eza="fast" aria-pressed="' + (G.speed >= 3) + '">Snel</button></span>');
+  // waarschuwingen in gewone taal: je oorlogen, een geplande aanval en wat er echt misgaat
+  const z = ezG(), w = [], ens = enemiesOf(me);
+  for(const e of ens.slice(0, 3)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + e + '">' + ezIc('zwaard') + '<span>Oorlog met ' + ezNm(e) + ': ' + ezWarTxt(e) + '</span></button>');
+  if(ens.length > 3) w.push('<span class="ez-pill war">en nog ' + (ens.length - 3) + '</span>');
+  if(!ens.length && z.atk && CN[z.atk]) w.push('<button type="button" class="ez-pill gold" data-eza="land:' + z.atk + '">' + ezIc('zwaard') + '<span>Aanval op ' + ezNm(z.atk) + ' over ' + ezDays(ezAtkLeft(z.atk)) + '</span></button>');
+  if(ens.length && meterOf(me) >= 0.5) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Je verliest de oorlog!</span></span>');
+  if(n.ws < 25) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Je volk wil vrede</span></span>');
+  for(const x of Object.keys(G.aiJust || {}).slice(0, 2)) if(CN[x] && alive(x) && !atWar(x, me)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + x + '">' + ezIc('agr') + '<span>' + ezNm(x) + ' wil je aanvallen</span></button>');
+  if(hotCount(COAL_THR() * 0.7) >= 2) w.push('<span class="ez-pill war">' + ezIc('agr') + '<span>Andere landen zijn boos op je</span></span>');
+  ezPut(ch[6], 'warn', w.join('')); ch[6].hidden = !w.length;
+}
+function ezAdvR(){
+  const tut = !!UI.ezTut;
+  let a;
+  if(tut) a = ezTutSay();
+  else {
+    const n = nat(G.player), z = ezG(), k = [Math.floor(G.day), G.paused, G.speed, WARV, DIPV, CTRLV, z.atk, n.q.length, n.q[0] && n.q[0].k, Math.floor(n.cp), Math.floor(n.ws)].join('|');
+    if(EZ.advK !== k || EZ.advG !== G){ EZ.advK = k; EZ.advG = G; EZ.advV = ezAdvice(); }
+    a = EZ.advV;
+  }
+  const fold = UI.ezFold && !tut;
+  ezPut(EZ.adv, 'adv', '<button type="button" class="ez-gen" data-eza="fold" aria-expanded="' + !fold + '" aria-label="Je generaal. Tik om zijn advies te ' + (fold ? 'tonen' : 'verbergen') + '">' + EZ_GEN + '</button>'
+    + (fold ? '' : '<div class="ez-bub"><span class="ez-bt">' + ezDot(a.t) + '</span>' + (a.b || tut ? '<span class="ez-bb">' + (a.b ? '<button type="button" class="kbtn go" data-eza="' + a.a + '" data-ezadv="1">' + a.b + '</button>' : '') + (tut ? '<button type="button" class="ez-skip" data-eza="tut:skip">Uitleg overslaan</button>' : '') + '</span>' : '') + '</div>'));
+}
+
+/* ---- de bladen: Aanvallen, Vrienden, Bouwen, Hulp en het kaartje van één land ---- */
+function ezAtkRow(c){
+  const me = G.player, z = ezG();
+  let sub, btn = '', cls = '';
+  if(atWar(me, c)){ sub = '<span class="ez-light r"><i></i>Oorlog: ' + ezWarTxt(c) + '</span>'; btn = '<button type="button" class="kbtn ghost" data-eza="land:' + c + '">Bekijk</button>'; }
+  else {
+    const why = ezCanAtk(c), [r, g] = ezFoe(c), L = ezLight(r);
+    cls = ' ' + L[0];
+    sub = '<span class="ez-light ' + L[0] + '"><i></i>' + L[1] + '</span>' + (g ? '<small>Let op: ' + ezNm(g) + ' helpt dit land.</small>' : '');
+    if(z.atk === c){ sub += '<small>De aanval begint over ' + ezDays(ezAtkLeft(c)) + '.</small>'; btn = '<button type="button" class="kbtn ghost" data-eza="stop:' + c + '">Stop</button>'; }
+    else if(why){ sub = '<small>' + esc(why) + '</small>'; cls = ''; }
+    else btn = '<button type="button" class="kbtn war" data-eza="atk:' + c + '">' + ezIc('zwaard') + 'Val aan</button>';
+  }
+  return '<div class="ez-land' + cls + '">' + ezFlag(c, 1) + '<div class="ez-lt"><b>' + ezNm(c) + '</b>' + sub + '</div>' + btn + '</div>';
+}
+function ezRel(c){   // [gezichtje, zin] over hoe land c over jou denkt
+  const st = dipState(c), rel = relOf(c).v;
+  return st === 'war' ? [4, 'Jullie hebben oorlog.'] : st === 'ally' ? [3, 'Je beste vriend. Jullie helpen elkaar.'] : st === 'pact' ? [2, 'Jullie zijn vrienden. Jullie vallen elkaar niet aan.']
+    : rel >= 15 ? [2, 'Vindt je aardig.'] : rel > -15 ? [1, 'Kent je nog niet goed.'] : (G.ae[c] || 0) >= 15 ? [0, 'Is bang voor je en boos op je.'] : [0, 'Vindt je niet aardig.'];
+}
+function ezFrBtn(c){
+  const me = G.player;
+  if(atWar(me, c)) return '';
+  if(isAlly(c)) return enemiesOf(me).length && ezHelpFind(c) ? '<button type="button" class="kbtn go" data-eza="help:' + c + '">Vraag om hulp</button>' : '';
+  const o = ezFriendOpt(c);
+  if(!o.k) return '';
+  const lab = o.k === 'ally' ? 'Word beste vrienden' : o.k === 'pact' ? 'Word vrienden' : 'Stuur een cadeau';
+  return o.wait ? '<button type="button" class="kbtn ghost ez-wait" data-eza="fr:' + c + '"><span>' + lab + '</span><small>kan over ' + ezDays(o.wait) + '</small></button>' : '<button type="button" class="kbtn go" data-eza="fr:' + c + '">' + ezIc('hart') + lab + '</button>';
+}
+function ezFrRow(c){
+  const [f, t] = ezRel(c), btn = atWar(G.player, c) ? '<button type="button" class="kbtn ghost" data-eza="land:' + c + '">Bekijk</button>' : ezFrBtn(c);
+  return '<div class="ez-land">' + ezFace(f) + '<div class="ez-lt"><b>' + ezFlag(c) + ezNm(c) + '</b><span>' + t + '</span></div>' + btn + '</div>';
+}
+function ezLandH(c){
+  const me = G.player, z = ezG();
+  if(c === me) return '<p class="ez-p">Dit is jouw land. Je hebt ' + ezGb(owned(me).length) + '. Hoe groter je land, hoe dichter bij de overwinning.</p><div class="ez-acts"><button type="button" class="kbtn gold big" data-eza="sheet:build">' + ezIc('hamer') + 'Bouwen</button><button type="button" class="kbtn big war" data-eza="sheet:atk">' + ezIc('zwaard') + 'Aanvallen</button></div>';
+  if(!alive(c)) return '<p class="ez-p">Dit land bestaat niet meer.</p>';
+  const [f, t] = ezRel(c);
+  let h = '<div class="ez-land">' + ezFace(f) + '<div class="ez-lt"><span>' + t + '</span></div></div>';
+  if(atWar(me, c)){
+    const d = dealInfo(c), mE = meterOf(c);
+    h += '<div class="ez-warbar"><span>Zo ver is ' + ezNm(c) + ' verslagen:</span><div class="ez-goalbar"><i style="width:' + pct(mE) + '%"></i></div><b>' + ezWarTxt(c) + '</b></div><div class="ez-acts col">';
+    if(d.keep.length) h += '<button type="button" class="kbtn go big wide" data-eza="deal:keep:' + c + '">Sluit vrede: jij krijgt ' + ezGb(d.keep.length) + '</button>';
+    if(d.white) h += '<button type="button" class="kbtn big wide" data-eza="deal:white:' + c + '">Sluit vrede: alles wordt weer zoals het was</button>';
+    if(d.give.length) h += '<button type="button" class="kbtn ghost wide" data-eza="deal:give:' + c + '">Geef op: jij geeft ' + ezGb(d.give.length) + ' weg</button>';
+    if(!d.keep.length && !d.white && !d.give.length) h += '<p class="ez-p">' + ezNm(c) + ' wil nu geen vrede. Je legers vechten door.</p>';
+    if(ezHelpFind()) h += '<button type="button" class="kbtn ghost wide" data-eza="help">Vraag je vrienden om hulp</button>';
+    return h + '</div>';
+  }
+  const why = ezCanAtk(c), [r, g] = ezFoe(c), L = ezLight(r), fb = ezFrBtn(c);
+  if(!isAlly(c)) h += '<div class="ez-land ' + L[0] + '"><span class="ez-light big ' + L[0] + '"><i></i></span><div class="ez-lt"><span>Dit land is <b>' + L[1] + '</b>.' + (g ? ' Let op: ' + ezNm(g) + ' helpt dit land.' : '') + '</span></div></div>';
+  if(z.atk === c) h += '<p class="ez-p">Je generaals maken een plan. Over ' + ezDays(ezAtkLeft(c)) + ' begint de aanval.</p>';
+  else if(why) h += '<p class="ez-p">' + esc(why) + '</p>';
+  h += '<div class="ez-acts">';
+  if(z.atk === c) h += '<button type="button" class="kbtn ghost big" data-eza="stop:' + c + '">Stop de aanval</button>';
+  else if(!why) h += '<button type="button" class="kbtn war big" data-eza="atk:' + c + '">' + ezIc('zwaard') + 'Val aan</button>';
+  return h + fb.replace('class="kbtn go"', 'class="kbtn go big"') + '</div>';
+}
+function ezSheetH(){
+  const k = UI.ezSheet, me = G.player, n = nat(me);
+  const head = (icon, t) => '<div class="ez-sh">' + icon + '<b>' + t + '</b><button type="button" class="ez-x" data-eza="close" aria-label="Sluiten">' + ezIc('kruis') + '</button></div>';
+  const tip = t => '<div class="ez-tip">' + EZ_GEN + '<span>' + t + '</span></div>';
+  if(k === 'atk'){
+    const ens = enemiesOf(me), nb = ezNbrs().filter(c => !atWar(me, c)).sort((a, b) => (ezCanAtk(a) ? 1 : 0) - (ezCanAtk(b) ? 1 : 0) || ezFoe(a)[0] - ezFoe(b)[0]);
+    return head(ezIc('zwaard'), 'Aanvallen') + tip(UI.ezTut === 5 ? ezTutSay().t : ens.length ? 'Je hebt al oorlog. Maak die eerst af.' : 'Groen is makkelijk. Rood is gevaarlijk.')
+      + '<div class="ez-list">' + ens.map(ezAtkRow).join('') + nb.map(ezAtkRow).join('') + (!ens.length && !nb.length ? '<p class="ez-p">Er is nu geen land om aan te vallen.</p>' : '') + '</div>';
+  }
+  if(k === 'fr'){
+    const s = new Set(ezNbrs()); for(const c in G.ally || {}) s.add(c); for(const c in G.pact || {}) if(hasPact(c)) s.add(c); for(const c of enemiesOf(me)) s.add(c);
+    const rank = c => { const st = dipState(c); return st === 'ally' ? 0 : st === 'pact' ? 1 : st === 'war' ? 3 : 2; };
+    const list = [...s].filter(c => CN[c] && alive(c) && c !== me).sort((a, b) => rank(a) - rank(b) || relOf(b).v - relOf(a).v);
+    return head(ezIc('hart'), 'Vrienden') + tip(enemiesOf(me).length ? 'Een vriend kan je helpen in de oorlog.' : 'Een vriend valt je niet aan. Een beste vriend helpt je ook.')
+      + '<div class="ez-list">' + (list.length ? list.map(ezFrRow).join('') : '<p class="ez-p">Er zijn nu geen landen in de buurt.</p>') + '</div>';
+  }
+  if(k === 'build'){
+    const tiles = EZB.map(([key, nm, txt]) => { const why = ezCanBuild(key);
+      return '<button type="button" class="ez-tile' + (why ? ' off' : '') + '" data-eza="build:' + key + '" aria-disabled="' + !!why + '">' + ezIc(key) + '<b>' + nm + '</b><span>' + (why || txt) + '</span>' + (why ? '' : '<small>Klaar over ongeveer ' + ezDays(ezBuildDays(key)) + '</small>') + '</button>'; }).join('');
+    let acc = 0;
+    const q = n.q.slice(0, 4).map(it => { acc += itemCost(me, it.k) - it.p; const kd = ezQKind(it.k); return '<span class="ez-qi">' + ezIc(kd === 'tech' ? 'tech' : kd) + '<span>' + (EZQN[kd] || 'Iets nieuws') + '<small>' + (it.wait ? 'wacht' : 'nog ' + ezDays(Math.max(1, Math.ceil(acc / Math.max(0.1, n.ppd))))) + '</small></span></span>'; }).join('');
+    return head(ezIc('hamer'), 'Bouwen') + tip('Tik op wat je wilt bouwen. De rest bouwt je land vanzelf.') + '<div class="ez-tiles">' + tiles + '</div>'
+      + '<div class="ez-q"><b>Nu in de maak</b>' + (q || '<span class="ez-qi"><span>Nog niets</span></span>') + '</div>';
+  }
+  if(k === 'help'){
+    const row = (icon, t, x) => '<div class="ez-land">' + icon + '<div class="ez-lt"><b>' + t + '</b><span>' + x + '</span></div></div>';
+    return head(ezIc('vraag'), 'Hulp') + '<div class="ez-list">'
+      + row(ezIc('ster'), 'Zo win je', 'Maak je land groter. Heb je ' + ezGoal() + '% van ' + ezMapNm() + ', dan heb je gewonnen. De balk bovenaan laat zien hoe ver je bent.')
+      + row(ezIc('speel'), 'De tijd', 'Druk op Start om de tijd te laten lopen. Met Pauze staat alles stil. Met Snel gaat het vlugger.')
+      + row(ezIc('zwaard'), 'Aanvallen', 'Kies een buurland. Je generaals maken een plan en je legers doen de rest. Groen is makkelijk, rood is gevaarlijk.')
+      + row(ezIc('hart'), 'Vrienden', 'Een vriend valt je niet aan. Een beste vriend helpt je als je oorlog hebt.')
+      + row(ezIc('hamer'), 'Bouwen', 'Je land bouwt vanzelf legers en fabrieken. Wil je iets extra? Tik op Bouwen.')
+      + row(ezIc('prov'), 'De kaart', 'Tik op een land om te zien wat je ermee kunt doen. Sleep om de kaart te verschuiven.')
+      + row('<span class="ez-minigen">' + EZ_GEN + '</span>', 'Je generaal', 'Hij zegt steeds wat een goede zet is. Tik op zijn knop en hij doet het voor je.')
+      + '</div><div class="ez-acts"><button type="button" class="kbtn" data-eza="tut:again">Uitleg opnieuw</button><button type="button" class="kbtn ghost" data-eza="log">Wat is er gebeurd?</button><button type="button" class="kbtn ghost" data-eza="home">Naar mijn land</button><button type="button" class="kbtn ghost" data-eza="menu">Menu</button></div>';
+  }
+  if(k.startsWith('land:')){ const c = k.slice(5); if(!CN[c]) return ''; return head(ezFlag(c, 1), ezNm(c)) + ezLandH(c); }
+  return '';
+}
+
+/* ---- knoppen, kaart en toetsen ---- */
+function ezAct(a){
+  if(!G || G.over) return;
+  const me = G.player, i = a.indexOf(':'), k = i < 0 ? a : a.slice(0, i), v = i < 0 ? '' : a.slice(i + 1);
+  if(k === 'play') togglePause();
+  else if(k === 'slow') G.speed = 1;
+  else if(k === 'fast') G.speed = 3;
+  else if(k === 'go'){ G.speed = 3; if(!cardOpen()) G.paused = false; }
+  else if(k === 'menu'){ UI.ezSheet = null; UI.sheet = UI.sheet === 'set' ? null : 'set'; }
+  else if(k === 'log'){ UI.ezSheet = null; UI.sheet = 'log'; }
+  else if(k === 'sheet'){ UI.sheet = null; UI.ezSheet = UI.ezSheet === v ? null : v; }
+  else if(k === 'close') UI.ezSheet = null;
+  else if(k === 'land'){ if(CN[v]){ UI.sheet = null; UI.ezSheet = 'land:' + v; if(owned(v).length) fitCountry(v); } }
+  else if(k === 'atk'){ ezAttack(v); if(ezG().atk === v || atWar(me, v)) UI.ezSheet = null; }
+  else if(k === 'stop') ezStop(v, true);
+  else if(k === 'fr') ezFriend(v);
+  else if(k === 'help') ezHelp(v || null);
+  else if(k === 'build') ezBuild(v);
+  else if(k === 'deal'){
+    const j = v.indexOf(':'), kind = v.slice(0, j), c = v.slice(j + 1);
+    if(CN[c] && atWar(me, c) && playerDeal(c, kind)) UI.ezSheet = null; else if(CN[c]) ezMsg(cname(c) + ' wil dat nu niet.', 'war');
+  }
+  else if(k === 'home'){ fitCountry(me); UI.ezSheet = null; }
+  else if(k === 'fold') UI.ezFold = !UI.ezFold;
+  else if(k === 'tut'){ if(v === 'next') UI.ezTut++; else if(v === 'again') ezTutStart(); else ezTutEnd(false); }
+  EZ.press = false; EZ.advK = null; sheetSig = ''; cardSig = ''; renderAll();
+}
+// tik op de kaart: een eenvoudig kaartje van dat land met dezelfde keuzes
+function ezProvince(p){
+  const c = G.ctrl[p], k = 'land:' + c;
+  if(cardOpen()) return;
+  sfx('tap'); UI.sheet = null; UI.info = null;
+  UI.ezSheet = UI.ezSheet === k ? null : k;
+  renderAll();
+}
+function ezKey(e, lk, tn){
+  if(e.ctrlKey || e.metaKey || e.altKey) return false;
+  const k = e.key;
+  if(k === 'Escape'){
+    if(UI.ezSheet) UI.ezSheet = null; else if(UI.ezTut && !UI.sheet) ezTutEnd(false); else return false;
+    renderAll(); return true;
+  }
+  if(k === 'Tab') return true;   // Tab loopt hier gewoon langs de knoppen
+  const m = {a:'atk', v:'fr', b:'build', h:'help', p:'build', d:'fr', o:'help'}[lk];
+  if(m){ if(!cardOpen() && !UI.winShown){ sfx('tap'); UI.sheet = null; UI.ezSheet = UI.ezSheet === m ? null : m; sheetSig = ''; renderAll(); } return true; }
+  if(k === 'Enter' && tn !== 'BUTTON' && tn !== 'SUMMARY'){ const b = !EZ.adv.hidden && EZ.adv.querySelector('[data-ezadv]'); if(b){ e.preventDefault(); b.click(); return true; } }
+  return 'fgc'.includes(lk);   // bevelen aan een selectie bestaan hier niet
+}
+for(const el of [EZ.top, EZ.nav, EZ.sheet, EZ.adv]) el.addEventListener('pointerdown', () => { EZ.press = true; });
+addEventListener('pointerup', () => { EZ.press = false; });
+addEventListener('pointercancel', () => { EZ.press = false; });
+document.addEventListener('click', e => {
+  const t = e.target.closest ? e.target : null; if(!t) return;
+  const m = t.closest('[data-ezmode]');
+  if(m){ sfx('tap'); ezSetMode(m.dataset.ezmode === '1'); return; }
+  const b = t.closest('[data-eza]');
+  if(b){ if(b.getAttribute('aria-disabled') === 'true'){ const s = b.querySelector('span'); if(s) ezMsg(s.textContent, ''); return; } sfx('tap'); ezAct(b.dataset.eza); return; }
+  const c = t.closest('[data-ezc]');
+  if(c && G && cardOpen()) ezCardAct(c.dataset.ezc);
+});
+$('pickcard').addEventListener('toggle', e => { if(e.target.classList && e.target.classList.contains('ez-more')){ UI.ezMore = e.target.open; pickSig = null; } }, true);
+
+/* ---- beslissingskaarten in gewone taal: één zin, twee grote knoppen en het advies van de generaal ---- */
+// wat een vrede betekent, in gewone zinnen
+function ezTerms(T){
+  if(!T) return '';
+  const v = termsView(T), on = ezNm(v.o), s = T.s || {}, out = [];
+  if(T.kind === 'white') out.push('Alles wordt weer zoals voor de oorlog.');
+  else if(v.even) out.push('Iedereen houdt wat hij nu heeft.' + (v.gain.length ? ' Jij krijgt ' + ezGb(v.gain.length) + ' erbij.' : '') + (v.lose.length ? ' Je raakt ' + ezGb(v.lose.length) + ' kwijt.' : ''));
+  else if(v.iWin){
+    out.push(v.gain.length ? 'Je krijgt ' + ezGb(v.gain.length) + ' van ' + on + ' erbij.' : 'Je krijgt geen land erbij.');
+    if(s.vas) out.push(on + ' moet voortaan naar jou luisteren.');
+    if(v.fac) out.push('Je krijgt ook fabrieken van ' + on + '.');
+    if(s.trib && !s.vas) out.push(on + ' betaalt je elke dag een beetje.');
+    if(v.dis) out.push(on + ' mag alleen een klein leger houden.');
+  } else {
+    out.push(v.lose.length ? 'Je moet ' + ezGb(v.lose.length) + ' weggeven.' : 'Je hoeft geen land weg te geven.');
+    if(v.ret.length) out.push('Je krijgt ' + ezGb(v.ret.length) + ' terug.');
+    if(v.fac) out.push('Je moet ook fabrieken afgeven.');
+    if(s.trib) out.push('Je moet ' + on + ' elke dag een beetje betalen.');
+    if(v.dis) out.push('Je leger wordt kleiner.');
+  }
+  return out.join(' ');
+}
+// de verstandige voorinstelling van de vredesconferentie: alles houden, tenzij de buren daar te boos van worden
+function ezConfPick(c){
+  confPreset(c, 'alles');
+  const v = termsView(confTerms(c));
+  if(v.ae && v.ae.top >= COAL_THR() * 0.85 && hotCount(COAL_THR() * 0.6) >= 1){ confPreset(c, 'grens'); if(!c.sel.size) confPreset(c, 'alles'); }
+}
+function ezConf(e){
+  const k = e + ':' + G.day;
+  if(!EZ.conf || EZ.conf.k !== k || EZ.conf.g !== G){ const c = confInit(e); ezConfPick(c); EZ.conf = {k, g:G, c}; }
+  return EZ.conf.c;
+}
+function ezCardAct(k){
+  const cd = G.cards[0]; if(!cd) return;
+  if(k === 'full'){ UI.ezFull = true; if(cd.k === 'surr') resolveCard('conf'); }
+  else if(k === 'sign' && (cd.k === 'surr' || cd.k === 'conf')){
+    if(cd.k === 'surr') resolveCard('conf');
+    if(UI.conf) ezConfPick(UI.conf);
+    resolveCard('sign');
+  }
+  cardSig = ''; stripSig = null; sheetSig = ''; EZ.sig = {}; EZ.advK = null; renderAll();
+}
+function ezCardH(cd){
+  const me = G.player, e = cd.e, x = cd.x;
+  EZ.lastCard = cd.k;
+  if(cd.k !== 'conf') UI.ezFull = false;
+  if(cd.k === 'nuke' || (cd.k === 'conf' && UI.ezFull)) return '';
+  const head = (c, title) => '<div class="ez-ch">' + (c && CN[c] ? ezFlag(c, 1) : '') + '<b class="ez-ct">' + ezDot(title) + '</b></div>';
+  const adv = (t, btn) => '<div class="ez-cadv"><div class="ez-cav">' + EZ_GEN + '<span><b>Advies van je generaal:</b> ' + t + '</span></div>' + btn + '</div>';
+  const B = (k, t, rec) => '<button type="button" class="kbtn big wide ' + (rec ? 'go' : 'ghost') + '" data-c="' + k + '"' + (rec ? ' data-ezrec="1"' : '') + '>' + t + '</button>';
+  // twee keuzes; de verstandigste staat in het vak van de generaal
+  const two = (c, title, text, yes, ty, tn, ay, an) => head(c, title) + '<p class="ez-cp">' + ezDot(text) + '</p>' + (yes ? adv(ezDot(ay), B('yes', ty, 1)) + B('no', tn) : B('yes', ty) + adv(ezDot(an), B('no', tn, 1)));
+  if(cd.k === 'surr' || cd.k === 'conf'){
+    const c = cd.k === 'conf' && UI.conf && UI.conf.e === e ? UI.conf : ezConf(e);
+    if(cd.k === 'conf' && !c.ezp){ c.ezp = 1; ezConfPick(c); }
+    return head(e, ezNm(e) + ' geeft zich over. Je hebt gewonnen!') + '<p class="ez-cp">' + ezTerms(confTerms(c)) + '</p>'
+      + adv('Teken de vrede. Dan stopt de oorlog en wordt je land groter.', '<button type="button" class="kbtn big wide go" data-ezc="sign" data-ezrec="1">' + ezIc('check') + 'Teken de vrede</button>')
+      + '<button type="button" class="kbtn wide ghost" data-ezc="full">Zelf kiezen</button>';
+  }
+  if(cd.k === 'mysurr'){
+    let lose = 0; for(const T of capTerms()) lose += T.keep.length;
+    return two(null, 'Je land is bijna verslagen.', 'Je vijanden zijn te sterk. Als je stopt, raak je ' + ezGb(lose) + ' kwijt. De rest blijft van jou en je mag verder spelen.', true, 'Stop met vechten', 'Vecht door',
+      'Stop met vechten. Dan blijft de rest van je land van jou.', '');
+  }
+  if(cd.k === 'offer'){
+    const mE = meterOf(e);
+    return two(e, ezNm(e) + ' wil vrede sluiten.', ezTerms(cardTerms(cd)) + ' Dan stopt de oorlog.', mE < 0.8, 'Sluit vrede', 'Vecht door',
+      'Zeg ja. De oorlog stopt en jij hebt gewonnen.', 'Vecht door. ' + ezNm(e) + ' is bijna verslagen. Straks krijg je meer.');
+  }
+  if(cd.k === 'demand'){
+    let ep = 0; for(const y of enemiesOf(me)) ep += armyPow(y);
+    return two(e, ezNm(e) + ' wil dat je opgeeft.', ezTerms(cardTerms(cd)) + ' Dan stopt de oorlog.', meterOf(me) >= 0.5 || ep > 1.5 * ezPow(me), 'Geef toe', 'Vecht door',
+      'Geef toe. We verliezen deze oorlog. Zo blijft de rest van je land veilig.', 'Vecht door. We kunnen nog winnen.');
+  }
+  if(cd.k === 'arm'){
+    const mE = meterOf(e), mM = meterOf(me);
+    return two(e, ezNm(e) + ' wil stoppen met vechten.', ezTerms(cardTerms(cd)), !(mE >= 0.4 && mE > mM + 0.2), 'Stop de oorlog', 'Vecht door',
+      'Zeg ja. Deze oorlog levert niets meer op.', 'Vecht door. Je bent aan het winnen.');
+  }
+  if(cd.k === 'treaty'){
+    const lost = /^Capitulatie/.test(cd.t || '');
+    return head(cd.o, lost ? 'Je hebt de oorlog verloren.' : 'Het is vrede' + (cd.o && CN[cd.o] ? ' met ' + ezNm(cd.o) : '') + '!')
+      + '<p class="ez-cp">Je hebt nu <b>' + ezShare() + '%</b> van ' + ezMapNm() + '. ' + (lost ? 'Bouw je land weer op en probeer het opnieuw.' : 'Jullie vallen elkaar een tijd niet meer aan.') + '</p>'
+      + '<button type="button" class="kbtn big wide go" data-c="ok" data-ezrec="1">Verder</button>';
+  }
+  if(cd.k === 'dipcall'){
+    const y = cd.y, ok = !enemiesOf(me).length && armyPow(y) < 1.2 * (armyPow(me) + armyPow(x));
+    return two(x, 'Je vriend ' + ezNm(x) + ' wordt aangevallen.', ezNm(y) + ' valt ' + ezNm(x) + ' aan. ' + ezNm(x) + ' vraagt of je komt helpen. Dan krijg jij ook oorlog met ' + ezNm(y) + '.', ok, 'Help ' + ezNm(x), 'Doe niet mee',
+      'Help je vriend. Samen zijn jullie sterker dan ' + ezNm(y) + '.', 'Doe niet mee. ' + (enemiesOf(me).length ? 'Je hebt zelf al oorlog.' : ezNm(y) + ' is te sterk.'));
+  }
+  if(cd.k === 'dipally') return two(x, ezNm(x) + ' wil je beste vriend worden.', 'Als iemand een van jullie aanvalt, helpen jullie elkaar.', true, 'Word beste vrienden', 'Nee, dank je', 'Zeg ja. Een vriend die helpt is altijd handig.', '');
+  if(cd.k === 'dippact'){
+    const prey = ezG().atk === x, only = !prey && !ezCanAtk(x) && ezFoe(x)[0] < 1.15 && !ezNbrs().some(c => c !== x && !ezCanAtk(c));   // het enige land dat je nog kunt aanvallen
+    return two(x, ezNm(x) + ' wil vrienden worden.', 'Jullie beloven elkaar twee jaar lang niet aan te vallen.', !prey && !only, 'Word vrienden', 'Nee, dank je', 'Zeg ja. Dan hoef je voor ' + ezNm(x) + ' niet bang te zijn.',
+      prey ? 'Zeg nee. Je wilde dit land juist aanvallen.' : 'Zeg nee. Anders kun je twee jaar lang niemand aanvallen.');
+  }
+  if(cd.k === 'diplend'){
+    const ok = !enemiesOf(me).length;
+    return two(x, 'Je vriend ' + ezNm(x) + ' heeft hulp nodig.', ezNm(x) + ' vraagt een deel van wat jouw fabrieken maken. Dat duurt 90 dagen. Je bouwt zelf dan wat langzamer.', ok, 'Stuur hulp', 'Nu niet',
+      'Stuur hulp. Een sterke vriend is goed voor jou.', 'Nu niet. Je hebt zelf oorlog en alles nodig.');
+  }
+  return '';
+}
+
+/* ---- meldingen in gewone taal: vertalen, of weglaten wat een beginner niet nodig heeft ---- */
+const EZ_SAY = [
+  [/^(Welkom in|Eerste stappen|Oorlogsdoel tegen|Te veel troepen|Fabriek geschrapt|Gedemilitariseerde grens|Raket gereed|Kernbom gereed|Basis verplaatst|Missiezone|Legergroep|Generaal: (belegering|het front|het leger)|Je bondgenoot .* sluit ook vrede|Volksleger|Luchtlanding)/, null],
+  [/^Blitzoffensief:/, 'Je generaal start een grote aanval. Je legers vechten nu extra hard.'],
+  [/^Mobilisatie:/, 'Je generaal roept extra soldaten op.'],
+  [/^(Raketaanval|Sabotage|Bunkerlinie)( ·| bij|:)/, null],
+  [/^(.+): (?:raketaanval|sabotage) op (.+)$/, '$1 heeft fabrieken van jou beschadigd bij $2.'],
+  [/^Je bent in oorlog met (.+)$/, 'De oorlog met $1 is begonnen! Je legers vallen aan.', 'Oorlog'],
+  [/^(.+) verklaart jou de oorlog$/, '$1 valt je aan! Je legers verdedigen je land.', 'Oorlog'],
+  [/^(.+) sluit zich aan tegen jou$/, '$1 doet mee met je vijanden!', 'Oorlog'],
+  [/^Coalitie tegen jou: (.+?) \(agressie.*$/, 'Andere landen zijn te boos geworden. Ze vallen je samen aan: $1.', 'Oorlog'],
+  [/^(\d+) provincies ingenomen$/, 'Je hebt $1 gebieden veroverd!'],
+  [/^(.+) ingenomen$/, 'Je hebt $1 veroverd!'],
+  [/^(.+) verloren aan (.+)$/, 'Je bent $1 kwijtgeraakt aan $2.'],
+  [/^Divisie (?:gesneuveld bij|omsingeld in) (.+)$/, 'Je hebt een leger verloren bij $1.'],
+  [/^Eskader .* neergeschoten boven (.+)$/, 'Een van je vliegtuigen is neergeschoten boven $1.'],
+  [/^(.+) capituleert: beslis/, null],   // de kaart zegt het al
+  [/^(.+) capituleert voor (.+)$/, '$1 geeft zich over aan $2.'],
+  [/^(.+) is volledig veroverd door jou$/, 'Heel $1 is nu van jou!', 'Veroverd'],
+  [/^(.+) is volledig veroverd door (.+)$/, '$1 bestaat niet meer. Het is nu van $2.'],
+  [/^(.+) is volledig veroverd$/, '$1 bestaat niet meer.'],
+  [/^Vrede tussen (.+) en (.+)$/, 'Het is vrede tussen $1 en $2.'],
+  [/^(?:Vrede|Witte vrede|Wapenstilstand) met (.+?):.*$/, null],
+  [/^Vrede: (.+) staat \d+ provincies? af aan (.+)$/, '$2 heeft de oorlog tegen $1 gewonnen.'],
+  [/^Wapenstilstand: (.+) en (.+) zijn uitgeput$/, '$1 en $2 stoppen met vechten.'],
+  [/^(.+) komt (.+) te hulp tegen (.+)$/, '$1 helpt $2 tegen $3.'],
+  [/^(.+) verklaart (.+) de oorlog$/, '$1 valt $2 aan.'],
+  [/^Doel behaald: /, 'Knap gedaan! Je land krijgt een beloning en wordt sterker.'],
+  [/^Onderscheiding: (.+?) ·.*$/, 'Je hebt een medaille gewonnen: $1!', 'Medaille'],
+  [/^Overwinning:/, 'Je hebt gewonnen! Je land is nu groot genoeg.'],
+  [/^Bijna: nog (\d+) provincies.*$/, 'Bijna gewonnen! Je hebt nog $1 gebieden nodig.'],
+  [/^Nieuwe fabriek/, 'Er is een nieuwe fabriek klaar.'],
+  [/^(Jagers|Grondaanval|Bommenwerpers) gereed/, 'Er zijn nieuwe vliegtuigen klaar.'],
+  [/ontwikkeld$/, 'Je legers hebben betere wapens gekregen.'],
+  [/ gereed( ·|$)/, 'Er is een nieuw leger klaar.'],
+  [/geïntegreerd/, 'Je nieuwe gebieden horen nu echt bij je land. Je mag meer legers hebben.'],
+  [/^(.+) rechtvaardigt een oorlog tegen jou/, '$1 wil je aanvallen! Pas op.'],
+  [/^(.+) roept de noodtoestand uit/, '$1 is bijna verslagen en vecht nog één keer hard terug.'],
+  [/^Noodtoestand:/, 'Je land is in gevaar! Iedereen helpt mee met verdedigen.'],
+  [/^Generaal: geen front met (.+?)\. .*$/, 'Je legers kunnen niet bij $1 komen.'],
+  [/^Niet-aanvalsverdrag met (.+) getekend/, 'Jij en $1 zijn nu vrienden. Jullie vallen elkaar niet aan.'],
+  [/^Bondgenootschap met (.+?)(?::| gesloten).*$/, '$1 is nu je beste vriend. Jullie helpen elkaar.'],
+  [/^Het niet-aanvalsverdrag met (.+) is afgelopen$/, 'De afspraak met $1 is voorbij. Jullie zijn geen vrienden meer.'],
+  [/^(.+) zegt het niet-aanvalsverdrag op/, '$1 wil geen vrienden meer zijn.'],
+  [/^(.+?) (?:zegt het bondgenootschap op|voelt zich in de steek gelaten)/, '$1 is niet meer je beste vriend.'],
+  [/^(.+) is teleurgesteld/, '$1 is teleurgesteld in jou.'],
+  [/^(.+) trekt het doorgangsrecht in/, 'Je legers mogen niet meer door $1.'],
+  [/^(.+) viel je bondgenoot aan/, '$1 viel je vriend aan. Jullie afspraak geldt niet meer.'],
+  [/^Je bondgenoot (.+) valt (.+) aan\..*$/, 'Je vriend $1 valt $2 aan. Je hoeft niet mee te doen.'],
+  [/^Je komt (.+) te hulp tegen (.+)$/, 'Je helpt je vriend $1 tegen $2.'],
+  [/^(.+) stuurt (?:industriële )?steun/, '$1 stuurt je hulp.'],
+  [/^(.+) stuurt een expeditiekorps/, '$1 stuurt legers om je te helpen.'],
+  [/^Lend-lease aan (.+?):/, 'Je stuurt hulp naar $1.'],
+  [/^(?:De steun van|Je steun aan) (.+) is afgelopen$/, 'De hulp van en aan $1 is gestopt.'],
+  [/^(?:Het expeditiekorps van (.+) keert|Je expeditieleger keert terug uit (.+?):)/, 'De legers die hielpen gaan weer naar huis.'],
+  [/^(.+) zoekt uit angst voor jou bescherming bij (.+?):.*$/, '$1 is bang voor je. $2 beschermt hen nu. Val je $1 aan, dan doet $2 mee.'],
+  [/^(.+) zoekt bescherming bij /, null],
+  [/^Verdragbreuk/, 'Je hebt een belofte gebroken. Andere landen vertrouwen je nu minder.'],
+  [/^Je capituleert/, 'Je hebt de oorlog verloren.'],
+  [/^Je vecht door/, 'Je vecht door!'],
+  [/^Onvoorwaardelijke overgave: verover de rest van (.+?)\..*$/, 'Je vecht door tot heel $1 van jou is.'],
+  [/^Het verdrag met (.+) is vervallen/, 'De vrede met $1 is voorbij. Jullie hebben weer oorlog.'],
+  [/^(?:De ontwapening|De herstelbetalingen|De gedemilitariseerde grens|De vazalstatus) van /, null],
+  [/^(.+) (?:dreigt met een kernaanval|werpt een kernbom) op (.+?)[ :(].*$/, '$1 gebruikt een heel zware bom bij $2!'],
+  [/^Inlichtingen: (.+?) (?:heeft de atoombom|werkt aan)/, '$1 bouwt een heel zware bom.'],
+  [/^Neem eerst een beslissing$/, 'Kies eerst wat je wilt doen.'],
+  [/^(.+) bevrijd voor (.+)$/, '$1 is weer van $2.'],
+  [/^(.+) bevrijdt (.+) voor jou$/, '$1 heeft $2 voor jou terugveroverd.'],
+  [/^(.+) weigert$/, '$1 wil dat niet.']
+];
+const EZ_WORDS = [[/\bdivisies\b/g, 'legers'], [/\bdivisie\b/g, 'leger'], [/\bDivisie\b/g, 'Leger'], [/\bprovincies\b/g, 'gebieden'], [/\bprovincie\b/g, 'gebied'], [/\bcapituleert\b/g, 'geeft zich over'], [/\boorlogssteun\b/gi, 'de moed van je volk'],
+  [/\bagressie\b/gi, 'boosheid van andere landen'], [/\bbondgenootschap\b/gi, 'vriendschap'], [/\bbondgenoten\b/g, 'vrienden'], [/\bbondgenoot\b/g, 'vriend'], [/\bniet-aanvalsverdrag\b/gi, 'afspraak om niet aan te vallen'], [/\beskaders\b/g, 'groepen vliegtuigen'], [/\beskader\b/g, 'groep vliegtuigen'],
+  [/\blend-lease\b/gi, 'hulp'], [/\bherstelbetalingen\b/gi, 'betalingen'], [/\bwapenstilstand\b/g, 'stoppen met vechten'], [/\bbevelpunten\b/g, 'punten']];
+function ezSay(msg, kind, key){
+  if(key === 'ez' || typeof msg !== 'string') return msg;
+  if(key === 'dip' || key === 'odds' || key === 'sel' || key === 'fs') return null;   // de eenvoudige stand zegt dit zelf, of het hoort bij bediening die hier niet bestaat
+  for(const [re, to, big] of EZ_SAY){
+    if(!re.test(msg)) continue;
+    if(to == null) return null;
+    const m = re.exec(msg), t = ezDot(to.replace(/\$(\d)/g, (_, i) => m[+i] || '')).replace(' helpt ' + cname(G.player) + ' tegen ', ' helpt jou tegen ');
+    if(big && SET.banner !== false){ logAdd(t, kind, key); showBanner(big, t, kind === 'war' ? 'war' : 'good'); return null; }
+    return t;
+  }
+  let t = msg; for(const [re, to] of EZ_WORDS) t = t.replace(re, to);
+  return t;
+}
+
+/* ---- instellingen en landkeuze ---- */
+const ezModeH = cls => [[1, 'Eenvoudig'], [0, 'Volledig']].map(([v, l]) => '<button type="button" class="' + cls + (!!SET.easy === !!v ? ' on' : '') + '" data-ezmode="' + v + '" aria-pressed="' + (!!SET.easy === !!v) + '">' + l + '</button>').join('');
+const ezSetH = () => '<div class="gord"><span class="gl">Speelstijl</span><span class="gsegs">' + ezModeH('gseg') + '</span></div><p class="help" style="margin:.1rem 0 0">Eenvoudig: het spel helpt mee en legt alles uit. Volledig: je regelt alles zelf.</p>';
+// in de volledige stand: dezelfde keuze bovenaan de rij met kaart en niveau
+const ezPickFull = h => h.replace('<div class="gord"><span class="gl">Kaart</span>', '<div class="gord"><span class="gl">Speelstijl</span><span class="gsegs">' + ezModeH('gseg') + '</span></div>$&');
+// drie aanraders: het sterkste land dat op dit niveau makkelijk, gemiddeld en moeilijk is
+function ezRecs(){
+  const k = MAPNAME + ':' + UI.diff;
+  if(EZ.rec && EZ.rec.k === k) return EZ.rec.v;
+  const v = [null, null, null];
+  for(const c of powRank().o){ const i = Math.min(2, chanceOf(c, UI.diff).k); if(!v[i]) v[i] = c; if(v[0] && v[1] && v[2]) break; }
+  EZ.rec = {k, v};
+  return v;
+}
+function ezPick(el){
+  if(!UI.ezDiff){ UI.ezDiff = 1; if(!UI.dailyKey) UI.diff = 0; }
+  const c = UI.pick && CN[UI.pick] ? UI.pick : null, fabs = x => Math.round(CN[x].f / FAB_ADD), dl = dailyOf();
+  const X = (k, t) => '<button type="button" class="ez-x" data-pk="' + k + '" aria-label="' + t + '">' + ezIc('kruis') + '</button>';
+  const rows = '<div class="ez-row"><span class="ez-rl">Speelstijl</span><span class="ez-segs">' + ezModeH('ez-seg') + '</span></div>'
+    + '<div class="ez-row"><span class="ez-rl">Kaart</span><span class="ez-segs">' + Object.keys(MAPS).map(m => '<button type="button" class="ez-seg' + (MAPNAME === m ? ' on' : '') + '" data-pm="' + m + '">' + MAPS[m].name + '</button>').join('') + '</span></div>'
+    + '<div class="ez-row"><span class="ez-rl">Niveau</span><span class="ez-segs">' + DIFF.map((d, i) => '<button type="button" class="ez-seg' + (UI.diff === i ? ' on' : '') + '" data-pd="' + i + '">' + d.name + '</button>').join('') + '</span></div>';
+  const more = body => '<details class="ez-more"' + (UI.ezMore ? ' open' : '') + '><summary>Meer uitleg</summary><div class="ez-moreb">' + body + '</div></details>';
+  const lvl = '<p class="help">' + esc(DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc) + '</p>';
+  let h;
+  if(!c){
+    const R = ezRecs(), lab = [['g', 'Makkelijk', 'Groot en sterk. Goed om het spel te leren.'], ['y', 'Gemiddeld', 'Je moet goed opletten.'], ['r', 'Uitdaging', 'Sterke buren. Voor wie durft.']];
+    h = '<div class="ez-sh">' + ezIc('vlag') + '<b>Kies je land</b>' + X('back', 'Terug naar het hoofdmenu') + '</div>'
+      + '<div class="ez-tip">' + EZ_GEN + '<span>Welk land wil jij zijn? Tik er een aan op de kaart, of kies een van deze drie.</span></div>'
+      + '<div class="ez-list">' + R.map((x, i) => x ? '<button type="button" class="ez-rec" data-pc="' + x + '">' + ezFlag(x, 1) + '<span class="ez-lt"><span class="ez-light ' + lab[i][0] + '"><i></i>' + lab[i][1] + '</span><b>' + ezNm(x) + '</b><small>' + lab[i][2] + '</small></span></button>' : '').join('') + '</div>'
+      + rows + more(lvl + '<div class="ez-acts"><button type="button" class="kbtn ghost" data-pk="rnd">Verras me</button><button type="button" class="kbtn ghost" data-pk="daily">Uitdaging van vandaag</button></div>');
+  } else {
+    const cc = CN[c], R = powRank(), rk = R.i[c] + 1, N = CIDS.length, nb = pickNbrs(c), chn = chanceOf(c, UI.diff), dv = startDivs(c);
+    const size = rk <= Math.max(5, Math.round(N * 0.12)) ? 'Een groot en sterk land.' : rk <= Math.round(N * 0.4) ? 'Een gewoon land: niet groot, niet klein.' : 'Een klein land.';
+    const L = [['g', 'Makkelijk. Goed om mee te beginnen.'], ['y', 'Best lastig. Je moet goed opletten.'], ['r', 'Heel moeilijk. Voor wie durft.'], ['r', 'Bijna niet te doen!']][chn.k];
+    const rel = x => CN[x].f > cc.f * 1.25 ? 'r' : CN[x].f < cc.f * 0.8 ? 'g' : 'y';
+    const daily = UI.dailyKey === dl.key && dl.c === c && dl.map === MAPNAME;
+    h = '<div class="ez-sh">' + ezFlag(c, 1) + '<b>' + ezNm(c) + '</b>' + X('none', 'Ander land kiezen') + '</div>'
+      + '<p class="ez-p">' + size + (daily ? ' Dit is de uitdaging van vandaag.' : '') + '</p>'
+      + '<div class="ez-land ' + L[0] + '"><span class="ez-light big ' + L[0] + '"><i></i></span><div class="ez-lt"><b>' + L[1] + '</b></div></div>'
+      + '<div class="ez-pstats"><span class="ez-stat">' + ezIc('leger') + '<b>' + dv + '</b><small>legers</small></span><span class="ez-stat">' + ezIc('fab') + '<b>' + fabs(c) + '</b><small>' + (fabs(c) === 1 ? 'fabriek' : 'fabrieken') + '</small></span><span class="ez-stat">' + ezIc('prov') + '<b>' + CPROV[c].length + '</b><small>' + (CPROV[c].length === 1 ? 'gebied' : 'gebieden') + '</small></span></div>'
+      + (nb.length ? '<div class="ez-nb"><b>Je buren</b><small>groen = zwakker dan jij, rood = sterker</small><div class="ez-nbl">' + nb.slice(0, 8).map(x => '<button type="button" class="ez-chip" data-pc="' + x + '"><span class="ez-light ' + rel(x) + '"><i></i></span>' + ezNm(x) + '</button>').join('') + (nb.length > 8 ? '<span class="ez-chip">en nog ' + (nb.length - 8) + '</span>' : '') + '</div></div>'
+        : '<p class="ez-p">Dit land heeft geen buren op het land. Je kunt alleen over zee aanvallen.</p>')
+      + rows + more(lvl + '<div class="pkinfo">' + pickInfoH(c, UI.diff) + '</div>')
+      + '<div class="ez-pgo"><button type="button" class="kbtn go big wide" data-pk="start">' + ezIc('speel') + 'Speel</button></div>';
+  }
+  if(h === pickSig) return;
+  const keep = pickSig !== null && el.dataset.c === (c || '');
+  pickSig = h; const st = el.scrollTop; el.innerHTML = h; el.hidden = false; el.dataset.c = c || ''; el.scrollTop = keep ? st : 0;
+  if(c && !keep && c !== pickFitted && (cw() < 900 || toScreen(P[CN[c].cap].a[0], P[CN[c].cap].a[1])[0] > cw() - el.offsetWidth - 40)) pickFit(c);
+  pickFitted = c;
+}
+
 /* ================= laden, opslaan, wisselen ================= */
 async function switchMap(name, force){
   if(MAPNAME === name && !force && DATA) return;
@@ -8706,6 +9784,7 @@ function onGameLoaded(focus){
   allFills(); stripSig = null; sheetSig = '';
   if(focus) fitCountry(G.player);
   renderAll();
+  if(ezLoaded()) return;   // eenvoudige stand: generaal aan, uitleg bij het eerste spel
   if(G.day === 0) toast('Welkom in ' + cname(G.player) + '. Begin met de eerste stappen onderaan', '');
 }
 addEventListener('visibilitychange', () => { if(document.hidden) autosave(); });
