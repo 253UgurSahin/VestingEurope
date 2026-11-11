@@ -615,6 +615,50 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 #card.k-conf{animation:cfin .2s ease-out;max-height:min(60vh,36rem)}
 @media (min-width:900px){ #card.k-conf{left:auto;right:max(1.5rem, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%)} }
 @media (max-width:899px){ #card.k-conf{top:auto;bottom:calc(4.4rem + env(safe-area-inset-bottom, 0px));transform:translateX(-50%)} }
+
+/* ===== kaart: kaartmodi en minimap (rechtsonder), tooltipregels, vignet ===== */
+#stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%, transparent 55%, rgba(2,6,10,.32) 100%)}
+#mapui{position:fixed;z-index:16;right:max(12px, env(safe-area-inset-right, 0px));bottom:var(--mub, calc(.6rem + env(safe-area-inset-bottom, 0px)));display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;pointer-events:none;transition:opacity .15s ease}
+#mapui[hidden]{display:none}
+#mapui.hid{opacity:0;visibility:hidden}
+#mapui > *{pointer-events:auto}
+#mapmodes{border-radius:.8rem;padding:.22rem;display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;max-width:min(21rem, calc(100vw - 24px))}
+#mapmodes .mmrow{display:flex;gap:.12rem}
+.mmb{position:relative;width:2.15rem;height:2.15rem;border-radius:.6rem;border:0;background:transparent;color:var(--dim);display:grid;place-items:center;cursor:pointer;padding:0;transition:background-color .12s ease, color .12s ease}
+.mmb:hover{background:var(--glass-2);color:var(--ink)}
+.mmb.on{background:var(--accent);color:var(--accent-ink)}
+.mmb:focus-visible,#mmtog:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.mmb .ic{width:1.15rem;height:1.15rem;display:block}
+.mmb kbd{position:absolute;right:.14rem;bottom:.02rem;font:600 .56rem var(--f-ui);opacity:.65;pointer-events:none}
+.mmb.mmx{display:none}
+#mapleg{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:.1rem .55rem;padding:.05rem .35rem .15rem;font-size:.72rem;color:var(--dim);line-height:1.3;align-self:stretch}
+#mapleg b{font:600 .82rem var(--f-ui);letter-spacing:.03em;color:var(--ink);margin-right:auto}
+.mlg{display:inline-flex;align-items:center;gap:.25rem;white-space:nowrap}
+.mlg i{width:.62rem;height:.62rem;border-radius:.15rem;display:inline-block;flex:none}
+.mlg i.hat{background:repeating-linear-gradient(135deg, #D4553F 0 2px, #5a2a22 2px 4px)}
+.mlg i.rte{height:0;border-top:2px dashed #9AD6EC;border-radius:0;width:.95rem}
+.mlg i.riv{height:2px;background:#6FB2EA;border-radius:1px;width:.95rem}
+#minimap{position:relative;border-radius:.6rem;padding:3px;line-height:0}
+#mmc{display:block;border-radius:.42rem;cursor:crosshair;touch-action:none}
+#mmtog{position:absolute;left:-.6rem;top:-.6rem;width:1.5rem;height:1.5rem;border-radius:999px;border:1px solid var(--line);background:#101820;color:var(--dim);display:grid;place-items:center;cursor:pointer;padding:0}
+#mmtog:hover{color:var(--ink)}
+#mmtog .ic{width:.85rem;height:.85rem;display:block}
+#minimap.off{padding:0;border-radius:999px}
+#minimap.off #mmc{display:none}
+#minimap.off #mmtog{position:static;width:2.15rem;height:2.15rem;border:0;background:transparent;color:var(--ink)}
+#minimap.off #mmtog .ic{width:1.15rem;height:1.15rem}
+#tip .tipx{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:var(--dim);margin-top:.12rem}
+#tip .tipx .ic{width:.85rem;height:.85rem;color:#9AD6EC;flex:none}
+#tip .tipx i{font-style:normal;color:var(--ink)}
+#tip .tipx i.warc{color:var(--war)}
+@media (hover:none){ .mmb kbd{display:none} }
+@media (max-width:640px){
+  #mapui{right:max(8px, env(safe-area-inset-right, 0px));gap:.3rem}
+  #mapmodes:not(.open){border-radius:999px;padding:0}
+  #mapmodes:not(.open) .mmb:not(.mmx), #mapmodes:not(.open) #mapleg{display:none}
+  .mmb.mmx{display:grid;color:var(--ink);border-radius:999px}
+  #mapmodes.open .mmb.mmx{color:var(--accent)}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -627,6 +671,7 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 <button id="status" class="glass" type="button" aria-label="Status van je land, open het overzicht" hidden></button>
 <div id="tip" class="glass" hidden></div>
 <div id="boxSel" hidden></div>
+<div id="mapui" hidden><div id="mapmodes" class="glass" role="group" aria-label="Kaartmodus"></div><div id="minimap" class="glass"><canvas id="mmc" aria-label="Minimap: klik of sleep om de kaart te verplaatsen"></canvas><button id="mmtog" type="button" aria-label="Minimap tonen of verbergen" title="Minimap"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20zM9 4v13.5M15 6.5V20"/></svg></button></div></div>
 
 <div id="dock">
   <div id="sheet" class="glass" hidden></div>
@@ -724,8 +769,95 @@ function setMap(name, d){
   JIT = {};
   PIDS.forEach((p,i) => { let h = 7; for(const ch of p) h = (h*131 + ch.charCodeAt(0)) >>> 0; h = (h + i*2654435761) >>> 0; JIT[p] = ((h % 1000)/1000 - .5) * 0.13; });
   MAJORS = new Set(CIDS.slice().sort((a,b) => CN[b].f - CN[a].f).slice(0, name === 'world' ? 14 : 7));
+  assignColors();   // landkleuren: buren duidelijk verschillend
   buildMap();
   V.cx = W/2; V.cy = H/2;
+}
+
+/* ================= kaartkleuren: elk land een kleur die duidelijk afwijkt van zijn buren ================= */
+// De kleuren uit de kaartdata lijken bij buren vaak op elkaar. Bij het laden kiezen we daarom (deterministisch) per land een
+// kleur uit een vast palet, zo dat directe buren (land én zeeroutes) en landen in de buurt zo ver mogelijk uit elkaar liggen
+// in OKLab (tint telt zwaarder dan helderheid, want veroverd gebied en de jitter per provincie verschuiven de helderheid al).
+// Grote landen houden hun herkenbare kleur; Europese landen hebben op de wereldkaart zoveel mogelijk dezelfde kleur.
+const COL_HOME = 'de:deu:686862,gb:gbr:B2484A,fr:fra:3E63A8,it:ita:3E8E5A,es:esp:D6B445,pl:pol:C25A6E,nl:nld:E08A3C,ua:ukr:4A86C5,se:swe:4F7FB3,be:bel:8E73B3,ch:che:9E3C3C,ro:rou:C9A13E,no:nor:A9574F,fi:fin:B9C5CD,dk:dnk:C9805C,cz:cze:4C8FB5,at:aut:C7B79C,hu:hun:6B9B5A,ie:irl:5E9C62,pt:prt:3F8A5A,sk:svk:7C6BAE,rs:srb:8E4A4A,gr:grc:5AA0D0,by:blr:5F8F60,bg:bgr:4E8F68,is:isl:86A9B9,lu:lux:7FC4D8,si:svn:5EA8A0,hr:hrv:4466A3,ba:bih:D2B04C,me:mne:B9805A,xk:kos:5A86C2,mk:mkd:C9663A,al:alb:B5463E,ee:est:3A6FA0,lv:lva:7A3F4E,lt:ltu:C2A23A,md:mda:A86A9A,'
+  + 'ru:rus:3F6B4A,us:usa:5C8FC9,jp:jpn:D9CBB2,cn:chn:C9B24A,in:ind:D98E4A,br:bra:4FA35E,ca:can:9A5252,au:aus:3E9484,tr:tur:9DB88A,mx:mex:6E9E58,ar:arg:7FB2D8,eg:egy:CDB67E,sa:sau:4E8058,ir:irn:4F9A8C,kr:kor:5E7FBE,za:zaf:8C9A4A,id:idn:B0604A';
+const COL_MAJOR = 'de gb fr it es pl nl ru us jp cn in br ca au tr';
+const srgb2lin = v => { v /= 255; return v <= 0.04045 ? v/12.92 : Math.pow((v + 0.055)/1.055, 2.4); };
+function hex2ok(hex){
+  const [r, g, b] = hex2rgb(hex).map(srgb2lin);
+  const l = Math.cbrt(0.4122214708*r + 0.5363325363*g + 0.0514459929*b), m = Math.cbrt(0.2119034982*r + 0.6806995451*g + 0.1073969566*b), s = Math.cbrt(0.0883024619*r + 0.2817188376*g + 0.6299787005*b);
+  return [0.2104542553*l + 0.7936177850*m - 0.0040720468*s, 1.9779984951*l - 2.4285922050*m + 0.4505937099*s, 0.0259040371*l + 0.7827717662*m - 0.8086757660*s];
+}
+function ok2hex(L, a, b, test){
+  const conv = (L, a, b) => {
+    const l = (L + 0.3963377774*a + 0.2158037573*b)**3, m = (L - 0.1055613458*a - 0.0638541728*b)**3, s = (L - 0.0894841775*a - 1.2914855480*b)**3;
+    return [4.0767416621*l - 3.3077115913*m + 0.2309699292*s, -1.2684380046*l + 2.6097574011*m - 0.3413193965*s, -0.0041960863*l - 0.7034186147*m + 1.7076147010*s];
+  };
+  let rgb = conv(L, a, b);
+  if(test) return !rgb.some(v => v < -0.001 || v > 1.001);
+  for(let i = 0; i < 24 && rgb.some(v => v < -0.002 || v > 1.002); i++){ a *= 0.94; b *= 0.94; rgb = conv(L, a, b); }   // buiten sRGB: minder verzadigd
+  return '#' + rgb.map(v => { v = clamp(v, 0, 1); v = v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055; return Math.round(v*255).toString(16).padStart(2, '0'); }).join('');
+}
+// kleurafstand: OKLab, helderheid telt voor 60% mee
+const okDist = (p, q) => Math.hypot(0.6*(p[0] - q[0]), p[1] - q[1], p[2] - q[2]);
+let COLPAL = null;
+function colPalette(){
+  if(COLPAL) return COLPAL;
+  const out = [];
+  // per tint en helderheid hooguit 80% van wat sRGB aankan: gedempte kaartkleuren, geen neon
+  const cmax = (L, h) => { let lo = 0, hi = 0.3; for(let i = 0; i < 14; i++){ const C = (lo + hi)/2, a = C*Math.cos(h), b = C*Math.sin(h); if(ok2hex(L, a, b, true)) lo = C; else hi = C; } return lo; };
+  const add = (L, C, hd) => { const h = hd*Math.PI/180; C = Math.min(C, 0.8*cmax(L, h)); const hex = ok2hex(L, C*Math.cos(h), C*Math.sin(h)); out.push({hex, ok:hex2ok(hex)}); };
+  for(let h = 10; h < 370; h += 20){ add(0.60, 0.108, h); add(0.48, 0.092, h + 7); add(0.735, 0.092, h - 7); }
+  add(0.50, 0.018, 245); add(0.64, 0.014, 230); add(0.80, 0.022, 230); add(0.79, 0.045, 85); add(0.42, 0.03, 20);
+  return COLPAL = out;
+}
+function countryGraph(){
+  const n1 = {}, n2 = {};
+  for(const c of CIDS) n1[c] = new Set();
+  for(const p of PIDS){ const c = P[p].c; for(const q of ADJ[p]){ const o = P[q].c; if(o !== c){ n1[c].add(o); n1[o].add(c); } } }
+  // 'in de buurt': geen buur, maar de hoofdsteden liggen binnen 2200 km (ook die landen moeten niet op elkaar lijken)
+  for(const c of CIDS){ const s = n2[c] = new Set(), a = P[CN[c].cap].a; for(const m of CIDS){ if(m === c || n1[c].has(m)) continue; const b = P[CN[m].cap].a; if(Math.hypot(a[0] - b[0], a[1] - b[1])*KM < 2200) s.add(m); } }
+  return {n1, n2};
+}
+function assignColors(){
+  const pal = colPalette(), {n1, n2} = countryGraph();
+  const home = {}, major = new Set();
+  for(const s of COL_HOME.split(',')){ const [a, b, h] = s.split(':'); const c = CN[a] ? a : CN[b] ? b : null; if(c){ home[c] = '#' + h; if(COL_MAJOR.split(' ').includes(a)) major.add(c); } }
+  const pref = {}, ok = {}, cur = {};
+  for(const c of CIDS){ pref[c] = home[c] ? hex2ok(home[c]) : null; CN[c].col0 ||= CN[c].col; }
+  // kandidaten per land: het palet, plus (voor landen met een vaste kleur) die kleur zelf en een lichtere/donkerdere variant
+  const cand = {};
+  for(const c of CIDS){
+    const list = major.has(c) ? [] : pal.slice();
+    if(home[c]){ const o = pref[c]; for(const dl of [0, 0.07, -0.06]){ const hex = dl ? ok2hex(clamp(o[0] + dl, 0.38, 0.82), o[1], o[2]) : home[c]; list.push({hex, ok:hex2ok(hex)}); } }
+    cand[c] = list;
+  }
+  // buren: de kleinste afstand telt (tot T1); landen in de buurt: elke gelijkenis onder T2 kost punten (kwadratisch)
+  const T1 = 0.16, T2 = 0.10, W2 = 4;
+  const score = (c, k) => {
+    let m1 = T1, s1 = 0, pen = 0;
+    for(const n of n1[c]){ const o = ok[n]; if(!o) continue; const d = okDist(k.ok, o); if(d < m1) m1 = d; s1 += Math.min(d, T1); }
+    for(const n of n2[c]){ const o = ok[n]; if(!o) continue; const d = okDist(k.ok, o); if(d < T2){ const e = (T2 - d)/T2; pen += e*e; } }
+    let s = 10*m1/T1 - W2*pen + (n1[c].size ? 1.5*s1/(T1*n1[c].size) : 0);
+    if(pref[c]) s -= (major.has(c) ? 30 : 9) * okDist(k.ok, pref[c]);
+    return s;
+  };
+  const pick = c => { let best = null, bs = -1e9; for(const k of cand[c]){ const s = score(c, k); if(s > bs + 1e-9){ bs = s; best = k; } } ok[c] = best.ok; cur[c] = best.hex; };
+  const order = CIDS.slice().sort((a, b) => (major.has(b) - major.has(a)) || (!!home[b] - !!home[a]) || (CN[b].f - CN[a].f) || (n1[b].size - n1[a].size) || (a < b ? -1 : 1));
+  for(const c of order) pick(c);
+  for(let it = 0; it < 4; it++) for(let i = order.length - 1; i >= 0; i--){ delete ok[order[i]]; pick(order[i]); }
+  for(const c of CIDS) CN[c].col = cur[c];
+  for(const k in PLATE) delete PLATE[k];
+}
+// kleinste kleurafstand tussen directe buren (voor controle): [OKLab×100 (gewogen), CIELAB ΔE76, paar]
+function colorReport(key){
+  const {n1} = countryGraph(); let m = 1e9, mp = '', m76 = 1e9, cnt = 0;
+  const lab = hex => { const [r, g, b] = hex2rgb(hex).map(srgb2lin); const f = t => t > 0.008856 ? Math.cbrt(t) : 7.787*t + 16/116; const x = f((0.4124*r + 0.3576*g + 0.1805*b)/0.95047), y = f(0.2126*r + 0.7152*g + 0.0722*b), z = f((0.0193*r + 0.1192*g + 0.9505*b)/1.08883); return [116*y - 16, 500*(x - y), 200*(y - z)]; };
+  for(const c of CIDS) for(const n of n1[c]) if(c < n){
+    const A = CN[c][key || 'col'], B = CN[n][key || 'col'], d = okDist(hex2ok(A), hex2ok(B))*100, la = lab(A), lb = lab(B), e = Math.hypot(la[0]-lb[0], la[1]-lb[1], la[2]-lb[2]);
+    if(d < m){ m = d; mp = c + '-' + n; } if(e < m76) m76 = e; if(d < 8) cnt++;
+  }
+  return {ok:+m.toFixed(1), de76:+m76.toFixed(1), pair:mp, under8:cnt};
 }
 
 /* ================= spelregels ================= */
@@ -3211,7 +3343,7 @@ function lodAll(l){
   return LODALL[l] = all;
 }
 function buildMap(){
-  PATH = {}; BBOX = {}; FILL = {}; RINGS = {}; LODP = []; LODB = []; LODO = []; LODALL = []; OCH = [];
+  PATH = {}; BBOX = {}; FILL = {}; RINGS = {}; LODP = []; LODB = []; LODO = []; LODALL = []; OCH = []; RIVG = null; RGEO = null; LBORD = null;
   for(const p of PIDS){ PATH[p] = new Path2D(P[p].d); BBOX[p] = P[p].b || bboxOf(P[p].d); RINGS[p] = parseRings(P[p].d); }
   BACK = new Path2D(DATA.backdrop); OUTL = new Path2D(DATA.outline);
   BACKR = parseRings(DATA.backdrop); OUTLR = parseRings(DATA.outline);
@@ -3229,7 +3361,9 @@ let POLSTALE = true;
 function setFill(p){
   const c = G ? G.ctrl[p] : P[p].c;
   const occ = G && P[p].c !== c;
-  FILL[p] = shade(colorOf(c), JIT[p] + (occ ? -0.12 : 0));
+  const m = mapMode();
+  FILL[p] = m !== 'pol' ? modeFill(m, p, c) : shade(colorOf(c), JIT[p] + (occ ? -0.12 : 0));
+  MM.dirty.add(p);
   if(G && CV){ if(inBuf(p)){ DIRTYP.add(p); labelsDirty = true; } } else mapDirty = true;
 }
 function setCtrl(p, c){
@@ -3264,12 +3398,18 @@ function computePolitical(){
 /* terreinpatronen (vaste schermgrootte): bergen = driehoekjes, heuvels = boogjes, woestijn = puntjes, moeras = streepjes */
 let TPAT = null;
 function terrainPatterns(){
-  const mk = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); draw(x); return bctx.createPattern(c, 'repeat'); };
+  const mk = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.lineJoin = 'round'; x.lineCap = 'round'; draw(x); return bctx.createPattern(c, 'repeat'); };
+  // bergtop met schaduwkant: rechts donker, links een lichte rand (licht komt van linksboven)
+  const peak = (x, cx, by, w, h) => {
+    x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.moveTo(cx, by - h); x.lineTo(cx + w/2, by); x.lineTo(cx - w*0.12, by); x.closePath(); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,.42)'; x.lineWidth = 1.2; x.beginPath(); x.moveTo(cx - w/2, by); x.lineTo(cx, by - h); x.lineTo(cx + w/2, by); x.stroke();
+    x.strokeStyle = 'rgba(255,255,255,.24)'; x.lineWidth = 1; x.beginPath(); x.moveTo(cx - w/2 + 1.4, by - 0.6); x.lineTo(cx - 0.7, by - h + 1.8); x.stroke();
+  };
   return {
-    m: mk(22, 18, x => { x.strokeStyle = 'rgba(0,0,0,.30)'; x.lineWidth = 1.3; x.lineJoin = 'round'; x.beginPath(); x.moveTo(3, 12); x.lineTo(7.5, 5); x.lineTo(12, 12); x.moveTo(13, 17); x.lineTo(16.5, 11.5); x.lineTo(20, 17); x.stroke(); }),
-    h: mk(20, 16, x => { x.strokeStyle = 'rgba(0,0,0,.24)'; x.lineWidth = 1.2; x.beginPath(); x.arc(7, 11, 4, Math.PI, 0); x.stroke(); }),
-    d: mk(12, 12, x => { x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(2, 3, 1.4, 1.4); x.fillRect(8, 8, 1.4, 1.4); }),
-    w: mk(16, 10, x => { x.strokeStyle = 'rgba(0,0,0,.26)'; x.lineWidth = 1.1; x.beginPath(); x.moveTo(2, 5); x.lineTo(9, 5); x.moveTo(8, 9); x.lineTo(14, 9); x.stroke(); })
+    m: mk(30, 24, x => { peak(x, 8, 12, 12.5, 8.5); peak(x, 22.5, 23, 11, 7.5); }),
+    h: mk(26, 20, x => { for(const [cx, cy] of [[7, 9.5], [20, 19]]){ x.strokeStyle = 'rgba(255,255,255,.15)'; x.lineWidth = 1; x.beginPath(); x.arc(cx, cy + 1.3, 4.6, Math.PI*1.12, Math.PI*1.62); x.stroke(); x.strokeStyle = 'rgba(0,0,0,.3)'; x.lineWidth = 1.25; x.beginPath(); x.arc(cx, cy, 4.6, Math.PI*1.06, Math.PI*1.94); x.stroke(); } }),
+    d: mk(18, 18, x => { x.fillStyle = 'rgba(0,0,0,.24)'; for(const [a, b] of [[3, 4], [11, 2], [7, 10], [15, 12], [2, 15], [11, 16]]) x.fillRect(a, b, 1.5, 1.5); x.fillStyle = 'rgba(255,236,170,.22)'; for(const [a, b] of [[7, 5], [14, 7], [4, 11], [9, 14]]) x.fillRect(a, b, 1.3, 1.3); }),
+    w: mk(22, 14, x => { x.strokeStyle = 'rgba(20,70,95,.55)'; x.lineWidth = 1.2; x.beginPath(); x.moveTo(2, 5); x.lineTo(9, 5); x.moveTo(12, 12); x.lineTo(20, 12); x.stroke(); x.strokeStyle = 'rgba(0,0,0,.3)'; x.lineWidth = 1; x.beginPath(); x.moveTo(4, 5); x.lineTo(4, 2); x.moveTo(6.5, 5); x.lineTo(6.5, 1.5); x.moveTo(15, 12); x.lineTo(15, 9); x.moveTo(17.5, 12); x.lineTo(17.5, 8.5); x.stroke(); })
   };
 }
 let TPAT_S = 0;
@@ -3293,8 +3433,9 @@ function hatchPattern(){
   const c = document.createElement('canvas'); c.width = c.height = 9;
   const x = c.getContext('2d');
   HATCHCB = SET.cb;
-  x.strokeStyle = SET.cb ? 'rgba(0,0,0,.85)' : 'rgba(212,85,63,.6)'; x.lineWidth = 2.6;
-  x.beginPath(); x.moveTo(-1, 10); x.lineTo(10, -1); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(7, 11); x.lineTo(11, 7); x.stroke();
+  const lines = () => { x.beginPath(); x.moveTo(-1, 10); x.lineTo(10, -1); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(7, 11); x.lineTo(11, 7); x.stroke(); };
+  if(!SET.cb){ x.strokeStyle = 'rgba(30,6,3,.34)'; x.lineWidth = 4.4; lines(); }   // donkere rand: de arcering blijft zichtbaar op rode en roze landen
+  x.strokeStyle = SET.cb ? 'rgba(0,0,0,.85)' : 'rgba(224,78,54,.72)'; x.lineWidth = 2.5; lines();
   return bctx.createPattern(c, 'repeat');
 }
 
@@ -3319,91 +3460,64 @@ function renderBase(coarse){
   baseDirty = false; CV = {cx:V.cx, cy:V.cy, k:V.k}; lastBase = performance.now(); DIRTYP.clear(); labelsDirty = false;
   const bw = baseC.width / Q, bh = baseC.height / Q;
   const ctx = bctx;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = SEA_COL; ctx.fillRect(0, 0, baseC.width, baseC.height);
   const s = Q / V.k, tx = bw/2*Q - V.cx*s, ty = bh/2*Q - V.cy*s;
-  ctx.setTransform(s, 0, 0, s, tx, ty);
-  const px = V.k;
+  const px = V.k, mode = UI.mapMode || 'pol';
   const vx0 = V.cx - bw/2*V.k, vx1 = V.cx + bw/2*V.k, vy0 = V.cy - bh/2*V.k, vy1 = V.cy + bh/2*V.k;
-  ctx.lineJoin = 'miter'; ctx.miterLimit = 2;
-  // zeeroutes over de oceaan: dunne stippellijn, zodat je ziet waar je kunt oversteken
-  if(LONG.size){
-    ctx.strokeStyle = 'rgba(140,185,220,.13)'; ctx.lineWidth = 0.9*px; ctx.setLineDash([3*px, 5*px]); ctx.beginPath();
-    for(const r of ROUTES){
-      if(!LONG.has(ek(r[0], r[1]))) continue;
-      if(Math.max(r[2], r[4]) < vx0 || Math.min(r[2], r[4]) > vx1 || Math.max(r[3], r[5]) < vy0 || Math.min(r[3], r[5]) > vy1) continue;
-      ctx.moveTo(r[2], r[3]); ctx.lineTo(r[4], r[5]);
-    }
-    ctx.stroke(); ctx.setLineDash([]);
-  }
+  drawSea(ctx, s, tx, ty, px, vx0, vy0, vx1, vy1);
   // ingezoomd (en niet te veel kaart in beeld): scherpe data; anders vereenvoudigde versie per zoomniveau
   const hd = !!HD && V.k < 0.8 && (vx1 - vx0)*(vy1 - vy0) < 1.4e6;
   const lv = hd ? 0 : Math.min(LOD_STEP.length - 1, lodLevel() + (coarse ? 1 : 0)), LP = lodPaths(lv);
   CVL = hd ? -1 : lv; if(coarse && !hd) baseDirty = true;
-  ctx.fillStyle = LAND_BG; ctx.fill(LODB[lv], 'evenodd');
-  ctx.strokeStyle = '#070C10'; ctx.lineWidth = 0.6*px; ctx.stroke(LODB[lv]);
   const vis = [], vp = [];
   for(const p of PIDS){
     const b = BBOX[p];
     if(b[2] < vx0 || b[0] > vx1 || b[3] < vy0 || b[1] > vy1) continue;
-    const path = hd ? hdPath(p) : LP[p];
-    vis.push(p); vp.push(path);
-    ctx.fillStyle = FILL[p]; ctx.fill(path, 'evenodd');
+    vis.push(p); vp.push(hd ? hdPath(p) : LP[p]);
   }
+  const whole = vis.length > 250 && !hd;
+  if(!coarse) coastGlow(ctx, vis, s, tx, ty, px);
+  ctx.setTransform(s, 0, 0, s, tx, ty);
+  ctx.lineJoin = 'miter'; ctx.miterLimit = 2;
+  ctx.fillStyle = LAND_BG; ctx.fill(LODB[lv], 'evenodd');
+  ctx.strokeStyle = '#070C10'; ctx.lineWidth = 0.6*px; ctx.stroke(LODB[lv]);
+  for(let i = 0; i < vis.length; i++){ ctx.fillStyle = FILL[vis[i]]; ctx.fill(vp[i], 'evenodd'); }
   if(V.k < 1.4){ terrainScale(s); for(let i = 0; i < vis.length; i++) fillTerrain(ctx, vis[i], vp[i]); }
   if(G && SET.cb){   // eigen land: stippen, zodat je het zonder kleur herkent
     OWNPAT ||= ownPattern(); if(OWNPAT.setTransform) OWNPAT.setTransform(new DOMMatrix().scale(Q/s));
     ctx.fillStyle = OWNPAT; const me0 = G.player;
     for(let i = 0; i < vis.length; i++) if(G.ctrl[vis[i]] === me0) ctx.fill(vp[i], 'evenodd');
   }
-  if(G && enemiesOf(G.player).length){
+  if(G && mode === 'pol' && enemiesOf(G.player).length){
     if(!HATCH || HATCHCB !== SET.cb) HATCH = hatchPattern();
     if(HATCH && HATCH.setTransform) HATCH.setTransform(new DOMMatrix().scale(Q/s));
     ctx.fillStyle = HATCH;
     const me = G.player;
     for(let i = 0; i < vis.length; i++){ const c = G.ctrl[vis[i]]; if(c !== me && atWar(me, c)) ctx.fill(vp[i], 'evenodd'); }
   }
-  ctx.strokeStyle = 'rgba(4,8,11,.55)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
-  if(vis.length > 250 && !hd) ctx.stroke(lodAll(lv));
+  ctx.strokeStyle = 'rgba(4,8,11,.5)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
+  if(whole) ctx.stroke(lodAll(lv));
   else for(const path of vp) ctx.stroke(path);
-  ctx.strokeStyle = SET.cb ? '#F4F4F0' : '#04080B'; ctx.lineWidth = (SET.cb ? 3.2 : 1.5)*px;
-  outlineNear(ctx, vx0, vy0, vx1, vy1, hd, lv);
-  // rivierovergangen: blauw streepje dwars op de lijn tussen twee provincies
-  if(V.k < 0.45){
-    ctx.strokeStyle = 'rgba(110,170,230,.55)'; ctx.lineCap = 'round';
-    for(const k in RIV){
-      const i = k.indexOf('|'), a = P[k.slice(0, i)].a, b = P[k.slice(i+1)].a;
-      const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
-      if(mx < vx0 || mx > vx1 || my < vy0 || my > vy1) continue;
-      const dx = b[0]-a[0], dy = b[1]-a[1], L = Math.hypot(dx, dy) || 1, h = (RIV[k] === 2 ? 7 : 5)*px;
-      ctx.lineWidth = (RIV[k] === 2 ? 2.4 : 1.6)*px;
-      ctx.beginPath(); ctx.moveTo(mx - dy/L*h, my + dx/L*h); ctx.lineTo(mx + dy/L*h, my - dx/L*h); ctx.stroke();
-    }
-    ctx.lineCap = 'butt';
-  }
-  // landnamen in schermruimte
+  drawBorders(ctx, vx0, vy0, vx1, vy1, hd, lv, px);
+  if(!coarse) drawRivers(ctx, vx0, vy0, vx1, vy1, px, hd);
+  // landnamen (schermruimte), daaroverheen de zeeroutes (kaartruimte), dan steden en namen die de veertekens vrijlaten
   ctx.setTransform(Q, 0, 0, Q, 0, 0);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-  for(const l of LABELS){
-    const fs = Math.min(64, l.fs / V.k);
-    if(fs < 7.5) continue;
-    const sx = (l.x - V.cx)/V.k + bw/2, sy = (l.y - V.cy)/V.k + bh/2;
-    if(sx < -300 || sx > bw + 300 || sy < -60 || sy > bh + 60) continue;
-    ctx.font = '700 ' + fs.toFixed(1) + 'px ' + FONT_UI;
-    ctx.lineWidth = Math.max(1.5, fs*0.14); ctx.strokeStyle = 'rgba(5,9,12,.55)'; ctx.strokeText(l.t, sx, sy);
-    ctx.fillStyle = 'rgba(255,255,255,.62)'; ctx.fillText(l.t, sx, sy);
-  }
+  const taken = drawLabels(ctx, CV, bw, bh);
+  ctx.setTransform(s, 0, 0, s, tx, ty);
+  drawRoutes(ctx, vx0, vy0, vx1, vy1, px, true);
+  ctx.setTransform(Q, 0, 0, Q, 0, 0);
+  for(const m of RMARK){ const mx = (m[0] - V.cx)/px + bw/2, my = (m[1] - V.cy)/px + bh/2; taken.push([mx - 9, my - 9, mx + 9, my + 9]); }
+  if(mode === 'sup' || mode === 'ind') drawModeNums(ctx, CV, bw, bh, vx0, vy0, vx1, vy1); else drawCities(ctx, CV, bw, bh, vx0, vy0, vx1, vy1, taken);
   baseC.style.transform = '';
 }
 function paintProvinces(){
   // alleen veranderde provincies (met buren, binnen hun kader) opnieuw in de buffer tekenen
   const ctx = bctx, bw = baseC.width / Q, bh = baseC.height / Q;
-  const s = Q / CV.k, tx = bw/2*Q - CV.cx*s, ty = bh/2*Q - CV.cy*s, px = CV.k;
+  const s = Q / CV.k, tx = bw/2*Q - CV.cx*s, ty = bh/2*Q - CV.cy*s, px = CV.k, mode = UI.mapMode || 'pol';
   const hd = CVL < 0 && !!HD, LP = lodPaths(Math.max(0, CVL)), me = G.player, pathOf = q => hd ? hdPath(q) : LP[q];
-  ctx.setTransform(s, 0, 0, s, tx, ty); ctx.lineJoin = 'miter'; ctx.miterLimit = 2;
   if(HATCH && HATCH.setTransform) HATCH.setTransform(new DOMMatrix().scale(Q/s));
   for(const p of DIRTYP){
-    const b = BBOX[p], pad = 2*px;
+    const b = BBOX[p], pad = 3*px;
+    ctx.setTransform(s, 0, 0, s, tx, ty); ctx.lineJoin = 'miter'; ctx.miterLimit = 2;
     ctx.save(); ctx.beginPath(); ctx.rect(b[0]-pad, b[1]-pad, b[2]-b[0]+2*pad, b[3]-b[1]+2*pad); ctx.clip();
     const group = [p, ...ADJ[p]].filter(q => { const bb = BBOX[q]; return !(bb[2] < b[0]-pad || bb[0] > b[2]+pad || bb[3] < b[1]-pad || bb[1] > b[3]+pad); });
     for(const q of group){
@@ -3411,12 +3525,20 @@ function paintProvinces(){
       if(CV.k < 1.4){ terrainScale(s); fillTerrain(ctx, q, pathOf(q)); }
       const c = G.ctrl[q];
       if(SET.cb && c === me){ OWNPAT ||= ownPattern(); if(OWNPAT.setTransform) OWNPAT.setTransform(new DOMMatrix().scale(Q/s)); ctx.fillStyle = OWNPAT; ctx.fill(pathOf(q), 'evenodd'); }
-      if(c !== me && atWar(me, c)){ if(!HATCH || HATCHCB !== SET.cb) HATCH = hatchPattern(); ctx.fillStyle = HATCH; ctx.fill(pathOf(q), 'evenodd'); }
+      if(mode === 'pol' && c !== me && atWar(me, c)){ if(!HATCH || HATCHCB !== SET.cb) HATCH = hatchPattern(); ctx.fillStyle = HATCH; ctx.fill(pathOf(q), 'evenodd'); }
     }
-    ctx.strokeStyle = 'rgba(4,8,11,.55)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
+    ctx.strokeStyle = 'rgba(4,8,11,.5)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
     for(const q of group) ctx.stroke(pathOf(q));
-    ctx.strokeStyle = SET.cb ? '#F4F4F0' : '#04080B'; ctx.lineWidth = (SET.cb ? 3.2 : 1.5)*px;
-    outlineNear(ctx, b[0]-pad, b[1]-pad, b[2]+pad, b[3]+pad, hd);
+    const x0 = b[0]-pad, y0 = b[1]-pad, x1 = b[2]+pad, y1 = b[3]+pad;
+    drawBorders(ctx, x0, y0, x1, y1, hd, undefined, px);
+    drawRivers(ctx, x0, y0, x1, y1, px, hd);
+    ctx.setTransform(Q, 0, 0, Q, 0, 0);
+    const taken = drawLabels(ctx, CV, bw, bh, x0, y0, x1, y1);
+    ctx.setTransform(s, 0, 0, s, tx, ty);
+    drawRoutes(ctx, x0, y0, x1, y1, px);
+    ctx.setTransform(Q, 0, 0, Q, 0, 0);
+    for(const m of RMARK){ const mx = (m[0] - CV.cx)/px + bw/2, my = (m[1] - CV.cy)/px + bh/2; taken.push([mx - 9, my - 9, mx + 9, my + 9]); }
+    if(mode === 'sup' || mode === 'ind') drawModeNums(ctx, CV, bw, bh, x0, y0, x1, y1); else drawCities(ctx, CV, bw, bh, x0, y0, x1, y1, taken, true);
     ctx.restore();
   }
   DIRTYP.clear();
@@ -3427,6 +3549,323 @@ function baseTransform(){
   if(f === 1 && tx === 0 && ty === 0){ baseC.style.transform = ''; return {f, tx, ty, still:true}; }
   baseC.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + f.toFixed(4) + ')';
   return {f, tx, ty, still:false};
+}
+
+/* ================= kaartlagen: zee, kust, grenzen, rivieren, zeeroutes, steden ================= */
+// Alles hier tekent in de kaartbuffer (renderBase / paintProvinces). Een functie krijgt de context (al in kaartruimte),
+// de camera van de buffer en het stuk kaart dat getekend moet worden, zodat dezelfde code ook één provincie kan bijwerken.
+let SEAPAT = null, GLOWC = null, GLOWC2 = null, GLOWC3 = null;
+function seaPattern(){   // één ondoorzichtige tegel: zeekleur met golfjes (één vulling in plaats van twee)
+  const c = document.createElement('canvas'); c.width = 96; c.height = 54;
+  const x = c.getContext('2d'); x.fillStyle = SEA_COL; x.fillRect(0, 0, 96, 54);
+  x.strokeStyle = 'rgba(125,180,210,.085)'; x.lineWidth = 1; x.lineCap = 'round';
+  for(const [a, b] of [[8, 13], [56, 40]]){ x.beginPath(); x.moveTo(a, b); x.quadraticCurveTo(a + 4, b - 3.2, a + 8, b); x.quadraticCurveTo(a + 12, b + 3.2, a + 16, b); x.quadraticCurveTo(a + 20, b - 3.2, a + 24, b); x.stroke(); }
+  return bctx.createPattern(c, 'repeat');
+}
+// zee: donker vlak met golfjes (vast aan de kaart) en een dun raster zoals op een stafkaart
+function drawSea(ctx, s, tx, ty, px, x0, y0, x1, y1){
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  SEAPAT ||= seaPattern();
+  if(SEAPAT.setTransform){ SEAPAT.setTransform(new DOMMatrix([Q, 0, 0, Q, Math.round(tx), Math.round(ty)])); ctx.fillStyle = SEAPAT; } else ctx.fillStyle = SEA_COL;
+  ctx.fillRect(0, 0, baseC.width, baseC.height);
+  ctx.setTransform(s, 0, 0, s, tx, ty);
+  let gs = 12.5; while(gs < 120*px) gs *= 2;
+  ctx.strokeStyle = 'rgba(120,175,205,.07)'; ctx.lineWidth = px; ctx.beginPath();
+  for(let x = Math.ceil(x0/gs)*gs; x <= x1; x += gs){ ctx.moveTo(x, y0); ctx.lineTo(x, y1); }
+  for(let y = Math.ceil(y0/gs)*gs; y <= y1; y += gs){ ctx.moveTo(x0, y); ctx.lineTo(x1, y); }
+  ctx.stroke();
+}
+// hoogste vereenvoudigingsniveau waarvan de afwijking onder tol kaarteenheden blijft
+function lodFor(tol){ let l = 0; for(let i = 1; i < LOD_STEP.length; i++) if(LOD_STEP[i] <= tol) l = i; return l; }
+// ondiep water: het land klein en wazig eronder getekend geeft een lichte strook langs elke kust (zonder dure filters)
+function coastGlow(ctx, vis, s, tx, ty, px){
+  const F = 6, w = Math.ceil(baseC.width/F), h = Math.ceil(baseC.height/F);
+  GLOWC ||= document.createElement('canvas'); GLOWC2 ||= document.createElement('canvas'); GLOWC3 ||= document.createElement('canvas');
+  if(GLOWC.width !== w || GLOWC.height !== h){ GLOWC.width = GLOWC3.width = w; GLOWC.height = GLOWC3.height = h; GLOWC2.width = Math.ceil(w/4); GLOWC2.height = Math.ceil(h/4); }
+  const g = GLOWC.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h);
+  g.setTransform(s/F, 0, 0, s/F, tx/F, ty/F); g.fillStyle = '#5E9DC0';
+  const gl = lodFor(3*px), LP = lodPaths(gl);   // de gloed is wazig: een grove vorm volstaat en tekent veel sneller
+  if(vis.length > 250 && gl) g.fill(lodAll(gl)); else for(const p of vis) g.fill(LP[p], 'evenodd');
+  g.fill(LODB[gl], 'evenodd');
+  // brede en smalle gloed op klein formaat samenvoegen, daarna in één keer vergroot onder de kaart leggen
+  const g2 = GLOWC2.getContext('2d'); g2.setTransform(1, 0, 0, 1, 0, 0); g2.clearRect(0, 0, GLOWC2.width, GLOWC2.height);
+  g2.imageSmoothingEnabled = true; g2.drawImage(GLOWC, 0, 0, w, h, 0, 0, GLOWC2.width, GLOWC2.height);
+  const g3 = GLOWC3.getContext('2d'); g3.setTransform(1, 0, 0, 1, 0, 0); g3.clearRect(0, 0, w, h); g3.imageSmoothingEnabled = true;
+  g3.globalAlpha = 0.5; g3.drawImage(GLOWC2, 0, 0, GLOWC2.width, GLOWC2.height, 0, 0, GLOWC2.width*4, GLOWC2.height*4);
+  g3.globalAlpha = 0.6; g3.drawImage(GLOWC, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
+  ctx.globalAlpha = 0.5; ctx.drawImage(GLOWC3, 0, 0, w, h, 0, 0, w*F, h*F); ctx.globalAlpha = 1;
+}
+// landsgrenzen: zachte donkere band met een scherpe lijn erin; de vulkleuren lopen daardoor niet in elkaar over.
+// De band komt alleen op grenzen over land (tussen provincies van verschillende landen): langs de kust zie je hem toch niet,
+// en juist de kustlijn kost het meeste tekenwerk.
+let LBORD = null;
+function landBorders(l){
+  if(!LBORD){
+    const raw = [];
+    for(const a of PIDS) for(const b of ADJ[a]){ if(a >= b || P[a].c === P[b].c || SEA.has(ek(a, b))) continue; for(const ln of borderLines(a, b)) raw.push(ln); }
+    LBORD = {raw, lv:[]};
+  }
+  if(LBORD.lv[l]) return LBORD.lv[l];
+  const st = LOD_STEP[l], out = [];
+  for(const ln of LBORD.raw){
+    const p = new Path2D(), n = ln.length; let lx = ln[0], ly = ln[1], x0 = lx, x1 = lx, y0 = ly, y1 = ly; p.moveTo(lx, ly);
+    for(let j = 2; j < n; j += 2){ const x = ln[j], y = ln[j+1]; if(j < n - 2 && Math.abs(x - lx) + Math.abs(y - ly) < st) continue; p.lineTo(x, y); lx = x; ly = y; if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }
+    out.push({b:[x0, y0, x1, y1], p});
+  }
+  return LBORD.lv[l] = out;
+}
+function drawBorders(ctx, x0, y0, x1, y1, hd, lv, px){
+  ctx.lineJoin = 'miter';
+  if(SET.cb){ ctx.strokeStyle = '#F4F4F0'; ctx.lineWidth = 3.2*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv); return; }
+  if(px < 2.4){
+    const band = new Path2D(); let n = 0;
+    for(const ch of landBorders(lodFor(1.2*px))){ const b = ch.b; if(b[2] < x0 || b[0] > x1 || b[3] < y0 || b[1] > y1) continue; band.addPath(ch.p); n++; }
+    if(n){ ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(2,5,8,.3)'; ctx.lineWidth = 5.5*px; ctx.stroke(band); ctx.lineJoin = 'miter'; }
+  }
+  ctx.strokeStyle = '#03070A'; ctx.lineWidth = 1.7*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv);
+}
+/* ---- rivieren: lopen langs de gedeelde grens van de twee provincies van een rivierovergang ---- */
+let RIVG = null, HDR = {hd:null, r:{}};
+// stukken grens die ring-set A en B gemeen hebben (zelfde hoekpunten), als reeksen x,y
+function sharedLines(ra, rb, f){
+  const key = (x, y) => Math.round(x*10)*100003 + Math.round(y*10);
+  const sb = new Set(); for(const r of rb) for(let i = 0; i < r.length; i += 2) sb.add(key(r[i], r[i+1]));
+  const out = [], sc = f || 1;
+  for(const r of ra){
+    const n = r.length >> 1, on = new Uint8Array(n); let cnt = 0;
+    for(let i = 0; i < n; i++) if(sb.has(key(r[2*i], r[2*i+1]))){ on[i] = 1; cnt++; }
+    if(cnt < 2) continue;
+    let st = 0; if(cnt < n) while(!(on[st] && !on[(st + n - 1) % n])) st++;
+    let cur = null;
+    for(let j = 0; j < n; j++){
+      const i = (st + j) % n;
+      if(on[i]) (cur ||= []).push(r[2*i]*sc, r[2*i+1]*sc);
+      else if(cur){ if(cur.length >= 4) out.push(new Float32Array(cur)); cur = null; }
+    }
+    if(cur){ if(cnt === n) cur.push(cur[0], cur[1]); if(cur.length >= 4) out.push(new Float32Array(cur)); }
+  }
+  return out;
+}
+// als twee buurprovincies geen hoekpunten delen (grenzen uit verschillende bronnen): de stukken van A die vlak langs B lopen
+function nearLines(ra, rb, eps){
+  const K = 100003, near = new Set(), cell = v => Math.floor(v/eps);
+  for(const r of rb){
+    const n = r.length >> 1;
+    for(let i = 0; i < n; i++){
+      const x0 = r[2*i], y0 = r[2*i+1], j = (i + 1) % n, dx = r[2*j] - x0, dy = r[2*j+1] - y0, st = Math.max(1, Math.ceil(Math.hypot(dx, dy)/(eps*0.7)));
+      for(let k = 0; k < st; k++) near.add(cell(x0 + dx*k/st)*K + cell(y0 + dy*k/st));
+    }
+  }
+  const out = [];
+  for(const r of ra){
+    const n = r.length >> 1, on = new Uint8Array(n); let cnt = 0;
+    for(let i = 0; i < n; i++){ const cx = cell(r[2*i]), cy = cell(r[2*i+1]); look: for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) if(near.has((cx + a)*K + cy + b)){ on[i] = 1; cnt++; break look; } }
+    if(cnt < 2 || cnt === n) continue;
+    let st = 0; while(!(on[st] && !on[(st + n - 1) % n])) st++;
+    let cur = null;
+    for(let j = 0; j < n; j++){ const i = (st + j) % n; if(on[i]) (cur ||= []).push(r[2*i], r[2*i+1]); else if(cur){ if(cur.length >= 4) out.push(new Float32Array(cur)); cur = null; } }
+    if(cur && cur.length >= 4) out.push(new Float32Array(cur));
+  }
+  return out;
+}
+const borderLines = (a, b) => { const l = sharedLines(RINGS[a], RINGS[b]); return l.length ? l : nearLines(RINGS[a], RINGS[b], 0.7); };
+function linesPath(lines){ const p = new Path2D(); for(const l of lines){ p.moveTo(l[0], l[1]); for(let j = 2; j < l.length; j += 2) p.lineTo(l[j], l[j+1]); } return p; }
+function riverGeo(){
+  if(RIVG) return RIVG;
+  RIVG = [];
+  for(const k in RIV){
+    const i = k.indexOf('|'), a = k.slice(0, i), b = k.slice(i + 1); if(!RINGS[a] || !RINGS[b] || !ADJ[a].includes(b) || SEA.has(k)) continue;
+    const lines = borderLines(a, b); if(!lines.length) continue;
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for(const l of lines) for(let j = 0; j < l.length; j += 2){ const x = l[j], y = l[j+1]; if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }
+    RIVG.push({a, b, sz:RIV[k], bb:[x0, y0, x1, y1], p:linesPath(lines), hdv:null, hd:null});
+  }
+  return RIVG;
+}
+function hdRings(p){ if(HDR.hd !== HD) HDR = {hd:HD, r:{}}; return HDR.r[p] ||= parseRings(HD.p[p] || ''); }
+function drawRivers(ctx, x0, y0, x1, y1, px, hd){
+  if(px >= 1.35 || !riverGeo().length) return;
+  const small = px < 0.75, fine = hd && HD && px < 0.3, big = new Path2D(), sm = new Path2D(); let nb = 0, ns = 0;
+  for(const g of RIVG){
+    if(g.sz < 2 && !small) continue;
+    const b = g.bb; if(b[2] < x0 || b[0] > x1 || b[3] < y0 || b[1] > y1) continue;
+    let p = g.p;
+    if(fine){ if(g.hdv !== HD){ g.hdv = HD; const l = sharedLines(hdRings(g.a), hdRings(g.b), HD.g); g.hd = l.length ? linesPath(l) : null; } if(g.hd) p = g.hd; }   // scherpe kaart: de rivier volgt de scherpe grens
+    if(g.sz >= 2){ nb++; big.addPath(p); } else { ns++; sm.addPath(p); }
+  }
+  ctx.lineJoin = 'bevel';
+  const wb = clamp(2.5 - px, 1.3, 2.3), ws = clamp(1.7 - px, 0.9, 1.4);
+  if(nb){ ctx.strokeStyle = 'rgba(5,14,24,.5)'; ctx.lineWidth = (wb + 1.8)*px; ctx.stroke(big); ctx.strokeStyle = '#6FB2EA'; ctx.lineWidth = wb*px; ctx.stroke(big); }
+  if(ns){ ctx.strokeStyle = 'rgba(111,178,234,.9)'; ctx.lineWidth = ws*px; ctx.stroke(sm); }
+  ctx.lineJoin = 'miter';
+}
+/* ---- zeeroutes (oversteekplaatsen): boog over het water, haven op beide oevers; korte zeestraten krijgen een veerteken ---- */
+let RGEO = null;
+const ROUTE_COL = '#9AD6EC';
+let LGRID = null;
+function isLand(x, y, back){
+  if(!LGRID || LGRID.d !== DATA){   // rooster van provinciekaders: snel zoeken welke provincie op een punt ligt
+    const n = 48, cw = W/n, ch = H/n, cells = Array.from({length:n*n}, () => []);
+    for(const p of PIDS){ const b = BBOX[p]; for(let i = Math.max(0, Math.floor(b[0]/cw)); i <= Math.min(n - 1, Math.floor(b[2]/cw)); i++) for(let j = Math.max(0, Math.floor(b[1]/ch)); j <= Math.min(n - 1, Math.floor(b[3]/ch)); j++) cells[j*n + i].push(p); }
+    LGRID = {d:DATA, n, cw, ch, cells};
+  }
+  const i = Math.floor(x/LGRID.cw), j = Math.floor(y/LGRID.ch);
+  if(i >= 0 && j >= 0 && i < LGRID.n && j < LGRID.n) for(const p of LGRID.cells[j*LGRID.n + i]){ const b = BBOX[p]; if(x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue; if(hitCtx.isPointInPath(PATH[p], x, y, 'evenodd')) return true; }
+  return !!back && hitCtx.isPointInPath(BACK, x, y, 'evenodd');
+}
+function routeGeo(){
+  if(RGEO) return RGEO;
+  RGEO = ROUTES.map(r => {
+    const x1 = r[2], y1 = r[3], x2 = r[4], y2 = r[5], dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), mx = (x1 + x2)/2, my = (y1 + y2)/2;
+    let nx = len ? -dy/len : 0, ny = len ? dx/len : -1, cx = mx, cy = my;
+    // bol naar de kant die van het land af wijst (weg van het midden tussen de twee provincies)
+    const A = P[r[0]].a, B = P[r[1]].a; if(nx*((A[0] + B[0])/2 - mx) + ny*((A[1] + B[1])/2 - my) > 0){ nx = -nx; ny = -ny; }
+    if(len*KM > 30){
+      pick: for(const f of [0.2, 0.11]) for(const sg of [1, -1]){
+        const qx = mx + nx*len*f*sg, qy = my + ny*len*f*sg; let ok = true;
+        for(const t of [0.3, 0.5, 0.7]){ const u = 1 - t; if(isLand(u*u*x1 + 2*u*t*qx + t*t*x2, u*u*y1 + 2*u*t*qy + t*t*y2)){ ok = false; break; } }
+        if(ok){ cx = qx; cy = qy; break pick; }
+      }
+    }
+    // sommige 'routes' in de kaartdata verbinden alleen twee provincies die elkaar op het land net niet raken: geen oversteek.
+    // Een echte oversteek heeft open water in de buurt (zeestraat, baai, meer); bij een landverbinding is alles eromheen land.
+    let land = false;
+    if(len*KM < 30){
+      const open = (x, y) => { if(isLand(x, y, true)) return false; for(let i = 0; i < 8; i++) if(isLand(x + 8/KM*Math.cos(i*Math.PI/4), y + 8/KM*Math.sin(i*Math.PI/4), true)) return false; return true; };
+      land = !open(mx, my);
+      for(let rr = 12; rr <= 36 && land; rr += 12) for(let i = 0; i < 12 && land; i++) if(open(mx + rr/KM*Math.cos(i*Math.PI/6), my + rr/KM*Math.sin(i*Math.PI/6))) land = false;
+    }
+    return {a:r[0], b:r[1], land, x1, y1, x2, y2, cx, cy, len, km:len*KM, ux:len ? dx/len : 1, uy:len ? dy/len : 0, bb:[Math.min(x1, x2, cx), Math.min(y1, y2, cy), Math.max(x1, x2, cx), Math.max(y1, y2, cy)]};
+  });
+  return RGEO;
+}
+// veerteken voor een korte oversteek: een staafje dwars over het water met een bootje erop; heeft een minimale schermgrootte
+function straitMark(ctx, g, px, col){
+  const badge = px < 0.75, L = Math.max(g.len/px + 5, badge ? 22 : 12) * px, w = 3.4 * px, mx = (g.x1 + g.x2)/2, my = (g.y1 + g.y2)/2;
+  const ax = mx - g.ux*L/2, ay = my - g.uy*L/2, bx = mx + g.ux*L/2, by = my + g.uy*L/2;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(3,9,14,.85)'; ctx.lineWidth = w + 2.2*px; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.lineCap = 'butt';
+  if(!badge) return;
+  ctx.beginPath(); ctx.arc(mx, my, 7.4*px, 0, Math.PI*2); ctx.fillStyle = '#0C1A24'; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.3*px; ctx.stroke();
+  ctx.save(); ctx.translate(mx, my); ctx.scale(px, px); ctx.fillStyle = col;
+  ctx.beginPath(); ctx.moveTo(-4.6, 0.6); ctx.lineTo(4.6, 0.6); ctx.lineTo(3.1, 3.5); ctx.lineTo(-3.1, 3.5); ctx.closePath(); ctx.fill();   // romp
+  ctx.fillRect(-2.2, -1.9, 4.4, 1.9); ctx.fillRect(-0.6, -4.1, 1.2, 2.2);                                                                // opbouw en schoorsteen
+  ctx.restore();
+}
+function harborMark(ctx, x, y, px, col, big){
+  if(big){
+    const r = 6.2*px;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle = '#0C1A24'; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.2*px; ctx.stroke();
+    ctx.save(); ctx.translate(x, y + 0.2*px); ctx.scale(0.78*px, 0.78*px); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; for(const p of ICON.mar.s) ctx.stroke(p); ctx.restore();
+  } else {
+    ctx.beginPath(); ctx.arc(x, y, 2.3*px, 0, Math.PI*2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = 'rgba(3,9,14,.9)'; ctx.lineWidth = 0.9*px; ctx.stroke();
+  }
+}
+let RTHIN = false, RMARK = [];   // RMARK: middens van de veertekens in beeld (namen blijven daar weg)
+function drawRoutes(ctx, x0, y0, x1, y1, px, full){
+  if(!ROUTES.length) return;
+  const arcs = new Path2D(), longs = new Path2D(), ends = [], marks = []; let na = 0, nl = 0;
+  for(const g of routeGeo()){
+    if(g.land) continue;
+    const b = g.bb; if(b[2] < x0 - 12*px || b[0] > x1 + 12*px || b[3] < y0 - 12*px || b[1] > y1 + 12*px) continue;
+    if(g.len < 22*px){ marks.push(g); continue; }
+    const t = g.km > 500 ? (nl++, longs) : (na++, arcs);
+    t.moveTo(g.x1, g.y1); t.quadraticCurveTo(g.cx, g.cy, g.x2, g.y2); ends.push(g);
+  }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if(na){
+    ctx.strokeStyle = 'rgba(3,9,14,.6)'; ctx.lineWidth = 3.4*px; ctx.stroke(arcs);
+    ctx.strokeStyle = 'rgba(154,214,236,.9)'; ctx.lineWidth = 1.6*px; ctx.setLineDash([5*px, 4.2*px]); ctx.stroke(arcs);
+  }
+  if(nl){ ctx.strokeStyle = 'rgba(154,214,236,.42)'; ctx.lineWidth = 1.25*px; ctx.setLineDash([1.5*px, 5.5*px]); ctx.stroke(longs); }
+  ctx.setLineDash([]); ctx.lineCap = 'butt';
+  const big = px < 0.62;
+  for(const g of ends){
+    const col = g.km > 500 && !big ? 'rgba(154,214,236,.7)' : ROUTE_COL;
+    harborMark(ctx, g.x1, g.y1, px, col, big); harborMark(ctx, g.x2, g.y2, px, col, big);
+  }
+  if(full) RTHIN = marks.length > 60 || px > 1.6;   // veel korte oversteken in beeld (wereldkaart, uitgezoomd): dunne streepjes, anders wordt het een kluwen
+  if(full){ RMARK = []; if(!RTHIN && px < 0.75) for(const g of marks) RMARK.push([(g.x1 + g.x2)/2, (g.y1 + g.y2)/2]); }
+  if(!RTHIN) for(const g of marks) straitMark(ctx, g, px, ROUTE_COL);
+  else {
+    ctx.strokeStyle = 'rgba(154,214,236,.8)'; ctx.lineWidth = 1.6*px; ctx.lineCap = 'round'; ctx.beginPath();
+    for(const g of marks){ const h = Math.max(g.len, 4.5*px)/2, mx = (g.x1 + g.x2)/2, my = (g.y1 + g.y2)/2; ctx.moveTo(mx - g.ux*h, my - g.uy*h); ctx.lineTo(mx + g.ux*h, my + g.uy*h); }
+    ctx.stroke(); ctx.lineCap = 'butt';
+  }
+}
+/* ---- steden en namen (in schermruimte): hoofdstad = ster, grote stad = stip; namen verschijnen als je inzoomt ---- */
+const CAPNM = {};
+'afg:Kaboel,ago:Luanda,alb:Tirana,are:Abu Dhabi,arg:Buenos Aires,arm:Jerevan,aus:Canberra,aut:Wenen,aze:Bakoe,bdi:Gitega,bel:Brussel,ben:Porto-Novo,bfa:Ouagadougou,bgd:Dhaka,bgr:Sofia,bhs:Nassau,bih:Sarajevo,blr:Minsk,blz:Belmopan,bol:Sucre,bra:Brasilia,brn:Bandar Seri Begawan,btn:Thimphu,bwa:Gaborone,caf:Bangui,can:Ottawa,che:Bern,chl:Santiago,chn:Peking,civ:Abidjan,cmr:Yaoundé,cod:Kinshasa,cog:Brazzaville,col:Bogota,com:Moroni,cpv:Praia,cri:San José,cub:Havana,cyn:Noord-Nicosia,cyp:Nicosia,cze:Praag,deu:Berlijn,dji:Djibouti,dnk:Kopenhagen,dom:Santo Domingo,dza:Algiers,ecu:Quito,egy:Caïro,eri:Asmara,esp:Madrid,est:Tallinn,eth:Addis Abeba,fin:Helsinki,fji:Suva,fra:Parijs,gab:Libreville,gbr:Londen,geo:Tbilisi,gha:Accra,gin:Conakry,gmb:Banjul,gnb:Bissau,gnq:Malabo,grc:Athene,grl:Nuuk,gtm:Guatemala-Stad,guy:Georgetown,hnd:Tegucigalpa,hrv:Zagreb,hti:Port-au-Prince,hun:Boedapest,idn:Jakarta,ind:New Delhi,irl:Dublin,irn:Teheran,irq:Bagdad,isl:Reykjavik,isr:Jeruzalem,ita:Rome,jam:Kingston,jor:Amman,jpn:Tokio,kaz:Astana,ken:Nairobi,kgz:Bisjkek,khm:Phnom Penh,kor:Seoel,kos:Pristina,kwt:Koeweit,lao:Vientiane,lbn:Beiroet,lbr:Monrovia,lby:Tripoli,lka:Colombo,lso:Maseru,ltu:Vilnius,lux:Luxemburg,lva:Riga,mar:Rabat,mda:Chisinau,mdg:Antananarivo,mex:Mexico-Stad,mkd:Skopje,mli:Bamako,mmr:Naypyidaw,mne:Podgorica,mng:Ulaanbaatar,moz:Maputo,mrt:Nouakchott,mus:Port Louis,mwi:Lilongwe,mys:Kuala Lumpur,nam:Windhoek,ner:Niamey,nga:Abuja,nic:Managua,nld:Amsterdam,nor:Oslo,npl:Kathmandu,nzl:Wellington,omn:Muscat,pak:Islamabad,pan:Panama-Stad,per:Lima,phl:Manilla,png:Port Moresby,pol:Warschau,prk:Pyongyang,prt:Lissabon,pry:Asunción,qat:Doha,rou:Boekarest,rus:Moskou,rwa:Kigali,sah:El Aaiún,sau:Riyad,sdn:Khartoem,sds:Juba,sen:Dakar,slb:Honiara,sle:Freetown,slv:San Salvador,sol:Hargeisa,som:Mogadishu,srb:Belgrado,sur:Paramaribo,svk:Bratislava,svn:Ljubljana,swe:Stockholm,swz:Mbabane,syr:Damascus,tcd:N\'Djamena,tgo:Lomé,tha:Bangkok,tjk:Doesjanbe,tkm:Asjchabad,tls:Dili,tto:Port of Spain,tun:Tunis,tur:Ankara,twn:Taipei,tza:Dar es Salaam,uga:Kampala,ukr:Kiev,ury:Montevideo,usa:Washington,uzb:Tasjkent,ven:Caracas,vnm:Hanoi,vut:Port Vila,wsm:Apia,yem:Sanaa,zaf:Bloemfontein,zmb:Lusaka,zwe:Harare'
+  .split(',').forEach(s => { const i = s.indexOf(':'); CAPNM[s.slice(0, i)] = s.slice(i + 1); });
+COL_HOME.split(',').forEach(s => { const [a, b] = s.split(':'); if(CAPNM[b]) CAPNM[a] = CAPNM[b]; });
+const cityName = p => (CAPS.has(p) && CN[P[p].c].cap === p && CAPNM[P[p].c]) || CITY[p] || P[p].n.replace(/ e\.o\.$/, '');
+function starPath(ctx, x, y, r){ ctx.beginPath(); for(let k = 0; k < 10; k++){ const a = -Math.PI/2 + k*Math.PI/5, rr = k % 2 ? r*0.46 : r; ctx.lineTo(x + rr*Math.cos(a), y + rr*Math.sin(a)); } ctx.closePath(); }
+function drawCities(ctx, cam, bw, bh, x0, y0, x1, y1, taken, part){
+  const k = cam.k, u = REM/16;
+  if(k > 2.6) return;
+  const capNames = k < 0.85, cityDots = k < 1.0, cityNames = k < 0.52, provNames = k < 0.3, m = (part ? 280 : 60)*k;   // bij deeltekenen ruim kijken: namen ernaast bepalen mee wat past
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  // namen mogen elkaar (en de landnamen) niet overlappen: wie eerst komt, staat; hoofdsteden gaan voor
+  const hit = (ax, ay, bx, by) => { for(const r of taken) if(ax < r[2] && bx > r[0] && ay < r[3] && by > r[1]) return true; return false; };
+  const inV = p => { const a = P[p].a; return !(a[0] < x0 - m || a[0] > x1 + m || a[1] < y0 - m || a[1] > y1 + m); };
+  const scr = p => { const a = P[p].a; return [(a[0] - cam.cx)/k + bw/2, (a[1] - cam.cy)/k + bh/2 - (k < 1.2 ? 18*u : 0)]; };
+  const list = STARP.filter(p => inV(p) && (CAPS.has(p) ? (k <= 1.5 || MAJORS.has(P[p].c)) : cityDots)).sort((a, b) => (CAPS.has(b) - CAPS.has(a)) || (STAR[b] - STAR[a]));
+  for(const p of list){
+    const cap = CAPS.has(p), b = BBOX[p], pw = (b[2] - b[0])/k, [sx, sy] = scr(p);
+    let name = (cap ? capNames : cityNames) && pw > 26 ? cityName(p) : '';
+    const r = cap ? 5.6*u : STAR[p] >= 3 ? 3.7*u : 2.9*u, fs = (cap ? 12.5 : 11.5)*u;
+    let tw = 0, oy = 0;
+    if(name){   // past de naam niet (landnaam, andere stad, veerteken)? Dan iets hoger; lukt dat ook niet: alleen het teken
+      ctx.font = (cap ? '700 ' : '600 ') + fs.toFixed(1) + 'px ' + FONT_UI; tw = ctx.measureText(name).width;
+      const hw = (tw + r)/2 + 4*u; let ok = false;
+      for(const d of [0, -14*u, -23*u]) if(!hit(sx - hw, sy + d - fs*0.6, sx + hw, sy + d + fs*0.6)){ oy = d; ok = true; break; }
+      if(!ok){ name = ''; tw = 0; }
+    }
+    const mx = name ? sx - (tw + r + 4*u)/2 + r/2 : sx, syy = sy + oy;
+    if(name) taken.push([sx - (tw + r)/2 - 4*u, syy - fs*0.6, sx + (tw + r)/2 + 4*u, syy + fs*0.6]); else taken.push([mx - r, syy - r, mx + r, syy + r]);
+    if(cap){ starPath(ctx, mx, syy, r); ctx.fillStyle = '#F2D98A'; ctx.strokeStyle = 'rgba(5,9,12,.9)'; ctx.lineWidth = 2.2; ctx.stroke(); ctx.fill(); }
+    else { ctx.beginPath(); ctx.arc(mx, syy, r, 0, Math.PI*2); ctx.fillStyle = '#F1F3EE'; ctx.fill(); ctx.strokeStyle = 'rgba(5,9,12,.9)'; ctx.lineWidth = 1.3; ctx.stroke(); }
+    if(name){
+      const txx = mx + r + 3.5*u;
+      ctx.lineWidth = 3.2; ctx.strokeStyle = 'rgba(5,9,12,.82)'; ctx.strokeText(name, txx, syy + 0.5);
+      ctx.fillStyle = cap ? '#FFF3CF' : 'rgba(255,255,255,.92)'; ctx.fillText(name, txx, syy + 0.5);
+    }
+  }
+  if(!provNames) return;
+  // gewone provincie: alleen de naam, klein en gedimd, als hij erin past
+  ctx.font = '500 ' + (10.5*u).toFixed(1) + 'px ' + FONT_UI;
+  for(const p of PIDS){
+    if(STAR[p] >= 2 || !inV(p)) continue;
+    const b = BBOX[p], pw = (b[2] - b[0])/k, t = P[p].n.replace(/ e\.o\.$/, ''), tw = ctx.measureText(t).width;
+    if(tw > pw*0.92) continue;
+    const [sx, sy] = scr(p); if(hit(sx - tw/2 - 3*u, sy - 6*u, sx + tw/2 + 3*u, sy + 6*u)) continue;
+    taken.push([sx - tw/2 - 3*u, sy - 6*u, sx + tw/2 + 3*u, sy + 6*u]);
+    ctx.lineWidth = 2.6; ctx.strokeStyle = 'rgba(5,9,12,.5)'; ctx.strokeText(t, sx - tw/2, sy);
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText(t, sx - tw/2, sy);
+  }
+}
+// landnamen: groot, gespatieerd, met een donkere rand zodat ze op elke kleur leesbaar zijn; geeft de bezette vakken terug
+function drawLabels(ctx, cam, bw, bh, rx0, ry0, rx1, ry1){
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  const sp = 'letterSpacing' in ctx, taken = [];
+  for(const l of LABELS){
+    const fs = Math.min(64, l.fs / cam.k);
+    if(fs < 7.5) continue;
+    const sx = (l.x - cam.cx)/cam.k + bw/2, sy = (l.y - cam.cy)/cam.k + bh/2;
+    if(sx < -300 || sx > bw + 300 || sy < -60 || sy > bh + 60) continue;
+    const deep = fs > 34;   // ver ingezoomd: de landnaam mag de steden en fiches niet overschreeuwen
+    ctx.font = '700 ' + fs.toFixed(1) + 'px ' + FONT_UI;
+    if(sp) ctx.letterSpacing = (fs*0.09).toFixed(1) + 'px';
+    if(!deep){ const w = ctx.measureText(l.t).width; taken.push([sx - w/2, sy - fs*0.42, sx + w/2, sy + fs*0.42]); }
+    if(rx0 !== undefined){ const hw = fs*l.t.length*0.36*cam.k, hh = fs*0.7*cam.k; if(l.x + hw < rx0 || l.x - hw > rx1 || l.y + hh < ry0 || l.y - hh > ry1) continue; }
+    ctx.lineWidth = Math.max(2.2, fs*0.2); ctx.strokeStyle = deep ? 'rgba(5,9,12,.4)' : 'rgba(5,9,12,.78)'; ctx.strokeText(l.t, sx, sy);
+    ctx.fillStyle = deep ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.88)'; ctx.fillText(l.t, sx, sy);
+  }
+  if(sp) ctx.letterSpacing = '0px';
+  return taken;
 }
 
 /* ================= camera ================= */
@@ -3767,6 +4206,7 @@ function hover(e){
     const o = selOdds(p);
     h += ' <span class="' + (!o.n || o.r >= 1 ? 'okc' : 'warc') + '">' + esc(oddsTxt(o)) + '</span>';
   }
+  h += tipExtra(p);
   tip.innerHTML = h; tip.hidden = false;
   const r = tip.getBoundingClientRect();
   let x = e.clientX + 14, y = e.clientY + 16;
@@ -3901,7 +4341,7 @@ function drawStars(ctx, x, y, n, hot, u){
   }
 }
 const PLATE = {};
-const plateCol = c => PLATE[c] ||= shade(colorOf(c), -0.12);
+const plateCol = c => PLATE[c] ||= shade(colorOf(c), -0.12 - 1.5*Math.max(0, hex2ok(colorOf(c))[0] - 0.66));
 function rrect(ctx, x, y, w, h, r){ ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); }
 const hpCol = hp => hp > 60 ? '#73B06C' : hp > 30 ? '#E3A23C' : '#D4553F';
 let tgtCache = {key:'', list:[]};
@@ -3975,16 +4415,8 @@ function renderOver(){
   const locs = new Set();
   if(UI.info) locs.add(UI.info);
   for(const id of UI.sel){ const u = unitById(id); if(u) locs.add(u.loc); }
-  if(locs.size){
-    ctx.strokeStyle = '#E3A23C'; ctx.lineWidth = 1.8; ctx.setLineDash([2, 6]); ctx.lineCap = 'round'; ctx.beginPath();
-    const seen = new Set();
-    for(const l of locs) for(const i of (RTOUCH[l] || [])){
-      if(seen.has(i)) continue; seen.add(i);
-      const r = ROUTES[i], a = toScreen(r[2], r[3]), b = toScreen(r[4], r[5]);
-      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-    }
-    ctx.stroke(); ctx.setLineDash([]);
-  }
+  if(locs.size || (HOVER && RTOUCH[HOVER] && !isTouch)) drawRouteHi(ctx, locs, isTouch ? null : HOVER);
+  drawProvIcons(ctx);
   const u1 = REM / 16 * (V.k > 1.8 ? 0.92 : 1.05);   // schermpixels per fiche-eenheid, iets kleiner ver uitgezoomd
   // --- landgroepen ---
   const groups = {};
@@ -4230,6 +4662,253 @@ function renderOver(){
     ctx.restore();
   }
   drawFx();
+}
+/* ================= kaartmodi, minimap en kaart-extra's in de bovenlaag ================= */
+// UI.mapMode: 'pol' (standaard) · 'ter' terrein · 'sup' aanvoer · 'dip' diplomatie · 'ind' industrie. Alleen tijdens een spel.
+const MODES = [
+  {k:'pol', n:'Politiek', key:'P', d:'M5 2.5h1.8v19H5zM6.8 3.5c3-1 5 1 8 0s3.5-.4 4.5.2v8.6c-1-.6-2.4-.9-4.5-.2-3 1-5-1-8 0z'},
+  {k:'ter', n:'Terrein', key:'T', d:'M1.5 20.5 8.5 8l3.2 5.4L15 7.5l7.5 13z'},
+  {k:'sup', n:'Aanvoer', key:'A', d:'M12 2.2 21.5 7v10L12 21.8 2.5 17V7zM12 4.6 6 7.6l6 3 6-3zM4.5 9.2v6.6l6.5 3.3v-6.6zM13 12.5v6.6l6.5-3.3V9.2z'},
+  {k:'dip', n:'Diplomatie', key:'D', d:'M5 2h10l4.5 4.5V22H5zM7.6 8h8.8v1.4H7.6zM7.6 11h8.8v1.4H7.6zM7.6 14h5.6v1.4H7.6z'},
+  {k:'ind', n:'Industrie', key:'I', d:'M2.5 21V10.5l5.5 3.4v-3.4l5.5 3.4V7.6l2.2-2.1h1.8V3h2.8v18z'}
+];
+const TER_COL = {'':'#63824F', h:'#8E8757', m:'#7F7167', d:'#C6AB6C', w:'#4A7F7A'};
+const DIP_COL = {me:'#4FAE6C', war:'#C9483A', ally:'#4C8FD6', pact:'#8E73C8', truce:'#C9B24A', fear:'#B5803C', neu:'#59646D'};
+const DIP_NM = {me:'jij', war:'vijand', ally:'bondgenoot', pact:'verdrag', truce:'bestand', fear:'vreest je', neu:'neutraal'};
+const mapMode = () => (G && UI.mapMode) || 'pol';
+const mixHex = (a, b, t) => { const A = hex2rgb(a), B = hex2rgb(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v)*t).toString(16).padStart(2, '0')).join(''); };
+// staat er iets over dit paar in G.ally / G.pact? (die velden komen van een ander deel van het spel; vorm onbekend, dus ruim lezen)
+function relHas(o, me, c){
+  if(!o) return false;
+  if(Array.isArray(o)) return o.includes(c) || o.includes(wk(me, c));
+  if(typeof o !== 'object') return false;
+  if(o[wk(me, c)]) return true;
+  const a = o[me], b = o[c];
+  if(a && typeof a === 'object') return Array.isArray(a) ? a.includes(c) : !!a[c];
+  if(b && typeof b === 'object') return Array.isArray(b) ? b.includes(me) : !!b[me];
+  if(a !== undefined && a !== null && typeof a !== 'object') return a === b;   // zelfde blok/factie
+  return !!b;
+}
+// verhouding van land c tot de speler
+function relOf(c){
+  const me = G.player;
+  if(c === me) return 'me';
+  if(atWar(me, c)) return 'war';
+  if(relHas(G.ally, me, c)) return 'ally';
+  if(relHas(G.pact, me, c)) return 'pact';
+  if(G.truce && truceLeft(me, c) > 0) return 'truce';
+  if(((G.ae || {})[c] || 0) >= 30) return 'fear';
+  return 'neu';
+}
+function modeFill(m, p, c){
+  const j = JIT[p];
+  if(m === 'ter') return shade(TER_COL[TER[p] || ''], j*0.8);
+  const me = G.player, occ = P[p].c !== c;
+  if(m === 'dip') return shade(DIP_COL[relOf(c)], j*0.6 + (occ ? -0.14 : 0));
+  if(m === 'ind'){
+    const n = facN(p), sl = SLOTS[p] || 0;
+    const base = n > 0 ? mixHex('#5A4827', '#F5B93F', clamp(Math.sqrt(n/2.5), 0, 1)) : sl > 0 ? '#33414C' : '#232D35';
+    return shade(base, j*0.5 + (c === me ? 0 : -0.22));
+  }
+  if(m === 'sup'){
+    const mine = c === me;
+    if(!mine && !atWar(me, c)) return shade('#27323B', j*0.5);
+    if(SUP[p] === 0) return shade(mine ? '#E0792A' : '#8A4424', j*0.5);
+    const t = clamp((supCap(p, c) - 3)/15, 0, 1);
+    return shade(mixHex(mine ? '#2C5338' : '#5B2B2B', mine ? '#86D692' : '#D98484', t), j*0.4);
+  }
+  return shade(colorOf(c), j + (occ ? -0.12 : 0));
+}
+function modeFills(){ let ch = false; for(const p of PIDS){ const f = modeFill(mapMode(), p, G ? G.ctrl[p] : P[p].c); if(f !== FILL[p]){ FILL[p] = f; ch = true; } } return ch; }
+function setMode(m){
+  if(!G || !MODES.some(x => x.k === m)) return;
+  UI.mapMode = m; if(m === 'sup') computeSupply();
+  modeFills(); DIRTYP.clear(); baseDirty = true; MM.full = true; MM.msig = ''; renderModes();
+}
+function legendH(m){
+  const sw = (col, t) => '<span class="mlg"><i style="background:' + col + '"></i>' + t + '</span>';
+  if(m === 'ter') return sw(TER_COL[''], 'vlak') + sw(TER_COL.h, 'heuvels') + sw(TER_COL.m, 'bergen') + sw(TER_COL.d, 'woestijn') + sw(TER_COL.w, 'moeras');
+  if(m === 'sup') return sw('#86D692', 'veel aanvoer') + sw('#2C5338', 'weinig') + sw('#E0792A', 'afgesneden') + sw('#D98484', 'vijand') + '<span class="mlg">getal = divisies</span>';
+  if(m === 'dip') return ['me', 'war', 'ally', 'pact', 'truce', 'fear', 'neu'].filter(k => (k !== 'ally' || G.ally) && (k !== 'pact' || G.pact)).map(k => sw(DIP_COL[k], DIP_NM[k])).join('');
+  if(m === 'ind') return sw('#F5B93F', 'veel fabrieken') + sw('#5A4827', 'weinig') + sw('#33414C', 'vrije bouwplek') + '<span class="mlg">getal = fabrieken/plekken</span>';
+  return '<span class="mlg"><i class="hat"></i>vijand</span><span class="mlg"><i class="rte"></i>oversteek</span><span class="mlg"><i class="riv"></i>rivier</span>';
+}
+function renderModes(){
+  const el = $('mapmodes'); if(!el) return;
+  const m = mapMode();
+  el.innerHTML = '<div class="mmrow">' + MODES.map(x => '<button class="mmb' + (x.k === m ? ' on' : '') + '" type="button" data-mode="' + x.k + '" title="' + x.n + ' (' + x.key + ')" aria-label="Kaartmodus ' + x.n + '" aria-pressed="' + (x.k === m) + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="' + x.d + '"/></svg><kbd>' + x.key + '</kbd></button>').join('')
+    + '<button class="mmb mmx" type="button" data-mmopen="1" aria-label="Kaartmodi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5 22 8l-10 5.5L2 8zM4.6 11.6 12 15.7l7.4-4.1L22 13l-10 5.5L2 13zM4.6 16.1 12 20.2l7.4-4.1L22 17.5 12 23 2 17.5z"/></svg></button></div>'
+    + '<div id="mapleg"><b>' + MODES.find(x => x.k === m).n + '</b>' + legendH(m) + '</div>';
+  $('minimap').classList.toggle('off', !!UI.miniOff);
+}
+// cijfers bij de modus (in de kaartbuffer): aanvoer in divisies, fabrieken/bouwplekken
+function drawModeNums(ctx, cam, bw, bh, x0, y0, x1, y1){
+  const m = mapMode(); if(!G || (m !== 'ind' && m !== 'sup') || cam.k > 0.95) return;
+  const u = REM/16, me = G.player;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.font = '700 ' + (12*u).toFixed(1) + 'px ' + FONT_UI;
+  for(const p of PIDS){
+    const a = P[p].a; if(a[0] < x0 || a[0] > x1 || a[1] < y0 || a[1] > y1) continue;
+    const b = BBOX[p], pw = (b[2] - b[0])/cam.k; if(pw < 36) continue;
+    let t;
+    if(m === 'ind'){ const n = facN(p), sl = SLOTS[p] || 0; if((!n && !sl) || pw < 52) continue; t = NF.format(Math.round(n*10)/10) + '/' + sl; }
+    else { const c = G.ctrl[p]; if(c !== me && !atWar(me, c)) continue; t = SUP[p] === 0 ? '×' : String(Math.floor(supCap(p, c))); }
+    const sx = (a[0] - cam.cx)/cam.k + bw/2, sy = (a[1] - cam.cy)/cam.k + bh/2 - 18*u;   // boven de fiches
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(5,9,12,.8)'; ctx.strokeText(t, sx, sy);
+    ctx.fillStyle = '#fff'; ctx.fillText(t, sx, sy);
+  }
+}
+/* ---- minimap: hele kaart klein, kader van het beeld, klikken of slepen verplaatst de camera ---- */
+const MM = {land:null, w:0, h:0, d:1, sc:1, full:true, dirty:new Set(), g:null, map:null, wv:-1, mode:'', t:0, lay:0, vx:0, vy:0, vk:0, vw:0, b:-1, msig:'', mt:0};
+try{ const st = JSON.parse(localStorage.getItem('ve_mapui') || 'null'); UI.miniOff = st ? !st.mini : innerWidth <= 640; }catch(e){ UI.miniOff = innerWidth <= 640; }
+function miniCol(p){
+  if(mapMode() !== 'pol' || !G) return FILL[p];
+  const c = G.ctrl[p], me = G.player;
+  if(c === me) return shade(colorOf(c), 0.3);
+  if(atWar(me, c)) return mixHex(colorOf(c), '#E2452F', 0.6);
+  return shade(colorOf(c), -0.32);
+}
+function miniLand(full){
+  const small = innerWidth <= 640, sc = Math.min((small ? 128 : 212)/W, (small ? 100 : 150)/H), w = Math.round(W*sc), h = Math.round(H*sc), d = Math.min(devicePixelRatio || 1, 2);
+  MM.land ||= document.createElement('canvas');
+  if(MM.w !== w || MM.h !== h || MM.d !== d){
+    MM.w = w; MM.h = h; MM.d = d; MM.land.width = w*d; MM.land.height = h*d;
+    const c = $('mmc'); c.width = w*d; c.height = h*d; c.style.width = w + 'px'; c.style.height = h + 'px'; full = true;
+  }
+  MM.sc = sc;
+  const x = MM.land.getContext('2d'), L = LOD_STEP.length - 1, LP = lodPaths(L);
+  x.setTransform(sc*d, 0, 0, sc*d, 0, 0); x.lineJoin = 'round';
+  if(full){ x.fillStyle = '#0B151D'; x.fillRect(0, 0, W, H); x.fillStyle = '#1B2630'; x.fill(LODB[L], 'evenodd'); }
+  x.lineWidth = 0.7/sc;
+  for(const p of (full ? PIDS : MM.dirty)){ const col = miniCol(p); x.fillStyle = col; x.strokeStyle = col; x.fill(LP[p], 'evenodd'); x.stroke(LP[p]); }
+  if(G && CN[G.player]){ const a = P[CN[G.player].cap].a; x.fillStyle = '#fff'; x.strokeStyle = '#0B151D'; x.lineWidth = 1/sc; x.beginPath(); x.arc(a[0], a[1], 2.2/sc, 0, Math.PI*2); x.fill(); x.stroke(); }
+  MM.dirty.clear();
+}
+function drawMini(){
+  const c = $('mmc'), x = c.getContext('2d'), sc = MM.sc*MM.d;
+  x.setTransform(1, 0, 0, 1, 0, 0); x.drawImage(MM.land, 0, 0);
+  x.setTransform(sc, 0, 0, sc, 0, 0);
+  const mn = 7/MM.sc, vw = Math.max(mn, CW*V.k), vh = Math.max(mn, CH*V.k), rx = V.cx - vw/2, ry = V.cy - vh/2;
+  x.fillStyle = 'rgba(255,255,255,.1)'; x.fillRect(rx, ry, vw, vh);
+  x.strokeStyle = 'rgba(0,0,0,.7)'; x.lineWidth = 3/MM.sc; x.strokeRect(rx, ry, vw, vh);
+  x.strokeStyle = '#F4E3A1'; x.lineWidth = 1.4/MM.sc; x.strokeRect(rx, ry, vw, vh);
+}
+// de widgets staan rechtsonder, boven alles van de dock dat daar ook staat (op een telefoon is dat de hele balk)
+function layoutMapUI(){
+  const ui = $('mapui'), dock = $('dock'); let top = innerHeight;
+  const left = innerWidth - ui.offsetWidth - 28;
+  if(dock) for(const ch of dock.children){ if(ch.hidden) continue; const r = ch.getBoundingClientRect(); if(r.width && r.height && r.right > left && r.top < top) top = r.top; }
+  const b = Math.round(Math.max(0, innerHeight - top));
+  if(b !== MM.b){ MM.b = b; ui.style.setProperty('--mub', b ? (b + 8) + 'px' : 'calc(.6rem + env(safe-area-inset-bottom, 0px))'); }
+  ui.classList.toggle('hid', top < innerHeight*0.45);
+}
+// één keer per beeld vanuit de hoofdlus: goedkoop, tekent alleen als er iets veranderd is
+function mapTick(t){
+  const ui = $('mapui'); if(!ui) return;
+  const show = !!G && !!DATA && !UI.loading;
+  if(ui.hidden === show){ ui.hidden = !show; if(show){ MM.full = true; MM.b = -1; renderModes(); } }
+  if(!show) return;
+  if(t - MM.lay > 300){
+    MM.lay = t; layoutMapUI();
+    const m = mapMode();
+    if(m !== MM.lm){ MM.lm = m; renderModes(); }
+    if(m === 'sup' || m === 'dip' || m === 'ind'){   // deze modi hangen af van de spelstand: af en toe verversen
+      const sig = Math.floor(G.day) + ':' + CTRLV + ':' + WARV;
+      if(sig !== MM.msig && t - MM.mt > 1500){ MM.msig = sig; MM.mt = t; if(m === 'sup') computeSupply(); if(modeFills()){ DIRTYP.clear(); baseDirty = true; MM.full = true; } }
+    }
+  }
+  if(UI.miniOff) return;
+  const stale = MM.full || MM.g !== G || MM.map !== MAPNAME || MM.wv !== WARV || !MM.land;
+  if((stale || MM.dirty.size) && t - MM.t > (stale ? 200 : 700)){
+    MM.t = t; miniLand(stale || MM.dirty.size > 150); MM.full = false; MM.g = G; MM.map = MAPNAME; MM.wv = WARV; MM.vk = 0;
+  }
+  if(MM.land && (MM.vx !== V.cx || MM.vy !== V.cy || MM.vk !== V.k || MM.vw !== CW)){ MM.vx = V.cx; MM.vy = V.cy; MM.vk = V.k; MM.vw = CW; drawMini(); }
+}
+(function(){
+  const mm = $('minimap'), mc = $('mmc'), modes = $('mapmodes'); if(!mm || !mc || !modes) return;
+  let drag = false, mv = 0;
+  const go = (e, smooth) => {
+    const r = mc.getBoundingClientRect(), x = (e.clientX - r.left)/r.width*W, y = (e.clientY - r.top)/r.height*H;
+    if(smooth) tweenView(x, y, V.k);
+    else { TW = null; V.cx = x; V.cy = y; clampView(); applyView(); lastWheel = performance.now(); }   // tijdens het slepen niet steeds de hele kaart hertekenen
+  };
+  mc.addEventListener('pointerdown', e => { drag = true; mv = 0; try{ mc.setPointerCapture(e.pointerId); }catch(_){} e.preventDefault(); });
+  mc.addEventListener('pointermove', e => { if(!drag) return; mv += Math.abs(e.movementX || 0) + Math.abs(e.movementY || 0) + 1; if(mv > 4) go(e, false); });
+  const up = e => { if(!drag) return; drag = false; if(e.type === 'pointerup'){ if(mv <= 4) go(e, true); else baseDirty = true; } };
+  mc.addEventListener('pointerup', up); mc.addEventListener('pointercancel', up);
+  mm.addEventListener('click', e => { if(!e.target.closest('#mmtog')) return; UI.miniOff = !UI.miniOff; try{ localStorage.setItem('ve_mapui', JSON.stringify({mini:!UI.miniOff})); }catch(_){} MM.full = true; mm.classList.toggle('off', UI.miniOff); });
+  modes.addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.mmopen){ modes.classList.toggle('open'); return; }
+    if(b.dataset.mode){ setMode(b.dataset.mode); modes.classList.toggle('open', b.dataset.mode !== 'pol'); }   // telefoon: legenda blijft staan bij een bijzondere modus
+  });
+  addEventListener('keydown', e => {
+    if(!G || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    const tg = e.target; if(tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
+    const m = MODES.find(x => x.key.toLowerCase() === String(e.key).toLowerCase()); if(m) setMode(m.k);
+  });
+})();
+/* ---- bovenlaag: zeeroutes vanaf de selectie, fabrieken en bunkers bij inzoomen, extra regels in de tooltip ---- */
+// routes vanaf de geselecteerde plek(ken) lichten goud op, met de naam van de overkant; rood als daar de vijand zit
+function drawRouteHi(ctx, locs, hov){
+  const geo = routeGeo(), me = G.player, seen = new Set(), labs = [];
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const one = (i, from, soft) => {
+    if(geo[i].land) return;
+    const g = geo[i], rev = g.b === from, dest = rev ? g.a : g.b, c = G.ctrl[dest], war = c !== me && atWar(me, c);
+    const col = soft ? 'rgba(255,255,255,.8)' : c === me ? '#F2C454' : war ? '#F2705A' : '#E0D2AC';
+    const A = toScreen(rev ? g.x2 : g.x1, rev ? g.y2 : g.y1), B = toScreen(rev ? g.x1 : g.x2, rev ? g.y1 : g.y2), C = toScreen(g.cx, g.cy);
+    if(Math.max(A[0], B[0]) < -40 || Math.min(A[0], B[0]) > CW + 40 || Math.max(A[1], B[1]) < -40 || Math.min(A[1], B[1]) > CH + 40) return;
+    ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.quadraticCurveTo(C[0], C[1], B[0], B[1]);
+    if(!soft){ ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 5.5; ctx.stroke(); }
+    ctx.strokeStyle = col; ctx.lineWidth = soft ? 1.8 : 2.8; ctx.setLineDash(soft ? [2, 5] : [7, 5]); ctx.stroke(); ctx.setLineDash([]);
+    if(Math.hypot(B[0] - A[0], B[1] - A[1]) < 22){   // korte zeestraat: ring om het veerteken
+      ctx.beginPath(); ctx.arc((A[0] + B[0])/2, (A[1] + B[1])/2, soft ? 10 : 11.5, 0, Math.PI*2); ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = soft ? 3.4 : 4.6; ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = soft ? 1.6 : 2.4; ctx.stroke();
+    } else for(const E of [A, B]){ ctx.beginPath(); ctx.arc(E[0], E[1], soft ? 3 : E === B ? 5 : 3.6, 0, Math.PI*2); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = 1.2; ctx.stroke(); }
+    if(!soft) labs.push({x:B[0], y:B[1], ax:A[0], ay:A[1], t:P[dest].n, col:war ? '#FFB0A2' : '#FFE9A8'});
+  };
+  for(const l of locs) for(const i of (RTOUCH[l] || [])){ if(seen.has(i)) continue; seen.add(i); one(i, l, false); }
+  if(hov && !locs.has(hov)) for(const i of (RTOUCH[hov] || [])) if(!seen.has(i)){ seen.add(i); one(i, hov, true); }
+  ctx.font = '700 ' + (12.5*REM/16).toFixed(1) + 'px ' + FONT_UI; ctx.textBaseline = 'middle';
+  for(const L of labs){
+    let dx = L.x - L.ax, dy = L.y - L.ay; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+    const tw = ctx.measureText(L.t).width;
+    const x = clamp(L.x + dx*11 + (dx > 0.35 ? 0 : dx < -0.35 ? -tw : -tw/2), 6, CW - tw - 6), y = L.y + dy*15 + (Math.abs(dx) <= 0.35 ? Math.sign(dy || 1)*3 : 0);
+    ctx.textAlign = 'left'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(5,9,12,.9)'; ctx.strokeText(L.t, x, y);
+    ctx.fillStyle = L.col; ctx.fillText(L.t, x, y);
+  }
+  ctx.textAlign = 'center';
+}
+// ver ingezoomd: bunkers als klein teken boven de provincienaam (fabrieken staan in de industriemodus: overal een getal is te druk)
+function drawProvIcons(ctx){
+  if(!G || V.k > 0.42) return;
+  const u = REM/16, k = V.k, x0 = V.cx - CW/2*k, x1 = V.cx + CW/2*k, y0 = V.cy - CH/2*k, y1 = V.cy + CH/2*k;
+  ctx.font = '700 ' + (10.5*u).toFixed(1) + 'px ' + FONT_UI; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  for(const p of PIDS){
+    const a = P[p].a; if(a[0] < x0 || a[0] > x1 || a[1] < y0 || a[1] > y1) continue;
+    const f = 0, b = (G.forts && G.forts[p]) || 0; if(!b) continue;
+    const bb = BBOX[p]; if((bb[2] - bb[0])/k < 44) continue;
+    const parts = []; if(f) parts.push(['fab', NF.format(f)]); if(b) parts.push(['bunker', String(b)]);
+    let w = 0; for(const q of parts){ q[2] = ctx.measureText(q[1]).width; w += 11*u + 2*u + q[2] + 6*u; } w -= 6*u;
+    let x = (a[0] - V.cx)/k + CW/2 - w/2; const y = (a[1] - V.cy)/k + CH/2 - 33*u;
+    rrect(ctx, x - 4*u, y - 7.5*u, w + 8*u, 15*u, 7.5*u); ctx.fillStyle = 'rgba(8,13,18,.62)'; ctx.fill();
+    for(const q of parts){ drawSil(ctx, q[0], x + 5.5*u, y, 11*u, '#0E151C', q[0] === 'fab' ? '#F0C46A' : '#B9D6E6'); ctx.fillStyle = '#fff'; ctx.fillText(q[1], x + 13*u, y + 0.5); x += 11*u + 2*u + q[2] + 6*u; }
+  }
+  ctx.textAlign = 'center';
+}
+// tooltip: waar je vanuit deze provincie kunt oversteken, en wat de kaartmodus hier laat zien
+function tipExtra(p){
+  let h = '';
+  const geo = RTOUCH[p] ? routeGeo() : null, rs = geo && RTOUCH[p].filter(i => !geo[i].land);
+  if(rs && rs.length){
+    const nm = rs.map(i => { const r = ROUTES[i], d = r[0] === p ? r[1] : r[0], war = G && G.ctrl[d] !== G.player && atWar(G.player, G.ctrl[d]); return (war ? '<i class="warc">' : '<i>') + esc(P[d].n) + '</i>'; });
+    h += '<div class="tipx"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="' + SIL.mar.p + '"/></svg><span>Oversteek naar: ' + nm.slice(0, 5).join(', ') + (nm.length > 5 ? ' +' + (nm.length - 5) : '') + '</span></div>';
+  }
+  if(!G) return h;
+  const m = mapMode(), c = G.ctrl[p];
+  if(m === 'sup' && (c === G.player || atWar(G.player, c))) h += '<div class="tipx"><span>Aanvoer: ' + (SUP[p] === 0 ? '<i class="warc">afgesneden</i>' : 'genoeg voor <i>' + Math.floor(supCap(p, c)) + '</i> divisies') + '</span></div>';
+  else if(m === 'ind') h += '<div class="tipx"><span>Fabrieken: <i>' + NF.format(Math.round(facN(p)*10)/10) + '</i> op ' + (SLOTS[p] || 0) + ' bouwplekken</span></div>';
+  else if(m === 'dip' && c !== G.player) h += '<div class="tipx"><span>' + esc(cname(c)) + ': <i>' + DIP_NM[relOf(c)] + '</i></span></div>';
+  return h;
 }
 /* ================= geluid: synthetisch (WebAudio), geen bestanden nodig ================= */
 // instellingen (ook voor latere opties) in één opslagsleutel
@@ -5203,6 +5882,7 @@ function frameBody(t){
     if((overDirty || viewDirty) && t - lastOver >= overMs){ const t1 = performance.now(); renderOver(); overCost = overCost*0.8 + (performance.now() - t1)*0.2; lastOver = t; viewDirty = false; }
   }
   if(t - lastUI > 300){ renderBar(); renderStrip(); renderSheet(); renderEnd(); renderCard(); lastUI = t; }
+  mapTick(t);   // kaartmodi en minimap
 }
 function measure(){ REM = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16; }
 new ResizeObserver(() => { measure(); sizeCanvases(); if(DATA){ clampView(); applyView(); } }).observe(stage);
