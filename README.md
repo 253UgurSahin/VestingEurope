@@ -14,6 +14,8 @@ Open daarna http://localhost:8000.
 
 ## Wat zit erin
 
+- **Twee speelstijlen**: *Eenvoudig* (standaard) en *Volledig*, te kiezen bij de landkeuze en in Menu → Instellingen. In de eenvoudige stand regelt het spel leger en productie zelf, zie je alleen wat je nodig hebt (voortgang naar de overwinning, legers, fabrieken) en kies je met drie grote knoppen: Aanvallen, Vrienden, Bouwen. Een adviseur zegt steeds in één zin wat een goede zet is en leidt je door je eerste spel. De volledige stand toont alles hieronder.
+- **Spelgevoel**: een speels, rond uiterlijk; veroveringen, gevechten en bouwwerk zie je op de kaart gebeuren; oorlog, vrede en overwinning krijgen een groot moment met geluid en confetti. Effecten kun je uitzetten in de instellingen.
 - **Twee kaarten**: Europa (285 provincies, 38 landen) en de wereld (1576 provincies, 175 landen). Elk land heeft een kleur die duidelijk verschilt van zijn buren; rivieren, steden, terrein en **oversteekplaatsen** (zeeroutes met ankers en veertekens) staan op de kaart.
 - **Kaartmodi** (toetsen 5–9): politiek, terrein, aanvoer, diplomatie, industrie. Minimap rechtsonder.
 - **Leger**: divisies uit bataljons (eigen ontwerpen), frontbreedte, aanvoer, ingraven, bunkers, luchtmacht met missiezones, parachutisten en mariniers.
