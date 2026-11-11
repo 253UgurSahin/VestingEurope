@@ -615,6 +615,61 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 #card.k-conf{animation:cfin .2s ease-out;max-height:min(60vh,36rem)}
 @media (min-width:900px){ #card.k-conf{left:auto;right:max(1.5rem, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%)} }
 @media (max-width:899px){ #card.k-conf{top:auto;bottom:calc(4.4rem + env(safe-area-inset-bottom, 0px));transform:translateX(-50%)} }
+/* ===== diplomatie: landenlijst, relatiemeter, acties ===== */
+.dph{flex-wrap:wrap;gap:.3rem .9rem}
+.dpf{margin:.5rem 0 .35rem}
+.dpf .dps{margin-left:auto;color:var(--dim)}
+.dplist{display:grid;gap:.12rem}
+.dprow{display:grid;grid-template-columns:auto minmax(3.5rem,1fr) auto 4.2rem 2.3rem;gap:.45rem;align-items:center;width:100%;text-align:left;padding:.4rem .45rem;border:1px solid transparent;border-radius:.6rem;background:transparent;color:var(--ink);cursor:pointer;font:500 .92rem var(--f-body);min-height:2.3rem}
+.dprow:hover{background:rgba(255,255,255,.05)}
+.dprow.on{background:var(--glass-2);border-color:var(--line)}
+.dprow:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.dprow.far .wn{color:var(--dim)}
+.dprow .wn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:600 .98rem var(--f-ui);letter-spacing:.01em}
+.dprow .num{text-align:right;font:600 .92rem var(--f-ui);font-variant-numeric:tabular-nums}
+.dpt{display:flex;gap:.2rem;justify-content:flex-end;overflow:hidden}
+.dpb{font:600 .66rem var(--f-ui);font-style:normal;letter-spacing:.03em;padding:.08rem .34rem;border-radius:999px;background:rgba(255,255,255,.09);color:var(--dim);white-space:nowrap}
+.dpb.a{background:rgba(115,176,108,.2);color:#9EDB95}
+.dpb.w{background:rgba(212,85,63,.2);color:#F09482}
+.dpm{position:relative;display:block;height:.4rem;border-radius:.2rem;background:rgba(255,255,255,.1);overflow:hidden}
+.dpm::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.4)}
+.dpm i{position:absolute;top:0;bottom:0}
+.dpm i.p{left:50%;background:var(--ok)}
+.dpm i.n{right:50%;background:var(--war)}
+.num.rg,.num.rf{color:var(--ok)} .num.rn{color:var(--dim)} .num.rc,.num.rh{color:var(--war)}
+.chip2.rg,.chip2.rf{background:rgba(115,176,108,.18)} .chip2.rg .ic,.chip2.rf .ic{color:var(--ok)}
+.chip2.rc,.chip2.rh{background:rgba(212,85,63,.18)} .chip2.rc .ic,.chip2.rh .ic{color:var(--war)}
+.dpd{margin:.1rem 0 .5rem;padding:.55rem .6rem .65rem;border:1px solid var(--line);border-radius:.7rem;background:rgba(255,255,255,.03);display:grid;gap:.5rem}
+.dpc{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.dpc .btn{margin-left:auto}
+.dpw{display:grid;gap:.05rem;font-size:.84rem}
+.dpw span{display:flex;justify-content:space-between;gap:.6rem;padding:.12rem 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.dpw span:last-child{border-bottom:0}
+.dpw i{font-style:normal;color:var(--dim)}
+.dpw b{font:600 .9rem var(--f-ui);font-variant-numeric:tabular-nums}
+.dpa{display:flex;flex-wrap:wrap;gap:.35rem}
+.dpa .btn.two{flex:1 1 11.5rem;min-width:0;white-space:normal}
+.dpa .btn.two span{min-width:0}
+.dpa .btn.two small{white-space:normal;line-height:1.25}
+.dps2{flex:1 1 100%;display:flex;align-items:center;gap:.4rem;font:600 .92rem var(--f-ui);padding:.2rem .1rem 0}
+.dps2 .ic{width:1rem;height:1rem;color:var(--dim)}
+.dps2.ok .ic{color:var(--ok)}
+.dps2 small{font:400 .78rem var(--f-body);color:var(--dim)}
+.dpsub{display:flex;align-items:center;flex-wrap:wrap;gap:.2rem .4rem;font:600 .95rem var(--f-ui);margin-top:.15rem;padding-top:.5rem;border-top:1px solid var(--line)}
+.dpsub .ic{width:1rem;height:1rem;color:var(--accent)}
+.dpsub small{font:400 .76rem var(--f-body);color:var(--dim)}
+.dpl{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+.dpl .dpll{flex:1 1 8rem;display:grid;font:600 .9rem var(--f-ui);line-height:1.15}
+.dpl .dpll small{font:400 .74rem var(--f-body);color:var(--dim)}
+.dpl .gseg:disabled{opacity:.38;cursor:not-allowed}
+.dpd .alert{margin-top:0}
+#card.k-dipcall .copt.war > .ic{color:var(--dim)}
+#strip .acts > .chip2{align-self:center}
+@media (max-width:520px){
+  .tabs .tab{font-size:.86rem;gap:.2rem;padding-left:.1rem;padding-right:.1rem}
+  .tabs .tab .ic{width:.9rem;height:.9rem}
+  .dprow{grid-template-columns:auto minmax(3rem,1fr) auto 3rem 2.1rem;gap:.35rem}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -639,6 +694,7 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
     <span class="sep"></span>
     <button class="ib wl" data-sheet="prod" type="button" aria-label="Productie"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 21V10.5l5.5 3.4v-3.4l5.5 3.4V7.6l2.2-2.1h1.8V3h2.8v18z"/><path class="icd" d="M5 16h2v2H5zM9.5 16h2v2h-2zM14 16h2v2h-2z"/></svg><span class="lbl">Productie</span></button>
     <button class="ib wl" data-sheet="spec" type="button" aria-label="Speciale acties"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M13.6 1.8 4.4 13.4h6.2l-1.2 8.8 9.4-12h-6.4z"/></svg><span class="lbl">Acties</span></button>
+    <button class="ib wl" data-sheet="dip" type="button" aria-label="Diplomatie"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M5 2h10l4.5 4.5V22H5z"/><path class="icd" d="M7.6 8h8.8v1.4H7.6zM7.6 11h8.8v1.4H7.6zM7.6 14h5.6v1.4H7.6zM13.5 18.5a2 2 0 1 0 4 0 2 2 0 1 0-4 0z"/></svg><span class="lbl">Diplomatie</span></button>
     <button class="ib wl" data-sheet="info" type="button" aria-label="Overzicht"><span class="cdot" id="myDot" style="background:#8E9CA5"></span><span class="lbl">Overzicht</span></button>
   </nav>
 </div>
@@ -1012,8 +1068,8 @@ function buildIdx(){
   IDX = {}; UCNT = {}; UBY = {}; UT = {}; AT = {}; ACNT = {}; POWC = null; AIRBY = {};
   computeSupply();
   for(const u of G.units){
-    (IDX[u.loc] ||= []).push(u); (UBY[u.c] ||= []).push(u);
-    UCNT[u.c] = (UCNT[u.c]||0) + 1;
+    (IDX[u.loc] ||= []).push(u); if(!(u.gst && dipGuest(u))) (UBY[u.c] ||= []).push(u);   // gst: staat op jouw bevel in bevriend land, de generaal blijft eraf
+    UCNT[u.c] = (UCNT[u.c]||0) + 1; if(u.home) UCNT[u.home] = (UCNT[u.home]||0) + 1;   // uitgeleende divisies tellen ook mee voor de limiet van de eigenaar
     const t = UT[u.c] ||= {}; t[u.t] = (t[u.t]||0) + 1;
   }
   for(const w of G.air){
@@ -1021,8 +1077,8 @@ function buildIdx(){
     const t = AT[w.c] ||= {}; t[w.t] = (t[w.t]||0) + 1;
   }
 }
-const defendersAt = p => (IDX[p] || []).filter(v => v.c === G.ctrl[p]);
-const defNow = p => G.units.filter(v => v.loc === p && v.c === G.ctrl[p]);     // actueel, voor de interface
+const defendersAt = (p, att) => { const o = G.ctrl[p]; return (IDX[p] || []).filter(v => v.c === o || (friendly(v.c, o) && (!att || atWar(v.c, att)))); };   // + bevriende troepen (diplomatie); att = wie aanvalt
+const defNow = p => G.units.filter(v => v.loc === p && (v.c === G.ctrl[p] || friendly(v.c, G.ctrl[p])));     // actueel, voor de interface
 
 /* ================= gevechtswaarden ================= */
 const supMul = u => SUP[u.loc] === 0 ? 0.65 : 1;
@@ -1034,7 +1090,7 @@ function computeSupply(force){
   SUPV = CTRLV;
   SUP = {}; OOSP = []; const q = [];
   for(const p of PIDS){ const c = G.ctrl[p]; if(P[p].c === c){ SUP[p] = 1; q.push(p); } else SUP[p] = 0; }
-  for(let i = 0; i < q.length; i++){ const x = q[i], c = G.ctrl[x]; for(const n of ADJ[x]) if(SUP[n] === 0 && G.ctrl[n] === c){ SUP[n] = 1; q.push(n); } }
+  for(let i = 0; i < q.length; i++){ const x = q[i], c = G.ctrl[x]; for(const n of ADJ[x]) if(SUP[n] === 0 && (G.ctrl[n] === c || friendly(G.ctrl[n], c))){ SUP[n] = 1; q.push(n); } }
   for(const p of PIDS) if(SUP[p] === 0 && alive(G.ctrl[p])) OOSP.push(p);
   overDirty = true;
 }
@@ -1217,14 +1273,14 @@ function advance(d){
   while(G.frac >= 1 && !G.over){ G.frac -= 1; G.day++; dailyTick(); if(performance.now() - t0 > TICK_MS) break; }
 }
 function uSpeed(u, nx){
-  let sp = tstat(u.c, u.tp).s / KM * TM * (u.hp < 50 ? 0.8 : 1) * (G.ctrl[nx] !== u.c ? 0.45 : 1) * (SUP[u.loc] === 0 ? 0.8 : 1);
+  let sp = tstat(u.c, u.tp).s / KM * TM * (u.hp < 50 ? 0.8 : 1) * (G.ctrl[nx] === u.c ? 1 : friendly(u.c, G.ctrl[nx]) ? 0.85 : 0.45) * (SUP[u.loc] === 0 ? 0.8 : 1);
   if(SEA.has(ek(u.loc, nx))) sp *= (u.t === 'mar' ? 1 : 0.6);
   return sp;
 }
 let FORM = {day:-1}, PATHV = 0, MVC = new WeakMap();   // MVC: tempo per eenheid voor de huidige stap
 function moveUnits(d){
-  const occ = {};
-  for(const u of G.units) if(u.c === G.ctrl[u.loc]) occ[u.loc] = (occ[u.loc]||0) + 1;
+  const occ = {}, occF = {};   // occF: bevriende troepen te gast (verdedigen mee tegen wie met hen in oorlog is)
+  for(const u of G.units){ const o = G.ctrl[u.loc]; if(u.c === o) occ[u.loc] = (occ[u.loc]||0) + 1; else if(friendly(u.c, o)) (occF[u.loc] ||= []).push(u.c); }
   // formaties: eenheden met hetzelfde bevel op dezelfde stap lopen samen, in het tempo van de traagste
   if(FORM.day !== G.day || FORM.v !== PATHV || FORM.n !== G.units.length){
     const form = {}, pend = {};
@@ -1242,9 +1298,9 @@ function moveUnits(d){
     const nx = u.path[0];
     if(!ADJ[u.loc].includes(nx)){ u.path = []; u.prog = 0; continue; }
     const own = G.ctrl[nx];
-    if(own !== u.c){
-      if(!atWar(u.c, own)){ u.path = []; u.prog = 0; continue; }
-      if(occ[nx]){
+    if(own !== u.c && !friendly(u.c, own)){
+      if(!atWar(u.c, own) || !dipBase(u.c, u.loc, own)){ u.path = []; u.prog = 0; continue; }   // geen oorlog, of geen uitvalsbasis (neutraal doorgangsland)
+      if(occ[nx] || (occF[nx] && occF[nx].some(f => atWar(u.c, f)))){
         // de route liep door eigen gebied dat onderweg verloren ging: niet blind aanvallen, de generaal plant opnieuw
         if(!u.man){ u.path = []; u.prog = 0; u.g = null; continue; }
         // samen aanvallen: wacht (max 6 dagen) op de rest van het bevel dat nog onderweg is
@@ -1261,13 +1317,14 @@ function moveUnits(d){
     u.prog += d * mc.step;
     if(u.prog >= 1){
       u.prog = 0; u.loc = nx; u.path.shift(); if(!u.path.length){ u.g = null; u.man = false; }
-      if(G.ctrl[nx] !== u.c) capture(nx, u.c);
+      if(G.ctrl[nx] !== u.c && !friendly(u.c, G.ctrl[nx])) capture(nx, u.c);
     }
   }
 }
 let capToast = {n:0, t:0};
 function capture(p, c){
   const prev = G.ctrl[p];
+  c = dipCapFor(p, c, prev);   // bevrijde provincie van een bondgenoot gaat terug naar die bondgenoot
   setCtrl(p, c);
   if(c === G.player) fx(p, 'cap'); else if(prev === G.player) fx(p, 'loss');
   if(G.nations[prev]){
@@ -1317,8 +1374,9 @@ function dailyTick(){
     if((G.day + i*5) % 20 === 0) aiDeclare(c);
   });
   if(G.day % 10 === 0) aiEnds();
+  dipTick();
   // gestrande troepen (land dat bij een vrede of conferentie van eigenaar wisselde): terug naar eigen gebied
-  { const st = new Set(); for(const u of G.units) if(G.ctrl[u.loc] !== u.c && !u.att) st.add(u.c); for(const c of st) relocate(c); }
+  { const st = new Set(); for(const u of G.units) if(G.ctrl[u.loc] !== u.c && !u.att && !friendly(u.c, G.ctrl[u.loc])) st.add(u.c); for(const c of st) relocate(c); }
   if(G.day % 5 === 2) aiCards();
   if(G.day % (MAPNAME === 'world' ? 30 : 10) === 0) autosaveIdle();
 }
@@ -1333,11 +1391,13 @@ function economy(initOnly){
     pp[c] += G.fac[p] * y * ((G.dmg[p]||0) > G.day ? 0.5 : 1);
     pe[c] += PPOP[p] * (home ? 1 : y === 0.75 ? 0.7 : c === G.player ? (D().occ || 0.3) : 0.3);       // mankracht: bezet land levert weinig, geïntegreerd land veel
   }
+  const LL = lendFlows(pp);   // steun (lend-lease): deel van de productie gaat naar een ander land
   for(const c of CIDS){
     const n = nat(c);
     if(!n.alive) continue;
     const mul = isAI(c) ? D().pp : (D().mePp || 1);
     n.ppd = pp[c] * 0.6 * mul * (n.ws != null && n.ws < 20 ? 0.85 : 1);
+    if(LL && LL[c]) n.ppd = Math.max(0, n.ppd + LL[c]);
     // legerlimiet = mankracht (bevolking), niet fabrieken: nieuw land en integratie maken je leger groter
     n.man = pe[c]; n.capB = manCap(pe[c]) + 0.3 * pp[c] / FAB_ADD;   // + een beetje industrie (begrensd door de bouwplekken)
     if(initOnly) continue;
@@ -1395,7 +1455,8 @@ function economy(initOnly){
     if(ov && G.ctrl[u.loc] === u.c){ if(u.hp > 35) u.hp = Math.max(35, u.hp - ov); if(!u.path.length && !u.att) u.ent = Math.min(20, (u.ent || 0) + 1); continue; }   // te veel troepen: slijtage, geen herstel
     if(!u.path.length && !u.att){ if(!contested.has(u.loc)) u.ent = Math.min(20, (u.ent || 0) + 1); } else u.ent = 0;   // ingraven: +1% verdediging per dag stilstaan (niet onder vuur)
     if(SUP[u.loc] === 0){ if(u.hp > 30) u.hp = Math.max(30, u.hp - 1.5); continue; }   // afgesneden: slijtage
-    if(u.att || u.hp >= 100 || G.ctrl[u.loc] !== u.c || contested.has(u.loc)) continue;
+    if(u.att || u.hp >= 100 || contested.has(u.loc)) continue;
+    if(G.ctrl[u.loc] !== u.c){ if(!ov && friendly(u.c, G.ctrl[u.loc])) u.hp = Math.min(100, u.hp + 1.5); continue; }   // te gast in bevriend land: traag herstel
     u.hp = Math.min(100, u.hp + (P[u.loc].c === u.c ? 4 : 2.5));                       // bevoorraad: herstel
   }
 }
@@ -1516,15 +1577,15 @@ function battles(){
   for(const u of G.units){
     if(!u.att) continue;
     const t = u.att, own = G.ctrl[t];
-    if(own === u.c){ u.att = null; u.air = false; continue; }
-    if(!atWar(u.c, own) || G.ctrl[u.loc] !== u.c || (!u.air && !ADJ[u.loc].includes(t))){ u.att = null; u.air = false; u.path = []; continue; }
+    if(own === u.c || friendly(u.c, own)){ u.att = null; u.air = false; continue; }
+    if(!atWar(u.c, own) || !dipBase(u.c, u.loc, own) || (!u.air && !ADJ[u.loc].includes(t))){ u.att = null; u.air = false; u.path = []; continue; }
     (by[t] ||= []).push(u);
   }
   G.battles = [];
   for(const t in by){
     const atts = by[t], own = G.ctrl[t];
-    const defs = defendersAt(t);
     const main = atts[0].c;
+    const defs = defendersAt(t, main);
     if(!defs.length){
       for(const a of atts){
         if(a.air){ capture(t, a.c); a.loc = t; a.att = null; a.air = false; a.path = []; continue; }
@@ -1561,6 +1622,7 @@ function battles(){
       if(d.hp < 20){
         const opts = ADJ[t].filter(n => G.ctrl[n] === d.c && !by[n]);
         const fall = opts.length ? opts : ADJ[t].filter(n => G.ctrl[n] === d.c);
+        if(!fall.length) for(const n of ADJ[t]) if(G.ctrl[n] !== d.c && friendly(d.c, G.ctrl[n]) && !LONG.has(ek(t, n))) fall.push(n);   // geen eigen land meer: uitwijken naar bevriend gebied
         if(fall.length){ d.loc = fall[0]; d.path = []; d.prog = 0; d.att = null; }
         else { d.dead = true; kill(main, d.c); if(d.c === G.player){ G.stats.lost++; toast('Divisie omsingeld in ' + P[t].n, 'war', 'kia'); } }
         continue;
@@ -1686,7 +1748,7 @@ const plist = ps => ps.length <= 3 ? ps.map(p => P[p].n).join(', ') : ps.slice(0
 function relocate(c){
   const own = owned(c);
   for(const u of G.units){
-    if(u.c !== c || G.ctrl[u.loc] === c) continue;
+    if(u.c !== c || G.ctrl[u.loc] === c || friendly(c, G.ctrl[u.loc])) continue;
     let best = null, bd = Infinity;
     for(const q of own){ const d2 = dist(u.loc, q); if(d2 < bd){ bd = d2; best = q; } }
     if(best){ u.loc = best; u.path = []; u.att = null; u.air = false; u.prog = 0; u.g = null; } else u.dead = true;
@@ -1712,6 +1774,7 @@ function settle(a, b, keepA, keepB, days){
 }
 function annex(c, by){
   const n = nat(c), me = G.player;
+  dipOnFall(c);
   if(by === me && n.total) annexAE(c, occBy(me, c));
   // wie de provincies nu heeft, houdt ze voorgoed
   for(const p of baseOf(c)){ const k = G.ctrl[p]; if(k !== c && G.nations[k] && nat(k).base && nat(k).base.length && !nat(k).base.includes(p)) nat(k).base.push(p); }
@@ -1762,6 +1825,7 @@ function lastStand(c){
 function surrender(c){
   const n = nat(c), me = G.player;
   if(c === me){ G.mySurrCd = G.day + 60; queueCard({k:'mysurr'}); return; }
+  dipOnFall(c);
   const ens = enemiesOf(c).slice();
   n.sur = G.day;
   G.units = G.units.filter(u => u.c !== c);
@@ -1893,6 +1957,7 @@ function resolveCard(choice){
   if(cd.k === 'conf' && choice === 'back'){ cd.k = 'surr'; UI.conf = null; cardSig = ''; return; }
   G.cards.shift(); cardSig = '';
   const c = UI.conf; UI.conf = null;
+  if(cd.dip) dipResolve(cd, choice); else
   if(cd.k === 'surr' && choice === 'fight' && atWar(me, e)) fightOn(e);
   else if(cd.k === 'conf' && choice === 'sign' && c) signConf(c);
   else if(cd.k === 'mysurr'){
@@ -1948,6 +2013,7 @@ function aiEnds(){
     const [a, b] = k.split('|');
     if(a === me || b === me || !alive(a) || !alive(b)) continue;
     if(nat(a).sur || nat(b).sur || nat(a).total || nat(b).total) continue;
+    if(dipHold(a, b)) continue;   // bondgenoot die voor jou meevecht: geen aparte vrede zolang hij een front heeft
     const ma = meterOf(a), mb = meterOf(b);
     const [w, l, mw, ml] = ma <= mb ? [a, b, ma, mb] : [b, a, mb, ma];
     const loud = MAPNAME === 'europe' || MAJORS.has(a) || MAJORS.has(b);
@@ -1996,6 +2062,7 @@ function neighbors(c){
 function declare(a, b, joining){
   if(atWar(a,b) || !alive(a) || !alive(b)) return;
   if(G.truce && truceLeft(a, b) > 0 && a !== G.player) return;   // bestand na capitulatie
+  if(!dipOnDeclare(a, b, joining)) return;   // verdragen: de AI breekt ze niet, jij alleen tegen een zware prijs
   G.wars[wk(a,b)] = G.day;
   if(G.aggr){
     const just = a !== G.player || (G.wg[b] || 0) >= G.day;
@@ -2014,6 +2081,7 @@ function declare(a, b, joining){
   if(b === G.player){ toast(cname(a) + (joining ? ' sluit zich aan tegen jou' : ' verklaart jou de oorlog'), 'war'); G.paused = true; shake(); flash(); sfx('war'); }
   else if(a === G.player){ toast('Je bent in oorlog met ' + cname(b), 'war'); sfx('war'); }
   else if(loud) toast(joining ? cname(a) + ' komt ' + cname(joining) + ' te hulp tegen ' + cname(b) : cname(a) + ' verklaart ' + cname(b) + ' de oorlog', joining && joining === G.player ? 'good' : '');
+  dipWar(a, b, joining);   // diplomatie: verdragen vervallen, bondgenoten en beschermers doen mee
   if(joining || a === G.player) return;   // tegen de speler werkt de zichtbare agressiemeter, geen dobbelsteen
   // coalitie tussen AI-landen: buren die de agressor vrezen springen bij
   const pa = armyPow(a), pb = armyPow(b);
@@ -2035,6 +2103,7 @@ function makePeace(a, b, quiet){
   if(G.wlast) delete G.wlast[wk(a, b)];
   if(G.cards && (a === me || b === me)){ const o = a === me ? b : a; G.cards = G.cards.filter(cd => cd.e !== o); }
   warsChanged();
+  dipOnPeace(a, b);   // bondgenoten die voor jou meevochten sluiten ook vrede
   if(a === me || b === me) baseDirty = true;
   for(const u of G.units) if(u.att && (u.c === a || u.c === b)){ const o = G.ctrl[u.att]; if(o === a || o === b){ u.att = null; u.air = false; u.path = []; } }
   for(const w of G.air) if(w.zone && (w.c === a || w.c === b)){ const o = G.ctrl[w.zone]; if(o === a || o === b) w.zone = null; }
@@ -2056,6 +2125,7 @@ function polInit(){
   TPC = {};
   if(!G.obj) G.obj = makeObjectives();
   if(G.start == null) G.start = {pp: nat(G.player).ppd, share: owned(G.player).length / PIDS.length};
+  dipInit();
 }
 const maxAE = () => { let m = 0, who = null; for(const x in G.ae) if(alive(x) && x !== G.player && !atWar(x, G.player) && G.ae[x] > m){ m = G.ae[x]; who = x; } return {m, who}; };
 const hotCount = t => CIDS.filter(x => x !== G.player && alive(x) && !atWar(x, G.player) && (G.ae[x] || 0) >= t).length;
@@ -2078,7 +2148,7 @@ function coalitionCheck(){
   // alleen landen die echt in de buurt liggen (hoofdstad dicht bij jouw gebied) doen mee; maximaal 4
   const mine = owned(me);
   const near = x => { const a = P[CN[x].cap].a; for(const p of mine){ const b = P[p].a; if(Math.hypot(a[0]-b[0], a[1]-b[1])*KM < AE_R()) return true; } return false; };
-  const hot = CIDS.filter(x => x !== me && alive(x) && !atWar(x, me) && (G.ae[x] || 0) >= thr && !(G.truce && truceLeft(x, me) > 0) && near(x))
+  const hot = CIDS.filter(x => x !== me && alive(x) && !atWar(x, me) && (G.ae[x] || 0) >= thr && !(G.truce && truceLeft(x, me) > 0) && !dipBound(x) && near(x))
     .sort((a, b) => G.ae[b] - G.ae[a]).slice(0, 4);
   if(hot.length < 3) return;
   G.stats.coal++;
@@ -2161,6 +2231,799 @@ function gameOver(kind){
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
   renderAll();
 }
+
+/* ================= diplomatie: relaties, verdragen, bondgenoten, doorgang en steun =================
+   Alles draait om jou (de speler):
+     G.rel[c]    houding van land c tegenover jou, −100…+100 (afgeleid, zie relOf: de redenen staan in het Diplomatie-vel)
+     G.pact[c]   niet-aanvalsverdrag: de dag waarop het afloopt
+     G.access[c] doorgangsrecht (wederzijds): de dag van tekenen
+     G.ally[c]   bondgenootschap: de dag van tekenen (doorgang hoort erbij)
+   AI-landen onderling: G.prot[klein] = beschermer (garantie); wie klein aanvalt krijgt de beschermer erbij.
+   Steun: G.lend = [{from, to, f, until}] (deel f van de productie van from gaat tot dag until naar to).
+   Geleende divisies (expeditieleger) dragen u.home (eigenaar) en u.htp (hun eigen ontwerp); u.gst = staat op jouw bevel
+   in bevriend land (de generaal blijft eraf tot je ze teruggeeft).
+   Vrede: bondgenoten die voor jou meevochten sluiten vrede zodra jij dat doet (ieder houdt wat hij bezet); een bondgenoot
+   die zelf verslagen is of geen front meer heeft, kan eerder apart vrede sluiten. */
+const PACT_DAYS = 730, DCP = {imp:15, pact:10, access:10, ally:25, call:20};
+const RELM = {verb:'Relaties verbeterd', steun:'Steun van jou', gift:'Geschenken van jou', hulp:'Samen gevochten', breuk:'Je brak een verdrag', opz:'Verdrag opgezegd', weiger:'Hulp geweigerd', oproep:'Meegesleept in jouw oorlog', nee:'Voorstel afgewezen'};
+let DIPV = 0, RELC = {day:-1, m:{}};
+const isAlly = c => !!(G.ally && G.ally[c]);
+const hasPact = c => !!(G.pact && G.pact[c] > G.day);
+const hasAccess = c => !!(G.access && G.access[c]);
+const dipBound = c => isAlly(c) || hasPact(c);
+// bevriend: eigen land, of een bondgenoot / land met doorgangsrecht (altijd tussen jou en een ander land)
+function friendly(c, o){
+  if(c === o) return true;
+  const me = G.player, x = c === me ? o : o === me ? c : null;
+  if(!x) return false;
+  const a = G.ally, t = G.access;
+  return !!((a && a[x]) || (t && t[x]));
+}
+const canEnter = (c, p) => { const o = G.ctrl[p]; return o === c || friendly(c, o) || atWar(c, o); };
+// mag c vanuit provincie p het land van 'own' binnenvallen? Vanuit eigen land altijd; vanuit bevriend land alleen als de
+// gastheer zelf met dat land in oorlog is (een gezamenlijke vijand). Doorgang door een neutraal land is geen uitvalsbasis.
+const dipBase = (c, p, own) => { const o = G.ctrl[p]; return o === c || (friendly(c, o) && atWar(o, own)); };
+// voor de kaart en de interface: hoe staat land c tegenover jou?
+function dipState(c){ const me = G.player; return c === me ? 'self' : atWar(me, c) ? 'war' : isAlly(c) ? 'ally' : hasAccess(c) ? 'access' : hasPact(c) ? 'pact' : 'neutral'; }
+function dipInit(){
+  G.rel ||= {}; G.relB ||= {}; G.relM ||= {}; G.pact ||= {}; G.access ||= {}; G.ally ||= {}; G.prot ||= {}; G.protD ||= {}; G.dipCd ||= {};
+  // opgeslagen spel: alleen landen die op deze kaart bestaan
+  for(const m of [G.rel, G.relB, G.relM, G.pact, G.access, G.ally, G.prot, G.protD]) for(const k in m) if(!CN[k] || k === G.player) delete m[k];
+  for(const k in G.prot) if(!CN[G.prot[k]]) delete G.prot[k];
+  G.lend = Array.isArray(G.lend) ? G.lend.filter(l => l && CN[l.from] && CN[l.to] && l.f > 0) : [];
+  for(const u of G.units) if(u.home && !CN[u.home]){ u.home = null; u.htp = null; }
+  DIPV++; RELC.day = -1; dipRelAll();
+}
+function dipRelAll(){ const me = G.player; for(const c of CIDS) if(c !== me && G.nations[c].alive) G.rel[c] = relOf(c).v; }
+function dipChanged(){ DIPV++; RELC.day = -1; computeSupply(true); dipRelAll(); baseDirty = true; overDirty = true; sheetSig = ''; stripSig = null; }
+function relAdd(c, k, v, cap){
+  if(c === G.player || !G.nations[c]) return;
+  const m = (G.relM[c] ||= {}), lim = cap || 60;
+  m[k] = clamp((m[k] || 0) + v, -lim, lim); if(!m[k]) delete m[k];
+  RELC.day = -1;
+}
+// de houding van c tegenover jou, met de redenen erbij
+function relOf(c){
+  if(RELC.day !== G.day || RELC.g !== G || RELC.v !== DIPV || RELC.w !== WARV) RELC = {day:G.day, g:G, v:DIPV, w:WARV, m:{}};
+  return RELC.m[c] ||= relOf0(c);
+}
+function relOf0(c){
+  const me = G.player, why = [];
+  const add = (t, v) => { v = Math.round(v); if(v) why.push([t, v]); };
+  const b = G.relB[c] || 0; add(b >= 0 ? 'Langdurige vrede' : 'Recente oorlog', b);
+  add('Bang voor jouw agressie', -Math.min(60, 0.8 * (G.ae[c] || 0)));
+  let je = 0, jn = null; for(const e of enemiesOf(me)) if(atWar(c, e)){ je++; if(!jn || armyPow(e) > armyPow(jn)) jn = e; }
+  if(je) add('Gezamenlijke vijand ' + cname(jn) + (je > 1 ? ' e.a.' : ''), je > 1 ? 25 : 15);
+  const g = G.prot[c]; if(g && atWar(me, g)) add('Je vecht tegen hun beschermer ' + cname(g), -25);
+  for(const x in G.prot) if(G.prot[x] === c && atWar(me, x)){ add('Je vecht tegen ' + cname(x) + ', dat zij beschermen', -25); break; }
+  if((G.just && G.just.c === c) || G.wg[c] >= G.day) add('Je rechtvaardigt een oorlog tegen hen', -25);
+  if(isAlly(c)) add('Bondgenootschap', 20);
+  if(hasPact(c)) add('Niet-aanvalsverdrag', 10);
+  if(hasAccess(c)) add('Doorgangsrecht', 5);
+  const m = G.relM[c]; if(m) for(const k in m) add(RELM[k] || k, m[k]);
+  let v = 0; for(const w of why) v += w[1];
+  return {v: clamp(v, -100, 100), why};
+}
+// de sterkste buur waar c bang voor is (niet jij, niet zijn beschermer): [land, gewicht] of null
+function dipThreat(c){
+  const me = G.player, pc = armyPow(c); let best = null, bp = 0;
+  for(const h of neighbors(c)){ if(h === me || G.prot[c] === h || isAlly(h) && isAlly(c)) continue; const p = armyPow(h) * (atWar(c, h) ? 3 : 1); if(p > bp){ bp = p; best = h; } }
+  if(!best) return null;
+  if(atWar(c, best)) return [best, 30];
+  return armyPow(best) >= 1.3 * pc ? [best, 20] : null;
+}
+// zegt de AI ja? Geen dobbelsteen: een optelsom die je in het vel kunt nalezen. Vanaf 0 is het ja.
+function dipEval(kind, c, e){
+  const me = G.player, r = relOf(c).v, pm = Math.max(1, armyPow(me)), pc = Math.max(1, armyPow(c)), parts = [['Relatie', r]];
+  let hard = !alive(c) ? 'bestaat niet meer' : atWar(me, c) ? 'jullie zijn in oorlog' : null;
+  const th = dipThreat(c), mine = enemiesOf(me);
+  if(kind === 'pact'){
+    parts.push(['Een verdrag kost weinig', 5]);
+    if(G.aiJust[c] != null) hard ||= 'bereidt een oorlog tegen je voor';
+    if((G.just && G.just.c === c) || G.wg[c] >= G.day) hard ||= 'je rechtvaardigt zelf een oorlog tegen hen';
+    if(pc > 2 * pm) parts.push(['Voelt zich veel sterker dan jij', -25]);
+    else if(pm > 1.5 * pc) parts.push(['Zoekt zekerheid tegenover jouw leger', 15]);
+    if(th) parts.push(['Heeft de handen vol aan ' + cname(th[0]), 10]);
+  } else if(kind === 'access'){
+    parts.push(['Vreemde troepen op eigen grond', -15]);
+    if(mine.some(x => atWar(c, x))) parts.push(['Jullie vechten tegen dezelfde vijand', 25]);
+    if(pm > 3 * pc) parts.push(['Wantrouwt jouw overmacht', -10]);
+  } else if(kind === 'ally'){
+    parts.push(['Een bondgenootschap is een grote stap', -45]);
+    if(G.aiJust[c] != null) hard ||= 'bereidt een oorlog tegen je voor';
+    if(th) parts.push([(th[1] >= 30 ? 'In oorlog met ' : 'Vreest ') + cname(th[0]), th[1]]);
+    const na = Object.keys(G.ally).length; if(na >= 2) parts.push(['Jij hebt al ' + na + ' bondgenoten', -15 * (na - 1)]);
+    if(pm < 0.4 * pc) parts.push(['Jouw leger heeft weinig te bieden', -20]);
+    let off = 0, dang = null;
+    for(const x of mine){ if(atWar(c, x)) continue; const w = G.aggr[wk(me, x)]; if(w && w.a === me) off++; else if(armyPow(x) > pc) dang = x; if(G.prot[x] === c || G.prot[c] === x) hard ||= 'staat aan de kant van je vijand ' + cname(x); }
+    if(off) parts.push(['Wil niet in jouw aanvalsoorlogen belanden', -15]);
+    if(dang) parts.push(['Zou meteen tegenover ' + cname(dang) + ' staan', -20]);
+    for(const y in G.ally) if(atWar(c, y)) hard ||= 'is in oorlog met je bondgenoot ' + cname(y);
+  } else if(kind === 'call'){
+    { const w0 = G.aggr[wk(me, e)]; parts.push(w0 && w0.a === me ? ['Het is jouw aanvalsoorlog', -45] : ['Oorlog is geen kleinigheid', -30]); }
+    if(!isAlly(c)) hard ||= 'geen bondgenoot';
+    if(!alive(e) || !atWar(me, e)) hard ||= 'jij bent niet in oorlog met dat land';
+    else if(atWar(c, e)) hard ||= 'vecht al mee';
+    else if(G.truce && truceLeft(c, e) > 0) hard ||= 'heeft een bestand met ' + cname(e);
+    else if(G.prot[e] === c || G.prot[c] === e) hard ||= 'beschermt ' + cname(e);
+    if(!hard){
+      parts.push(neighbors(c).includes(e) ? ['Grenst aan ' + cname(e), 15] : ['Geen grens met ' + cname(e), -10]);
+      const pe = armyPow(e);
+      parts.push(pc >= 0.8 * pe ? ['Kan ' + cname(e) + ' aan', 10] : pc + pm >= pe ? ['Samen zijn jullie sterker', 0] : [cname(e) + ' is te sterk', -20]);
+      const nw = enemiesOf(c).length; if(nw) parts.push(['Is al in oorlog', -20 * nw]);
+      const w = G.aggr[wk(me, e)]; if(w && w.a !== me) parts.push(['Jij werd aangevallen', 20]);
+    }
+  } else if(kind === 'ask'){
+    parts.push(['Steun kost hun eigen opbouw', -40]);
+    if(!mine.length) hard ||= 'je bent niet in oorlog';
+    if(isAlly(c)) parts.push(['Bondgenoot', 30]);
+    if(mine.some(x => atWar(c, x))) parts.push(['Jullie vechten tegen dezelfde vijand', 15]);
+    if(dipNeed()) parts.push(['Je zit in het nauw', 15]);
+    if(meterOf(c) >= 0.3) hard ||= 'heeft het zelf te zwaar';
+    if(G.lend.some(l => l.from === me && l.to === c)) hard ||= 'jij steunt hen juist';
+    if((G.dipCd['ask:' + c] || 0) > G.day) hard ||= 'heeft pas nog geholpen (weer over ' + (G.dipCd['ask:' + c] - G.day) + ' d)';
+  }
+  let s = 0; for(const p of parts) s += p[1];
+  return {ok: !hard && s >= 0, s, hard, parts};
+}
+// zit jij in het nauw? (dan sturen bondgenoten uit zichzelf steun)
+function dipNeed(){ const me = G.player, ens = enemiesOf(me); if(!ens.length) return false; let ep = 0; for(const e of ens) ep += armyPow(e); return meterOf(me) >= 0.2 || ep > 1.3 * armyPow(me); }
+// aan wie mag je steun geven: bondgenoten en landen die tegen jouw vijand vechten
+const dipCanAid = c => alive(c) && !atWar(G.player, c) && (isAlly(c) || enemiesOf(G.player).some(e => atWar(c, e)));
+
+/* ---- haken in het spel ---- */
+// de AI valt niet aan waar een verdrag, garantie of blok het verbiedt of te gevaarlijk maakt
+function dipNoAttack(c, x){
+  const me = G.player;
+  if(c === me) return false;
+  if(x === me){
+    if(isAlly(c) || hasPact(c)) return true;
+    let ap = 0; for(const y in G.ally) if(alive(y) && !(G.truce && truceLeft(y, c) > 0)) ap += armyPow(y);
+    return ap > 0 && armyPow(c) < 1.2 * (armyPow(me) + 0.5 * ap);   // jouw bondgenoten schrikken af
+  }
+  if(isAlly(c) && isAlly(x)) return true;   // jouw bondgenoten vechten niet onderling
+  const pr = G.prot;
+  if(pr[x] === c || pr[c] === x) return true;
+  const g = pr[x];
+  if(g && g !== c && alive(g) && !atWar(g, c) && armyPow(c) < 1.3 * (armyPow(x) + armyPow(g))) return true;   // afgeschrikt door de beschermer
+  if(isAlly(x) && armyPow(c) < 1.3 * (armyPow(x) + 0.5 * armyPow(me))) return true;   // jouw bondgenoot: jij telt mee
+  return false;
+}
+// vóór een oorlogsverklaring: false = gaat niet door
+function dipOnDeclare(a, b, joining){
+  const me = G.player;
+  if(!G.ally) return true;
+  if(b === me && a !== me){ if(isAlly(a) || hasPact(a)) return false; }   // de AI breekt geen verdragen (ze zegt eerst op)
+  else if(a === me && dipBound(b)){ if(joining && isAlly(joining)) toast(cname(b) + ' viel je bondgenoot aan: jullie verdrag vervalt', 'war'); else dipBreak(b); }
+  else if(a !== me && b !== me && isAlly(a) && isAlly(b)) return false;
+  return true;
+}
+// jij breekt een verdrag: iedereen onthoudt het
+function dipBreak(c){
+  const me = G.player, n = nat(me), what = isAlly(c) ? 'bondgenootschap' : 'niet-aanvalsverdrag';
+  n.ws = clamp(n.ws - 15, 0, 100);
+  const nb = new Set([...neighbors(me), ...neighbors(c)]);
+  for(const x of CIDS){
+    if(x === me || x === c || !alive(x)) continue;
+    if(dipBound(x) || hasAccess(x)) relAdd(x, 'breuk', -40);
+    else if(nb.has(x)) relAdd(x, 'breuk', -15);
+    if(nb.has(x)) addAE(x, 12);
+  }
+  G.stats.broken = (G.stats.broken || 0) + 1;
+  toast('Verdragbreuk: je schendt het ' + what + ' met ' + cname(c) + '. Oorlogssteun −15%, de buren en je verdragspartners wantrouwen je', 'war');
+}
+// alle banden met c doorsnijden (oorlog): verdragen, steun, geleende troepen; gasten gaan naar huis
+function dipDrop(c){
+  const me = G.player;
+  const had = G.ally[c] || G.pact[c] || G.access[c];
+  delete G.ally[c]; delete G.pact[c]; delete G.access[c]; delete G.aiJust[c];
+  dipReturn(u => (u.home === me && u.c === c) || (u.home === c && u.c === me));
+  if(G.lend.length) G.lend = G.lend.filter(l => !((l.from === me && l.to === c) || (l.from === c && l.to === me)));
+  if(G.cards) G.cards = G.cards.filter(cd => !(cd.dip && cd.x === c));
+  if(had){ relocate(me); relocate(c); }
+  dipChanged();
+}
+// na een oorlogsverklaring: verdragen vervallen, bondgenoten en beschermers doen mee
+function dipWar(a, b, joining){
+  const me = G.player;
+  if(!G.ally) return;
+  if(G.prot[a] === b) delete G.prot[a]; if(G.prot[b] === a) delete G.prot[b];
+  if(a === me || b === me) dipDrop(a === me ? b : a);
+  if(b === me){
+    // jij wordt aangevallen: je bondgenoten doen mee
+    for(const y of Object.keys(G.ally)) if(alive(y) && y !== a && !atWar(y, a)){ declare(y, a, me); const w = G.aggr[wk(y, a)]; if(w && atWar(y, a)){ w.for = me; relAdd(y, 'hulp', 5, 30); } }
+  } else if(a !== me && isAlly(b) && !joining && !atWar(me, a)) dipCard({k:'dipcall', x:b, y:a});   // je bondgenoot wordt aangevallen: hij vraagt je hulp
+  else if(a !== me && isAlly(a) && !joining && !atWar(me, b)) toast('Je bondgenoot ' + cname(a) + ' valt ' + cname(b) + ' aan. Meedoen hoeft niet', '', 'allywar');
+  if(joining) return;
+  // garantie: de beschermer van het slachtoffer springt bij (tegen jou altijd: je ziet het van tevoren staan)
+  const g = G.prot[b];
+  if(g && g !== a && alive(g) && !atWar(g, a) && !atWar(g, b) && (a === me || Math.random() < 0.7)) declare(g, a, b);
+}
+// na een vrede van jou: wie voor jou meevocht, sluit ook vrede (ieder houdt wat hij bezet)
+function dipOnPeace(a, b){
+  const me = G.player;
+  if(!G.ally || (a !== me && b !== me)) return;
+  const e = a === me ? b : a;
+  G.relB[e] = Math.min(G.relB[e] || 0, -30);
+  for(const y of Object.keys(G.ally)){
+    const w = G.aggr[wk(y, e)];
+    if(!w || w.for !== me || !alive(y) || !alive(e) || !atWar(y, e)) continue;
+    settle(y, e, occBy(y, e), occBy(e, y));
+    toast('Je bondgenoot ' + cname(y) + ' sluit ook vrede met ' + cname(e), 'good', 'allypeace');
+  }
+  RELC.day = -1;
+}
+// een bondgenoot die voor jou meevecht, sluit geen aparte vrede zolang hij een front heeft en niet zelf aan de verliezende hand is
+function dipHold(a, b){
+  const w = G.aggr[wk(a, b)]; if(!w || !w.for) return false;
+  const me = G.player, y = isAlly(a) ? a : isAlly(b) ? b : null; if(!y || w.for !== me) return false;
+  const e = y === a ? b : a;
+  if(!atWar(me, e) || meterOf(y) >= 0.5) return false;
+  return owned(y).some(p => ADJ[p].some(n => G.ctrl[n] === e));
+}
+// wie krijgt een veroverde provincie? Bevrijd kernland van een bondgenoot (of wat hij vóór de oorlog had) gaat terug
+function dipCapFor(p, c, prev){
+  const A = G.ally; if(!A) return c;
+  const me = G.player, o = P[p].c;
+  let to = c;
+  if(o === c) return c;
+  if(c === me){
+    if(o === me) return c;
+    if(A[o] && alive(o)) to = o;
+    else for(const y in A) if(alive(y) && (nat(y).base || []).includes(p)){ to = y; break; }
+  } else if(A[c] && alive(me) && (o === me || (nat(me).base || []).includes(p))) to = me;
+  if(to !== c){
+    if(atWar(c, prev)) (G.wlast ||= {})[wk(c, prev)] = G.day;
+    if(c === me){ toast(P[p].n + ' bevrijd voor ' + cname(to), 'good', 'lib'); relAdd(to, 'hulp', 2, 30); sfx('cap'); }
+    else toast(cname(c) + ' bevrijdt ' + P[p].n + ' voor jou', 'good', 'lib');
+  }
+  return to;
+}
+// een land capituleert of verdwijnt: geleende divisies gaan eerst terug naar hun eigenaar
+function dipOnFall(c){
+  if(!G.ally || !G.units.some(u => u.home)) return;
+  dipReturn(u => u.c === c);
+  for(const u of G.units) if(u.home === c){ u.home = null; u.htp = null; }
+}
+// steun: hoeveel productie gaat er vandaag van wie naar wie (pp = ruwe fabriekscapaciteit per land)
+function lendFlows(pp){
+  const L = G.lend; if(!L || !L.length) return null;
+  const d = {};
+  for(const l of L){
+    if(!alive(l.from) || !alive(l.to)){ l.amt = 0; continue; }
+    const n = nat(l.from), mul = isAI(l.from) ? D().pp : (D().mePp || 1);
+    const amt = pp[l.from] * 0.6 * mul * (n.ws != null && n.ws < 20 ? 0.85 : 1) * l.f;
+    l.amt = amt; d[l.from] = (d[l.from] || 0) - amt; d[l.to] = (d[l.to] || 0) + amt;
+  }
+  return d;
+}
+// staat deze divisie op jouw bevel in bevriend land? Dan blijft de generaal eraf
+function dipGuest(u){ if(G.ctrl[u.loc] !== u.c || u.path.length || u.att) return true; u.gst = false; return false; }
+function dipOrder(u){ const c = u.c; if(G.ctrl[u.loc] !== c || u.path.some(q => G.ctrl[q] !== c && friendly(c, G.ctrl[q]))) u.gst = true; }
+// waarom kan een bevel niet? Doel ligt achter een neutraal land met doorgang: dat is geen uitvalsbasis
+function dipWhyNot(p){
+  const me = G.player, own = G.ctrl[p];
+  if(!atWar(me, own)) return '';
+  for(const n of ADJ[p]){ const o = G.ctrl[n]; if(o !== me && friendly(me, o) && !atWar(o, own)) return 'Vanuit ' + cname(o) + ' kun je ' + cname(own) + ' niet aanvallen: ' + cname(o) + ' is zelf niet met ' + cname(own) + ' in oorlog'; }
+  return '';
+}
+
+/* ---- troepen overdragen ---- */
+function dipPlace(u, c){
+  if(G.ctrl[u.loc] === c) return;
+  let best = null, bd = Infinity;
+  for(const q of owned(c)){ if(SUP[q] === 0) continue; const d2 = dist(u.loc, q); if(d2 < bd){ bd = d2; best = q; } }
+  if(!best) best = owned(c)[0];
+  if(best) u.loc = best;
+}
+function dipGive(us, to, loan){
+  let n = 0;
+  for(const u of us){
+    if(u.home || u.c === to) continue;   // geleende troepen geef je niet door
+    if(loan){ u.home = u.c; u.htp = u.tp; }
+    u.c = to; if(to !== G.player && !FIXT[u.tp]) u.tp = FIXT[u.t] ? u.t : 'inf';
+    u.t = domOfKey(u.tp); u.path = []; u.att = null; u.air = false; u.prog = 0; u.man = false; u.g = null; u.gst = false; u.ent = 0;
+    dipPlace(u, to); UI.sel.delete(u.id); n++;
+  }
+  if(n){ POWC = null; buildIdx(); }
+  return n;
+}
+// geleende divisies terug naar hun eigenaar
+function dipReturn(pred){
+  let n = 0;
+  for(const u of G.units){
+    if(!u.home || !pred(u)) continue;
+    const h = u.home; u.home = null;
+    if(!alive(h)){ u.htp = null; continue; }
+    u.c = h; if(u.htp) u.tp = u.htp; u.htp = null; u.t = domOfKey(u.tp);
+    u.path = []; u.att = null; u.air = false; u.prog = 0; u.man = false; u.g = null; u.gst = false;
+    if(h !== G.player || !friendly(h, G.ctrl[u.loc])) dipPlace(u, h);
+    UI.sel.delete(u.id); n++;
+  }
+  if(n){ POWC = null; buildIdx(); }
+  return n;
+}
+// verdrag beëindigen (de straf regelt de aanroeper); gasten gaan terug naar eigen gebied
+function dipEnd(kind, c){
+  const me = G.player;
+  if(kind === 'ally'){ delete G.ally[c]; dipReturn(u => (u.home === me && u.c === c) || (u.home === c && u.c === me)); G.lend = G.lend.filter(l => !(l.from === c && l.to === me)); }
+  else if(kind === 'access') delete G.access[c];
+  else if(kind === 'pact') delete G.pact[c];
+  dipChanged();
+  if(friendly(me, c)) return 0;
+  let n = 0; for(const u of G.units) if(u.c === me && G.ctrl[u.loc] === c) n++;
+  relocate(me); relocate(c); buildIdx();
+  if(n) toast(n + (n === 1 ? ' divisie keert' : ' divisies keren') + ' terug uit ' + cname(c), '', 'evict');
+  return n;
+}
+
+/* ---- dagelijks ---- */
+function dipTick(){
+  const me = G.player, d = G.day;
+  if(!nat(me).alive) return;
+  let ch = false;
+  for(const c in G.pact) if(G.pact[c] <= d || !alive(c)){ delete G.pact[c]; ch = true; if(alive(c)) toast('Het niet-aanvalsverdrag met ' + cname(c) + ' is afgelopen', '', 'pact' + c); }
+  for(const c in G.ally) if(!alive(c) || atWar(me, c)){ delete G.ally[c]; ch = true; }
+  for(const c in G.access) if(!alive(c) || atWar(me, c)){ delete G.access[c]; ch = true; }
+  if(G.lend.length){
+    const n0 = G.lend.length;
+    G.lend = G.lend.filter(l => {
+      const ok = l.until > d && alive(l.from) && alive(l.to) && !atWar(l.from, l.to);
+      if(!ok && l.from === me) toast('Je steun aan ' + cname(l.to) + ' is afgelopen', '', 'lend' + l.to);
+      else if(!ok && l.to === me) toast('De steun van ' + cname(l.from) + ' is afgelopen', '', 'lend' + l.from);
+      return ok;
+    });
+    if(G.lend.length !== n0) sheetSig = '';
+  }
+  if(G.cards.length && G.cards.some(cd => cd.dip && !dipCardOk(cd))){ G.cards = G.cards.filter(cd => !cd.dip || dipCardOk(cd)); cardSig = ''; }
+  if(ch) dipChanged();
+  if(d % 5 === 0){
+    for(const l of G.lend) if(l.from === me) relAdd(l.to, 'steun', 10 * l.f, 40);   // 10% steun: +1 per 5 dagen
+    dipRelAll();
+  }
+  if(d % 10 === 0){
+    // tijd heelt: lange vrede bouwt vertrouwen op, oude gebeurtenissen vervagen
+    for(const c of CIDS){
+      if(c === me || !alive(c) || atWar(me, c)) continue;
+      G.relB[c] = Math.min(20, (G.relB[c] || 0) + 1);
+      const m = G.relM[c]; if(m){ for(const k in m){ const v = m[k]; m[k] = v > 0 ? Math.max(0, v - 1) : Math.min(0, v + 1.5); if(!m[k]) delete m[k]; } }
+    }
+    RELC.day = -1;
+    dipReview(); dipSupport(); dipExpBack();
+  }
+  if(d % 30 === 10) dipPropose();
+  if(d % 30 === 15) dipBlocs();
+  if(d % 3 === 0 && (allyN() || Object.keys(G.access).length)) dipGuestsHome();
+}
+const allyN = () => Object.keys(G.ally).length;
+/* Divisies die zonder bevel in bevriend land staan (teruggetrokken, klaar met een doortocht, of terug van een expeditie)
+   lopen naar eigen gebied terug: die van de AI altijd, die van jou alleen als de generaal aan staat. De generaal-AI stuurt
+   ze (nog) niet zelf; wie een divisie bewust in bevriend land wil laten staan, zet u.gst. */
+function dipGuestsHome(){
+  const me = G.player, auto = nat(me).auto;
+  for(const u of G.units){
+    if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.c === me && (!auto || u.man)) || !friendly(u.c, G.ctrl[u.loc])) continue;
+    const c = u.c, prev = {[u.loc]: null}, q = [u.loc]; let goal = null;
+    for(let i = 0; i < q.length && i < 600 && !goal; i++){
+      const x = q[i];
+      for(const n of ADJ[x]){
+        if(n in prev) continue; const o = G.ctrl[n];
+        if(o !== c && !friendly(c, o)) continue;
+        prev[n] = x; if(o === c){ goal = n; break; } q.push(n);
+      }
+    }
+    if(goal){ const path = []; let y = goal; while(y !== u.loc){ path.unshift(y); y = prev[y]; } u.path = path; u.prog = 0; }
+    else dipPlace(u, c);
+  }
+}
+// de AI houdt haar verdragen tegen het licht
+function dipReview(){
+  const me = G.player, d = G.day, ens = enemiesOf(me);
+  for(const c of Object.keys(G.ally)){
+    const r = relOf(c).v, co = ens.some(e => atWar(c, e));
+    if(r < (co ? -10 : 15)){ G.pact[c] = Math.max(G.pact[c] || 0, d + 90); dipEnd('ally', c); toast(cname(c) + ' zegt het bondgenootschap op: de relatie is te slecht (' + r + ')', 'war'); }
+  }
+  for(const c of Object.keys(G.access)) if(relOf(c).v < -10){ dipEnd('access', c); toast(cname(c) + ' trekt het doorgangsrecht in: de relatie is te slecht', 'war'); }
+  for(const c of Object.keys(G.pact)) if(G.pact[c] > d + 30 && !isAlly(c) && relOf(c).v < -35){ G.pact[c] = d + 30; sheetSig = ''; toast(cname(c) + ' zegt het niet-aanvalsverdrag op: over 30 dagen vervalt het', 'war'); }
+}
+// bondgenoten helpen jou als je in het nauw zit: industriële steun, en een expeditiekorps als ze zelf geen front hebben
+function dipSupport(){
+  const me = G.player, d = G.day, cd = G.dipCd;
+  if(!dipNeed()) return;
+  for(const y of Object.keys(G.ally)){
+    if(!alive(y) || meterOf(y) >= 0.3) continue;
+    if((cd['sup:' + y] || 0) <= d && !G.lend.some(l => (l.from === y && l.to === me) || (l.from === me && l.to === y))){
+      G.lend.push({from:y, to:me, f:0.12, until:d + 90}); cd['sup:' + y] = d + 150; sheetSig = '';
+      toast(cname(y) + ' stuurt industriële steun: 12% van zijn productie, 90 dagen lang', 'good', 'sup' + y);
+    }
+    if((cd['exp:' + y] || 0) <= d) dipSendExp(y);
+  }
+}
+function dipSendExp(y){
+  const me = G.player;
+  if(owned(y).some(p => ADJ[p].some(n => atWar(y, G.ctrl[n]) && !LONG.has(ek(p, n))))) return 0;   // heeft zelf een front
+  const pool = (UBY[y] || G.units.filter(u => u.c === y)).filter(u => !u.att && !u.home && u.hp >= 60 && u.tp !== 'mil');
+  if(pool.length < 6) return 0;
+  const k = clamp(Math.round(pool.length * 0.25), 1, 5);
+  pool.sort((a, b) => b.hp - a.hp);
+  const us = pool.slice(0, k), tgt = rallyTarget(me) || CN[me].cap;
+  for(const u of us) u.loc = G.ctrl[tgt] === me ? tgt : u.loc;
+  const n = dipGive(us, me, true);
+  if(n){ G.dipCd['exp:' + y] = G.day + 240; fx(tgt, 'spawn'); toast(cname(y) + ' stuurt een expeditiekorps: ' + n + (n === 1 ? ' divisie' : ' divisies') + ' onder jouw bevel in ' + P[tgt].n + ' (tot de vrede)', 'good', 'exp' + y); }
+  return n;
+}
+// expeditielegers keren terug als de oorlog voorbij is of het bondgenootschap eindigt
+function dipExpBack(){
+  const me = G.player;
+  if(!G.units.some(u => u.home)) return;
+  const mine = {}, theirs = {};
+  const n = dipReturn(u => {
+    const lender = u.home, borrower = u.c, other = lender === me ? borrower : lender;
+    const back = !alive(lender) || !isAlly(other) || !enemiesOf(borrower).length;
+    if(back && alive(lender)){ if(lender === me) mine[borrower] = (mine[borrower] || 0) + 1; else theirs[lender] = (theirs[lender] || 0) + 1; }
+    return back;
+  });
+  for(const c in mine) toast('Je expeditieleger keert terug uit ' + cname(c) + ': ' + mine[c] + (mine[c] === 1 ? ' divisie' : ' divisies'), 'good', 'expb' + c);
+  for(const c in theirs) toast('Het expeditiekorps van ' + cname(c) + ' keert naar huis terug', '', 'expb' + c);
+  if(n) sheetSig = '';
+}
+// de AI komt zelf met een voorstel of een verzoek (hooguit één per drie maanden)
+function dipPropose(){
+  const me = G.player, d = G.day, cd = G.dipCd;
+  if(d < 60 || cardOpen() || (cd.prop || 0) > d) return;
+  for(const y of Object.keys(G.ally)){   // een bondgenoot in nood vraagt steun
+    if(alive(y) && enemiesOf(y).length && meterOf(y) >= 0.25 && (cd['req:' + y] || 0) <= d && !G.lend.some(l => l.from === me && l.to === y)){
+      cd['req:' + y] = d + 150; cd.prop = d + 60; dipCard({k:'diplend', x:y}); return;
+    }
+  }
+  const cand = new Set(neighbors(me));
+  for(const e of enemiesOf(me)) for(const x of enemiesOf(e)) cand.add(x);
+  let best = null, bs = -1, kind = null;
+  for(const c of cand){
+    if(c === me || !alive(c) || atWar(me, c) || (cd['no:' + c] || 0) > d || !dipThreat(c)) continue;
+    if(!isAlly(c)){ const ev = dipEval('ally', c); if(ev.ok && ev.s >= 10 && ev.s + 100 > bs){ bs = ev.s + 100; best = c; kind = 'dipally'; } }
+    if(!dipBound(c)){ const ev = dipEval('pact', c); if(ev.ok && ev.s >= 25 && ev.s > bs){ bs = ev.s; best = c; kind = 'dippact'; } }
+  }
+  if(best){ cd.prop = d + (kind === 'dippact' ? 150 : 90); cd['no:' + best] = d + 300; dipCard({k:kind, x:best}); }
+}
+/* blokken tussen AI-landen, licht gehouden: een klein land dat bang is (voor jou of voor een grote buur) zoekt een
+   beschermer. Wie het kleine land aanvalt, krijgt de beschermer erbij. Hooguit drie beschermelingen per land, twee jaar. */
+function dipBlocs(){
+  const me = G.player, d = G.day, cnt = {}, pr = G.prot;
+  for(const x in pr){
+    const g = pr[x];
+    if(!alive(x) || !alive(g) || atWar(x, g) || (G.protD[x] || 0) <= d){ delete pr[x]; delete G.protD[x]; } else cnt[g] = (cnt[g] || 0) + 1;
+  }
+  if(d < 30) return;
+  let ch = false;
+  for(const x of CIDS){
+    if(x === me || !alive(x) || pr[x] || isAlly(x) || MAJORS.has(x) || enemiesOf(x).length) continue;
+    const nb = neighbors(x); if(nb.length < 2) continue;
+    const px = armyPow(x), fearMe = (G.ae[x] || 0) >= 20 && !hasPact(x);
+    let pred = null, pp2 = 2 * px;
+    for(const h of nb) if(h !== me && armyPow(h) > pp2){ pp2 = armyPow(h); pred = h; }
+    if(!fearMe && !(pred && Math.random() < 0.15)) continue;
+    let g = null, gp = 1.5 * px;
+    for(const h of nb){
+      if(h === me || h === pred || pr[h] || atWar(h, x) || (cnt[h] || 0) >= 3 || (fearMe && isAlly(h)) || (G.truce && truceLeft(h, x) > 0)) continue;
+      if(armyPow(h) > gp){ gp = armyPow(h); g = h; }
+    }
+    if(!g) continue;
+    pr[x] = g; G.protD[x] = d + 720; cnt[g] = (cnt[g] || 0) + 1; ch = true;
+    if(fearMe) toast(cname(x) + ' zoekt uit angst voor jou bescherming bij ' + cname(g) + ': val je ' + cname(x) + ' aan, dan doet ' + cname(g) + ' mee', 'war', 'prot' + x);
+    else if(MAPNAME === 'europe' && neighbors(me).includes(x)) toast(cname(x) + ' zoekt bescherming bij ' + cname(g) + ' (bang voor ' + cname(pred) + ')', '', 'prot' + x);
+  }
+  if(ch){ RELC.day = -1; sheetSig = ''; stripSig = null; baseDirty = true; }
+}
+
+/* ---- jouw acties ---- */
+function dipDo(k, c, arg){
+  const me = G.player, n = nat(me), d = G.day, nm = cname(c), cd = G.dipCd;
+  const pay = v => { n.cp -= v; };
+  const two = () => { const key = k + ':' + c; if(UI.confirm === key){ UI.confirm = null; return true; } UI.confirm = key; return false; };
+  if(atWar(me, c)) return;
+  if(k === 'imp'){
+    if(n.cp < DCP.imp || (cd['imp:' + c] || 0) > d || ((G.relM[c] || {}).verb || 0) >= 40) return;
+    pay(DCP.imp); cd['imp:' + c] = d + 30; relAdd(c, 'verb', 12, 40);
+    toast('Gezanten naar ' + nm + ': relatie +12 (nu ' + sgn(relOf(c).v) + ')', 'good', 'dip');
+  } else if(k === 'pact'){
+    const ev = dipEval('pact', c); if(!ev.ok || n.cp < DCP.pact) return;
+    pay(DCP.pact); G.pact[c] = d + PACT_DAYS; delete G.aiJust[c];
+    toast('Niet-aanvalsverdrag met ' + nm + ' getekend: twee jaar geen oorlog', 'good', 'dip');
+  } else if(k === 'pactx'){
+    if(!hasPact(c) || G.pact[c] <= d + 60 || !two()) return;
+    G.pact[c] = d + 60; relAdd(c, 'opz', -15);
+    toast('Niet-aanvalsverdrag met ' + nm + ' opgezegd: het vervalt over 60 dagen', 'war', 'dip');
+  } else if(k === 'access'){
+    const ev = dipEval('access', c); if(!ev.ok || n.cp < DCP.access || hasAccess(c)) return;
+    pay(DCP.access); G.access[c] = Math.max(1, d);
+    toast(nm + ' geeft doorgangsrecht: jullie divisies mogen door elkaars land trekken', 'good', 'dip');
+  } else if(k === 'accessx'){
+    if(!hasAccess(c) || !two()) return;
+    relAdd(c, 'opz', -5); dipEnd('access', c);
+    toast('Doorgangsrecht met ' + nm + ' opgezegd', '', 'dip');
+  } else if(k === 'ally'){
+    const ev = dipEval('ally', c); if(!ev.ok || n.cp < DCP.ally || isAlly(c)) return;
+    pay(DCP.ally); dipAlly(c);
+    toast('Bondgenootschap met ' + nm + ': wie een van jullie aanvalt, krijgt met beiden te maken', 'good', 'dip');
+  } else if(k === 'allyx'){
+    if(!isAlly(c) || !two()) return;
+    relAdd(c, 'opz', -25); G.pact[c] = Math.max(G.pact[c] || 0, d + 90); dipEnd('ally', c);
+    toast('Bondgenootschap met ' + nm + ' opgezegd. Er geldt nog 90 dagen een niet-aanvalsverdrag', 'war', 'dip');
+  } else if(k === 'call'){
+    const e = arg, ev = dipEval('call', c, e); if(!ev.ok || n.cp < DCP.call) return;
+    pay(DCP.call); declare(c, e, me);
+    if(atWar(c, e)){ const w = G.aggr[wk(c, e)]; if(w) w.for = me; relAdd(c, 'oproep', -15); }
+  } else if(k === 'lend'){
+    const f = clamp(+arg || 0, 0, 30) / 100, cur = G.lend.find(l => l.from === me && l.to === c);
+    if(!f){ if(cur){ G.lend = G.lend.filter(l => l !== cur); toast('Steun aan ' + nm + ' gestopt', '', 'dip'); } }
+    else {
+      if(!dipCanAid(c)) return;
+      let tot = f; for(const l of G.lend) if(l.from === me && l !== cur) tot += l.f;
+      if(tot > 0.5){ toast('Je kunt hooguit de helft van je productie weggeven', 'war', 'dip'); return; }
+      if(cur){ cur.f = f; cur.until = d + 90; } else { G.lend.push({from:me, to:c, f, until:d + 90}); relAdd(c, 'steun', 3, 40); }
+      toast('Lend-lease aan ' + nm + ': ' + Math.round(100 * f) + '% van je productie, 90 dagen', 'good', 'dip');
+    }
+    economy(true);
+  } else if(k === 'ask'){
+    const ev = dipEval('ask', c); if(!ev.ok) return;
+    cd['ask:' + c] = d + 180;
+    if(!G.lend.some(l => l.from === c && l.to === me)) G.lend.push({from:c, to:me, f:0.1, until:d + 90});
+    const ne = isAlly(c) ? dipSendExp(c) : 0;
+    toast(nm + ' stuurt steun: 10% van zijn productie, 90 dagen' + (ne ? ', en een expeditiekorps' : ''), 'good', 'dip');
+    economy(true);
+  } else if(k === 'fab'){
+    if(!dipCanAid(c)) return;
+    let best = null; for(const p of owned(me)) if(G.fac[p] >= FAB_ADD && (!best || G.fac[p] > G.fac[best])) best = p;
+    if(!best || facTot(me) < 4){ toast('Je hebt zelf te weinig fabrieken om er een weg te geven', 'war', 'dip'); return; }
+    if(!two()) return;
+    G.fac[best] -= FAB_ADD; addFac(c, FAB_ADD); relAdd(c, 'gift', 10, 40); FTC.day = -1;
+    toast('Fabriek uit ' + P[best].n + ' geschonken aan ' + nm + ': relatie +10', 'good', 'dip');
+    economy(true);
+  } else if(k === 'give' || k === 'loan'){
+    const us = dipSel(); if(!us.length) return;
+    if(k === 'loan' ? !(isAlly(c) && enemiesOf(c).length) : !dipCanAid(c)) return;
+    if(k === 'give' && !two()) return;
+    const cnt = dipGive(us, c, k === 'loan');
+    relAdd(c, k === 'loan' ? 'steun' : 'gift', (k === 'loan' ? 2 : 3) * cnt, 40);
+    toast(k === 'loan' ? cnt + (cnt === 1 ? ' divisie' : ' divisies') + ' als expeditieleger naar ' + nm + ': ze komen terug na de oorlog' : cnt + (cnt === 1 ? ' divisie' : ' divisies') + ' geschonken aan ' + nm, 'good', 'dip');
+  } else if(k === 'recall'){
+    const cnt = dipReturn(u => u.home === me && u.c === c);
+    if(cnt) toast('Expeditieleger teruggeroepen uit ' + nm + ': ' + cnt + (cnt === 1 ? ' divisie' : ' divisies'), 'good', 'dip');
+  } else if(k === 'dbrk'){
+    if(!dipBound(c) || !two()) return;
+    declare(me, c);
+  }
+  dipChanged();
+}
+function dipAlly(c){ G.ally[c] = Math.max(1, G.day); delete G.aiJust[c]; delete G.access[c]; if(G.prot[c]){ delete G.prot[c]; delete G.protD[c]; } dipChanged(); }
+// jouw geselecteerde divisies die je kunt weggeven (niet in gevecht, niet zelf geleend)
+const dipSel = () => [...UI.sel].map(unitById).filter(u => u && u.c === G.player && !u.att && !u.air && !u.home);
+
+/* ---- beslissingskaarten: verzoeken en voorstellen van de AI ---- */
+function dipCard(cd){
+  G.cards ||= [];
+  if(G.cards.some(x => x.k === cd.k && x.x === cd.x && x.y === cd.y)) return;
+  cd.dip = 1; cd.day = G.day; G.cards.push(cd); sfx('card');
+  if(!G.paused){ G.paused = true; G.cardPause = true; }
+  cardSig = '';
+}
+function dipCardOk(cd){
+  const me = G.player, x = cd.x;
+  if(!CN[x] || !alive(x) || atWar(me, x)) return false;
+  if(cd.k === 'dipcall') return isAlly(x) && CN[cd.y] && alive(cd.y) && atWar(x, cd.y) && !atWar(me, cd.y);
+  if(cd.k === 'dipally') return !isAlly(x);
+  if(cd.k === 'dippact') return !dipBound(x);
+  if(cd.k === 'diplend') return isAlly(x);
+  return false;
+}
+function dipCardH(cd, head, opt){
+  const me = G.player, x = cd.x, nm = esc(cname(x)), r = relOf(x).v, pm = Math.max(1, armyPow(me));
+  const row = (icon, t, v) => '<div>' + ic(icon) + '<span>' + t + '</span><b>' + v + '</b></div>';
+  const th = dipThreat(x), fear = th ? esc(cname(th[0])) : '';
+  if(cd.k === 'dipcall'){
+    const y = cd.y, ny = esc(cname(y)), pact = hasPact(y);
+    return head('schild', nm + ' vraagt je hulp', ny + ' heeft je bondgenoot aangevallen · ' + fmtDate(G.day), '')
+      + '<div class="crows">' + row('leger', 'Leger van ' + ny, NF.format(armyPow(y) / pm) + '× het jouwe') + row('leger', 'Leger van ' + nm, NF.format(armyPow(x) / pm) + '× het jouwe') + row('vrede', 'Relatie met ' + nm, sgn(r)) + '</div>'
+      + '<div class="copts">' + opt('yes', 'zwaard', 'Kom te hulp', 'Je verklaart ' + ny + ' de oorlog. Verdedigend: geen agressie, geen verlies aan steun' + (pact ? '. Je niet-aanvalsverdrag met ' + ny + ' vervalt' : ''), 'pri')
+      + opt('no', 'wit', 'Blijf erbuiten', 'Relatie −30' + (r - 30 < 15 ? ': ' + nm + ' zegt dan het bondgenootschap op' : ''), 'war') + '</div>';
+  }
+  if(cd.k === 'dipally')
+    return head('schild', nm + ' stelt een bondgenootschap voor', (fear ? 'Uit vrees voor ' + fear : 'Jullie relatie is uitstekend') + ' · relatie ' + sgn(r), 'win')
+      + '<div class="crows">' + row('leger', 'Leger van ' + nm, NF.format(armyPow(x) / pm) + '× het jouwe') + (th ? row('agr', 'Hun grootste zorg', fear) : '') + '</div>'
+      + '<div class="copts">' + opt('yes', 'check', 'Sluit het bondgenootschap', 'Wie een van jullie aanvalt, krijgt met beiden te maken. Doorgang door elkaars land', 'pri')
+      + opt('no', 'wit', 'Sla af', 'Relatie −5. Later kun je het zelf voorstellen') + '</div>';
+  if(cd.k === 'dippact')
+    return head('vrede', nm + ' stelt een niet-aanvalsverdrag voor', (fear ? 'Ze hebben de handen vol aan ' + fear : 'Ze zoeken zekerheid') + ' · relatie ' + sgn(r), '')
+      + '<div class="copts">' + opt('yes', 'check', 'Teken', 'Twee jaar geen oorlog tussen jullie. Breken kost je 15% oorlogssteun en het vertrouwen van iedereen', 'pri')
+      + opt('no', 'wit', 'Sla af', 'Je houdt je handen vrij') + '</div>';
+  if(cd.k === 'diplend'){
+    const amt = nat(me).ppd * 0.15;
+    return head('fab', nm + ' vraagt om steun', 'Je bondgenoot staat er slecht voor (overgave ' + pct(meterOf(x)) + '%)', '')
+      + '<div class="crows">' + row('fab', 'Gevraagd', '15% van je productie · 90 d') + row('tijd', 'Dat kost je', '−' + NF.format(amt) + ' per dag') + '</div>'
+      + '<div class="copts">' + opt('yes', 'check', 'Stuur lend-lease', 'Hun fabrieken draaien op jouw staal. De relatie groeit', 'pri')
+      + opt('no', 'wit', 'Weiger', 'Relatie −8') + '</div>';
+  }
+  return '';
+}
+function dipResolve(cd, choice){
+  const me = G.player, x = cd.x, yes = choice === 'yes', d = G.day;
+  if(!dipCardOk(cd)) return;
+  if(cd.k === 'dipcall'){
+    const y = cd.y;
+    if(yes){
+      declare(me, y, x);
+      if(atWar(me, y)){ G.aggr[wk(me, y)] = {a:y, just:true}; relAdd(x, 'hulp', 15, 30); toast('Je komt ' + cname(x) + ' te hulp tegen ' + cname(y), 'good'); }
+    } else {
+      relAdd(x, 'weiger', -30);
+      if(relOf(x).v < 15){ G.pact[x] = Math.max(G.pact[x] || 0, d + 90); dipEnd('ally', x); toast(cname(x) + ' voelt zich in de steek gelaten en zegt het bondgenootschap op', 'war'); }
+      else toast(cname(x) + ' is teleurgesteld: relatie −30', 'war');
+    }
+  } else if(cd.k === 'dipally'){
+    if(yes){ dipAlly(x); toast('Bondgenootschap met ' + cname(x) + ' gesloten', 'good'); } else relAdd(x, 'nee', -5);
+  } else if(cd.k === 'dippact'){
+    if(yes){ G.pact[x] = d + PACT_DAYS; delete G.aiJust[x]; toast('Niet-aanvalsverdrag met ' + cname(x) + ' getekend: twee jaar geen oorlog', 'good'); }
+  } else if(cd.k === 'diplend'){
+    if(yes){
+      let tot = 0.15; for(const l of G.lend) if(l.from === me) tot += l.f;
+      if(tot <= 0.5){ G.lend.push({from:me, to:x, f:0.15, until:d + 90}); relAdd(x, 'steun', 5, 40); toast('Lend-lease aan ' + cname(x) + ': 15% van je productie, 90 dagen', 'good'); economy(true); }
+      else toast('Je geeft al de helft van je productie weg', 'war');
+    } else relAdd(x, 'weiger', -8);
+  }
+  dipChanged();
+}
+
+/* ---- interface: vel, contextstrook, tooltip ---- */
+const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(Math.round(v));
+const relCls = r => r >= 30 ? 'rg' : r >= 10 ? 'rf' : r > -10 ? 'rn' : r > -35 ? 'rc' : 'rh';
+const relWord = r => r >= 60 ? 'hartelijk' : r >= 30 ? 'vriendelijk' : r >= 10 ? 'welwillend' : r > -10 ? 'neutraal' : r > -35 ? 'koel' : 'vijandig';
+const relBar = r => '<span class="dpm"><i class="' + (r >= 0 ? 'p' : 'n') + '" style="width:' + Math.min(50, Math.abs(r) / 2) + '%"></i></span>';
+const evTip = ev => ev.parts.map(([t, v]) => t + ' ' + sgn(v)).join(' · ') + ' = ' + sgn(ev.s) + (ev.hard ? ' · ' + ev.hard : '') + ' (ja vanaf 0)';
+function evWhy(ev){
+  if(ev.hard) return 'weigert: ' + ev.hard;
+  let w = null; for(const p of ev.parts) if(p[0] !== 'Relatie' && p[1] < 0 && (!w || p[1] < w[1])) w = p;
+  return 'weigert: nog ' + Math.ceil(-ev.s) + ' relatie tekort' + (w ? ' (' + w[0].toLowerCase() + ')' : '');
+}
+function dipTipH(c){ const st = dipState(c); return st === 'ally' ? ' <span class="okc">bondgenoot</span>' : st === 'access' ? ' <span class="okc">doorgang</span>' : st === 'pact' ? ' <span class="mut">· niet-aanvalsverdrag</span>' : ''; }
+// compacte rij in de contextstrook van een aangetikt land
+function dipStripH(c){
+  const me = G.player;
+  if(atWar(me, c)) return '';
+  const rel = relOf(c), r = rel.v, n = nat(me), d = G.day;
+  let h = '<span class="chip2 ' + relCls(r) + '" title="Relatie met jou: ' + esc(rel.why.map(([t, v]) => t + ' ' + sgn(v)).join(' · ') || 'nog geen geschiedenis') + '">' + ic('vrede') + relWord(r) + ' ' + sgn(r) + '</span>';
+  if(isAlly(c)) h += '<span class="chip2 good" title="Bondgenoot: jullie verdedigen elkaar en mogen door elkaars land">' + ic('schild') + 'bondgenoot</span>';
+  else if(hasAccess(c)) h += '<span class="chip2 good" title="Doorgangsrecht: je divisies mogen door dit land trekken">' + ic('prov') + 'doorgang</span>';
+  if(hasPact(c)) h += '<span class="chip2" title="Niet-aanvalsverdrag">' + ic('vrede') + 'pact ' + (G.pact[c] - d) + ' d</span>';
+  const g = G.prot[c];
+  if(g && alive(g)) h += '<span class="chip2' + (dipBound(g) ? '' : ' hot') + '" title="Val je ' + esc(cname(c)) + ' aan, dan doet ' + esc(cname(g)) + ' mee' + (dipBound(g) ? ' — behalve nu: jullie hebben een verdrag' : '') + '">' + ic('schild') + 'beschermd door ' + esc(cname(g)) + '</span>';
+  const cdl = (G.dipCd['imp:' + c] || 0) - d, cap = ((G.relM[c] || {}).verb || 0) >= 40;
+  h += '<button class="btn sm" data-dip="imp:' + c + '"' + (cdl > 0 || cap || n.cp < DCP.imp ? ' disabled' : '') + ' title="Relaties verbeteren: +12, kost ' + DCP.imp + ' bevelpunten' + (cdl > 0 ? ' · weer over ' + cdl + ' d' : cap ? ' · maximum bereikt' : '') + '">' + ic('steun') + 'Relatie +12</button>';
+  h += '<button class="btn sm" data-dip="sheet:' + c + '" title="Verdragen, bondgenootschap en steun">' + ic('vrede') + 'Diplomatie</button>';
+  if(dipBound(c)){ const cf = UI.confirm === 'dbrk:' + c;
+    h += '<button class="btn two' + (cf ? ' war' : '') + '" data-dip="dbrk:' + c + '" title="Verdragbreuk: meteen oorlog, −15% oorlogssteun, agressie bij alle buren en het wantrouwen van je verdragspartners.">' + ic('oorlog') + '<span>' + (cf ? 'Bevestig verraad' : isAlly(c) ? 'Verraad bondgenoot' : 'Breek het pact') + '<small>oorlog · −15% steun</small></span></button>'; }
+  return h;
+}
+function dipSheetH(){
+  const me = G.player, n = nat(me), d = G.day;
+  const nbs = new Set(neighbors(me)), F = UI.dipF || 'nb', S = UI.dipS || 'rel';
+  const allies = Object.keys(G.ally).filter(alive), np = Object.keys(G.pact).filter(c => hasPact(c)).length;
+  const aid = new Set(); let flow = 0;
+  for(const l of G.lend){ if(l.from === me){ flow -= l.amt || 0; aid.add(l.to); } else if(l.to === me){ flow += l.amt || 0; aid.add(l.from); } }
+  let h = '<div class="flow2 dph"><span class="fl" title="Bevelpunten: voorstellen en gezanten kosten bevel">' + ic('bevel') + '<b>' + Math.floor(n.cp) + '</b></span>'
+    + '<span class="fl" title="Bondgenoten: ' + (allies.map(cname).join(', ') || 'geen') + '">' + ic('schild') + '<b>' + allies.length + '</b><small>bondgeno' + (allies.length === 1 ? 'ot' : 'ten') + '</small></span>'
+    + '<span class="fl" title="Niet-aanvalsverdragen">' + ic('vrede') + '<b>' + np + '</b><small>pact' + (np === 1 ? '' : 'en') + '</small></span>'
+    + (aid.size ? '<span class="fl" title="Steun (lend-lease): wat je per dag krijgt of weggeeft">' + ic('fab') + '<b>' + (flow >= 0 ? '+' : '−') + NF.format(Math.abs(flow)) + '</b><small>/dag</small></span>' : '') + '</div>';
+  const SL = {rel:'relatie', pow:'sterkte', nm:'naam'}, SN = {rel:'pow', pow:'nm', nm:'rel'};
+  h += '<div class="gsegs dpf">' + [['nb', 'Buren'], ['tr', 'Verdragen'], ['war', 'Oorlog'], ['all', 'Alle']].map(([k, l]) => '<button class="gseg' + (F === k ? ' on' : '') + '" data-dip="f:' + k + '">' + l + '</button>').join('')
+    + '<button class="gseg dps" data-dip="s:' + SN[S] + '" title="Sorteren: buren staan altijd bovenaan">↕ ' + SL[S] + '</button></div>';
+  const rows = [];
+  for(const c of CIDS){
+    if(c === me || !alive(c)) continue;
+    const st = dipState(c), nb = nbs.has(c), tr = st === 'ally' || st === 'access' || st === 'pact' || aid.has(c);
+    if(c !== UI.dipC && (F === 'nb' ? !(nb || tr || st === 'war') : F === 'tr' ? !tr : F === 'war' ? st !== 'war' : false)) continue;
+    rows.push({c, st, nb, tr, r: relOf(c).v, p: armyPow(c), nm: cname(c)});
+  }
+  rows.sort((a, b) => (b.nb - a.nb) || (S === 'rel' ? b.r - a.r : S === 'pow' ? b.p - a.p : 0) || (a.nm < b.nm ? -1 : a.nm > b.nm ? 1 : 0));
+  if(!rows.length) h += '<div class="blk empty" style="margin-top:.5rem">' + ic('vrede') + '<span>' + (F === 'tr' ? 'Nog geen verdragen. Kies Buren en tik een land.' : F === 'war' ? 'Je bent met niemand in oorlog.' : 'Geen landen.') + '</span></div>';
+  const MAXR = 60;
+  h += '<div class="dplist">';
+  for(const o of rows.slice(0, MAXR)){
+    const c = o.c, open = UI.dipC === c, st = o.st;
+    const tags = (st === 'war' ? '<i class="dpb w">oorlog</i>' : '') + (st === 'ally' ? '<i class="dpb a">bondgenoot</i>' : '') + (hasPact(c) ? '<i class="dpb">pact</i>' : '') + (st === 'access' ? '<i class="dpb a">doorgang</i>' : '')
+      + (aid.has(c) ? '<i class="dpb">steun</i>' : '') + (G.prot[c] ? '<i class="dpb" title="Beschermd door ' + esc(cname(G.prot[c])) + '">▲' + esc(cname(G.prot[c]).slice(0, 3)) + '</i>' : '') + (G.aiJust[c] != null ? '<i class="dpb w">dreigt</i>' : '');
+    h += '<button class="dprow' + (open ? ' on' : '') + (o.nb ? '' : ' far') + '" data-dip="open:' + c + '" aria-expanded="' + open + '"><span class="cdot" style="background:' + colorOf(c) + '"></span><span class="wn">' + esc(cname(c)) + '</span><span class="dpt">' + tags + '</span>'
+      + (st === 'war' ? '<span class="dpm"></span><span class="num rh">—</span>' : relBar(o.r) + '<span class="num ' + relCls(o.r) + '">' + sgn(o.r) + '</span>') + '</button>';
+    if(open) h += dipDetailH(c);
+  }
+  h += '</div>';
+  if(rows.length > MAXR) h += '<p class="help">Nog ' + (rows.length - MAXR) + ' landen: kies een filter, of tik een land op de kaart en dan Diplomatie.</p>';
+  const rules = '<div class="rules">'
+    + '<p>' + ic('vrede') + '<span><b>Relatie</b> (−100 tot +100): daalt door jouw agressie, verdragbreuk en oorlog tegen hun vrienden; stijgt door lange vrede, een gezamenlijke vijand, gezanten, verdragen en steun. De AI zegt ja zodra de optelsom bij een voorstel op 0 of hoger uitkomt: geen dobbelsteen.</span></p>'
+    + '<p>' + ic('vrede') + '<span><b>Niet-aanvalsverdrag</b> (2 jaar): zij vallen jou niet aan en doen niet mee aan een coalitie. Jij kunt het breken, maar dat kost 15% oorlogssteun, agressie bij alle buren en het vertrouwen van je andere partners. Opzeggen kan netjes: 60 dagen.</span></p>'
+    + '<p>' + ic('prov') + '<span><b>Doorgangsrecht</b>: jullie divisies mogen door elkaars land trekken en er staan. Je verovert er niets en herstelt er traag (1,5% per dag). Aanvallen vanuit hun land kan alleen op een gezamenlijke vijand: een land waarmee de gastheer zelf in oorlog is. Eindigt het recht, dan keren je troepen terug naar eigen gebied.</span></p>'
+    + '<p>' + ic('schild') + '<span><b>Bondgenootschap</b>: wordt een van jullie aangevallen, dan doet de ander mee. Bij jouw aanvalsoorlog kun je een bondgenoot <b>te wapen roepen</b>; of hij komt hangt af van relatie, grens en kracht. Bondgenoten vallen elkaar niet aan, tellen niet mee voor een coalitie, schrikken aanvallers af en mogen door elkaars land. Jouw troepen in hun land verdedigen het mee. Een provincie van je bondgenoot die jij bevrijdt, gaat terug naar hem (en andersom).</span></p>'
+    + '<p>' + ic('wit') + '<span><b>Vrede</b>: sluit jij vrede, dan doen de bondgenoten die voor jou meevochten dat ook; ieder houdt wat hij bezet. Een bondgenoot die zelf verslagen wordt of geen front meer heeft, kan eerder apart vrede sluiten. Wat een bondgenoot verovert, houdt hij zelf.</span></p>'
+    + '<p>' + ic('fab') + '<span><b>Steun</b> aan een bondgenoot of aan wie tegen jouw vijand vecht: lend-lease (10–30% van je productie, 90 dagen), een fabriek, of divisies: uitlenen als expeditieleger (komt terug na de oorlog) of schenken. Zit jij in het nauw, dan sturen bondgenoten jou steun. Alles verbetert de relatie.</span></p>'
+    + '<p>' + ic('agr') + '<span><b>Bescherming</b>: kleine landen die bang zijn (voor jou of een grote buur) zoeken een beschermer. Val je zo’n land aan, dan doet de beschermer mee, tenzij hij een verdrag met jou heeft.</span></p></div>';
+  h += det('diphow', ic('info') + 'Hoe werkt diplomatie?', rules, false);
+  return h;
+}
+// uitgeklapt land: redenen van de relatie en alle acties met kosten en het antwoord van de AI
+function dipDetailH(c){
+  const me = G.player, n = nat(me), d = G.day, rel = relOf(c), st = dipState(c), nm = esc(cname(c));
+  const pm = Math.max(1, armyPow(me)), cd = G.dipCd;
+  const prs = []; for(const x in G.prot) if(G.prot[x] === c && alive(x)) prs.push(cname(x));
+  const th = dipThreat(c);
+  let h = '<div class="dpd"><div class="dpc">'
+    + '<span class="chip2 ' + relCls(rel.v) + '">' + ic('vrede') + relWord(rel.v) + ' ' + sgn(rel.v) + '</span>'
+    + '<span class="chip2" title="Hun leger vergeleken met het jouwe">' + ic('leger') + NF.format(armyPow(c) / pm) + '× jij</span>'
+    + (G.prot[c] ? '<span class="chip2' + (dipBound(G.prot[c]) ? '' : ' hot') + '" title="Val je ' + nm + ' aan, dan doet de beschermer mee' + (dipBound(G.prot[c]) ? ' (nu niet: jullie hebben een verdrag)' : '') + '">' + ic('schild') + 'beschermd door ' + esc(cname(G.prot[c])) + '</span>' : '')
+    + (prs.length ? '<span class="chip2" title="Val je deze landen aan, dan doet ' + nm + ' mee">' + ic('schild') + 'beschermt ' + esc(prs.join(', ')) + '</span>' : '')
+    + (th ? '<span class="chip2" title="Hun grootste zorg: maakt een bondgenootschap met jou aantrekkelijker">' + ic('agr') + (th[1] >= 30 ? 'in oorlog met ' : 'vreest ') + esc(cname(th[0])) + '</span>' : '')
+    + (G.aiJust[c] != null ? '<span class="chip2 hot">' + ic('oorlog') + 'bereidt oorlog voor</span>' : '')
+    + '<button class="btn sm" data-dip="go:' + c + '" title="Toon op de kaart">' + ic('prov') + 'Kaart</button></div>';
+  h += '<div class="dpw">' + (rel.why.length ? rel.why.map(([t, v]) => '<span><i>' + esc(t) + '</i><b class="' + (v > 0 ? 'okc' : 'warc') + '">' + sgn(v) + '</b></span>').join('') : '<span><i>Nog geen geschiedenis met elkaar</i><b>0</b></span>') + '</div>';
+  if(st === 'war') return h + '<p class="help">In oorlog: diplomatie kan pas weer na de vrede. Onderhandelen doe je in Overzicht, onder Oorlogen.</p></div>';
+  const B = (k, icon, t, sub, dis, cls, tip) => '<button class="btn two' + (cls ? ' ' + cls : '') + '" data-dip="' + k.replace('#', c) + '"' + (dis ? ' disabled' : '') + (tip ? ' title="' + esc(tip) + '"' : '') + '>' + ic(icon) + '<span>' + t + '<small>' + sub + '</small></span></button>';
+  const evB = (kind, k, icon, t, e) => { const ev = dipEval(kind, c, e), cost = DCP[kind] || 0; return B(k, icon, t, ev.ok ? (n.cp < cost ? 'te weinig bevel (' + cost + ')' : 'zegt ja' + (cost ? ' · ' + cost + ' bevel' : '')) : evWhy(ev), !ev.ok || n.cp < cost, '', evTip(ev)); };
+  const cf = k => UI.confirm === k + ':' + c;
+  h += '<div class="dpa">';
+  // relatie
+  { const cdl = (cd['imp:' + c] || 0) - d, cap = ((G.relM[c] || {}).verb || 0) >= 40;
+    h += B('imp:#', 'steun', 'Relaties verbeteren', cdl > 0 ? 'gezanten onderweg · weer over ' + cdl + ' d' : cap ? 'meer kunnen gezanten niet doen' : '+12 · ' + DCP.imp + ' bevel', cdl > 0 || cap || n.cp < DCP.imp); }
+  // verdragen
+  if(hasPact(c)){ const left = G.pact[c] - d;
+    h += '<span class="dps2">' + ic('vrede') + 'Niet-aanvalsverdrag<small>nog ' + left + ' d</small></span>';
+    if(left < 180) h += evB('pact', 'pact:#', 'vrede', 'Verdrag verlengen');
+    if(!isAlly(c)) h += B('pactx:#', 'wit', cf('pactx') ? 'Bevestig opzeggen' : 'Verdrag opzeggen', left <= 60 ? 'loopt al af' : 'vervalt na 60 d · relatie −15', left <= 60, cf('pactx') ? 'war' : '');
+  } else if(!isAlly(c)) h += evB('pact', 'pact:#', 'vrede', 'Niet-aanvalsverdrag');
+  if(isAlly(c)){
+    h += '<span class="dps2 ok">' + ic('schild') + 'Bondgenoot<small>sinds ' + fmtDate(G.ally[c]) + ' · doorgang inbegrepen</small></span>';
+    for(const e of enemiesOf(me)) if(!atWar(c, e)) h += evB('call', 'call:#:' + e, 'zwaard', 'Roep te wapen: ' + esc(cname(e)), e);
+    h += B('allyx:#', 'wit', cf('allyx') ? 'Bevestig opzeggen' : 'Bondgenootschap opzeggen', 'relatie −25 · daarna 90 d pact', false, cf('allyx') ? 'war' : '');
+  } else {
+    if(hasAccess(c)) h += '<span class="dps2 ok">' + ic('prov') + 'Doorgangsrecht<small>sinds ' + fmtDate(G.access[c]) + '</small></span>' + B('accessx:#', 'wit', cf('accessx') ? 'Bevestig opzeggen' : 'Doorgang opzeggen', 'troepen keren terug · relatie −5', false, cf('accessx') ? 'war' : '');
+    else h += evB('access', 'access:#', 'prov', 'Doorgangsrecht');
+    h += evB('ally', 'ally:#', 'schild', 'Bondgenootschap');
+  }
+  h += '</div>';
+  // steun
+  const can = dipCanAid(c), cur = G.lend.find(l => l.from === me && l.to === c), inc = G.lend.find(l => l.from === c && l.to === me);
+  h += '<div class="dpsub">' + ic('fab') + 'Steun' + (can ? '' : '<small>alleen aan bondgenoten en aan wie tegen jouw vijand vecht</small>') + '</div>';
+  if(inc) h += '<div class="alert own">' + ic('fab') + '<span>' + nm + ' steunt jou: <b>+' + NF.format(inc.amt || 0) + '</b> productie per dag</span><span class="num">' + (inc.until - d) + ' d</span></div>';
+  if(cur) h += '<div class="alert own">' + ic('fab') + '<span>Jij geeft ' + Math.round(100 * cur.f) + '%: <b>−' + NF.format(cur.amt || 0) + '</b> per dag voor jou, hun productie nu ' + NF.format(nat(c).ppd) + '</span><span class="num">' + (cur.until - d) + ' d</span></div>';
+  h += '<div class="dpl"><span class="dpll">Lend-lease<small>deel van je productie, 90 d</small></span>' + [10, 20, 30].map(f => '<button class="gseg' + (cur && Math.round(100 * cur.f) === f ? ' on' : '') + '" data-dip="lend:' + c + ':' + f + '"' + (can ? '' : ' disabled') + ' title="' + f + '% van je productie (nu ' + NF.format(n.ppd + (cur ? cur.amt || 0 : 0)) + ' per dag) gaat 90 dagen naar ' + nm + '">' + f + '%</button>').join('')
+    + (cur ? '<button class="gseg" data-dip="lend:' + c + ':0">stop</button>' : '') + '</div>';
+  h += '<div class="dpa">';
+  { const ev = dipEval('ask', c); h += B('ask:#', 'fab', 'Vraag om steun', ev.ok ? 'zegt ja: 10% van hun productie, 90 d' : evWhy(ev), !ev.ok, '', evTip(ev)); }
+  h += B('fab:#', 'fab', cf('fab') ? 'Bevestig: fabriek weg' : 'Schenk een fabriek', 'relatie +10 · jij −' + NF.format(FAB_ADD * 0.6) + ' per dag', !can, cf('fab') ? 'war' : '');
+  const ns = dipSel().length, out = G.units.filter(u => u.home === me && u.c === c).length, inn = G.units.filter(u => u.home === c && u.c === me).length;
+  const loanOk = isAlly(c) && enemiesOf(c).length > 0;
+  h += B('loan:#', 'leger', 'Leen ' + (ns || '') + ' divisie' + (ns === 1 ? '' : 's') + ' uit', !ns ? 'selecteer eerst divisies op de kaart' : !isAlly(c) ? 'alleen aan een bondgenoot' : !loanOk ? 'ze zijn niet in oorlog' : 'expeditieleger: terug na de oorlog', !ns || !loanOk);
+  h += B('give:#', 'leger', cf('give') ? 'Bevestig: ' + ns + ' weggeven' : 'Schenk ' + (ns || '') + ' divisie' + (ns === 1 ? '' : 's'), !ns ? 'selecteer eerst divisies op de kaart' : 'voorgoed · relatie +3 per divisie', !ns || !can, cf('give') ? 'war' : '');
+  if(out) h += B('recall:#', 'leger', 'Roep expeditieleger terug', out + (out === 1 ? ' divisie' : ' divisies') + ' van jou bij ' + nm, false);
+  h += '</div>';
+  if(inn) h += '<div class="alert own">' + ic('leger') + '<span>Expeditiekorps van ' + nm + ' onder jouw bevel</span><span class="num">' + inn + '</span></div>';
+  return h + '</div>';
+}
+function dipAct(a){
+  const [k, c, arg] = a.split(':');
+  if(k === 'f'){ UI.dipF = c; UI.dipC = null; return; }
+  if(k === 's'){ UI.dipS = c; return; }
+  if(!CN[c] || c === G.player || !alive(c)) return;
+  if(k === 'open'){ UI.dipC = UI.dipC === c ? null : c; UI.confirm = null; return; }
+  if(k === 'sheet'){ UI.sheet = 'dip'; UI.dipC = c; UI.target = null; UI.confirm = null; UI.info = null; setTimeout(() => { const r = $('sheet').querySelector('.dprow.on'); if(r) r.scrollIntoView({block:'nearest'}); }, 0); return; }
+  if(k === 'go'){ fitCountry(c); return; }
+  if(UI.confirm && UI.confirm !== k + ':' + c) UI.confirm = null;
+  dipDo(k, c, arg);
+}
+function dipClick(e){
+  const b = e.target.closest('[data-dip]'); if(!b || b.disabled || !G || G.over) return;
+  sfx('tap'); dipAct(b.dataset.dip);
+  stripSig = null; sheetSig = ''; sheetPress = false; stripPress = false; renderAll();
+}
+$('sheet').addEventListener('click', dipClick);
+$('strip').addEventListener('click', dipClick);
 
 /* ================= meta: onderscheidingen, dagelijkse uitdaging, records ================= */
 const ACH = [
@@ -2980,7 +3843,7 @@ function aiDeclare(c){
   const share = owned(G.player).length / PIDS.length;
   const feared = share >= 0.12;
   const cands = neighbors(c).filter(x => {
-    if(atWar(c,x) || (G.truce && truceLeft(c, x) > 0)) return false;
+    if(atWar(c,x) || (G.truce && truceLeft(c, x) > 0) || dipNoAttack(c, x)) return false;
     if(x === G.player){
       if(G.day < D().grace) return false;
       return my > (feared ? (D().fear || 1.1) : (D().prey || 2)) * armyPow(x);   // op Makkelijk valt de AI je alleen aan met grote overmacht
@@ -3033,7 +3896,7 @@ function aiSpecials(c){
 /* ================= routes ================= */
 function findPath(c, from, to, allowEnemy){
   if(from === to) return [];
-  const ok = n => G.ctrl[n] === c || (allowEnemy && atWar(c, G.ctrl[n]));
+  const ok = n => G.ctrl[n] === c || friendly(c, G.ctrl[n]) || (allowEnemy && atWar(c, G.ctrl[n]));   // eigen, bevriend (bondgenoot/doorgang) of vijandelijk
   if(!ok(to)) return null;
   if(allowEnemy){
     // spelersbevel: liefst via eigen gebied, vijandelijk/zee-stappen tellen zwaarder (kleine Dijkstra)
@@ -3046,8 +3909,9 @@ function findPath(c, from, to, allowEnemy){
       if(x === to){ const path = []; let y = to; while(y !== from){ path.push(y); y = prev[y]; } return path.reverse(); }
       for(const n of ADJ[x]){
         if(done.has(n) || !ok(n)) continue;
-        const own = G.ctrl[n] === c;
-        const w = (own ? 1 : 3.5) + (SEA.has(ek(x, n)) ? 2 : 0) + (n !== to && !own && (IDX[n] || []).some(v => v.c === G.ctrl[n]) ? 6 : 0);
+        const own = G.ctrl[n] === c || friendly(c, G.ctrl[n]);
+        if(!own && !dipBase(c, x, G.ctrl[n])) continue;   // vanuit een neutraal doorgangsland val je niemand aan
+        const w = (own ? (G.ctrl[n] === c ? 1 : 1.25) : 3.5) + (SEA.has(ek(x, n)) ? 2 : 0) + (n !== to && !own && (IDX[n] || []).some(v => v.c === G.ctrl[n]) ? 6 : 0);
         const nd = dd[x] + w;
         if(dd[n] === undefined || nd < dd[n]){ dd[n] = nd; prev[n] = x; push(nd, n); }
       }
@@ -3731,6 +4595,7 @@ function orderMove(p){
     if(!path){ fail++; continue; }
     if(u.path[0] !== path[0] || u.att) u.prog = 0;
     u.path = path; u.att = null; u.g = gid; ok++; goers.push(u);
+    dipOrder(u);
     atk += atkPlain(u) * (G.ctrl[path[0]] !== u.c ? seaMul(u, u.loc, path[0]) : 1);
   }
   if(ok) sfx(G.ctrl[p] !== G.player && atWar(G.player, G.ctrl[p]) ? 'attack' : 'order');
@@ -3742,7 +4607,7 @@ function orderMove(p){
   }
   if(!ok && fail){
     const c = G.ctrl[p];
-    toast(c !== G.player && !atWar(G.player, c) ? 'Je bent niet in oorlog met ' + cname(c) : 'Daar kunnen je divisies niet komen', 'war', 'bad');
+    toast(c !== G.player && !atWar(G.player, c) ? 'Je bent niet in oorlog met ' + cname(c) + ': vraag doorgangsrecht via Diplomatie' : dipWhyNot(p) || 'Daar kunnen je divisies niet komen', 'war', 'bad');
     if(c !== G.player && !atWar(G.player, c)){ UI.info = p; clearSel(); }
   }
   renderAll();
@@ -3763,6 +4628,7 @@ function hover(e){
   if(G && P[p].c !== c) h += ' (bezet)';
   h += '</span>';
   if(G && c !== G.player && atWar(G.player, c)) h += ' <span class="warc">oorlog</span>';
+  else if(G && c !== G.player) h += dipTipH(c);
   if(G && UI.selAir.size){
     const w = airById([...UI.selAir][0]);
     if(w){ const km = Math.round(distKm(w.base, p)); h += ' <span class="' + (km <= AIR[w.t].range ? 'okc' : 'warc') + '">' + km + ' km</span>'; }
@@ -3995,7 +4861,7 @@ function renderOver(){
   // --- landgroepen ---
   const groups = {};
   for(const u of G.units){
-    if(!vis(u.c)) continue;
+    if(!vis(u.c) && !isAlly(u.c)) continue;   // ook de divisies van je bondgenoten zijn zichtbaar
     const a = P[u.loc].a;
     let key, x = a[0], y = a[1];
     if(u.att && u.air){ const b = P[u.att].a; key = u.loc + '^' + u.att; x = b[0]; y = b[1] - 10*u1*V.k; }
@@ -4149,7 +5015,7 @@ function renderOver(){
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for(const g of list){
     if(!onScreen(g.sx, g.sy, 60)) continue;
-    const hp = Math.max(0, Math.min(100, g.hp / g.n)), foe = g.c !== me, x0 = -g.w/2;
+    const hp = Math.max(0, Math.min(100, g.hp / g.n)), foe = g.c !== me && !isAlly(g.c), x0 = -g.w/2;
     ctx.save(); ctx.translate(g.sx, g.sy); ctx.scale(u1, u1);
     // fiche: plaat in landskleur, wit silhouet per troepsoort, aantal ernaast, sterktebalk eronder
     const col = plateCol(g.c);
@@ -4572,7 +5438,7 @@ function renderStrip(){
       h += sp > 0 ? '<button class="btn two" data-act="fabq:' + p + '"' + (full2 ? ' disabled' : '') + ' title="Bouw een fabriek in deze provincie (' + Math.round(100*yieldOf(p)) + '% opbrengst)">' + ic('fab') + '<span>Fabriek hier<small>' + (qd ? qd + ' in wachtrij · ' : '') + sp + ' plek' + (sp === 1 ? '' : 'ken') + ' vrij</small></span></button>'
         : '<span class="chip2" title="Alle bouwplekken in gebruik">' + ic('fab') + 'plekken vol</span>';
     }
-    if(c !== me && !atWar(me, c) && alive(c) && !tl){
+    if(c !== me && !atWar(me, c) && alive(c) && !tl && !dipBound(c)){
       const wg = (G.wg[c] || 0) >= G.day, busy = G.just && G.just.c === c;
       const ae = Math.round(G.ae[c] || 0);
       if(ae) h = h.replace('</span></div><div class="acts">', '<span class="chip2' + (ae >= COAL_THR()*0.7 ? ' hot' : '') + '" title="Hoe bang ' + esc(cname(c)) + ' voor je is (coalitie bij ' + COAL_THR() + ')">' + ic('agr') + ae + '</span></span></div><div class="acts">');
@@ -4585,6 +5451,7 @@ function renderStrip(){
         h += '<button class="btn two' + (UI.confirm === 'war:' + c ? ' war' : '') + '" data-act="war:' + c + '" title="Verrassingsaanval: meteen oorlog, maar veel agressie en −10% oorlogssteun.">' + ic('oorlog') + '<span>' + (UI.confirm === 'war:' + c ? 'Bevestig' : 'Verrassing') + '<small>nu · −10% steun</small></span></button>';
       }
     }
+    if(c !== me && alive(c)) h += dipStripH(c);
     h += '<button class="btn sm ghost" data-act="clear" aria-label="Sluiten">×</button></div>';
   }
   el.hidden = !h;
@@ -4652,7 +5519,7 @@ $('strip').addEventListener('click', async e => {
       clearSel();
     } else toast('Geen frontprovincies gevonden', 'war', 'bad');
   }
-  else if(a === 'toai'){ for(const id of UI.sel){ const u = unitById(id); if(u){ u.man = false; u.g = null; } } toast('De generaal neemt deze troepen over', 'good'); clearSel(); }
+  else if(a === 'toai'){ for(const id of UI.sel){ const u = unitById(id); if(u){ u.man = false; u.g = null; u.gst = false; } } toast('De generaal neemt deze troepen over', 'good'); clearSel(); }
   else if(a.startsWith('tt:')){ const t = a.slice(3); const rest = [...UI.sel].filter(id => { const u = unitById(id); return u && u.t !== t; }); if(rest.length) UI.sel = new Set(rest); }
   else if(a.startsWith('war:')){
     const c = a.slice(4);
@@ -4757,7 +5624,7 @@ function renderSheet(){
   const tsub = k => ic('tijd') + dd(k) + ' d';
   const divs = UCNT[me] != null ? UCNT[me] : G.units.filter(u => u.c === me).length, cap = armyCap(me);
   let h = '<div class="tabs" role="tablist">'
-    + [['prod','Productie','fab'],['spec','Acties','bevel'],['info','Overzicht','vlag']].map(([k,l,i]) => '<button class="tab' + (UI.sheet === k ? ' on' : '') + '" role="tab" aria-selected="' + (UI.sheet === k) + '" data-tab="' + k + '">' + ic(i) + '<span>' + l + '</span></button>').join('')
+    + [['prod','Productie','fab'],['spec','Acties','bevel'],['dip','Diplomatie','vrede'],['info','Overzicht','vlag']].map(([k,l,i]) => '<button class="tab' + (UI.sheet === k ? ' on' : '') + '" role="tab" aria-selected="' + (UI.sheet === k) + '" data-tab="' + k + '">' + ic(i) + '<span>' + l + '</span></button>').join('')
     + '<button class="xclose" data-tab="" aria-label="Sluiten">×</button></div>';
   if(UI.sheet === 'prod' && UI.editT != null){
     // de divisieontwerper: stel je divisie samen uit bataljons
@@ -4816,6 +5683,7 @@ function renderSheet(){
         + '<span class="tmeta">' + line + '</span></span></button>';
     }
     h += '</div><p class="help" style="margin-top:.55rem">Raket, sabotage en bunker: tik hierna een provincie op de kaart.</p>';
+  } else if(UI.sheet === 'dip'){ h += dipSheetH();
   } else if(UI.sheet === 'info'){
     const mineP = owned(me).length;
     const wings = {fi:0, cas:0, bo:0}; for(const w of G.air) if(w.c === me) wings[w.t]++;
@@ -4981,11 +5849,13 @@ function renderCard(){
   }
   const cd = G.cards[0], me = G.player, e = cd.e;
   if(e && (!alive(e) || !atWar(me, e))){ G.cards.shift(); UI.conf = null; cardSig = ''; renderCard(); return; }
+  if(cd.dip && !dipCardOk(cd)){ G.cards.shift(); cardSig = ''; renderCard(); return; }
   if(cd.k === 'conf' && !UI.conf) UI.conf = confInit(e);
   const head = (icon, t, sub, cls) => '<div class="chead"><span class="eico ' + (cls || '') + '">' + ic(icon) + '</span><span class="ct"><b>' + t + '</b><small>' + sub + '</small></span></div>';
   const opt = (k, icon, t, sub, cls) => '<button class="copt ' + (cls || '') + '" data-c="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
   const nm = e ? esc(cname(e)) : '';
   let h = '';
+  if(cd.dip) h = dipCardH(cd, head, opt); else
   if(cd.k === 'surr'){
     const occ = occBy(me, e), kills = (G.kill || {})[me + '>' + e] || 0;
     h = head('vlag', nm + ' biedt overgave aan', 'Het leger legt de wapens neer · ' + fmtDate(G.day), 'win')
