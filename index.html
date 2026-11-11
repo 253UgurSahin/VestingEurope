@@ -1365,6 +1365,12 @@ body.paused #clock{background:linear-gradient(180deg,#2C4690,#20326C)}
 #mmtog{border:2px solid #5677C8;background:#28408A;color:#fff}
 #mapmodes{border-radius:var(--r-l);padding:.3rem .45rem}
 .mmb.on{box-shadow:0 .14rem 0 var(--gold-d)}
+/* ---- laadscherm ---- */
+#veil{background:radial-gradient(ellipse at 50% 40%, #2C4690 0, #17265A 70%)}
+#veil:not(.on) .vbar::after{animation:none}   /* verborgen laadbalk hoeft niet door te lopen */
+.vbar{height:.5rem;border-radius:999px;background:rgba(8,15,44,.55)}
+.vbar::after{border-radius:999px}
+/* ---- kaart dimmen onder een beslissing: lichter dan voorheen ---- */
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -5476,8 +5482,9 @@ function renderBase(coarse){
   ctx.fillStyle = LAND_BG; ctx.fill(LODB[lv], 'evenodd');
   ctx.strokeStyle = 'rgba(10,24,52,.55)'; ctx.lineWidth = 0.8*px; ctx.stroke(LODB[lv]);
   // lichte branding langs de kust: het land ligt als een puzzelstuk op de zee
-  ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(200,238,255,.5)'; ctx.lineWidth = 4.2*px;
-  if(whole) ctx.stroke(lodAll(lv)); else for(const path of vp) ctx.stroke(path);
+  // (omtrek per land in stukken: goedkoper dan elke provincie; wat over land valt verdwijnt onder de vulkleuren)
+  ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(200,238,255,.5)'; ctx.lineWidth = 4.2*px;
+  outlineNear(ctx, vx0, vy0, vx1, vy1, hd, Math.max(lv, lodFor(2.5*px)));
   ctx.lineJoin = 'miter';
   for(let i = 0; i < vis.length; i++){ ctx.fillStyle = FILL[vis[i]]; ctx.fill(vp[i], 'evenodd'); }
   if(V.k < 1.4){ terrainScale(s); for(let i = 0; i < vis.length; i++) fillTerrain(ctx, vis[i], vp[i]); }
@@ -5615,9 +5622,9 @@ function drawBorders(ctx, x0, y0, x1, y1, hd, lv, px){
   if(px < 2.4){
     const band = new Path2D(); let n = 0;
     for(const ch of landBorders(lodFor(1.2*px))){ const b = ch.b; if(b[2] < x0 || b[0] > x1 || b[3] < y0 || b[1] > y1) continue; band.addPath(ch.p); n++; }
-    if(n){ ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(8,18,44,.26)'; ctx.lineWidth = 6.5*px; ctx.stroke(band); ctx.lineJoin = 'miter'; }
+    if(n){ ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(8,18,44,.26)'; ctx.lineWidth = 6.5*px; ctx.stroke(band); ctx.lineJoin = 'miter'; }
   }
-  ctx.lineJoin = 'round'; ctx.strokeStyle = '#0D1A3A'; ctx.lineWidth = 2.3*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv); ctx.lineJoin = 'miter';
+  ctx.lineJoin = 'bevel'; ctx.strokeStyle = '#0D1A3A'; ctx.lineWidth = 2.3*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv); ctx.lineJoin = 'miter';
 }
 /* ---- rivieren: lopen langs de gedeelde grens van de twee provincies van een rivierovergang ---- */
 let RIVG = null, HDR = {hd:null, r:{}};
