@@ -19,7 +19,9 @@ Open daarna http://localhost:8000.
 - **Leger**: divisies uit bataljons (eigen ontwerpen), frontbreedte, aanvoer, ingraven, bunkers, luchtmacht met missiezones, parachutisten en mariniers.
 - **Generaal** (auto-generaal): voert het leger voor je. Hij trekt troepen samen voor een aanval, bewaakt de hoofdstad, breekt uit een omsingeling, belegert vestingen, stuurt niet meer troepen dan de vijand waard is en vecht ook vanuit het land van bondgenoten. Met *Positie* houd je divisies buiten zijn bereik.
 - **Diplomatie**: relaties, niet-aanvalsverdrag, doorgangsrecht, bondgenootschap (meevechten, te wapen roepen), lend-lease, fabrieken schenken, divisies uitlenen of schenken.
-- **Oorlog en vrede**: oorlogsdoelen, agressie en coalities, oorlogssteun, overgave, vredesconferentie en onderhandelde vrede.
+- **Oorlog en vrede**: oorlogsdoelen, agressie en coalities, oorlogssteun, overgave, vredesconferentie en onderhandelde vrede. Elke vrede toont vooraf wat jij krijgt en wat de ander houdt, ook op de kaart. Sancties: industrie ontmantelen, herstelbetalingen, ontwapening, gedemilitariseerde grens, niet-aanvalsgarantie, bevriend bewind, vazalstaat.
+- **Kernwapen**: atoomproject (vanaf 12 fabrieken), kernbom en kernaanval per bommenwerper, met besmetting en een wereldwijde schrikreactie. Grote AI-landen kunnen het laat in het spel ook, met waarschuwing vooraf.
+- **Kleine landen**: een bonus die slinkt naarmate je groeit (productie, legerlimiet, reservisten, verdediging op eigen grond, snellere integratie), plus een kansinschatting per land in het keuzescherm.
 - **Interface**: topbalk met je grondstoffen en de tijdbediening, panelen voor productie, acties, diplomatie en overzicht, logboek van alle gebeurtenissen, legerpaneel, hoofdmenu met records en de uitdaging van vandaag.
 
 ## Sneltoetsen
