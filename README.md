@@ -14,8 +14,8 @@ Open daarna http://localhost:8000.
 
 ## Wat zit erin
 
-- **Twee speelstijlen**: *Eenvoudig* (standaard) en *Volledig*, te kiezen bij de landkeuze en in Menu → Instellingen. In de eenvoudige stand regelt het spel leger en productie zelf, zie je alleen wat je nodig hebt (voortgang naar de overwinning, legers, fabrieken) en kies je met drie grote knoppen: Aanvallen, Vrienden, Bouwen. Een adviseur zegt steeds in één zin wat een goede zet is en leidt je door je eerste spel. De volledige stand toont alles hieronder.
-- **Spelgevoel**: een speels, rond uiterlijk; veroveringen, gevechten en bouwwerk zie je op de kaart gebeuren; oorlog, vrede en overwinning krijgen een groot moment met geluid en confetti. Effecten kun je uitzetten in de instellingen.
+- **Twee speelstijlen**: *Eenvoudig* (standaard) en *Volledig*, te kiezen bij de landkeuze en in Menu → Instellingen. In de eenvoudige stand lopen leger en productie automatisch, zie je alleen de voortgang naar de overwinning, je divisies en je fabrieken, en kies je via Aanvallen, Diplomatie en Productie. Een adviesregel noemt steeds een aanbevolen zet en leidt je door je eerste spel. De volledige stand toont alles hieronder.
+- **Vormgeving**: strak en compact, met een schaal die de schermhoogte volgt (telefoon, laptop, 21:9 en 5K2K). Effecten zijn standaard rustig en gaan alleen over je eigen land; "Extra veel effecten" en het grote moment bij oorlog of een veroverd land zijn uit te zetten of uit te breiden in de instellingen.
 - **Twee kaarten**: Europa (285 provincies, 38 landen) en de wereld (1576 provincies, 175 landen). Elk land heeft een kleur die duidelijk verschilt van zijn buren; rivieren, steden, terrein en **oversteekplaatsen** (zeeroutes met ankers en veertekens) staan op de kaart.
 - **Kaartmodi** (toetsen 5–9): politiek, terrein, aanvoer, diplomatie, industrie. Minimap rechtsonder.
 - **Leger**: divisies uit bataljons (eigen ontwerpen), frontbreedte, aanvoer, ingraven, bunkers, luchtmacht met missiezones, parachutisten en mariniers.
