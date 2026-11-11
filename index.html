@@ -615,12 +615,429 @@ details.how summary .ic{color:var(--accent);--plate:#121A21}
 #card.k-conf{animation:cfin .2s ease-out;max-height:min(60vh,36rem)}
 @media (min-width:900px){ #card.k-conf{left:auto;right:max(1.5rem, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%)} }
 @media (max-width:899px){ #card.k-conf{top:auto;bottom:calc(4.4rem + env(safe-area-inset-bottom, 0px));transform:translateX(-50%)} }
+/* ===== spelschil (commandopost): topbalk, knoppenbalk, spelpanelen, hoofdmenu, landkeuze, logboek, legerpaneel ===== */
+/* Eén stijl voor de hele schil: donker staal, messing randen, amber accenten, gestencilde koppen. Alleen CSS, geen afbeeldingen. */
+:root{
+  --glass:rgba(15,21,27,.95); --glass-2:rgba(255,255,255,.055); --line:rgba(201,164,92,.17);
+  --brass:#C9A45C; --edge:rgba(201,164,92,.24); --edge-hi:rgba(201,164,92,.6);
+  --plate-hi:#2B3742; --plate-lo:#1A232B;
+  --hud-h:3.1rem; --bar-h:3.9rem; --sat:env(safe-area-inset-top, 0px); --sab:env(safe-area-inset-bottom, 0px);
+  --pl:max(12px, env(safe-area-inset-left, 0px)); --pr:max(12px, env(safe-area-inset-right, 0px));
+}
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 9rem rgba(0,0,0,.42);transition:background .4s ease}
+body[data-mode="menu"] #stage::after{background:linear-gradient(90deg, rgba(4,7,10,.9) 0, rgba(4,7,10,.55) 38%, rgba(4,7,10,.12) 75%, rgba(4,7,10,.3) 100%)}
+body[data-mode="pick"] #stage::after{background:linear-gradient(180deg, rgba(4,7,10,.55) 0, transparent 22%, transparent 78%, rgba(4,7,10,.45) 100%)}
+
+/* --- bouwstenen: panelen, knoppen, tegels, tabs --- */
+.glass{background:repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 1px, transparent 1px 3px), linear-gradient(180deg, rgba(31,40,49,.97) 0, rgba(18,24,30,.97) 2.6rem, rgba(12,17,22,.97) 100%);
+  border:1px solid #04070A;border-radius:.3rem;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:inset 0 0 0 1px var(--edge), inset 0 2px 0 rgba(255,255,255,.045), 0 12px 32px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.5)}
+.btn{border-radius:.25rem;border:1px solid rgba(0,0,0,.7);background:linear-gradient(180deg,#2D3A45,#1B242C);color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px rgba(201,164,92,.14), 0 1px 2px rgba(0,0,0,.4);
+  text-transform:uppercase;letter-spacing:.06em;font-size:.88rem;min-height:2.1rem;justify-content:center}
+.btn:hover:not(:disabled){border-color:rgba(0,0,0,.7);background:linear-gradient(180deg,#384753,#222D36);box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px var(--edge-hi), 0 1px 2px rgba(0,0,0,.4)}
+.btn.sm{font-size:.8rem;min-height:1.9rem;padding:.25rem .6rem}
+.btn.pri,.btn.pri:hover:not(:disabled){background:linear-gradient(180deg,#F4C05C,#D0902D);border-color:#4A2F06;color:#1B1204;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.2), 0 1px 3px rgba(0,0,0,.5);text-shadow:0 1px 0 rgba(255,255,255,.25)}
+.btn.pri:hover:not(:disabled){background:linear-gradient(180deg,#FFD479,#DC9D38)}
+.btn.war,.btn.war:hover:not(:disabled){background:linear-gradient(180deg,#DB6650,#A5372A);border-color:#3D0E08;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.5)}
+.btn.war:hover:not(:disabled){background:linear-gradient(180deg,#EA7862,#B34334)}
+.btn.ghost,.btn.ghost:hover:not(:disabled){background:transparent;border-color:transparent;box-shadow:none;min-height:0}
+.btn.ghost:hover:not(:disabled){color:var(--ink)}
+.btn.two{justify-content:flex-start}
+.btn.two small{text-transform:none;letter-spacing:0}
+.btn.wide{font-size:1rem;letter-spacing:.1em}
+.btn kbd,.fsb kbd{font:600 .62rem var(--f-ui);letter-spacing:0;padding:0 .25rem;border-radius:.15rem;border:1px solid rgba(255,255,255,.18);color:var(--dim);margin-left:.15rem;line-height:1.35}
+.btn.pri kbd{border-color:rgba(0,0,0,.3);color:rgba(0,0,0,.6)}
+.tile,.fsb,.uchip,.pchip,.copt,.kt,.blk,.flow2,.neg,.alert,.fs{border-radius:.25rem}
+.tile,.fsb,.copt,.pchip,.uchip{border:1px solid rgba(0,0,0,.6);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:inset 0 0 0 1px rgba(201,164,92,.11), inset 0 1px 0 rgba(255,255,255,.05)}
+.tile:hover:not(:disabled),.fsb:hover,.copt:hover{border-color:rgba(0,0,0,.6);box-shadow:inset 0 0 0 1px var(--edge-hi), inset 3px 0 0 var(--accent)}
+.tile.arm,.pchip.on,.copt.pri{border-color:rgba(0,0,0,.6);box-shadow:inset 0 0 0 1px var(--accent)}
+.tile .tico,#strip .sico,.arow .aico{border-radius:.2rem;background:#0B1015;box-shadow:inset 0 0 0 1px rgba(201,164,92,.24)}
+.kt,.blk,.flow2,.neg{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.55);box-shadow:inset 0 0 0 1px rgba(201,164,92,.1)}
+.kt.win{box-shadow:inset 0 0 0 1px var(--accent)}
+.chip2,.gseg,.tchip,.pl,.medal,.role{border-radius:.2rem}
+.chip2,.pl{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.gseg{border:1px solid rgba(0,0,0,.6);background:linear-gradient(180deg,#2A3640,#1B242C);box-shadow:inset 0 0 0 1px rgba(201,164,92,.12);text-transform:uppercase;letter-spacing:.05em;font-size:.74rem}
+.gseg.on{background:linear-gradient(180deg,#F4C05C,#D0902D);border-color:#4A2F06;color:#1B1204;box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.gseg i{font-style:normal;opacity:.65;margin-left:.3rem;font-variant-numeric:tabular-nums}
+.medal{border:1px solid rgba(0,0,0,.6);box-shadow:inset 0 0 0 1px rgba(201,164,92,.2);background:rgba(0,0,0,.25)}
+.sec{text-transform:uppercase;letter-spacing:.11em;font-size:.8rem;color:var(--brass);padding-bottom:.28rem;border-bottom:1px solid var(--line);margin:1rem 0 .5rem}
+.sec .sr{text-transform:none;letter-spacing:0}
+.secd summary{text-transform:uppercase;letter-spacing:.09em;font-size:.86rem}
+.secd summary .sumv{text-transform:none;letter-spacing:0}
+.meter,.prog,.aebar,.tug{border-radius:1px;background:rgba(0,0,0,.45);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.meter{height:.36rem}
+.meter i,.prog i,.aebar i,.tug i{border-radius:0}
+.meter i{background:linear-gradient(180deg,#F4C05C,#C98A2B)}
+.meter.ok i{background:linear-gradient(180deg,#8BC883,#5E9A57)} .meter.warn i{background:linear-gradient(180deg,#F4C05C,#C98A2B)} .meter.hot i{background:linear-gradient(180deg,#E2705B,#B8402F)}
+.sw{border-radius:.2rem;border:1px solid rgba(0,0,0,.65);background:#0B1015;box-shadow:inset 0 0 0 1px rgba(201,164,92,.18)}
+.sw::after{border-radius:.12rem;top:.14rem}
+.sw[aria-checked="true"]{border-color:rgba(0,0,0,.65);background:rgba(227,162,60,.22);box-shadow:inset 0 0 0 1px var(--accent)}
+.cdot{box-shadow:0 0 0 1.5px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 2px rgba(0,0,0,.25)}
+.xclose,.xb{border-radius:.2rem}
+.xclose{border:1px solid rgba(0,0,0,.55);background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 1px rgba(201,164,92,.14);width:2rem;height:2rem;font-size:1.25rem}
+.xclose:hover{background:rgba(212,85,63,.3);color:#fff}
+#tip,#tip2{border-radius:.2rem}
+#tip2{position:fixed;z-index:60;pointer-events:none;padding:.4rem .65rem;font-size:.8rem;line-height:1.4;max-width:21rem;white-space:pre-line;color:var(--ink);box-shadow:inset 0 0 0 1px var(--edge-hi), 0 8px 22px rgba(0,0,0,.6)}
+#sheet,#card,#pickcard,#menu .mpanel,.apl,.logl{scrollbar-width:thin;scrollbar-color:rgba(201,164,92,.45) transparent}
+
+/* --- topbalk --- */
+#hud{position:fixed;z-index:22;left:0;right:0;top:0;display:flex;align-items:stretch;height:calc(var(--hud-h) + var(--sat));padding:var(--sat) var(--pr) 0 var(--pl);color:var(--ink);
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 5px), linear-gradient(180deg,#2A3540 0,#18212A 52%,#0F151B 100%);
+  border-bottom:1px solid #000;box-shadow:inset 0 -1px 0 var(--edge-hi), inset 0 1px 0 rgba(255,255,255,.07), 0 6px 20px rgba(0,0,0,.5)}
+#hud > *{flex:none}
+#hudNat{display:flex;align-items:center;gap:.6rem;padding:0 .9rem 0 .1rem;background:none;border:0;color:inherit;cursor:pointer;font:inherit;text-align:left;min-width:0}
+#hudNat:hover .hn b{color:#fff}
+.hflag{width:2.35rem;height:1.6rem;flex:none;border-radius:.12rem;position:relative;overflow:hidden;background:var(--c,#8E9CA5);box-shadow:0 0 0 1px #000, 0 0 0 2px rgba(201,164,92,.55), 0 3px 6px rgba(0,0,0,.5)}
+.hflag::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg, rgba(255,255,255,.22) 0, rgba(255,255,255,0) 22%, rgba(0,0,0,.16) 48%, rgba(255,255,255,.12) 70%, rgba(0,0,0,.22) 100%)}
+.hflag::after{content:"";position:absolute;left:0;right:0;top:38%;height:24%;background:rgba(255,255,255,.2);box-shadow:0 -1px 0 rgba(0,0,0,.12), 0 1px 0 rgba(0,0,0,.12)}
+.hflag.big{width:3.3rem;height:2.25rem}
+.hn{display:grid;line-height:1.05;min-width:0}
+.hn b{font:700 1.18rem var(--f-ui);letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:13rem}
+.hn small{font:500 .66rem var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--brass);white-space:nowrap}
+#hud #status{position:static;display:flex;align-items:stretch;gap:0;padding:0;margin:0;max-width:none;background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;font:inherit;color:inherit;text-align:left}
+#hud #status::-webkit-scrollbar{display:none}
+.hc{display:flex;align-items:center;gap:.42rem;padding:0 .72rem;border-left:1px solid rgba(0,0,0,.55);box-shadow:inset 1px 0 0 rgba(255,255,255,.045);white-space:nowrap;flex:none;transition:background-color .12s ease}
+.hc:hover{background:rgba(227,162,60,.1)}
+.hc .ic{width:1.15rem;height:1.15rem;color:var(--accent);--plate:#151D25}
+.hc .hv{display:grid;line-height:1.02}
+.hc b{font:700 1.1rem var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.hc b em{font:600 .76rem var(--f-ui);font-style:normal;color:var(--dim);margin-left:.12rem}
+.hc small{font:600 .6rem var(--f-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+.hc.low b,.hc.low .ic{color:var(--war)}
+.hc.full b{color:var(--accent)}
+.hc .tr{font-style:normal;font-size:.55rem;margin-left:.2rem;vertical-align:.25em}
+.hc .tr.up{color:var(--ok)} .hc .tr.dn{color:var(--war)}
+#hud .warpill{align-self:stretch;height:auto;margin:0 0 0 .2rem;padding:0 .35rem;gap:.3rem;border:0;border-left:1px solid rgba(0,0,0,.55);border-radius:0;background:none;align-items:flex-start}
+.pen{display:grid;justify-items:center;align-content:center;gap:.16rem;width:2.1rem;height:calc(100% + .45rem);padding:.2rem 0 .65rem;background:linear-gradient(180deg,#C24A37,#8E2A1E);color:#fff;
+  clip-path:polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - .55rem), 0 100%);filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+.pen .cdot{width:.8rem;height:.8rem}
+.pen b{font:700 .72rem var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.pen.more{font:700 .8rem var(--f-ui);background:linear-gradient(180deg,#7A2A20,#571A13)}
+#hud .warpill:hover .pen{background:linear-gradient(180deg,#D75B47,#9C3125)}
+#news{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;margin-left:.3rem;border:0;border-left:1px solid rgba(0,0,0,.55);background:none;color:var(--dim);font:500 .84rem var(--f-body);text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}
+#news:hover{color:var(--ink)}
+#news .ic{width:1rem;height:1rem;flex:none;color:var(--dim);--plate:#151D25}
+#news.war .ic{color:var(--war)} #news.good .ic{color:var(--ok)}
+#news i{font:600 .68rem var(--f-ui);font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);flex:none}
+#news span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+#news.fresh span{animation:newsin .5s ease-out;color:var(--ink)}
+@keyframes newsin{from{transform:translateY(.7rem);opacity:0}to{transform:none;opacity:1}}
+#clock{display:flex;align-items:center;gap:.2rem;padding:0 0 0 .7rem;border-left:1px solid rgba(0,0,0,.55);box-shadow:inset 1px 0 0 rgba(255,255,255,.045)}
+#clock .ib{width:2.05rem;height:2.05rem;border-radius:.22rem;border:1px solid rgba(0,0,0,.7);background:linear-gradient(180deg,#2D3A45,#1B242C);box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px rgba(201,164,92,.14);font:700 1.15rem var(--f-ui);line-height:1}
+#clock .ib:hover:not(:disabled){box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px var(--edge-hi)}
+#clock .ib:disabled{opacity:.4}
+#clock #playBtn{width:2.5rem;height:2.3rem}
+#clock #playBtn svg{width:1.3rem;height:1.3rem}
+#clock #playBtn.pulse{background:linear-gradient(180deg,#F4C05C,#D0902D);color:#1B1204;border-color:#4A2F06}
+#clock #speedBtn{width:2.5rem}
+#clock .spd i{width:.3rem;border-radius:0}
+#clock .spd i:nth-child(1){height:.45rem}#clock .spd i:nth-child(2){height:.7rem}#clock .spd i:nth-child(3){height:.95rem}#clock .spd i:nth-child(4){height:1.2rem}
+#clock .spd i.lit{background:var(--accent)}
+#clock .date{display:grid;min-width:5.6rem;padding:0 .2rem 0 .7rem;text-align:right;line-height:1.02}
+#clock .date b{font:700 1.2rem var(--f-ui);letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+#clock .date small{font:600 .62rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+body.paused #clock{background:repeating-linear-gradient(-45deg, rgba(227,162,60,.16) 0 .5rem, transparent .5rem 1rem)}
+body.paused #clock .date b{color:var(--accent)}
+
+/* --- gepauzeerd, meldingen, banier --- */
+#pausetag{display:flex;align-items:center;gap:.55rem;padding:.32rem .9rem .32rem .7rem;border-radius:.2rem;cursor:pointer;pointer-events:auto;
+  background:linear-gradient(180deg,#F4C05C,#D0902D);color:#1B1204;border:1px solid #4A2F06;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 6px 18px rgba(0,0,0,.55);animation:tin .2s ease-out}
+#pausetag i{width:.7rem;height:.85rem;border-left:.24rem solid #1B1204;border-right:.24rem solid #1B1204;box-sizing:border-box;animation:blink 1.4s steps(2, jump-none) infinite}
+#pausetag b{font:700 1rem var(--f-ui);letter-spacing:.2em;text-transform:uppercase}
+#pausetag span{font:600 .7rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+@keyframes blink{0%{opacity:1}100%{opacity:.25}}
+body #toasts{top:calc(var(--hud-h) + var(--sat) + var(--bar-h) + .8rem);z-index:26;gap:.35rem;padding-left:var(--pl);padding-right:var(--pr)}
+.toast{border-radius:.2rem;padding:.38rem .9rem .38rem .6rem;font-size:.86rem;border-left:3px solid var(--dim);max-width:min(32rem,100%);pointer-events:auto}
+.toast.war{border-color:#04070A;border-left-color:var(--war)} .toast.good{border-color:#04070A;border-left-color:var(--ok)}
+#banner{position:fixed;z-index:38;left:50%;top:max(31vh, calc(var(--hud-h) + var(--sat) + 13rem));transform:translate(-50%,-.6rem) scale(.96);opacity:0;display:grid;justify-items:center;gap:.35rem;width:min(40rem, calc(100vw - 24px));padding:1rem 1.4rem 1.1rem;text-align:center;cursor:pointer;
+  background:linear-gradient(90deg, transparent, rgba(8,12,16,.94) 14%, rgba(8,12,16,.94) 86%, transparent);border-top:1px solid var(--edge-hi);border-bottom:1px solid var(--edge-hi);transition:opacity .3s ease, transform .3s ease}
+#banner.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#banner::before,#banner::after{content:"";position:absolute;left:14%;right:14%;height:4px;background:repeating-linear-gradient(-45deg, var(--bc,var(--accent)) 0 .45rem, transparent .45rem .9rem);opacity:.75}
+#banner::before{top:.3rem} #banner::after{bottom:.3rem}
+#banner.war{--bc:var(--war)} #banner.good{--bc:var(--accent)}
+.bnk{display:flex;align-items:center;gap:.7rem;font:700 clamp(1.9rem, 5.4vw, 3.1rem) var(--f-ui);letter-spacing:.26em;text-transform:uppercase;line-height:1.05;color:var(--bc,var(--accent));text-shadow:0 2px 0 rgba(0,0,0,.6), 0 0 26px rgba(0,0,0,.6);padding-left:.26em}
+.bnk .ic{width:.8em;height:.8em;--plate:#0B1015}
+.bnm{font-size:1rem;color:var(--ink);max-width:100%}
+
+/* --- knoppenbalk --- */
+#bar{gap:.25rem;padding:.3rem;border-radius:.3rem}
+#bar .sep{display:none}
+#bar .ib{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.16rem;width:auto;min-width:4.4rem;height:3.3rem;padding:.25rem .6rem 0;border-radius:.25rem;
+  border:1px solid rgba(0,0,0,.7);background:linear-gradient(180deg,#2D3A45,#1B242C);box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px rgba(201,164,92,.14);color:var(--ink)}
+#bar .ib:hover:not(:disabled){background:linear-gradient(180deg,#384753,#222D36);box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px var(--edge-hi)}
+#bar .ib:disabled{opacity:.45;cursor:default}
+#bar .ib .ic,#bar .ib svg{width:1.35rem;height:1.35rem}
+#bar .ib .cdot{width:1.15rem;height:1.15rem;margin:.1rem 0}
+#bar .ib .lbl{display:block;font:600 .7rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+body:not([data-mode="game"]) #bar{display:none}
+#bar .ib.on,#bar .ib.on:hover:not(:disabled){background:linear-gradient(180deg,#F4C05C,#D0902D);border-color:#4A2F06;color:#1B1204;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 14px rgba(227,162,60,.25)}
+.hk{position:absolute;top:.14rem;right:.18rem;font:600 .56rem var(--f-ui);padding:0 .22rem;line-height:1.35;border-radius:.12rem;border:1px solid rgba(255,255,255,.16);color:var(--dim)}
+#bar .ib.on .hk{border-color:rgba(0,0,0,.3);color:rgba(0,0,0,.6)}
+.badge{position:absolute;top:-.3rem;left:-.3rem;min-width:1.1rem;height:1.1rem;padding:0 .25rem;box-sizing:border-box;border-radius:.55rem;background:var(--war);color:#fff;font:700 .68rem/1.1rem var(--f-ui);font-style:normal;text-align:center;box-shadow:0 0 0 1.5px #0B1015}
+
+/* --- wachtrij, waarschuwingen, legergroepen --- */
+#queue{top:calc(var(--hud-h) + var(--sat) + .5rem);right:var(--pr);max-width:min(30rem, 62vw);gap:.25rem}
+.qb{width:2.5rem;height:2.5rem;border-radius:.22rem}
+.qb .fill{background:linear-gradient(180deg, rgba(244,192,92,.5), rgba(208,144,45,.3))}
+.qb.idle{border-color:var(--accent);color:var(--accent);animation:pulse 1.6s ease-in-out infinite;width:auto;padding:0 .55rem 0 .45rem;display:flex;gap:.35rem}
+.qb.idle .d{position:static;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);opacity:1}
+#alerts{position:fixed;z-index:18;right:var(--pr);top:calc(var(--hud-h) + var(--sat) + 3.35rem);display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:.25rem;max-width:min(24rem, 60vw)}
+.al{position:relative;display:flex;align-items:center;justify-content:center;gap:.2rem;min-width:2.1rem;height:2.1rem;padding:0 .35rem;border-radius:.22rem;cursor:pointer;color:var(--ink);
+  border:1px solid rgba(0,0,0,.7);background:linear-gradient(180deg,#2D3A45,#1B242C);box-shadow:inset 0 0 0 1.5px var(--ac,var(--edge-hi)), 0 3px 8px rgba(0,0,0,.5);--plate:#1B242C}
+.al .ic{width:1.05rem;height:1.05rem;color:var(--ac,var(--accent))}
+.al b{font:700 .78rem var(--f-ui);font-variant-numeric:tabular-nums}
+.al .cdot{position:absolute;right:-.15rem;bottom:-.15rem;width:.7rem;height:.7rem}
+.al.war{--ac:var(--war);animation:pulsew 1.8s ease-in-out infinite} .al.warn{--ac:#F0962E} .al.ok{--ac:var(--ok)}
+.al:hover{filter:brightness(1.25)}
+@keyframes pulsew{0%,100%{box-shadow:inset 0 0 0 1.5px var(--war), 0 0 0 0 rgba(212,85,63,.5)}50%{box-shadow:inset 0 0 0 1.5px var(--war), 0 0 0 .35rem rgba(212,85,63,0)}}
+.al.grp{border-radius:.22rem;padding:0 .4rem 0 .3rem;gap:.3rem}
+.al.grp i{font:700 .7rem var(--f-ui);font-style:normal;width:1.05rem;height:1.05rem;display:grid;place-items:center;border-radius:.12rem;background:var(--accent);color:#1B1204}
+.al.grp.on{box-shadow:inset 0 0 0 1.5px #fff, 0 3px 8px rgba(0,0,0,.5)}
+
+/* --- panelen: titelbalk met tabs, strook, kaarten --- */
+#sheet{padding:0 .8rem .8rem;width:min(31rem,100%)}
+.tabs{margin:0 -.8rem .6rem;padding:.3rem .35rem 0 .45rem;top:0;gap:.2rem;align-items:flex-end;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));border-bottom:1px solid #04070A;box-shadow:inset 0 -1px 0 var(--edge-hi), 0 3px 8px rgba(0,0,0,.35);border-radius:.25rem .25rem 0 0}
+.tab{border-radius:.22rem .22rem 0 0;padding:.5rem .35rem .48rem;text-transform:uppercase;letter-spacing:.08em;font-size:.84rem;border:1px solid transparent;border-bottom:0;min-width:0}
+.tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab.on{background:linear-gradient(180deg, rgba(227,162,60,.24), rgba(227,162,60,.05));box-shadow:inset 0 2px 0 var(--accent);border-color:rgba(201,164,92,.32)}
+.tabs .xclose{align-self:center;margin:0 0 .3rem .15rem}
+.ptl .tab.on,.ptl .tab.on:hover{flex:1;justify-content:flex-start;background:none;border-color:transparent;box-shadow:none;font-size:1rem;letter-spacing:.16em;padding-left:.3rem;cursor:default;color:var(--ink)}
+/* de knoppenbalk wisselt van paneel; in het paneel zelf blijft alleen de titel van het open tabblad over */
+#sheet .tabs .tab:not(.on){display:none}
+#sheet .tabs .tab.on,#sheet .tabs .tab.on:hover{flex:1;justify-content:flex-start;background:none;border-color:transparent;box-shadow:none;font-size:1rem;letter-spacing:.16em;padding-left:.3rem;cursor:default}
+#strip{position:relative;border-radius:.3rem;padding:.55rem .7rem .6rem .85rem;max-width:min(40rem,100%)}
+#strip::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:.3rem 0 0 .3rem;background:linear-gradient(180deg,var(--accent),rgba(227,162,60,.15))}
+#strip b{letter-spacing:.04em}
+#strip .sel > .sb:first-child > b,#strip .txt > b,#strip .fst > b{text-transform:uppercase;letter-spacing:.1em;font-size:1rem}
+body[data-mode="menu"] #strip,body[data-mode="pick"] #strip{display:none!important}   /* het hoofdmenu en de landkaart nemen het hier over */
+#card,#endcard{border-radius:.35rem}
+body.has-card #stage::after{background:rgba(4,7,10,.5)}
+#card .chead{padding-bottom:.6rem;border-bottom:1px solid var(--line)}
+#card .ct b{text-transform:uppercase;letter-spacing:.07em;font-size:1.2rem}
+#card .eico,#endcard .eico{border-radius:.25rem;box-shadow:inset 0 0 0 1px var(--edge)}
+#endcard{padding:0 1.3rem 1.1rem;width:min(25rem,calc(100vw - 1.6rem));overflow:hidden}
+#endcard .eh{justify-self:stretch;display:flex;align-items:center;gap:.5rem;margin:0 -1.3rem .3rem;padding:.5rem .8rem;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));border-bottom:1px solid #04070A;box-shadow:inset 0 -1px 0 var(--edge-hi);font:600 .78rem var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--brass)}
+#endcard .eh .ic{width:1rem;height:1rem}
+#endcard .eh span{flex:1;text-align:left}
+#endcard .eh i{font-style:normal;color:var(--dim);letter-spacing:.08em}
+#endcard .et{font-size:2rem;letter-spacing:.2em;text-transform:uppercase;padding-left:.2em}
+#endcard.win .et{color:var(--accent)} #endcard.lose .et{color:#E2705B}
+#endcard .ebtns2{display:flex;gap:.3rem;justify-content:center;flex-wrap:wrap}
+
+/* --- legerpaneel (contextstrook bij een geselecteerde stapel) --- */
+#strip .aph{flex:1 1 100%;display:flex;align-items:center;gap:.8rem;min-width:0;margin:-.55rem -.7rem 0 -.85rem;padding:.3rem .35rem .3rem .85rem;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));border-bottom:1px solid #04070A;box-shadow:inset 0 -1px 0 var(--edge-hi);border-radius:.25rem .25rem 0 0}
+#strip .apt{display:flex;align-items:baseline;gap:.5rem;flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden}
+#strip .apt .ic{align-self:center;color:var(--accent);--plate:#1B242C;flex:none}
+#strip .apt b{font:700 1rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+#strip .apt em{font-style:normal;color:var(--dim);font-size:.82rem;overflow:hidden;text-overflow:ellipsis}
+#strip .aps{display:flex;align-items:center;gap:.3rem;flex:none}
+#strip .aps b{font:700 .95rem var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+#strip .aps .meter{width:3.4rem}
+#strip .aps .ic{width:.95rem;height:.95rem;color:var(--dim)}
+.apl{flex:1 1 100%;display:grid;gap:.22rem;max-height:9.4rem;overflow-y:auto;min-width:0}
+.apr{display:grid;grid-template-columns:minmax(8.5rem,11.5rem) 4.6rem minmax(0,1fr) auto;gap:.6rem;align-items:center;min-width:0}
+.apu{display:flex;align-items:center;gap:.5rem;min-width:0;padding:.18rem .5rem .18rem .3rem;border-radius:.22rem;border:1px solid rgba(0,0,0,.6);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:inset 0 0 0 1px rgba(201,164,92,.11);color:var(--ink);cursor:pointer;text-align:left;--plate:#1C2730}
+.apu:disabled{cursor:default}
+.apu:not(:disabled):hover{box-shadow:inset 0 0 0 1px var(--edge-hi)}
+.apu .ic{width:1.5rem;height:1.5rem}
+.apu span{flex:1;min-width:0;font:600 .9rem var(--f-ui);letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#strip .apu b{font:700 1.08rem var(--f-ui);font-variant-numeric:tabular-nums}
+.apm .meter{width:100%}
+.aps2{display:flex;gap:.25rem;flex-wrap:wrap;font-size:.78rem;min-width:0}
+.apx{width:1.7rem;height:1.7rem;border-radius:.2rem;border:1px solid rgba(0,0,0,.55);background:rgba(0,0,0,.2);color:var(--dim);cursor:pointer;font-size:1rem;line-height:1;padding:0}
+.apx:hover{color:#fff;background:rgba(212,85,63,.3)}
+.apst{flex:1 1 100%;display:flex;gap:.25rem .8rem;flex-wrap:wrap;align-items:center;font-size:.82rem;color:var(--dim);min-width:0}
+.apst .hint2{flex-basis:auto;color:var(--ink)}
+#strip .acts.apb{flex:1 1 100%;justify-content:flex-start;gap:.28rem}
+.apb .btn.sm{padding:.25rem .5rem;letter-spacing:.04em}
+
+/* --- logboek en menu in het paneel --- */
+.logf{margin:.1rem 0 .55rem}
+.logl{display:grid;gap:1px}
+.lrow{display:grid;grid-template-columns:3.6rem 1.1rem minmax(0,1fr) auto;gap:.5rem;align-items:center;width:100%;padding:.34rem .4rem;border:0;border-bottom:1px solid rgba(255,255,255,.05);background:none;color:var(--ink);font:400 .84rem var(--f-body);text-align:left;cursor:default;border-radius:.15rem}
+.lrow i{font:600 .7rem var(--f-ui);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--brass);font-variant-numeric:tabular-nums}
+.lrow i.same{visibility:hidden}
+.lrow > .ic{width:1rem;height:1rem;color:var(--dim);--plate:#141C23}
+.lrow.war > .ic{color:var(--war)} .lrow.good > .ic{color:var(--ok)}
+.lrow em{font-style:normal;color:var(--dim);display:flex}
+.lrow em .ic{width:.9rem;height:.9rem}
+.lrow.go{cursor:pointer}
+.lrow.go:hover{background:rgba(227,162,60,.1)}
+.lrow.go:hover em{color:var(--accent)}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin:.1rem 0 .2rem}
+.mgrid .btn{justify-content:flex-start;padding:.5rem .65rem}
+
+/* --- hoofdmenu --- */
+#menu{position:fixed;z-index:24;left:max(5vw, var(--pl));top:50%;transform:translateY(-50%);width:min(26rem, calc(100vw - var(--pl) - var(--pr)));max-height:calc(100vh - 1.6rem - var(--sat) - var(--sab));display:flex;flex-direction:column;gap:1rem;animation:menuin .45s ease-out}
+@keyframes menuin{from{opacity:0;transform:translate(-1.2rem,-50%)}to{opacity:1;transform:translate(0,-50%)}}
+.mhead{display:flex;align-items:center;gap:1rem;padding:0 .2rem}
+.mlg{width:4.6rem;height:4.6rem;flex:none;color:var(--accent);--plate:#0A1117;filter:drop-shadow(0 4px 10px rgba(0,0,0,.7))}
+.mt{display:grid;gap:.3rem;min-width:0}
+.mt b{font:700 clamp(2.5rem, 5.2vw, 3.6rem)/.92 var(--f-ui);letter-spacing:.13em;text-transform:uppercase;color:var(--ink);text-shadow:0 2px 0 rgba(0,0,0,.7), 0 8px 30px rgba(0,0,0,.8)}
+.mt span{font:600 .78rem var(--f-ui);letter-spacing:.34em;text-transform:uppercase;color:var(--brass);padding-top:.45rem;border-top:2px solid var(--edge-hi)}
+#menu .mpanel{padding:.8rem;display:grid;gap:.4rem;overflow-y:auto;min-height:0}
+#menu .mpanel .tabs{margin:-.8rem -.8rem .3rem;top:-.8rem}
+.mbtns{display:grid;gap:.4rem}
+.mb{position:relative;display:flex;align-items:center;gap:.85rem;width:100%;text-align:left;padding:.62rem .85rem;border-radius:.25rem;cursor:pointer;color:var(--ink);font-family:var(--f-body);
+  border:1px solid rgba(0,0,0,.7);background:linear-gradient(180deg,#2D3A45,#1B242C);box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 0 1px rgba(201,164,92,.14);transition:transform .12s ease, box-shadow .12s ease;--plate:#1B242C}
+.mb:hover{transform:translateX(.3rem);box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px var(--edge-hi), inset 4px 0 0 var(--accent)}
+.mb:active{transform:translateX(.3rem) scale(.985)}
+.mb:focus-visible,.pkc:focus-visible,.al:focus-visible,.lrow:focus-visible,.apu:focus-visible,#hudNat:focus-visible,#news:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mb > .ic{width:1.6rem;height:1.6rem;flex:none;color:var(--accent)}
+.mb span{display:grid;gap:.05rem;min-width:0}
+.mb b{font:700 1.12rem var(--f-ui);letter-spacing:.12em;text-transform:uppercase}
+.mb small{color:var(--dim);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb.pri{background:linear-gradient(180deg,#F4C05C,#D0902D);border-color:#4A2F06;color:#1B1204;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 4px 16px rgba(227,162,60,.2);--plate:#E3A23C}
+.mb.pri > .ic{color:#1B1204} .mb.pri small{color:rgba(27,18,4,.75)}
+.mb.pri:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 4px 0 0 #1B1204, 0 4px 18px rgba(227,162,60,.35)}
+.mb.done > .ic{color:var(--ok)}
+.mfoot{margin:.2rem .1rem 0;font-size:.78rem;color:var(--dim);display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.mpage .sec:first-child{margin-top:.1rem}
+.mpage .rrow .num{width:1.2rem}
+.khelp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.28rem .7rem;font-size:.84rem;align-items:baseline}
+.khelp kbd,.kk{font:600 .74rem var(--f-ui);letter-spacing:.04em;padding:.08rem .4rem;border-radius:.18rem;border:1px solid rgba(255,255,255,.2);border-bottom-width:2px;background:rgba(255,255,255,.06);color:var(--ink);white-space:nowrap;justify-self:start}
+#hero{top:calc(.8rem + var(--sat));padding:.5rem 2.4rem .6rem;gap:.1rem;background:linear-gradient(90deg, transparent, rgba(8,12,16,.9) 18%, rgba(8,12,16,.9) 82%, transparent);left:50%;right:auto;transform:translateX(-50%);width:min(34rem, 100vw);border-top:1px solid var(--edge-hi);border-bottom:1px solid var(--edge-hi)}
+#hero b{font-size:clamp(1.3rem, 4vw, 1.9rem);letter-spacing:.24em;text-shadow:none;padding-left:.24em}
+#hero span{font-size:.82rem;color:var(--brass);letter-spacing:.06em;text-shadow:none}
+
+/* --- landkaart bij de landkeuze --- */
+#pickcard{position:fixed;z-index:24;right:var(--pr);top:calc(1rem + var(--sat));width:min(26rem, calc(100vw - var(--pl) - var(--pr)));max-height:calc(100vh - 2rem - var(--sat) - var(--sab));overflow-y:auto;overscroll-behavior:contain;padding:0 .85rem .85rem;animation:pkin .25s ease-out}
+@keyframes pkin{from{opacity:0;transform:translateX(1rem)}to{opacity:1;transform:none}}
+.pkh{display:flex;align-items:center;gap:.8rem;margin:0 -.85rem .6rem;padding:.6rem .5rem .6rem .85rem;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));border-bottom:1px solid #04070A;box-shadow:inset 0 -1px 0 var(--edge-hi);border-radius:.25rem .25rem 0 0;position:sticky;top:0;z-index:2}
+.pkh .hn{flex:1}
+.pkh .hn b{font-size:1.5rem;max-width:none}
+#pickcard .tabs{position:sticky;margin:0 -.85rem .6rem}
+#pickcard .tiles{margin-top:0}
+#pickcard .kt b.pos-ok{color:var(--ok)} #pickcard .kt b.pos-warn{color:var(--accent)} #pickcard .kt b.pos-hot{color:#E2705B}
+.pkl,.pkn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3rem}
+.pkc{display:flex;align-items:center;gap:.45rem;min-width:0;padding:.36rem .5rem;border-radius:.22rem;border:1px solid rgba(0,0,0,.6);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:inset 0 0 0 1px rgba(201,164,92,.11);color:var(--ink);cursor:pointer;font:600 .92rem var(--f-ui);letter-spacing:.02em;text-align:left;transition:box-shadow .12s ease}
+.pkc:hover{box-shadow:inset 0 0 0 1px var(--edge-hi), inset 3px 0 0 var(--accent)}
+.pkc .wn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pkc i{font-style:normal;display:flex;align-items:center;gap:.2rem;color:var(--dim);font-size:.8rem;font-variant-numeric:tabular-nums}
+.pkc i .ic{width:.85rem;height:.85rem;--plate:#1B242C}
+.pkc i.warc{color:var(--war)} .pkc i.okc{color:var(--ok)}
+#pickcard .gord{margin-top:.45rem}
+#pickcard .gord .gl{width:5.6rem;font:600 .72rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase}
+.pdesc{margin:.5rem 0 0;padding:.45rem .6rem;border-radius:.22rem;background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1px rgba(201,164,92,.1);font-size:.8rem;line-height:1.45}
+.pdesc .ic{width:.9rem;height:.9rem;color:var(--accent);margin-right:.3rem}
+#pickcard .pgo{width:100%;margin-top:.7rem;min-height:3rem;font-size:1.25rem;letter-spacing:.28em;padding-left:1.1rem}
+#pickcard .pgo .ic{width:1.3rem;height:1.3rem}
+#pickcard .foot{margin-top:.7rem}
+
+/* --- sneltoetsenoverzicht en laadscherm --- */
+#keys{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:1rem;background:rgba(4,7,10,.6);animation:cfin .15s ease-out}
+.kpanel{width:min(44rem, 100%);max-height:calc(100vh - 2rem);overflow-y:auto;padding:0 .9rem .9rem}
+.kpanel .tabs{margin:0 -.9rem .7rem;position:sticky}
+.kcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:.3rem 1.6rem}
+#veil{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%, #16202A 0, #080C10 70%);opacity:0;visibility:hidden;transition:opacity .4s ease, visibility 0s linear .4s}
+#veil.on{opacity:1;visibility:visible;transition:opacity .12s ease}
+#veil.thru{pointer-events:none}
+.vl{display:grid;justify-items:center;gap:.5rem;text-align:center;padding:1rem}
+.vl svg{width:4.4rem;height:4.4rem;color:var(--accent);--plate:#0C1116}
+.vl b{font:700 clamp(2rem, 7vw, 3.4rem) var(--f-ui);letter-spacing:.2em;text-transform:uppercase;padding-left:.2em;line-height:1}
+.vl span{font:600 .8rem var(--f-ui);letter-spacing:.3em;text-transform:uppercase;color:var(--brass)}
+.vbar{width:11rem;height:3px;margin-top:.5rem;background:rgba(255,255,255,.1);position:relative;overflow:hidden}
+.vbar::after{content:"";position:absolute;top:0;bottom:0;width:35%;background:var(--accent);animation:vbar 1.1s ease-in-out infinite}
+@keyframes vbar{0%{left:-35%}100%{left:100%}}
+
+/* --- indeling op brede schermen: knoppen linksboven, paneel links eronder, de kaart blijft vrij --- */
+@media (min-width:900px){
+  #dock{padding-bottom:.8rem;padding-left:var(--pl);padding-right:var(--pr);gap:.5rem}
+  #dock #bar{position:fixed;left:var(--pl);top:calc(var(--hud-h) + var(--sat) + .45rem)}
+  #dock #sheet{position:fixed;left:var(--pl);top:calc(var(--hud-h) + var(--sat) + var(--bar-h) + .8rem);max-height:calc(100vh - var(--hud-h) - var(--sat) - var(--bar-h) - 1.6rem);width:min(31rem, calc(100vw - 24px));animation:shin .18s ease-out}
+  @keyframes shin{from{opacity:0;transform:translateX(-.8rem)}to{opacity:1;transform:none}}
+  body.has-sheet #dock{align-items:flex-start;padding-left:calc(var(--pl) + 31rem + .8rem)}
+  #dock #pausetag{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--hud-h) + var(--sat) + var(--bar-h) + .7rem);z-index:21}
+  body.ptag #toasts{top:calc(var(--hud-h) + var(--sat) + var(--bar-h) + 3.4rem)}
+  body.has-sheet #toasts{padding-left:calc(var(--pl) + 31rem + .8rem)}
+  body.has-sheet #dock #pausetag{left:calc(50% + 15.5rem)}
+  .apl{grid-template-columns:repeat(2,minmax(0,1fr));gap:.22rem 1rem}
+  .apr{grid-template-columns:minmax(7.5rem,1fr) 3rem minmax(2.9rem,auto) 1.7rem;gap:.45rem}
+  .aps2{flex-wrap:nowrap}
+  .aps2 .mut{font-size:.74rem}
+  #hero{left:calc((100vw - 27rem) / 2);width:min(30rem, calc(100vw - 29rem))}
+  #strip{animation:stin .16s ease-out;max-width:min(42rem, calc(100vw - 30rem))}   /* de hoek rechtsonder blijft vrij voor de kaartwidgets */
+  body.has-sheet #strip{max-width:min(42rem, calc(100vw - 48rem - 2 * var(--pl)))}
+  @keyframes stin{from{opacity:0;transform:translateY(.5rem)}to{opacity:1;transform:none}}
+}
+@media (min-width:900px) and (max-width:1279px){ .hc small{display:none} .hc{padding:0 .55rem} #news{display:none} #clock{margin-left:auto} .hn b{max-width:9rem} }
+/* --- telefoon en smal: twee regels bovenaan, tabbalk onderaan --- */
+@media (max-width:899px){
+  :root{--hud-h:4.9rem;--bar-h:0rem}
+  #hud{flex-wrap:wrap;align-content:flex-start}
+  #hudNat{order:1;height:2.6rem;flex:0 1 auto;padding-right:.5rem}
+  .hflag{width:1.9rem;height:1.3rem}
+  .hn b{font-size:1.02rem;max-width:36vw} .hn small{display:none}
+  #hud .warpill{order:2;height:2.6rem;align-self:flex-start}
+  .pen{width:1.75rem;height:2.5rem;padding-bottom:.55rem}
+  #clock{order:3;margin-left:auto;height:2.6rem;border-left:0;box-shadow:none;padding-left:.3rem}
+  #spdDn,#spdUp{display:none}
+  #clock .date{min-width:4.2rem;padding-left:.35rem} #clock .date b{font-size:1.05rem}
+  #hud #status{order:4;flex:1 1 100%;height:2.3rem;border-top:1px solid rgba(0,0,0,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  .hc{padding:0 .6rem;gap:.3rem} .hc:first-child{border-left:0;box-shadow:none;padding-left:.2rem}
+  .hc small{display:none} .hc b{font-size:1rem} .hc .ic{width:1rem;height:1rem}
+  #news{display:none}
+  #dock{padding:0;gap:.4rem}
+  #dock > #sheet,#dock > #strip{width:calc(100% - var(--pl) - var(--pr));max-width:37rem}
+  #sheet{max-height:min(58vh, calc(100vh - var(--hud-h) - var(--sat) - 8rem))}
+  #bar{width:100%;max-width:none;box-sizing:border-box;border-radius:0;border-left:0;border-right:0;border-bottom:0;justify-content:space-between;gap:.2rem;padding:.3rem max(.3rem, env(safe-area-inset-right, 0px)) calc(.3rem + var(--sab)) max(.3rem, env(safe-area-inset-left, 0px))}
+  #bar .ib{flex:1 1 0;min-width:0;height:3.1rem;padding:.2rem .1rem 0}
+  #bar .ib .lbl{font-size:.62rem;letter-spacing:.03em;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .hk,.btn kbd,.fsb kbd{display:none}
+  .badge{top:.1rem;left:auto;right:.3rem}
+  #queue{max-width:46vw}
+  .qb{width:2.2rem;height:2.2rem}
+  #alerts{left:var(--pl);right:auto;top:calc(var(--hud-h) + var(--sat) + .5rem);flex-direction:row;max-width:46vw}
+  body #toasts{top:calc(var(--hud-h) + var(--sat) + 3.2rem)}
+  #pausetag{margin-bottom:.1rem}
+  #pausetag span{display:none}
+  #menu{left:var(--pl);right:var(--pr);top:auto;bottom:calc(.7rem + var(--sab));transform:none;width:auto;max-height:calc(100vh - 1.4rem - var(--sat) - var(--sab));gap:.7rem;animation:menuup .4s ease-out}
+  @keyframes menuup{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}
+  .mlg{width:3.2rem;height:3.2rem} .mt b{font-size:2.3rem}
+  .mb{padding:.5rem .7rem} .mb b{font-size:1rem}
+  body[data-mode="menu"] #stage::after{background:linear-gradient(180deg, rgba(4,7,10,.35) 0, rgba(4,7,10,.6) 35%, rgba(4,7,10,.92) 100%)}
+  #pickcard{left:var(--pl);right:var(--pr);top:auto;bottom:calc(.6rem + var(--sab));width:auto;max-height:min(64vh, calc(100vh - 6rem));animation:menuup .25s ease-out}
+  .pkh .hn b{font-size:1.25rem}
+  .pkn .pkc:nth-child(n+7){display:none}
+  #pickcard .gord{flex-direction:row;align-items:center} #pickcard .gord .gl{width:3.6rem}
+  #pickcard .gseg{padding:.22rem .45rem}
+  .apr{grid-template-columns:minmax(0,1fr) 3.4rem auto auto;gap:.4rem}
+  .aps2 .mut{display:none}
+  .apl{max-height:7.4rem}
+  #strip .aph{gap:.5rem} #strip .aps .meter{width:2.4rem}
+  #strip .apt em{display:none}
+  .mgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:899px) and (max-height:520px){   /* telefoon liggend: weinig hoogte */
+  #bar .ib{flex-direction:row;height:2.4rem;gap:.4rem;padding-top:0}
+  body.has-sheet #dock > #strip{display:none}
+  .apl{max-height:3.9rem}
+  #sheet{max-height:calc(100vh - var(--hud-h) - var(--sat) - 3.8rem)}
+  #menu .mhead{display:none}
+}
+@media (max-width:420px){ #strip .aps:nth-of-type(3),#strip .aps:nth-of-type(4){display:none} .pkl{grid-template-columns:1fr 1fr} }
+@media (hover:none){ .hk,.btn kbd,.fsb kbd{display:none} }
+@media (prefers-reduced-motion: reduce){ #veil,#banner{transition:none} .mb:hover{transform:none} }
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
 <div id="toasts" aria-live="polite"></div>
 <div id="flash" aria-hidden="true"></div>
-<div id="hero" hidden><b>Vesting Europa</b><span>Kies je land en herschrijf de geschiedenis</span></div>
+<header id="hud" hidden>
+  <button id="hudNat" type="button" aria-label="Je land: open het overzicht"></button>
+  <button id="news" type="button" aria-label="Laatste melding: open het logboek"></button>
+  <div id="clock"><button class="ib" id="spdDn" type="button" aria-label="Langzamer">−</button><button class="ib" id="spdUp" type="button" aria-label="Sneller">+</button></div>
+</header>
+<div id="pausetag" hidden><i></i><b>Gepauzeerd</b><span>spatie = verder</span></div>
+<div id="alerts" aria-label="Waarschuwingen en legergroepen"></div>
+<div id="banner" role="status" hidden></div>
+<div id="menu" hidden></div>
+<div id="pickcard" class="glass" hidden></div>
+<div id="keys" role="dialog" aria-label="Sneltoetsen" hidden></div>
+<div id="veil" class="on" aria-hidden="true"><div class="vl"><svg viewBox="0 0 64 64" aria-hidden="true"><path fill="currentColor" d="M12 50V26h8v-8h6v8h12v-8h6v8h8v24z"/><path class="icd" d="M28 50V38h8v12z"/></svg><b>Vesting Europa</b><span id="veilT">Kaart laden…</span><i class="vbar"></i></div></div>
+<div id="tip2" class="glass" role="tooltip" hidden></div>
+<div id="hero" hidden><b>Kies je land</b><span>Klik een land aan op de kaart en herschrijf de geschiedenis</span></div>
 <div id="endcard" class="glass" hidden></div>
 <div id="card" class="glass" role="dialog" aria-label="Beslissing" hidden></div>
 <div id="queue" aria-label="Productiewachtrij"></div>
@@ -3646,13 +4063,7 @@ overC.addEventListener('contextmenu', e => {
   if(UI.selAir.size) orderAir(p);
   else if(UI.sel.size) orderMove(p);
 });
-addEventListener('keydown', e => {
-  if(!G || G.over) return;
-  if(e.code === 'Space'){ e.preventDefault(); togglePause(); }
-  else if(e.key >= '1' && e.key <= '4'){ G.speed = +e.key; if(!cardOpen()) G.paused = false; renderBar(); }
-  else if(e.key === 'Escape'){ clearSel(); UI.target = null; UI.info = null; UI.sheet = null; renderAll(); }
-  else if(e.key === 'm' || e.key === 'M'){ const on = !(SET.sound || SET.music); setSound(on); setMusic(on); sheetSig = ''; toast(on ? 'Geluid aan' : 'Geluid uit', '', 'mute'); }
-});
+addEventListener('keydown', e => hudKey(e));   // alle sneltoetsen: zie het blok "spelschil"
 function boxSelect(b){
   const r = stage.getBoundingClientRect();
   const x0 = Math.min(b.x0, b.x1) - r.left, x1 = Math.max(b.x0, b.x1) - r.left, y0 = Math.min(b.y0, b.y1) - r.top, y1 = Math.max(b.y0, b.y1) - r.top;
@@ -4308,9 +4719,10 @@ function setVol(v){ SET.vol = clamp(v, 0, 1); saveSettings(); if(MASTER) MASTER.
 /* ================= meldingen ================= */
 const toastKeys = {};
 // korte fysieke feedback: schudden bij verlies, flits bij oorlog of overwinning
-function shake(){ const s = $('stage'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); }
-function flash(col){ const f = $('flash'); f.style.setProperty('--fc', col || 'rgba(212,85,63,.55)'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+function shake(){ if(SET.fx === false) return; const s = $('stage'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); }
+function flash(col){ if(SET.fx === false) return; const f = $('flash'); f.style.setProperty('--fc', col || 'rgba(212,85,63,.55)'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
 function toast(msg, kind, key){
+  if(logAdd(msg, kind, key)) return;   // logboek en nieuwsregel; grote gebeurtenissen krijgen een banier in plaats van een melding
   const host = $('toasts');
   if(key && toastKeys[key] && toastKeys[key].isConnected){
     toastKeys[key].lastChild.textContent = msg; toastKeys[key].className = 'toast glass' + (kind ? ' ' + kind : ''); clearTimeout(toastKeys[key]._t);
@@ -4323,8 +4735,8 @@ function toast(msg, kind, key){
   const icn = TK[key] || (key && key.startsWith('just') ? 'agr' : key && key.startsWith('ls') ? 'schild' : key && key.startsWith('surr') ? 'vlag' : kind === 'war' ? 'oorlog' : kind === 'good' ? 'check' : 'info');
   el.innerHTML = ic(icn) + '<span></span>'; el.lastChild.textContent = msg;
   host.appendChild(el);
-  while(host.children.length > 2) host.firstChild.remove();
-  el._t = setTimeout(() => fade(el), 3600);
+  while(host.children.length > 3) host.firstChild.remove();
+  el._t = setTimeout(() => fade(el), kind === 'war' ? 5200 : 3800);
   if(key) toastKeys[key] = el;
 }
 function fade(el){ if(!el) return; el.classList.add('out'); setTimeout(() => el.remove(), 420); }
@@ -4338,7 +4750,8 @@ function renderBar(){
   pb.innerHTML = running ? ICON_PAUSE : ICON_PLAY;
   pb.classList.toggle('pulse', !!(G && G.paused && !G.over));
   pb.disabled = !G || !!G.over;
-  $('date').textContent = G ? fmtDay(G.day) : (MAPNAME ? MAPS[MAPNAME].name : 'Laden…');
+  { const d = G ? Math.floor(G.day) : 0, dh = G ? '<b>Dag ' + d + '</b><small>jaar ' + (Math.floor(d / 365) + 1) + '</small>' : ''; const de = $('date'); if(de._h !== dh){ de._h = dh; de.innerHTML = dh; } }
+  { const pt = running ? 'Pauzeer (spatie)' : 'Verder (spatie)'; if(pb.dataset.tip !== pt){ pb.dataset.tip = pt; pb.setAttribute('aria-label', pt); } }
   const lit = G ? G.speed : 0;
   [...$('speedBtn').querySelectorAll('i')].forEach((i,k) => i.classList.toggle('lit', k < lit));
   $('speedBtn').disabled = !G;
@@ -4353,12 +4766,13 @@ function renderBar(){
     wb.hidden = !ens.length;
     wb.title = ens.length ? 'In oorlog met ' + ens.map((c, i) => cname(c) + ' (geeft op ' + ms[i] + '%)').join(', ') : '';
     wb.setAttribute('aria-label', wb.title || 'Oorlogen');
-    wb.innerHTML = ic('oorlog')
-      + ens.slice(0, 4).map((c, i) => '<span class="mring" style="--m:' + ms[i] + '"><span class="cdot" style="background:' + colorOf(c) + '"></span></span>').join('')
-      + (ens.length > 4 ? '<span class="more">+' + (ens.length - 4) + '</span>' : '');
+    // lopende oorlogen als rode vaandels: kleur van de vijand en hoe dicht hij bij overgave is
+    wb.innerHTML = ens.slice(0, 4).map((c, i) => '<span class="pen"><span class="cdot" style="background:' + colorOf(c) + '"></span><b>' + ms[i] + '%</b></span>').join('')
+      + (ens.length > 4 ? '<span class="pen more">+' + (ens.length - 4) + '</span>' : '');
   }
   renderQueue();
   renderStatus();
+  renderHud();
 }
 $('playBtn').addEventListener('click', togglePause);
 $('speedBtn').addEventListener('click', () => { if(!G) return; G.speed = G.speed % 4 + 1; renderBar(); });
@@ -4374,6 +4788,7 @@ for(const b of document.querySelectorAll('[data-sheet]')){
 
 const SI = { pp:ic('fab'), cp:ic('bevel'), dv:ic('leger'), air:ic('fi'), ws:ic('steun'), ae:ic('agr') };
 let statusSig = '';
+// topbalk: je grondstoffen als cellen met icoon, getal, bijschrift, trend en uitleg; een klik opent het bijbehorende paneel
 function renderStatus(){
   const el = $('status');
   if(!G || G.over){ if(!el.hidden){ el.hidden = true; statusSig = ''; } return; }
@@ -4381,17 +4796,21 @@ function renderStatus(){
   const divs = UCNT[me] != null ? UCNT[me] : G.units.filter(u => u.c === me).length;
   const wings = ACNT[me] != null ? ACNT[me] : G.air.filter(w => w.c === me).length;
   const cap = armyCap(me), full = divs >= cap, aeM = maxAE(), aeHot = hotCount(COAL_THR()*0.8) >= 2, mM = meterOf(me);
-  const h = '<span class="cdot" style="background:' + colorOf(me) + '"></span><span class="nm">' + esc(cname(me)) + '</span>'
-    + '<span class="st" title="Productie per dag: hiermee bouw je alles. Komt uit je fabrieken.">' + SI.pp + NF.format(n.ppd) + '<small>per dag</small></span>'
-    + '<span class="st' + (full ? ' low' : '') + '" title="Divisies / legerlimiet. De limiet groeit met je bevolking en fabrieken, ook veroverde.">' + SI.dv + divs + '/' + cap + '<small>leger</small></span>'
-    + '<span class="st' + (n.ws < 25 ? ' low' : '') + '" title="Oorlogssteun: bepaalt je legerlimiet. Stijgt als je wordt aangevallen, daalt bij aanvalsoorlogen, verlies en bombardementen. Lage steun: je geeft sneller op.">' + SI.ws + Math.round(n.ws) + '%<small>steun</small></span>'
-    + (mM >= 0.4 ? '<span class="st low" title="Overgavemeter: bij 100% kun je capituleren of doorvechten">' + ic('vlag') + pct(mM) + '%<small>overgave</small></span>' : '')
-    + (aeM.m >= 1 ? '<span class="st' + (aeHot ? ' low' : '') + '" title="Agressie: hoe bang andere landen voor je zijn. Bij ' + COAL_THR() + '+ bij 3 landen tegelijk volgt een coalitie.">' + SI.ae + Math.round(aeM.m) + '/' + COAL_THR() + '<small>agressie</small></span>' : '')
-    + '<span class="st" title="Bevelpunten: groeien vanzelf, voor speciale acties">' + SI.cp + Math.floor(n.cp) + '<small>bevel</small></span>';
+  const acap = airCap(me), mine = owned(me).length, sc = score(), wsh = winShare(), [su, st] = slotTot(me);
+  const cell = (go, cls, icon, val, lbl, tip) => '<span class="hc' + (cls ? ' ' + cls : '') + '" data-go="' + go + '" data-tip="' + esc(tip) + '">' + icon + '<span class="hv"><b>' + val + '</b><small>' + lbl + '</small></span></span>';
+  const h = cell('info', '', ic('prov'), mine + '<em>' + Math.round(100*mine/PIDS.length) + '%</em>' + trendH(4, mine, 0.5), 'gebied', 'Gebied: ' + mine + ' van de ' + PIDS.length + ' provincies (' + Math.round(100*mine/PIDS.length) + '%).\nOverwinning bij ' + Math.round(100*wsh) + '% van de kaart: ' + Math.ceil(PIDS.length*wsh) + ' provincies.')
+    + cell('prod', '', SI.pp, NF.format(n.ppd) + trendH(1, n.ppd, 0.15), 'per dag', 'Productie per dag: hiermee bouw je alles.\nFabrieken ' + NF.format(facTot(me)) + ' · bouwplekken ' + NF.format(su) + '/' + st + ' · wachtrij ' + n.q.length + '/10\nSneltoets P')
+    + cell('prod', full ? 'low' : '', SI.dv, divs + '<em>/' + cap + '</em>' + trendH(2, divs, 0.5), 'leger', 'Divisies / legerlimiet.\nDe limiet komt uit je mankracht (' + NF.format(n.man || 0) + ' mln) en een beetje uit je fabrieken, maal je oorlogssteun.' + (full ? '\nLimiet bereikt: verover en integreer land, of gebruik Mobilisatie.' : ''))
+    + cell('prod', wings >= acap ? 'low' : '', SI.air, wings + '<em>/' + acap + '</em>', 'lucht', 'Eskaders / luchtmachtlimiet. De limiet groeit met je fabrieken.')
+    + cell('info', n.ws < 25 ? 'low' : '', SI.ws, Math.round(n.ws) + '%' + trendH(3, n.ws, 1.5), 'steun', 'Oorlogssteun: vermenigvuldigt je legerlimiet.\nStijgt als je wordt aangevallen; daalt bij aanvalsoorlogen, verlies en bombardementen. Lage steun: je geeft sneller op.')
+    + cell('spec', n.cp >= 95 ? 'full' : '', SI.cp, Math.floor(n.cp) + '', 'bevel', 'Bevelpunten (max 100, +0,5 per dag): voor speciale acties en het rechtvaardigen van een oorlog.\nSneltoets A')
+    + cell('info', '', ic('medaille'), sc + '', 'score', 'Score (' + rankOf(sc).toLowerCase() + '): gebied, doelen en verslagen landen. Geen tijdslimiet.\nBrons vanaf 350 · zilver 800 · goud 1400')
+    + (aeM.m >= 1 ? cell('info', aeHot ? 'low' : '', SI.ae, Math.round(aeM.m) + '<em>/' + COAL_THR() + '</em>', 'agressie', 'Agressie: hoe bang andere landen voor je zijn (hoogste: ' + (aeM.who ? cname(aeM.who) : '—') + ').\nBij ' + COAL_THR() + ' of meer bij 3 landen tegelijk volgt een coalitie tegen jou.') : '')
+    + (mM >= 0.4 ? cell('info', 'low', ic('vlag'), pct(mM) + '%', 'overgave', 'Je overgavemeter: bij 100% moet je capituleren of doorvechten tot het einde.') : '');
   el.hidden = false;
   if(h !== statusSig){ statusSig = h; el.innerHTML = h; }
 }
-$('status').addEventListener('click', () => { if(!G) return; UI.sheet = UI.sheet === 'info' ? null : 'info'; sheetSig = ''; renderAll(); });
+$('status').addEventListener('click', e => { if(!G) return; const c = e.target.closest('[data-go]'), k = c ? c.dataset.go : 'info'; sfx('tap'); UI.sheet = UI.sheet === k ? null : k; sheetSig = ''; renderAll(); });
 
 /* ================= wachtrij ================= */
 const SVGI = (inner, fill) => '<svg viewBox="0 0 24 24" ' + (fill ? 'fill="currentColor"' : 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"') + '>' + inner + '</svg>';
@@ -4427,12 +4846,15 @@ function renderQueue(){
       + '<span class="fill" style="height:' + Math.round(100*q.p/cost) + '%"></span>' + qIcon(q.k)
       + '<span class="d">' + (q.wait ? '!' : days) + '</span></button>';
   });
+  // lege wachtrij: je fabrieken staan stil; een knipperende knop opent Productie
+  if(!n.q.length) h = '<button class="qb glass idle" data-i="-1" title="De wachtrij is leeg: je fabrieken staan stil. Open Productie (P)" aria-label="Wachtrij leeg: open Productie">' + ic('fab') + '<span class="d">leeg</span></button>';
   if(h === qSig) return;
   qSig = h; host.innerHTML = h;
 }
 $('queue').addEventListener('pointerup', e => {
   const b = e.target.closest('.qb'); if(!b || !G) return;
   const i = +b.dataset.i;
+  if(i < 0){ sfx('tap'); UI.sheet = 'prod'; sheetSig = ''; renderAll(); return; }
   if(qArm === i){ nat(G.player).q.splice(i, 1); qArm = -1; }
   else { qArm = i; qArmT = performance.now(); }
   qSig = null; renderQueue(); sheetSig = '';
@@ -4520,27 +4942,7 @@ function renderStrip(){
       + '<span class="chip2">' + ic('doel') + zn + '</span><span class="chip2">' + ic('prov') + AIR[t].range + ' km</span></span></div>'
       + '<div class="acts"><button class="btn sm" data-act="airhome" title="Terug naar de basis">' + ic('stad') + 'Basis</button><button class="btn sm pri" data-act="clear">' + ic('check') + 'Klaar</button></div>';
   } else if(UI.sel.size){
-    const us = [...UI.sel].map(unitById).filter(Boolean);
-    const cnt = {}; for(const u of us) cnt[u.t] = (cnt[u.t]||0) + 1;
-    const hp = Math.round(us.reduce((s,u) => s + u.hp, 0) / Math.max(1, us.length));
-    const moving = us.some(u => u.path.length || u.att);
-    const paras = us.filter(u => u.t === 'para');
-    const paraReady = paras.filter(u => !u.att && !u.path.length && (u.dropCd||0) <= G.day);
-    const types = UTYPES.filter(t => cnt[t]);
-    const chips = types.map(t => '<button class="uchip" data-act="tt:' + t + '"' + (types.length > 1 ? ' title="' + BAT[t].name + ' uit de selectie halen"' : ' disabled title="' + BAT[t].name + '"') + '>' + ic(t) + '<b>' + cnt[t] + '</b>' + (types.length > 1 ? '<i>×</i>' : '') + '</button>').join('');
-    const oos = us.filter(u => SUP[u.loc] === 0).length;
-    const nAuto = nat(G.player).auto, manual = us.filter(u => u.man).length;
-    h = '<div class="sel"><span class="sb"><b>' + us.length + (us.length === 1 ? ' divisie' : ' divisies') + '</b>' + meter(hp, 100, hp > 60 ? 'ok' : hp > 30 ? 'warn' : 'hot') + (oos ? '<span class="chip2 oos" title="Afgesneden van bevoorrading">' + ic('prov') + oos + '</span>' : '') + '</span>'
-      + '<span class="chips">' + chips + '</span>'
-      + (UI.hintN < 4 ? '<span class="hint2">' + ic('zwaard') + (isTouch ? 'Tik of sleep naar een doel' : 'Klik of sleep naar een doel') + '</span>' : '') + '</div><div class="acts">';
-    if(nAuto && manual) h += '<button class="btn sm" data-act="toai" title="Laat de auto-generaal deze troepen weer besturen">' + ic('gen') + 'Generaal</button>';
-    if(paras.length){
-      const cd = paras.reduce((m,u) => Math.max(m, (u.dropCd||0) - G.day), 0);
-      h += paraReady.length && enemiesOf(G.player).length ? '<button class="btn sm pri" data-act="drop">' + ic('para') + 'Landing</button>'
-        : '<button class="btn sm" disabled title="' + (!enemiesOf(G.player).length ? 'Alleen in oorlog' : 'Weer klaar over ' + Math.ceil(cd) + ' dagen') + '">' + ic('para') + (!enemiesOf(G.player).length ? '—' : Math.ceil(cd) + ' d') + '</button>';
-    }
-    h += '<button class="btn sm" data-act="front" title="Verdeel deze troepen over je frontprovincies">' + ic('schild') + 'Front</button>';
-    h += (moving ? '<button class="btn sm" data-act="halt">' + ic('stop') + 'Stop</button>' : '') + '<button class="btn sm pri" data-act="clear">' + ic('check') + 'Klaar</button></div>';
+    h = armyPanelH();   // legerpaneel: zie het blok "spelschil"
   } else if(UI.info){
     const p = UI.info, c = G.ctrl[p], core = P[p].c, me = G.player;
     const TI = {m:'berg', h:'heuvel', d:'woest', w:'moeras'};
@@ -4593,6 +4995,7 @@ $('strip').addEventListener('click', async e => {
   sfx('tap');
   if(b.dataset.map){ await switchMap(b.dataset.map); return; }
   const a = b.dataset.act;
+  if(armyAct(a)){ stripSig = null; renderAll(); return; }   // bevelen van het legerpaneel
   if(a === 'start'){ const c = UI.pick; UI.pick = null; newGame(c, UI.diff); if(UI.dailyKey){ G.daily = UI.dailyKey; UI.dailyKey = null; } onGameLoaded(true); return; }
   if(a === 'daily'){ const dl = dailyOf(); if(MAPNAME !== dl.map){ await switchMap(dl.map); } UI.diff = dl.diff; UI.pick = dl.c; UI.dailyKey = dl.key; fitCountry(dl.c); stripSig = null; renderAll(); return; }
   if(a === 'resume'){ loadSaved(); return; }
@@ -4745,6 +5148,7 @@ const det = (k, sum, body, def) => { const open = UI.od && UI.od[k] !== undefine
 function renderSheet(){
   const el = $('sheet');
   if(!G || !UI.sheet || G.over){ el.hidden = true; sheetSig = ''; return; }
+  if(hudSheet(el)) return;   // logboek en menu: zie het blok "spelschil"
   const n = nat(G.player), me = G.player;
   const full = n.q.length >= 10;
   const dd = k => Math.ceil(itemCost(me,k) / Math.max(0.1, n.ppd));
@@ -5041,7 +5445,6 @@ $('card').addEventListener('click', e => {
 let endSig = '';
 function renderEnd(){
   const el = $('endcard');
-  $('hero').hidden = !(DATA && !G && !UI.pick && !UI.loading && !UI.err);
   const show = G && (G.over || (G.won && UI.winShown));
   if(!show){ if(!el.hidden) el.hidden = true; endSig = ''; return; }
   const sc = score(), rk = rankOf(sc), best = bestOf(MAPNAME, G.player);
@@ -5050,7 +5453,8 @@ function renderEnd(){
   const win = G.won && !G.over;
   const title = win ? 'Overwinning' : 'Capitulatie';
   const sub = win ? 'Je beheerst ' + winTxt() + ' van de kaart' : esc(cname(G.player)) + ' geeft zich over · ' + fmtDate(G.day);
-  const h = '<span class="eico">' + ic(win ? 'medaille' : 'dood') + '</span>'
+  const h = '<div class="eh">' + ic(win ? 'ster' : 'vlag') + '<span>' + (win ? 'Eindverslag · zege' : 'Eindverslag · nederlaag') + '</span><i>' + fmtDay(G.day) + '</i></div>'
+    + '<span class="eico">' + ic(win ? 'medaille' : 'dood') + '</span>'
     + '<span class="et">' + title + '</span><span class="esub">' + sub + '</span>'
     + '<span class="escore">' + sc + '<small>' + rk + (best > 0 && sc >= best ? ' · record' : best ? ' · record ' + best : '') + '</small></span>'
     + '<div class="erows">'
@@ -5062,13 +5466,15 @@ function renderEnd(){
     + '</div><div class="ebtns">'
     + (win ? '<button class="btn" data-e="cont">Doorspelen</button>' : '<button class="btn" data-e="again">' + ic('leger') + 'Opnieuw met ' + esc(cname(G.player)) + '</button>')
     + '<button class="btn pri" data-e="new">' + ic('vlag') + 'Nieuw spel</button></div>'
-    + '<button class="btn sm ghost" data-e="share" title="Deel je score">' + ic('steun') + 'Deel je score</button>';
+    + '<div class="ebtns2"><button class="btn sm ghost" data-e="share" title="Deel je score">' + ic('steun') + 'Deel je score</button><button class="btn sm ghost" data-e="menu">' + ic('deur') + 'Hoofdmenu</button></div>';
   if(h === endSig) return;
   endSig = h; el.className = 'glass ' + (win ? 'win' : 'lose'); el.innerHTML = h; el.hidden = false;
 }
 $('endcard').addEventListener('click', e => {
   const b = e.target.closest('[data-e]'); if(!b) return;
+  sfx('tap');
   if(b.dataset.e === 'new'){ toPick(); }
+  else if(b.dataset.e === 'menu'){ toMenu(); }
   else if(b.dataset.e === 'share'){
     const txt = 'Vesting Europa: ' + score() + ' punten (' + rankOf(score()) + ') met ' + cname(G.player) + ' op ' + DIFF[G.diff].name + (G.won ? ' — overwinning!' : '') + (G.daily ? ' · uitdaging van ' + G.daily : '') + ' · ' + location.href.split('#')[0];
     if(navigator.share){ navigator.share({title:'Vesting Europa', text:txt}).catch(() => {}); }
@@ -5080,6 +5486,706 @@ $('endcard').addEventListener('click', e => {
   else { UI.winShown = false; G.paused = false; }
   renderAll();
 });
+
+/* ================= spelschil: topbalk, hoofdmenu, landkeuze, logboek, sneltoetsen, legerpaneel ================= */
+// extra silhouetten voor de schil (zelfde 24×24-raster als SIL, dus ook via ic() te gebruiken)
+Object.assign(SIL, {
+  boek:  {p:'M5 2.5h12.5A1.5 1.5 0 0 1 19 4v14.5H6.6a1.1 1.1 0 0 0 0 2.2H19V22H6.4A2.9 2.9 0 0 1 3.5 19.1V4A1.5 1.5 0 0 1 5 2.5z', d:'M7.5 6h8v1.6h-8zM7.5 9.4h8V11h-8z'},
+  wiel:  {p:'M10.4 1.6h3.2l.5 2.6 1.9.8 2.2-1.5 2.3 2.3-1.5 2.2.8 1.9 2.6.5v3.2l-2.6.5-.8 1.9 1.5 2.2-2.3 2.3-2.2-1.5-1.9.8-.5 2.6h-3.2l-.5-2.6-1.9-.8-2.2 1.5-2.3-2.3 1.5-2.2-.8-1.9-2.6-.5v-3.2l2.6-.5.8-1.9-1.5-2.2 2.3-2.3 2.2 1.5 1.9-.8z', d:'M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 1 0 0-6.8z'},
+  deur:  {p:'M4 3h10v2.5H6.5v13H14V21H4zM14.5 7.5 20 12l-5.5 4.5v-3H9.5v-3h5z'},
+  huis:  {p:'M12 3 2.5 11.5h2.7V21h5.3v-6h3v6h5.3v-9.5h2.7z'},
+  deel:  {p:'M11 2h2v7.2l6.4 6.4V12h2v7h-7v-2h3.6L12 11l-5.6 6H10v2H3v-7h2v3.6L11 9.2z'},
+  prul:  {p:'M9 2.5h6l.8 2H20v2H4v-2h4.2zM5.6 8h12.8l-1 13.5H6.6z', d:'M9.2 10.5h1.6v8H9.2zM13.2 10.5h1.6v8h-1.6z'},
+  oog:   {p:'M12 5c5 0 8.6 3.6 10 7-1.4 3.4-5 7-10 7S3.4 15.4 2 12c1.4-3.4 5-7 10-7z', d:'M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 1 0 0-7z'},
+  schijf:{p:'M4 3h13l3 3v15H4z', d:'M7 3h8v5H7zM7 13h10v6H7z'},
+  scherm:{p:'M3 3h7v2.4H5.4V10H3zM14 3h7v7h-2.4V5.4H14zM3 14h2.4v4.6H10V21H3zM18.6 14H21v7h-7v-2.4h4.6z'},
+  beker: {p:'M7 3h10v2h3.5v3.2a4.3 4.3 0 0 1-4 4.3A5.2 5.2 0 0 1 13 15.4V18h3.5v3h-9v-3H11v-2.6a5.2 5.2 0 0 1-3.5-2.9 4.3 4.3 0 0 1-4-4.3V5H7z', d:'M5.4 7v1.2c0 1 .7 1.9 1.6 2.2V7zM17 7v3.4c.9-.3 1.6-1.2 1.6-2.2V7z'},
+  toets: {p:'M2 6h20v12H2z', d:'M4.5 8.5h2v2h-2zM8 8.5h2v2H8zM11.5 8.5h2v2h-2zM15 8.5h2v2h-2zM18 8.5h1.5v2H18zM4.5 12h2v2h-2zM8 12h2v2H8zM11.5 12h2v2h-2zM15 12h4.5v2H15zM7 15.2h10v1.5H7z'},
+  speel: {p:'M8 5v14l11-7z'},
+  pijl:  {p:'M3 10.2h10.5V5.5L21.5 12l-8 6.5v-4.7H3z'}
+});
+const LOGO = cls => '<svg class="' + cls + '" viewBox="0 0 64 64" aria-hidden="true"><path fill="currentColor" d="M12 50V26h8v-8h6v8h12v-8h6v8h8v24z"/><path class="icd" d="M28 50V38h8v12z"/></svg>';
+const phead = (icon, t, close) => '<div class="tabs ptl"><span class="tab on">' + ic(icon) + '<span>' + t + '</span></span>' + close + '</div>';
+
+/* ---- logboek: elke melding met dag en soort; bewaard in G.log (begrensd), dus ook in het opgeslagen spel ---- */
+const LOG_MAX = 200;
+const LOG_SKIP = new Set(['sel', 'bad', 'mute', 'beslis', 'pts', 'odds', 'lag', 'err', 'save', 'fs', 'hud']);   // bedieningsfeedback: geen nieuws
+const LOG_KEEP = /oorlog|vrede|wapenstilstand|capitul|verdrag|coalitie|landen in|luchtlanding|raket|sabotage|blitz|mobilisatie|bunker/i;
+const LOG_CAT = {dip:['Oorlog en vrede', 'oorlog'], front:['Front', 'zwaard'], prod:['Productie', 'fab'], info:['Overig', 'info']};
+// grote gebeurtenissen: een banier midden in beeld in plaats van een gewone melding
+const BIG = [
+  [/verklaart jou de oorlog|sluit zich aan tegen jou|^Je bent in oorlog met/, 'Oorlog', 'war'],
+  [/^Coalitie tegen jou/, 'Coalitie', 'war'],
+  [/capituleert: beslis/, 'Overgave', 'good'],
+  [/^(Vrede getekend|Vrede met|Witte vrede|Wapenstilstand met)/, 'Vrede', 'good'],
+  [/is volledig veroverd door jou/, 'Veroverd', 'good'],
+  [/^Je capituleert/, 'Capitulatie', 'war'],
+  [/^Onderscheiding:/, 'Onderscheiding', 'good'],
+  [/^Doel behaald:/, 'Doel behaald', 'good']
+];
+function logCat(msg, key){
+  if(key && /^(cap|lost|kia|airloss|rebase|ls)/.test(key) && key !== 'cap-me') return 'front';
+  if(/geïntegreerd|gereed|ontwikkeld/i.test(msg)) return 'prod';
+  if(/oorlog|vrede|wapenstilstand|capitul|coalitie|rechtvaardigt|verdrag|veroverd|overgave/i.test(msg)) return 'dip';
+  if(/fabriek/i.test(msg)) return 'prod';
+  if(/ingenomen|verloren|gesneuveld|omsingeld|neergeschoten|landing|landen in|bunkerlinie|generaal|troepen|afgesneden|noodtoestand|raket|sabotage/i.test(msg)) return 'front';
+  return 'info';
+}
+// waar gaat de melding over? Bij oorlog en vrede het eerst genoemde (andere) land, anders de eerst genoemde provincie: daar springt het logboek heen
+function logRef(msg, cat){
+  const at = (n, min) => { if(n.length < min) return -1; const i = msg.indexOf(n); if(i < 0) return -1; const a = msg[i - 1], z = msg[i + n.length]; return (a && /\p{L}/u.test(a)) || (z && /\p{L}/u.test(z)) ? -1 : i; };
+  let bp = null, pi = 1e9, pl = 0, bc = null, ci = 1e9, cl = 0;
+  for(const p of PIDS){ const n = P[p].n, i = at(n, 4); if(i >= 0 && (i < pi || (i === pi && n.length > pl))){ bp = p; pi = i; pl = n.length; } }
+  for(const c of CIDS){ if(c === G.player) continue; const n = CN[c].name, i = at(n, 3); if(i >= 0 && (i < ci || (i === ci && n.length > cl))){ bc = c; ci = i; cl = n.length; } }
+  if(bp && (!bc || cat !== 'dip')) return {p:bp};
+  return bc ? {c:bc} : {};
+}
+let newsSig = '';
+function logAdd(msg, kind, key){
+  if(!G || !msg) return false;
+  const big = BIG.find(b => b[0].test(msg));
+  const byUser = !!window.event;   // melding als direct gevolg van een klik of toets (geen spelgebeurtenis uit de simulatie)
+  const skip = (key && LOG_SKIP.has(key)) || (byUser && !big && kind !== 'war' && !LOG_KEEP.test(msg));
+  if(!skip){
+    const L = G.log ||= [], d = Math.floor(G.day), last = L[L.length - 1];
+    if(key && last && last.y === key && d - last.d <= 3){ last.m = msg; last.d = d; }   // dezelfde melding, bijgewerkt (bv. "3 provincies ingenomen"): één regel
+    else {
+      const e = {d, k:kind || '', t:logCat(msg, key), m:msg}, r = logRef(msg, e.t);
+      if(key) e.y = key;
+      if(r.p) e.p = r.p; else if(r.c) e.c = r.c;
+      L.push(e); if(L.length > LOG_MAX) L.splice(0, L.length - LOG_MAX);
+      G.logN = (G.logN || 0) + 1;
+    }
+    newsSig = null;
+  }
+  if(big && SET.banner !== false){ showBanner(big[1], msg, kind || big[2]); return true; }
+  return false;
+}
+function jumpTo(p){ const [x, y] = P[p].a, m = Math.max(60, 420 / KM); fitBox(x - m, y - m, x + m, y + m, 1); }
+function logJump(e){
+  if(e.p && P[e.p]){ jumpTo(e.p); if(G && !G.over && !UI.target){ clearSel(); UI.info = e.p; UI.confirm = null; } }
+  else if(e.c && CN[e.c]){ if(G && owned(e.c).length) fitCountry(e.c); else jumpTo(CN[e.c].cap); }
+  else return;
+  if(cw() < 900) UI.sheet = null;   // op een smal scherm ligt het paneel over de kaart
+  stripSig = null;
+}
+const logRowH = (e, i, same) => '<button class="lrow ' + (e.k || '') + (e.p || e.c ? ' go' : '') + '" data-li="' + i + '"' + (e.p || e.c ? ' title="Toon op de kaart"' : ' tabindex="-1"') + '><i' + (same ? ' class="same"' : '') + '>dag ' + e.d + '</i>'
+  + ic((LOG_CAT[e.t] || LOG_CAT.info)[1]) + '<span>' + esc(e.m) + '</span>' + (e.p || e.c ? '<em>' + ic('doel') + '</em>' : '<em></em>') + '</button>';
+function renderNews(){
+  const L = G.log || [], e = L[L.length - 1], el = $('news');
+  const h = e ? ic((LOG_CAT[e.t] || LOG_CAT.info)[1]) + '<i>dag ' + e.d + '</i><span>' + esc(e.m) + '</span>' : '<i>Logboek</i><span>Nog geen nieuws van het front</span>';
+  if(h === newsSig) return;
+  const fresh = newsSig !== '' && !!e;
+  newsSig = h; el.innerHTML = h; el.className = (e ? e.k : '') + (fresh ? ' fresh' : '');
+  el.title = 'Laatste melding · klik voor het logboek (L)';
+}
+let bannerT = 0;
+function showBanner(head, msg, kind){
+  const el = $('banner');
+  el.className = kind === 'war' ? 'war' : 'good';
+  el.innerHTML = '<span class="bnk">' + ic(kind === 'war' ? 'oorlog' : 'ster') + head + '</span><span class="bnm"></span>';
+  el.lastChild.textContent = msg.startsWith(head + ': ') ? msg.slice(head.length + 2) : msg;
+  el.hidden = false; void el.offsetWidth; el.classList.add('on');
+  clearTimeout(bannerT); bannerT = setTimeout(hideBanner, 4600);
+}
+function hideBanner(){ const el = $('banner'); clearTimeout(bannerT); el.classList.remove('on'); bannerT = setTimeout(() => { el.hidden = true; }, 320); }
+$('banner').addEventListener('click', () => { const L = G && G.log, e = L && L[L.length - 1]; hideBanner(); if(e){ logJump(e); renderAll(); } });
+
+/* ---- trend in de topbalk: steekproeven om de 5 dagen, het pijltje vergelijkt met ruim een maand geleden ---- */
+let TREND = [];   // [dag, productie, divisies, steun, provincies]
+function trendTick(){
+  const me = G.player, d = Math.floor(G.day), last = TREND[TREND.length - 1];
+  if(last && d < last[0]) TREND = [];
+  else if(last && d - last[0] < 5) return;
+  TREND.push([d, nat(me).ppd, UCNT[me] || 0, nat(me).ws, owned(me).length]); if(TREND.length > 9) TREND.shift();
+}
+function trendH(i, v, eps){ const s = TREND[0]; if(!s || !G || G.day - s[0] < 10) return ''; const dv = v - s[i]; return Math.abs(dv) < eps ? '' : '<i class="tr ' + (dv > 0 ? 'up' : 'dn') + '">' + (dv > 0 ? '▲' : '▼') + '</i>'; }
+
+/* ---- waarschuwingen (rechtsboven onder de wachtrij) en legergroepen ---- */
+function alertsOf(){
+  const me = G.player, n = nat(me), out = [];
+  for(const x of Object.keys(G.aiJust || {})) if(CN[x] && alive(x) && !atWar(x, me)) out.push({ic:'oorlog', cls:'war', dot:colorOf(x), c:x, t:cname(x) + ' bereidt een oorlog tegen je voor' + (G.aiJust[x] > G.day ? ' (nog ' + Math.ceil(G.aiJust[x] - G.day) + ' dagen)' : '') + '\nKlik: toon het land'});
+  for(const x in G.wg || {}) if(G.wg[x] >= G.day && CN[x] && alive(x) && !atWar(me, x)) out.push({ic:'vrede', cls:'ok', dot:colorOf(x), c:x, t:'Oorlogsdoel tegen ' + cname(x) + ' is klaar: nog ' + Math.ceil(G.wg[x] - G.day) + ' dagen geldig\nKlik: toon het land'});
+  const mM = meterOf(me); if(mM >= 0.5) out.push({ic:'vlag', cls:'war', go:'info', t:'Je overgavemeter staat op ' + pct(mM) + '%: bij 100% moet je capituleren of doorvechten'});
+  const oos = (UBY[me] || []).filter(u => SUP[u.loc] === 0);
+  if(oos.length) out.push({ic:'prov', cls:'warn', n:oos.length, ids:oos.map(u => u.id), t:oos.length + (oos.length === 1 ? ' divisie is' : ' divisies zijn') + ' afgesneden van de aanvoer: ze vechten op 65% en slijten\nKlik: selecteer ze'});
+  let crowd = 0, cp = null; for(const p in G.over2 || {}) if(G.over2[p] && G.ctrl[p] === me){ crowd++; cp ||= p; }
+  if(crowd) out.push({ic:'leger', cls:'warn', n:crowd, p:cp, t:'Te veel troepen in ' + crowd + (crowd === 1 ? ' provincie' : ' provincies') + ': meer dan de aanvoer aankan, ze slijten en herstellen niet\nKlik: toon de provincie'});
+  if(n.q.some(q => q.wait)) out.push({ic:'fab', cls:'warn', go:'prod', t:'De productie wacht: legerlimiet of luchtmachtlimiet bereikt, of geen bouwplek vrij'});
+  if(n.cp >= 95) out.push({ic:'bevel', cls:'ok', go:'spec', t:'Bevelpunten vol: gebruik een speciale actie (A)'});
+  return out;
+}
+let alSig = '';
+function renderAlerts(){
+  const host = $('alerts');
+  if(!G || G.over){ if(alSig !== ''){ alSig = ''; host.innerHTML = ''; } return; }
+  const al = alertsOf(), gr = G.groups || {};
+  let h = al.map((a, i) => '<button class="al ' + a.cls + '" data-al="' + i + '" data-tip="' + esc(a.t) + '" aria-label="' + esc(a.t.split('\n')[0]) + '">' + ic(a.ic) + (a.n ? '<b>' + a.n + '</b>' : '') + (a.dot ? '<span class="cdot" style="background:' + a.dot + '"></span>' : '') + '</button>').join('');
+  for(let k = 1; k <= 9; k++){
+    if(!gr[k]) continue;
+    const ids = gr[k].filter(id => unitById(id));
+    if(!ids.length){ delete gr[k]; continue; }
+    if(ids.length !== gr[k].length) gr[k] = ids;
+    const on = ids.length === UI.sel.size && ids.every(id => UI.sel.has(id));
+    h += '<button class="al grp' + (on ? ' on' : '') + '" data-grp="' + k + '" data-tip="Legergroep ' + k + ': ' + ids.length + (ids.length === 1 ? ' divisie' : ' divisies') + '\nKlik = selecteren, nogmaals = ernaartoe · Alt+' + k + '" aria-label="Legergroep ' + k + '"><i>' + k + '</i><b>' + ids.length + '</b></button>';
+  }
+  UI.alerts = al;
+  if(h === alSig) return;
+  alSig = h; host.innerHTML = h;
+}
+$('alerts').addEventListener('click', e => {
+  if(!G || G.over) return;
+  const g = e.target.closest('[data-grp]'), b = e.target.closest('[data-al]');
+  if(g){ groupPick(+g.dataset.grp); return; }
+  const a = b && (UI.alerts || [])[+b.dataset.al]; if(!a) return;
+  sfx('tap');
+  if(a.go){ UI.sheet = a.go; sheetSig = ''; }
+  else if(a.ids){ UI.sel = new Set(a.ids.filter(id => unitById(id))); UI.selAir = new Set(); UI.info = null; UI.target = null; fitSel(); }
+  else if(a.p){ jumpTo(a.p); clearSel(); UI.info = a.p; UI.confirm = null; }
+  else if(a.c){ fitCountry(a.c); const p = owned(a.c).includes(CN[a.c].cap) ? CN[a.c].cap : owned(a.c)[0]; if(p){ clearSel(); UI.info = p; UI.confirm = null; } }
+  stripSig = null; renderAll();
+});
+function groupSave(k){
+  const ids = [...UI.sel].filter(id => unitById(id)); if(!ids.length) return;
+  (G.groups ||= {})[k] = ids; alSig = null; stripSig = null; sfx('order');
+  toast('Legergroep ' + k + ' opgeslagen: ' + ids.length + (ids.length === 1 ? ' divisie' : ' divisies') + (isTouch ? '' : ' · Alt+' + k + ' selecteert haar weer'), 'good', 'hud');
+  renderAll();
+}
+function groupPick(k){
+  const us = ((G.groups || {})[k] || []).map(unitById).filter(Boolean);
+  if(!us.length){ toast('Legergroep ' + k + ' is leeg: selecteer troepen en druk Shift+' + k, '', 'hud'); return; }
+  const same = us.length === UI.sel.size && us.every(u => UI.sel.has(u.id));
+  UI.sel = new Set(us.map(u => u.id)); UI.selAir = new Set(); UI.info = null; UI.target = null;
+  if(same) fitSel();
+  sfx('tap'); stripSig = null; renderAll();
+}
+function fitSel(){
+  const us = [...UI.sel].map(unitById).filter(Boolean); if(!us.length) return;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for(const u of us){ const [x, y] = P[u.loc].a; x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  const m = Math.max(60, 340 / KM); fitBox(x0 - m, y0 - m, x1 + m, y1 + m, 1.05);
+}
+
+/* ---- legerpaneel: de selectie per divisiesoort (aantal, sterkte, toestand) met alle bevelen ---- */
+const disbOk = us => !!(UI.disb && us.length && UI.disb.n === us.length && UI.disb.id === us[0].id && performance.now() - UI.disb.t < 5000);
+function armyPanelH(){
+  const me = G.player, n = nat(me), us = [...UI.sel].map(unitById).filter(u => u && u.c === me);
+  if(!us.length){ UI.sel = new Set(); return ''; }
+  const cnt = {}, hpT = {}, st = {}, locs = new Set();
+  let hp = 0, atk = 0, def = 0, nMove = 0, nAtt = 0, nDug = 0, nOos = 0, nMan = 0, dest = null, oneDest = true;
+  for(const u of us){
+    cnt[u.t] = (cnt[u.t] || 0) + 1; hpT[u.t] = (hpT[u.t] || 0) + u.hp; hp += u.hp; locs.add(u.loc);
+    const s = st[u.t] ||= {att:0, mov:0, dug:0, oos:0};
+    if(u.att){ s.att++; nAtt++; }
+    else if(u.path.length){ s.mov++; nMove++; const d = u.path[u.path.length - 1]; if(dest == null) dest = d; else if(dest !== d) oneDest = false; }
+    else if((u.ent || 0) >= 6){ s.dug++; nDug++; }
+    if(SUP[u.loc] === 0){ s.oos++; nOos++; }
+    if(u.man) nMan++;
+    atk += atkPlain(u); def += defPlain(u, u.loc);
+  }
+  hp = Math.round(hp / us.length);
+  const types = UTYPES.filter(t => cnt[t]), multi = types.length > 1, moving = nMove + nAtt > 0;
+  const paras = us.filter(u => u.t === 'para'), paraReady = paras.filter(u => !u.att && !u.path.length && (u.dropCd || 0) <= G.day);
+  const where = locs.size === 1 ? esc(P[[...locs][0]].n) : locs.size + ' provincies';
+  const gk = Object.keys(G.groups || {}).find(k => { const g = G.groups[k]; return g.length === us.length && g.every(id => UI.sel.has(id)); });
+  const mcl = v => v > 60 ? 'ok' : v > 30 ? 'warn' : 'hot';
+  const chip = (cls, icon, v, tip) => '<span class="chip2' + (cls ? ' ' + cls : '') + '" title="' + tip + '">' + ic(icon) + v + '</span>';
+  const kb = k => '<kbd>' + k + '</kbd>';
+  let h = '<div class="aph"><span class="apt">' + ic('leger') + '<b>' + (gk ? 'Legergroep ' + gk : 'Selectie') + '</b><em>' + us.length + (us.length === 1 ? ' divisie' : ' divisies') + ' · ' + where + '</em></span>'
+    + '<span class="aps" title="Gemiddelde sterkte van de selectie">' + meter(hp, 100, mcl(hp)) + '<b>' + hp + '%</b></span>'
+    + '<span class="aps" title="Aanvalskracht van de selectie">' + ic('zwaard') + '<b>' + NF.format(Math.round(atk)) + '</b></span>'
+    + '<span class="aps" title="Verdedigingskracht op de huidige plek (met ingraven en bunkers)">' + ic('schild') + '<b>' + NF.format(Math.round(def)) + '</b></span>'
+    + '<button class="xclose" data-act="clear" aria-label="Deselecteren" title="Deselecteren (Esc)">×</button></div><div class="apl">';
+  for(const t of types){
+    const s = st[t], thp = Math.round(hpT[t] / cnt[t]), nm = BAT[t].name;
+    h += '<div class="apr"><button class="apu" data-act="only:' + t + '"' + (multi ? ' title="Alleen ' + nm.toLowerCase() + ' selecteren"' : ' disabled') + '>' + ic(t) + '<span>' + nm + '</span><b>' + cnt[t] + '</b></button>'
+      + '<span class="apm" title="Sterkte ' + thp + '%">' + meter(thp, 100, mcl(thp)) + '</span><span class="aps2">'
+      + (s.att ? chip('hot', 'zwaard', s.att, 'In de aanval') : '') + (s.mov ? chip('', 'pijl', s.mov, 'Onderweg') : '')
+      + (s.dug ? chip('good', 'bunker', s.dug, 'Ingegraven: extra verdediging') : '') + (s.oos ? chip('oos', 'prov', s.oos, 'Afgesneden van de aanvoer: vecht op 65% en slijt') : '')
+      + (!s.att && !s.mov && !s.dug && !s.oos ? '<span class="mut">paraat</span>' : '') + '</span>'
+      + (multi ? '<button class="apx" data-act="tt:' + t + '" title="' + nm + ' uit de selectie halen" aria-label="' + nm + ' uit de selectie halen">×</button>' : '<span></span>') + '</div>';
+  }
+  const stat = [];
+  if(nAtt) stat.push('<span class="warc">' + nAtt + ' in de aanval</span>');
+  if(nMove) stat.push(nMove + ' onderweg' + (oneDest && dest ? ' naar ' + esc(P[dest].n) : ''));
+  if(nDug) stat.push(nDug + ' ingegraven');
+  if(nOos) stat.push('<span class="oosc" style="margin:0">' + nOos + ' afgesneden</span>');
+  if(n.auto) stat.push(nMan ? nMan + ' op jouw bevel' : 'onder de generaal');
+  h += '</div><div class="apst">' + (UI.hintN < 4 ? '<span class="hint2">' + ic('zwaard') + (isTouch ? 'Tik of sleep naar een doel' : 'Klik, rechtsklik of sleep naar een doel') + '</span>' : '') + '<span>' + (stat.join(' · ') || 'Paraat: wacht op je bevel') + '</span></div><div class="acts apb">';
+  h += '<button class="btn sm" data-act="halt"' + (moving ? '' : ' disabled') + ' title="Halt: stop en houd deze positie. Wie stilstaat graaft zich in (tot +20% verdediging)">' + ic('stop') + 'Halt' + kb('H') + '</button>';
+  h += '<button class="btn sm" data-act="front" title="Verdeel deze troepen over je frontprovincies">' + ic('schild') + 'Front' + kb('F') + '</button>';
+  if(n.auto && nMan) h += '<button class="btn sm" data-act="toai" title="Laat de auto-generaal deze troepen weer besturen">' + ic('gen') + 'Generaal' + kb('G') + '</button>';
+  if(paras.length){
+    const cd = paras.reduce((m, u) => Math.max(m, (u.dropCd || 0) - G.day), 0), war = enemiesOf(me).length;
+    h += paraReady.length && war ? '<button class="btn sm pri" data-act="drop" title="Luchtlanding: kies daarna een gemarkeerde provincie">' + ic('para') + 'Landing</button>'
+      : '<button class="btn sm" disabled title="' + (!war ? 'Luchtlanding kan alleen in oorlog' : 'Weer klaar over ' + Math.ceil(cd) + ' dagen') + '">' + ic('para') + (!war ? 'Landing' : Math.ceil(cd) + ' d') + '</button>';
+  }
+  h += '<button class="btn sm" data-act="split"' + (us.length > 1 ? '' : ' disabled') + ' title="Splits: de helft van elke soort blijft geselecteerd">' + ic('deel') + 'Splits</button>';
+  h += '<button class="btn sm" data-act="center" title="Kaart naar de selectie">' + ic('doel') + 'Toon' + kb('C') + '</button>';
+  h += '<button class="btn sm" data-act="selview" title="Selecteer al je divisies die nu in beeld zijn">' + ic('oog') + 'In beeld' + kb('V') + '</button>';
+  h += '<button class="btn sm" data-act="grp"' + (gk ? ' disabled' : '') + ' title="Sla deze selectie op als legergroep (Shift+1…9). Alt+cijfer of de knop rechtsboven selecteert haar weer">' + ic('leger') + (gk ? 'Groep ' + gk : 'Groep +') + '</button>';
+  h += '<button class="btn sm' + (disbOk(us) ? ' war' : '') + '" data-act="disband" title="Ontbinden: deze divisies verdwijnen voorgoed en maken ruimte onder je legerlimiet">' + ic('prul') + (disbOk(us) ? 'Bevestig: ' + us.length + ' weg' : 'Ontbind') + '</button>';
+  return h + '</div>';
+}
+// de nieuwe bevelen van het legerpaneel; geeft false terug voor wat de contextstrook zelf al afhandelt (halt, front, generaal, landing)
+function armyAct(a){
+  if(!G || G.over || !a) return false;
+  const me = G.player, us = [...UI.sel].map(unitById).filter(u => u && u.c === me);
+  if(a.startsWith('only:')){ const ids = us.filter(u => u.t === a.slice(5)).map(u => u.id); if(ids.length) UI.sel = new Set(ids); return true; }
+  if(a === 'split'){
+    const s = us.slice().sort((x, y) => UTYPES.indexOf(x.t) - UTYPES.indexOf(y.t) || y.hp - x.hp || x.id - y.id);
+    if(s.length > 1) UI.sel = new Set(s.filter((_, i) => i % 2 === 0).map(u => u.id));
+    return true;
+  }
+  if(a === 'center'){ fitSel(); return true; }
+  if(a === 'selview'){
+    const ids = []; for(const g of Object.values(GROUPS)) if(g.c === me && g.sx >= 0 && g.sx <= cw() && g.sy >= 0 && g.sy <= chh()) ids.push(...g.ids);
+    if(ids.length){ UI.sel = new Set(ids); UI.selAir = new Set(); UI.info = null; UI.target = null; toast(ids.length + (ids.length === 1 ? ' divisie' : ' divisies') + ' in beeld geselecteerd', 'good', 'sel'); }
+    else toast('Geen eigen divisies in beeld', '', 'hud');
+    return true;
+  }
+  if(a === 'grp'){ const gr = G.groups ||= {}; let k = 1; while(k < 9 && gr[k] && gr[k].some(id => unitById(id))) k++; groupSave(k); return true; }
+  if(a === 'disband'){
+    if(disbOk(us)){
+      const drop = new Set(us.map(u => u.id));
+      G.units = G.units.filter(u => !drop.has(u.id)); buildIdx(); clearSel(); UI.disb = null; overDirty = true;
+      toast(drop.size + (drop.size === 1 ? ' divisie ontbonden' : ' divisies ontbonden'), '', 'hud');
+    } else if(us.length) UI.disb = {n:us.length, id:us[0].id, t:performance.now()};
+    return true;
+  }
+  return false;
+}
+
+/* ---- instellingen (gedeeld door het hoofdmenu en het menu in het spel) en het sneltoetsenoverzicht ---- */
+function applyUiScale(){
+  const v = SET.ui || 1;
+  document.documentElement.style.fontSize = v === 1 ? '' : 'calc(' + v + ' * clamp(13px, calc(0.5vmin + 0.25vw + 8px), 30px))';
+  measure(); baseDirty = true; overDirty = true;
+}
+function settingsH(){
+  const sc = SET.ui || 1, chk = (attr, k, on, l) => '<label><input type="checkbox" ' + attr + '="' + k + '"' + (on ? ' checked' : '') + '> ' + l + '</label>';
+  return '<div class="setrow">' + chk('data-set', 'sound', SET.sound, 'Geluidseffecten') + chk('data-set', 'music', SET.music, 'Muziek')
+    + '<label class="vol">' + ic('steun') + '<input type="range" min="0" max="1" step="0.05" value="' + SET.vol + '" data-set="vol" aria-label="Volume"></label>'
+    + chk('data-set', 'cb', SET.cb, 'Kleurenblind: dikke grenzen en patronen')
+    + chk('data-set2', 'fx', SET.fx !== false, 'Schudden en flitsen bij oorlog en verlies')
+    + chk('data-set2', 'banner', SET.banner !== false, 'Grote banier bij belangrijke gebeurtenissen')
+    + chk('data-set2', 'tips', SET.tips !== false, 'Uitleg bij aanwijzen in spelstijl')
+    + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>';
+}
+// wijzigingen in de instellingen; all = ook de bestaande sleutels (in het paneel doet de eigen luisteraar van het vel die al)
+function setChange(i, all){
+  if(i.dataset.set2){ SET[i.dataset.set2] = i.checked; saveSettings(); if(SET.tips === false) $('tip2').hidden = true; return true; }
+  const k = i.dataset.set; if(!k || !all) return false;
+  if(k === 'sound'){ setSound(i.checked); if(i.checked){ audioInit(); sfx('tap'); } }
+  else if(k === 'music'){ audioInit(); setMusic(i.checked); }
+  else if(k === 'vol'){ audioInit(); setVol(+i.value); sfx('tap'); }
+  else if(k === 'cb'){ SET.cb = i.checked; saveSettings(); allFills(); baseDirty = true; }
+  return true;
+}
+const KEYS = [
+  ['Spatie', 'Pauze / verder'], ['1 – 4', 'Snelheid kiezen'], ['+ / −', 'Sneller / langzamer'],
+  ['P', 'Productie'], ['A', 'Speciale acties'], ['D', 'Diplomatie'], ['O', 'Overzicht'], ['L', 'Logboek'],
+  ['Esc', 'Annuleren, paneel sluiten, deselecteren; anders het menu'],
+  ['Home', 'Naar je eigen land'], ['Pijltjes', 'Kaart schuiven'], ['Scrollwiel', 'In- en uitzoomen'], ['Tab', 'Volgend gevecht of frontstuk (Shift = vorige)'],
+  ['Klik', 'Stapel of provincie kiezen'], ['Rechtsklik', 'Bevel: ga naar of val aan'], ['Shift+klik', 'Stapel toevoegen aan de selectie'], ['Shift+slepen', 'Kader selecteren'],
+  ['Shift+1 … 9', 'Selectie opslaan als legergroep (Ctrl kan ook)'], ['Alt+1 … 9', 'Legergroep selecteren, nogmaals = ernaartoe'],
+  ['H', 'Selectie: halt'], ['F', 'Selectie: verdeel over het front'], ['G', 'Selectie: terug naar de generaal'], ['C', 'Kaart naar de selectie'], ['V', 'Selecteer alles in beeld'],
+  ['M', 'Geluid aan / uit'], ['?', 'Dit overzicht']
+];
+const keysH = () => '<div class="kcols">' + [0, 1].map(col => '<div class="khelp">' + KEYS.filter(k => k[0] !== 'D' || document.querySelector('[data-sheet="dip"]')).filter((_, i, a) => (i < Math.ceil(a.length / 2)) === (col === 0)).map(([k, t]) => '<kbd>' + k + '</kbd><span>' + t + '</span>').join('') + '</div>').join('') + '</div>';
+function renderKeys(){
+  const el = $('keys');
+  if(!UI.keys){ el.hidden = true; el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="kpanel glass">' + phead('toets', 'Sneltoetsen', '<button class="xclose" data-k="x" aria-label="Sluiten">×</button>') + keysH() + '</div>';
+  el.hidden = false;
+}
+$('keys').addEventListener('click', e => { if(e.target === $('keys') || e.target.closest('[data-k]')){ sfx('tap'); UI.keys = false; renderKeys(); } });
+function fullScreen(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => {}); }catch(e){} }
+
+/* ---- eigen vellen in het paneel: logboek en menu ---- */
+let hudK = null;
+function hudSheet(el){
+  const k = UI.sheet; if(k !== 'log' && k !== 'set'){ hudK = null; return false; }
+  const X = '<button class="xclose" data-tab="" aria-label="Sluiten">×</button>';
+  let h;
+  if(k === 'log'){
+    const L = G.log || [], f = UI.logF || 'all', cnt = {all:L.length}; for(const e of L) cnt[e.t] = (cnt[e.t] || 0) + 1;
+    h = phead('boek', 'Logboek', X) + '<div class="gsegs logf">' + [['all', 'Alles']].concat(Object.keys(LOG_CAT).map(c => [c, LOG_CAT[c][0]])).map(([c, l]) => '<button class="gseg' + (f === c ? ' on' : '') + '" data-lf="' + c + '">' + l + '<i>' + (cnt[c] || 0) + '</i></button>').join('') + '</div>';
+    const rows = []; let pd = -1;
+    for(let i = L.length - 1; i >= 0 && rows.length < 120; i--){ const e = L[i]; if(f !== 'all' && e.t !== f) continue; rows.push(logRowH(e, i, e.d === pd)); pd = e.d; }
+    h += rows.length ? '<div class="logl">' + rows.join('') + '</div>' : '<div class="blk empty">' + ic('boek') + '<span>' + (L.length ? 'Geen meldingen van deze soort.' : 'Nog niets te melden. Oorlog en vrede, veroveringen, verliezen en productie komen hier te staan.') + '</span></div>';
+    h += '<div class="foot" style="align-items:center"><span class="mut" style="font-size:.78rem;flex:1 1 12rem">De laatste ' + LOG_MAX + ' meldingen blijven bewaard bij je spel. Klik een regel om er op de kaart heen te gaan.</span>' + (L.length ? '<button class="btn sm" data-h="logclr">' + ic('prul') + 'Wissen</button>' : '') + '</div>';
+  } else {
+    const hb = (a, icon, t, cls) => '<button class="btn' + (cls ? ' ' + cls : '') + '" data-h="' + a + '">' + ic(icon) + t + '</button>';
+    h = phead('wiel', 'Menu', X) + '<div class="mgrid">'
+      + hb('resume', 'speel', 'Verder') + hb('save', 'schijf', 'Nu opslaan')
+      + hb('keys', 'toets', 'Sneltoetsen') + hb('intro', 'info', 'Snelstart')
+      + hb('home', 'huis', 'Mijn land') + hb('full', 'scherm', 'Volledig scherm')
+      + (UI.confirm === 'new' ? hb('new', 'vlag', 'Bevestig: nieuw', 'war') : hb('new', 'vlag', 'Nieuw spel'))
+      + hb('menu', 'deur', 'Hoofdmenu') + '</div>'
+      + '<p class="help" style="margin:.2rem 0 0">Het spel wordt vanzelf opgeslagen. Via het hoofdmenu kun je later verder met Doorgaan.</p>'
+      + '<div class="sec">' + ic('wiel') + 'Instellingen</div>' + settingsH();
+  }
+  if(h === sheetSig || sheetPress) return true;
+  sheetSig = h;
+  const st = hudK === k ? el.scrollTop : 0;
+  el.innerHTML = h; el.hidden = false; el.scrollTop = st; hudK = k;
+  return true;
+}
+function hudAct(a){
+  if(a === 'logclr'){ G.log = []; newsSig = null; }
+  else if(a === 'resume'){ UI.sheet = null; }
+  else if(a === 'save'){ autosave(); if(!saveFailed) toast('Spel opgeslagen', 'good', 'hud'); }
+  else if(a === 'keys'){ UI.keys = true; renderKeys(); }
+  else if(a === 'intro'){ UI.intro = 1; UI.sheet = null; G.paused = true; stripSig = null; }
+  else if(a === 'home'){ fitCountry(G.player); if(cw() < 900) UI.sheet = null; }
+  else if(a === 'full'){ fullScreen(); }
+  else if(a === 'new'){ if(UI.confirm === 'new'){ UI.confirm = null; toPick(); return; } UI.confirm = 'new'; }
+  else if(a === 'menu'){ toMenu(); return; }
+}
+$('sheet').addEventListener('click', e => {
+  if(!G) return;
+  const lf = e.target.closest('[data-lf]'), li = e.target.closest('[data-li]'), hb = e.target.closest('[data-h]'), ui = e.target.closest('[data-ui]');
+  if(lf) UI.logF = lf.dataset.lf;
+  else if(li){ const en = (G.log || [])[+li.dataset.li]; if(en) logJump(en); }
+  else if(hb) hudAct(hb.dataset.h);
+  else if(ui){ SET.ui = +ui.dataset.ui; saveSettings(); applyUiScale(); }
+  else return;
+  sheetSig = ''; sheetPress = false; renderAll();
+});
+$('sheet').addEventListener('change', e => { const i = e.target.closest('[data-set2]'); if(i){ setChange(i, false); sheetSig = ''; } });
+
+/* ---- hoofdmenu: Doorgaan, Nieuw spel, Uitdaging, Records, Instellingen, Hoe werkt het ---- */
+let menuSig = null, menuSave;   // menuSave: samenvatting van het opgeslagen spel (één keer lezen per bezoek aan het menu)
+function saveInfo(){
+  if(menuSave !== undefined) return menuSave;
+  const s = readSave(), g = s && s.G;
+  menuSave = g && g.v === 5 && g.player && !g.over && MAPS[s.map] ? {c:g.player, day:g.day, map:s.map, diff:g.diff, name:((CACHE[s.map] && CACHE[s.map].countries[g.player]) || {}).name || g.player.toUpperCase()} : null;
+  return menuSave;
+}
+function bestList(){
+  let b = {}; try{ b = JSON.parse(localStorage.getItem('ve_best') || '{}'); }catch(e){}
+  return Object.keys(b).map(k => { const [m, c] = k.split(':'); return {m, c, s:b[k], name:m === MAPNAME && CN[c] ? CN[c].name : ((CACHE[m] && CACHE[m].countries[c]) || {}).name || c.toUpperCase()}; }).filter(x => MAPS[x.m] && x.s > 0).sort((x, y) => y.s - x.s);
+}
+const mbtn = (k, icon, t, sub, cls) => '<button class="mb' + (cls ? ' ' + cls : '') + '" data-m="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
+const HOW = [
+  ['vlag', '<b>Kies een land</b> en een niveau. Je wint zodra je het afgesproken deel van de kaart beheerst; er is geen tijdslimiet.'],
+  ['fab', '<b>Productie</b> (P): fabrieken bouwen divisies, vliegtuigen, onderzoek en nieuwe fabrieken. Een lege wachtrij is verspilling.'],
+  ['leger', '<b>Leger</b>: klik een stapel en klik, rechtsklik of sleep naar een doel. Of zet de <b>auto-generaal</b> aan (Overzicht): hij regelt front en aanval, jouw bevelen gaan voor.'],
+  ['vrede', '<b>Oorlog</b>: klik een buitenlandse provincie. Rechtvaardig eerst (30 dagen) voor halve agressie, of val bij verrassing aan.'],
+  ['ster', '<b>Sterren</b>: neem steden in tot de overgavemeter van de vijand vol is. Dan kies je: vredesconferentie of doorvechten.'],
+  ['agr', '<b>Agressie</b>: veroveren maakt de buren bang. Drie bange landen tegelijk vormen een coalitie tegen jou.'],
+  ['bevel', '<b>Acties</b> (A): bevelpunten voor raketten, sabotage, blitz, mobilisatie en bunkers.'],
+  ['boek', '<b>Logboek</b> (L): alles wat er gebeurt, per dag. Klik een regel om er op de kaart heen te gaan.']
+];
+function renderMenu(mode){
+  const el = $('menu');
+  if(mode !== 'menu'){ if(!el.hidden){ el.hidden = true; menuSig = null; menuSave = undefined; } return; }
+  const pg = UI.menuPage || 'main', back = '<div class="foot"><button class="btn" data-m="main">' + ic('deur') + 'Terug</button></div>';
+  const X = '<button class="xclose" data-m="main" aria-label="Terug naar het hoofdmenu" title="Terug (Esc)">×</button>';
+  let h = '<div class="mhead">' + LOGO('mlg') + '<div class="mt"><b>Vesting Europa</b><span>Grand strategy · 1936</span></div></div><div class="mpanel glass">';
+  if(pg === 'rec'){
+    const bests = bestList(), a = achGet(), got = ACH.filter(z => a[z.id]).length;
+    let nd = 0; try{ nd = Object.keys(JSON.parse(localStorage.getItem('ve_daily') || '{}')).length; }catch(e){}
+    h += phead('beker', 'Records', X) + '<div class="mpage"><div class="sec">' + ic('medaille') + 'Beste scores<span class="sr">' + bests.length + (bests.length === 1 ? ' land' : ' landen') + '</span></div>'
+      + (bests.length ? bests.slice(0, 8).map((b, i) => '<div class="rrow"><span class="num">' + (i + 1) + '</span><span class="wn">' + esc(b.name) + ' <span class="mut">· ' + MAPS[b.m].name + '</span></span><span class="medal m-' + rankOf(b.s).split(' ')[0].toLowerCase() + '" title="' + rankOf(b.s) + '">' + ic('medaille') + '<b>' + b.s + '</b></span></div>').join('')
+        : '<div class="empty">' + ic('info') + '<span>Nog geen scores. Na een overwinning of capitulatie staat je beste score per land hier.</span></div>')
+      + '<div class="sec">' + ic('tijd') + 'Uitdagingen van de dag<span class="sr">' + nd + ' voltooid</span></div>'
+      + '<div class="sec">' + ic('ster') + 'Onderscheidingen<span class="sr">' + got + '/' + ACH.length + '</span></div><div class="achs">'
+      + ACH.map(z => '<div class="arow2' + (a[z.id] ? ' got' : '') + '">' + ic(z.ic) + '<span><b>' + z.t + '</b><small>' + z.d + (a[z.id] ? ' · ' + a[z.id] : '') + '</small></span></div>').join('') + '</div></div>' + back;
+  } else if(pg === 'set'){
+    h += phead('wiel', 'Instellingen', X) + settingsH() + '<div class="foot"><button class="btn" data-m="main">' + ic('deur') + 'Terug</button><button class="btn" data-m="full">' + ic('scherm') + 'Volledig scherm</button></div>';
+  } else if(pg === 'how'){
+    h += phead('info', 'Hoe werkt het', X) + '<div class="rules">' + HOW.map(([i, t]) => '<p>' + ic(i) + '<span>' + t + '</span></p>').join('') + '</div>'
+      + '<div class="foot"><button class="btn" data-m="main">' + ic('deur') + 'Terug</button><button class="btn" data-m="keys">' + ic('toets') + 'Sneltoetsen</button></div>';
+  } else {
+    const sv = saveInfo(), dl = dailyOf(), dd = dailyDone(), a = achGet(), got = ACH.filter(z => a[z.id]).length, bests = bestList();
+    h += '<nav class="mbtns" aria-label="Hoofdmenu">'
+      + (sv ? mbtn('resume', 'speel', 'Doorgaan', esc(sv.name) + ' · ' + fmtDate(sv.day) + ' · ' + MAPS[sv.map].name + ' · ' + (DIFF[sv.diff] || DIFF[1]).name, 'pri') : '')
+      + mbtn('new', 'vlag', 'Nieuw spel', 'Kies je land op de kaart van ' + (MAPNAME === 'world' ? 'de wereld' : 'Europa'), sv ? '' : 'pri')
+      + mbtn('daily', dd ? 'check' : 'tijd', 'Uitdaging van vandaag', esc(dl.name) + ' · ' + MAPS[dl.map].name + ' · ' + DIFF[dl.diff].name + (dd ? ' · voltooid' : ''), dd ? 'done' : '')
+      + mbtn('rec', 'beker', 'Records', got + '/' + ACH.length + ' onderscheidingen' + (bests.length ? ' · beste score ' + bests[0].s : ''))
+      + mbtn('set', 'wiel', 'Instellingen', 'Geluid, muziek en weergave')
+      + mbtn('how', 'info', 'Hoe werkt het', 'De regels in het kort en alle sneltoetsen')
+      + '</nav><p class="mfoot"><span>Of klik meteen een land aan op de kaart.</span>' + (isTouch ? '' : '<span><span class="kk">?</span> sneltoetsen</span>') + '</p>';
+  }
+  h += '</div>';
+  if(h === menuSig) return;
+  menuSig = h; el.innerHTML = h; el.hidden = false;
+}
+async function pickDaily(){
+  const dl = dailyOf();
+  if(MAPNAME !== dl.map) await switchMap(dl.map);
+  if(G || UI.err) return;
+  UI.menuPage = 'pick'; UI.diff = dl.diff; UI.pick = dl.c; UI.dailyKey = dl.key; pickFit(dl.c); pickFitted = dl.c; stripSig = null; renderAll();
+}
+$('menu').addEventListener('click', async e => {
+  const ui = e.target.closest('[data-ui]'), b = e.target.closest('[data-m]');
+  if(ui){ sfx('tap'); SET.ui = +ui.dataset.ui; saveSettings(); applyUiScale(); menuSig = null; renderAll(); return; }
+  if(!b) return;
+  sfx('tap');
+  const k = b.dataset.m;
+  if(k === 'resume'){ menuSave = undefined; loadSaved(); return; }
+  if(k === 'daily'){ await pickDaily(); return; }
+  if(k === 'new'){ UI.menuPage = 'pick'; UI.dailyKey = null; }
+  else if(k === 'keys'){ UI.keys = true; renderKeys(); }
+  else if(k === 'full') fullScreen();
+  else UI.menuPage = k;
+  menuSig = null; renderAll();
+});
+$('menu').addEventListener('change', e => { const i = e.target.closest('[data-set],[data-set2]'); if(i){ setChange(i, true); menuSig = null; } });
+
+/* ---- landkeuze: de landkaart met sterkte, buren, niveau en kaart, en de grote Speel-knop ---- */
+let pickSig = null, RANKC = null, pickFitted = null;
+function powRank(){
+  if(!RANKC || RANKC.m !== MAPNAME){
+    const o = CIDS.slice().sort((a, b) => CN[b].f - CN[a].f);
+    RANKC = {m:MAPNAME, o, i:Object.fromEntries(o.map((c, i) => [c, i])), maxP:Math.max(...CIDS.map(c => CPROV[c].length)), maxPop:Math.max(...CIDS.map(c => CN[c].pop))};
+  }
+  return RANKC;
+}
+// startleger zoals newGame het opbouwt (zelfde formule; alleen voor de weergave)
+function startDivs(c){ const f = CN[c].f, pe = popE(c), ex = Math.floor(f/6) + Math.floor(f/5) + Math.floor(f/7); return Math.max(1, Math.round(pe/9 + f*0.25), Math.round(0.6 * (manCap(pe) + 0.3 * f / FAB_ADD)) - ex) + ex; }
+const startWings = c => { const f = CN[c].f; return Math.min(6, Math.floor(f/3)) + Math.min(4, Math.floor(f/7)) + Math.min(4, Math.floor(f/6)); };
+function pickNbrs(c){ const s = new Set(); for(const p of CPROV[c]) for(const n of ADJ[p]){ const o = P[n].c; if(o !== c && !LONG.has(ek(p, n))) s.add(o); } return [...s].sort((a, b) => CN[b].f - CN[a].f); }
+function renderPick(mode){
+  const el = $('pickcard');
+  if(mode !== 'pick'){ if(!el.hidden){ el.hidden = true; pickSig = null; } return; }
+  renderStrip();   // de (hier verborgen) strook levert de uitlegregel van het landkeuzescherm
+  const R = powRank(), c = UI.pick && CN[UI.pick] ? UI.pick : null, dl = dailyOf(), hint = $('strip').querySelector('.hint2');
+  const seg = '<div class="gord"><span class="gl">Kaart</span><span class="gsegs">' + Object.keys(MAPS).map(m => '<button class="gseg' + (MAPNAME === m ? ' on' : '') + '" data-pm="' + m + '">' + MAPS[m].name + '</button>').join('') + '</span></div>'
+    + '<div class="gord"><span class="gl">Niveau</span><span class="gsegs">' + DIFF.map((d, i) => '<button class="gseg' + (UI.diff === i ? ' on' : '') + '" data-pd="' + i + '">' + d.name + '</button>').join('') + '</span></div>'
+    + '<p class="help pdesc">' + (hint ? hint.innerHTML : esc(DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc)) + '</p>';
+  const fabs = x => Math.round(CN[x].f / FAB_ADD);
+  let h;
+  if(!c){
+    h = phead('vlag', 'Kies je land', '<button class="xclose" data-pk="back" aria-label="Terug naar het hoofdmenu" title="Terug naar het hoofdmenu (Esc)">×</button>')
+      + '<p class="help" style="margin:0 0 .5rem">Klik een land aan op de kaart, of neem een van de grote mogendheden:</p>'
+      + '<div class="pkl">' + R.o.slice(0, 10).map(x => '<button class="pkc" data-pc="' + x + '"><span class="cdot" style="background:' + colorOf(x) + '"></span><span class="wn">' + esc(cname(x)) + '</span><i title="Fabrieken">' + ic('fab') + fabs(x) + '</i></button>').join('') + '</div>'
+      + seg + '<div class="foot"><button class="btn sm" data-pk="back">' + ic('deur') + 'Hoofdmenu</button><button class="btn sm" data-pk="rnd" title="Een willekeurig land">' + ic('doel') + 'Verras me</button><button class="btn sm" data-pk="daily" title="Elke dag hetzelfde land en niveau voor iedereen">' + ic('tijd') + 'Uitdaging</button></div>';
+  } else {
+    const cc = CN[c], rk = R.i[c] + 1, N = CIDS.length, nb = pickNbrs(c), big = nb.filter(x => CN[x].f > cc.f * 1.5).length;
+    const tier = rk <= Math.max(5, Math.round(N * 0.12)) ? 'Grootmacht' : rk <= Math.round(N * 0.4) ? 'Regionale macht' : 'Kleine staat';
+    const pos = rk <= 3 ? ['Sterk', 'ok'] : big >= 2 || (nb[0] && CN[nb[0]].f > cc.f * 3) ? ['Zwaar', 'hot'] : big ? ['Uitdagend', 'warn'] : ['Evenwichtig', 'ok'];
+    const best = bestOf(MAPNAME, c), daily = UI.dailyKey === dl.key && dl.c === c && dl.map === MAPNAME, dv = startDivs(c), wg = startWings(c);
+    const stat = (icon, lbl, val, frac, tip) => '<div class="kt" title="' + tip + '"><span class="kti">' + ic(icon) + '</span><b>' + val + '</b><small>' + lbl + '</small>' + meter(frac, 1) + '</div>';
+    const rel = x => CN[x].f > cc.f * 1.25 ? ['warc', '▲', 'sterker dan jij'] : CN[x].f < cc.f * 0.8 ? ['okc', '▼', 'zwakker dan jij'] : ['mut', '=', 'ongeveer even sterk'];
+    h = '<div class="pkh"><span class="hflag big" style="--c:' + colorOf(c) + '"></span><span class="hn"><b>' + esc(cname(c)) + '</b><small>' + tier + ' · nr. ' + rk + ' van ' + N + '</small></span><button class="xclose" data-pk="none" aria-label="Ander land kiezen" title="Ander land kiezen (Esc)">×</button></div>'
+      + (daily ? '<div class="alert own" style="margin:0 0 .5rem">' + ic('tijd') + '<span><b>Uitdaging van vandaag</b> · niveau ' + DIFF[dl.diff].name + '</span></div>' : '')
+      + '<div class="tiles">' + stat('prov', 'provincies', CPROV[c].length, CPROV[c].length / R.maxP, 'Provincies bij de start')
+      + stat('fab', 'fabrieken', fabs(c), cc.f / CN[R.o[0]].f, 'Fabrieken: je industrie bepaalt hoe snel je bouwt')
+      + stat('inf', 'mln inwoners', NF.format(Math.round(cc.pop)), cc.pop / R.maxPop, 'Bevolking: mankracht voor je legerlimiet')
+      + stat('leger', 'divisies', dv, dv / Math.max(1, startDivs(R.o[0])), 'Divisies bij de start')
+      + stat('fi', 'eskaders', wg, wg / 14, 'Eskaders bij de start: jagers, grondaanval en bommenwerpers')
+      + '<div class="kt" title="Hoe zwaar deze start is: je eigen rang en hoeveel buren duidelijk sterker zijn"><span class="kti">' + ic('schild') + '</span><b class="pos-' + pos[1] + '">' + pos[0] + '</b><small>startpositie</small></div></div>'
+      + (best ? '<div class="alert own">' + ic('medaille') + '<span>Je record met dit land</span><span class="num">' + best + ' · ' + rankOf(best).split(' ')[0] + '</span></div>' : '')
+      + '<div class="sec">' + ic('prov') + 'Buren<span class="sr">' + (nb.length ? nb.length + ' · ▲ sterker ▼ zwakker' : 'geen') + '</span></div>'
+      + (nb.length ? '<div class="pkn">' + nb.slice(0, 10).map(x => { const r = rel(x); return '<button class="pkc" data-pc="' + x + '" title="' + esc(cname(x)) + ': ' + fabs(x) + ' fabrieken, ' + r[2] + ' · klik om dit land te bekijken"><span class="cdot" style="background:' + colorOf(x) + '"></span><span class="wn">' + esc(cname(x)) + '</span><i class="' + r[0] + '">' + r[1] + '</i></button>'; }).join('') + '</div>' + (nb.length > 10 ? '<p class="help">en nog ' + (nb.length - 10) + ' kleinere buren</p>' : '')
+        : '<div class="empty">' + ic('mar') + '<span>Geen landgrenzen: alleen over zee bereikbaar.</span></div>')
+      + seg + '<button class="btn pri wide pgo" data-pk="start">' + ic('vlag') + 'Speel</button>';
+  }
+  if(h === pickSig) return;
+  const keep = pickSig !== null && el.dataset.c === (c || '');
+  pickSig = h; const st = el.scrollTop; el.innerHTML = h; el.hidden = false; el.dataset.c = c || ''; el.scrollTop = keep ? st : 0;
+  // nieuw land gekozen op de kaart: zorg dat het niet achter de landkaart ligt
+  if(c && !keep && c !== pickFitted && (cw() < 900 || toScreen(P[CN[c].cap].a[0], P[CN[c].cap].a[1])[0] > cw() - el.offsetWidth - 40)) pickFit(c);
+  pickFitted = c;
+}
+// het gekozen land in het vrije deel van het scherm zetten: links van de landkaart (breed scherm) of erboven (smal)
+function pickFit(c){
+  fitCountry(c);
+  const el = $('pickcard'), t = TW ? TW.to : V;
+  if(cw() >= 900){ const wd = el.offsetWidth || 26*REM; t.k *= clamp(cw() / (cw() - wd - 24), 1, 1.3); t.cx += wd/2 * t.k; }
+  else { const hd = Math.min(el.offsetHeight || 0.6*chh(), 0.64*chh()); t.k *= 1.9; t.cy += hd/2 * t.k; }
+  if(!TW){ clampView(); applyView(); baseDirty = true; }
+}
+function startGame(){
+  const c = UI.pick; if(G || !c || !CN[c]) return;
+  const dl = dailyOf(), daily = UI.dailyKey === dl.key && dl.c === c && dl.map === MAPNAME && UI.diff === dl.diff;
+  UI.pick = null; UI.dailyKey = null;
+  newGame(c, UI.diff); if(daily) G.daily = dl.key;
+  veilFlash(cname(c), DIFF[UI.diff].name + ' · ' + MAPS[MAPNAME].name);
+  onGameLoaded(true);
+}
+$('pickcard').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if(!b || G) return;
+  sfx('tap');
+  const d = b.dataset;
+  if(d.pm){ if(d.pm !== MAPNAME){ UI.dailyKey = null; await switchMap(d.pm); } }
+  else if(d.pd != null) UI.diff = +d.pd;
+  else if(d.pc){ UI.pick = d.pc; pickFit(d.pc); pickFitted = d.pc; }
+  else if(d.pk === 'start'){ startGame(); return; }
+  else if(d.pk === 'back'){ UI.pick = null; UI.dailyKey = null; UI.menuPage = 'main'; }
+  else if(d.pk === 'none'){ UI.pick = null; UI.dailyKey = null; }
+  else if(d.pk === 'rnd'){ const c = CIDS[Math.floor(Math.random() * CIDS.length)]; UI.pick = c; pickFit(c); pickFitted = c; }
+  else if(d.pk === 'daily'){ await pickDaily(); return; }
+  pickSig = null; stripSig = null; renderAll();
+});
+// laad- en overgangsscherm: bij het laden van een kaart, en kort bij de start van een spel (dan vangt het geen klikken af)
+let veilHold = 0;
+function veilFlash(t, sub){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const v = $('veil'); v.querySelector('b').textContent = t; $('veilT').textContent = sub;
+  v.classList.add('on', 'thru'); veilHold = performance.now() + 650;
+  setTimeout(() => { if(performance.now() >= veilHold - 20 && hudMode() !== 'load') v.classList.remove('on'); }, 660);
+}
+
+/* ---- de schil bijwerken: stand van het scherm, topbalk, waarschuwingen, menu's (aangeroepen vanuit renderBar) ---- */
+let hudG = null, natSig = '', lastMode;
+// de hele kaart in het vrije deel van het scherm: naast het hoofdmenu of de landkaart (breed), of erboven (smal)
+function homeFit(mode, instant){
+  const wide = cw() >= 900, k = kFit();
+  const dx = !wide ? 0 : mode === 'menu' ? -0.16 * cw() * k : 0.13 * cw() * k, dy = wide ? 10 : (mode === 'menu' ? 0.2 : 0.22) * chh() * k;
+  tweenView(W/2 + dx, H/2 + dy, k, instant);
+}
+function hudMode(){ return UI.err ? 'err' : (UI.loading || !DATA) ? 'load' : !G ? (UI.pick || UI.menuPage === 'pick' ? 'pick' : 'menu') : G.over ? 'over' : 'game'; }
+function renderHud(){
+  if(!G && UI.pick && UI.menuPage !== 'pick') UI.menuPage = 'pick';   // direct een land aangeklikt vanuit het hoofdmenu
+  const mode = hudMode(), b = document.body, v = $('veil');
+  if(b.dataset.mode !== mode) b.dataset.mode = mode;
+  if(mode !== lastMode){ if((mode === 'menu' || mode === 'pick') && !UI.pick) homeFit(mode, lastMode === 'load' || lastMode === undefined); lastMode = mode; }
+  if(mode === 'load'){ if(!v.classList.contains('on') || v.classList.contains('thru')){ v.querySelector('b').textContent = 'Vesting Europa'; $('veilT').textContent = 'Kaart laden…'; v.classList.remove('thru'); v.classList.add('on'); } }
+  else if(performance.now() >= veilHold) v.classList.remove('on');
+  const paused = !!(G && G.paused && !G.over), ptag = paused && !cardOpen() && !UI.intro && !UI.winShown;
+  b.classList.toggle('paused', paused); b.classList.toggle('ptag', ptag); b.classList.toggle('has-sheet', !!(G && UI.sheet && !G.over));
+  b.classList.toggle('has-card', !!(G && (G.over || (G.won && UI.winShown) || (cardOpen() && G.cards[0].k !== 'conf'))));   // beslissing of eindkaart: de kaart dimt
+  $('pausetag').hidden = !ptag;
+  $('hud').hidden = !G;
+  $('hero').hidden = !(mode === 'pick' && !UI.pick);
+  if(tipEl && !tipEl.isConnected){   // het aangewezen element is opnieuw getekend: de uitleg blijft staan bij zijn opvolger
+    const at = document.elementFromPoint(tipX, tipY), el = at && at.closest ? at.closest('[title],[data-tip]') : null;
+    tipEl = el; clearTimeout(tipTm); $('tip2').hidden = true;
+    if(el && SET.tips !== false){ if(el.title){ el.dataset.tip = el.title; el.removeAttribute('title'); } tipShow(el); }
+  }
+  if(G){
+    if(G !== hudG){ hudG = G; TREND = []; UI.logSeen = G.logN || 0; UI.logF = 'all'; UI.tabI = -1; natSig = ''; newsSig = ''; alSig = null; }
+    const me = G.player, h = '<span class="hflag" style="--c:' + colorOf(me) + '"></span><span class="hn"><b>' + esc(cname(me)) + '</b><small>' + DIFF[G.diff].name + ' · ' + MAPS[MAPNAME].name + '</small></span>';
+    if(h !== natSig){ natSig = h; $('hudNat').innerHTML = h; $('hudNat').title = 'Overzicht van ' + cname(me) + ' (O)'; }
+    if(!G.over){ trendTick(); renderNews(); }
+    if(UI.sheet === 'log') UI.logSeen = G.logN || 0;
+    const un = (G.logN || 0) - (UI.logSeen || 0), bd = $('logBadge'), bt = un > 9 ? '9+' : '' + un;
+    bd.hidden = un <= 0; if(bd.textContent !== bt) bd.textContent = bt;
+  } else hudG = null;
+  renderAlerts(); renderMenu(mode); renderPick(mode);
+}
+
+/* ---- sneltoetsen ---- */
+const HKEY = {p:'prod', a:'spec', d:'dip', o:'info', l:'log'};
+function setSpeed(v){ if(!G || G.over) return; G.speed = clamp(v, 1, 4); renderBar(); }
+function stripClick(act){ const b = $('strip').querySelector('[data-act="' + act + '"]'); if(b && !b.disabled) b.click(); }
+// Tab: naar het volgende gevecht; zijn er geen gevechten, dan langs het front
+function nextFront(dir){
+  const me = G.player;
+  let ps = [...new Set((G.battles || []).filter(b => b.att === me || b.def === me).map(b => b.t))], what = 'Gevecht bij ';
+  if(!ps.length){
+    const fr = owned(me).filter(p => ADJ[p].some(n => G.ctrl[n] !== me && atWar(me, G.ctrl[n]))), stp = Math.max(1, Math.ceil(fr.length / 8));
+    ps = fr.filter((_, i) => i % stp === 0); what = 'Front bij ';
+  }
+  if(!ps.length){ toast('Geen gevechten en geen front: je bent nergens in oorlog', '', 'hud'); return; }
+  UI.tabI = ((((UI.tabI ?? -1) + dir) % ps.length) + ps.length) % ps.length;
+  const p = ps[UI.tabI]; jumpTo(p);
+  toast(what + P[p].n + ' (' + (UI.tabI + 1) + '/' + ps.length + ')', '', 'hud');
+}
+function hudKey(e){
+  const tg = e.target, tn = tg && tg.tagName;
+  if(tn === 'TEXTAREA' || tn === 'SELECT' || (tn === 'INPUT' && !/^(checkbox|range|radio|button)$/.test(tg.type))) return;
+  const k = e.key, lk = k.length === 1 ? k.toLowerCase() : k;
+  if(tn === 'INPUT' && (k === ' ' || k === 'Home' || k === 'End' || k.startsWith('Arrow'))) return;   // schuifje en vinkje bedienen
+  if(UI.keys){ if(k === 'Escape' || k === '?'){ e.preventDefault(); UI.keys = false; renderKeys(); } return; }
+  if(k === '?'){ e.preventDefault(); UI.keys = true; renderKeys(); return; }
+  if(!G){   // hoofdmenu en landkeuze
+    if(e.ctrlKey || e.metaKey || e.altKey) return;
+    if(k === 'Escape'){
+      if(UI.pick){ UI.pick = null; UI.dailyKey = null; } else if(UI.menuPage && UI.menuPage !== 'main') UI.menuPage = 'main'; else return;
+      sfx('tap'); menuSig = null; pickSig = null; stripSig = null; renderAll();
+    }
+    else if(k === 'Enter' && UI.pick && hudMode() === 'pick' && tn !== 'BUTTON'){ e.preventDefault(); startGame(); }
+    return;
+  }
+  if(G.over) return;
+  const dg = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || '');
+  if(dg && e.altKey && !e.ctrlKey && !e.metaKey){ e.preventDefault(); groupPick(+dg[1]); return; }
+  if(dg && (e.shiftKey || e.ctrlKey) && !e.altKey && !e.metaKey){ if(UI.sel.size){ e.preventDefault(); groupSave(+dg[1]); } return; }
+  if(e.ctrlKey || e.metaKey || e.altKey) return;   // sneltoetsen van de browser met rust laten
+  if(e.code === 'Space'){ e.preventDefault(); if(tn === 'BUTTON') tg.blur(); togglePause(); }
+  else if(k >= '1' && k <= '4'){ G.speed = +k; if(!cardOpen()) G.paused = false; renderBar(); }
+  else if(k === '+' || k === '='){ setSpeed(G.speed + 1); }
+  else if(k === '-' || k === '_'){ setSpeed(G.speed - 1); }
+  else if(k === 'Escape'){
+    if(UI.target) UI.target = null;
+    else if(UI.sheet){ UI.sheet = null; UI.editT = null; UI.armAct = null; }
+    else if(UI.sel.size || UI.selAir.size || UI.info){ clearSel(); UI.info = null; UI.confirm = null; }
+    else if(!cardOpen() && !UI.intro && !UI.winShown) UI.sheet = 'set';
+    sheetSig = ''; stripSig = null; renderAll();
+  }
+  else if(lk === 'm'){ const on = !(SET.sound || SET.music); setSound(on); setMusic(on); sheetSig = ''; toast(on ? 'Geluid aan' : 'Geluid uit', '', 'mute'); }
+  else if(HKEY[lk]){
+    const s = HKEY[lk]; if(!document.querySelector('#bar [data-sheet="' + s + '"]')) return;
+    sfx('tap'); UI.sheet = UI.sheet === s ? null : s; UI.target = null; UI.editT = null; UI.armAct = null; sheetSig = ''; renderAll();
+  }
+  else if(k === 'Home'){ e.preventDefault(); fitCountry(G.player); }
+  else if(k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown'){
+    if(tn === 'INPUT') return;
+    e.preventDefault(); TW = null;
+    const st = 90 * V.k * (e.shiftKey ? 3 : 1);
+    V.cx += (k === 'ArrowLeft' ? -st : k === 'ArrowRight' ? st : 0); V.cy += (k === 'ArrowUp' ? -st : k === 'ArrowDown' ? st : 0);
+    clampView(); applyView(); hideTip();
+  }
+  else if(k === 'Tab'){ e.preventDefault(); if(tn === 'BUTTON') tg.blur(); nextFront(e.shiftKey ? -1 : 1); }
+  else if(lk === 'v'){ armyAct('selview'); stripSig = null; renderAll(); }
+  else if(UI.sel.size && lk === 'h') stripClick('halt');
+  else if(UI.sel.size && lk === 'f') stripClick('front');
+  else if(UI.sel.size && lk === 'g') stripClick('toai');
+  else if(UI.sel.size && lk === 'c') fitSel();
+}
+
+/* ---- uitleg bij aanwijzen in spelstijl: elk title-attribuut (ook van andere panelen) en data-tip ---- */
+let tipEl = null, tipTm = 0, tipX = 0, tipY = 0;
+function tipShow(el){
+  const t = el.dataset.tip, tp = $('tip2'); if(!t) return;
+  tp.textContent = t; tp.hidden = false;
+  const r = el.getBoundingClientRect(), w = tp.offsetWidth, hh = tp.offsetHeight;
+  let y = r.bottom + 8; if(y + hh > innerHeight - 8) y = r.top - hh - 8;
+  tp.style.left = clamp(r.left + r.width/2 - w/2, 8, Math.max(8, innerWidth - w - 8)) + 'px'; tp.style.top = Math.max(8, y) + 'px';
+}
+if(!isTouch){
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest ? e.target.closest('[title],[data-tip]') : null;
+    tipX = e.clientX; tipY = e.clientY;
+    if(el === tipEl) return;
+    clearTimeout(tipTm); $('tip2').hidden = true; tipEl = el;
+    if(!el || SET.tips === false) return;
+    if(el.title){ el.dataset.tip = el.title; el.removeAttribute('title'); }
+    tipTm = setTimeout(() => { if(tipEl === el && el.isConnected) tipShow(el); }, 300);
+  });
+  addEventListener('mousemove', e => { tipX = e.clientX; tipY = e.clientY; }, {passive:true});
+  addEventListener('pointerdown', () => { clearTimeout(tipTm); $('tip2').hidden = true; tipEl = null; }, true);
+  addEventListener('wheel', () => { clearTimeout(tipTm); $('tip2').hidden = true; }, {passive:true, capture:true});
+}
+
+/* ---- opbouw: bestaande bedieningselementen verhuizen naar de topbalk, sneltoetsletters op de knoppen ---- */
+{
+  const hud = $('hud'), ck = $('clock'), HKL = {prod:'P', spec:'A', dip:'D', info:'O', log:'L', set:'Esc'};
+  hud.insertBefore($('status'), $('news')); hud.insertBefore($('warBtn'), $('news'));
+  ck.prepend($('playBtn')); ck.insertBefore($('speedBtn'), $('spdUp')); ck.append($('date'));
+  $('dock').prepend($('pausetag'));
+  // twee eigen knoppen achteraan in de knoppenbalk: Logboek en Menu (hier aangemaakt, zodat de HTML van de balk ongemoeid blijft)
+  $('bar').insertAdjacentHTML('beforeend', '<button class="ib wl" data-sheet="log" type="button" aria-label="Logboek"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M5 2.5h12.5A1.5 1.5 0 0 1 19 4v14.5H6.6a1.1 1.1 0 0 0 0 2.2H19V22H6.4A2.9 2.9 0 0 1 3.5 19.1V4A1.5 1.5 0 0 1 5 2.5z"/><path class="icd" d="M7.5 6h8v1.6h-8zM7.5 9.4h8V11h-8z"/></svg><span class="lbl">Logboek</span><i class="badge" id="logBadge" hidden></i></button>'
+    + '<button class="ib wl" data-sheet="set" type="button" aria-label="Menu en instellingen"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M10.4 1.6h3.2l.5 2.6 1.9.8 2.2-1.5 2.3 2.3-1.5 2.2.8 1.9 2.6.5v3.2l-2.6.5-.8 1.9 1.5 2.2-2.3 2.3-2.2-1.5-1.9.8-.5 2.6h-3.2l-.5-2.6-1.9-.8-2.2 1.5-2.3-2.3 1.5-2.2-.8-1.9-2.6-.5v-3.2l2.6-.5.8-1.9-1.5-2.2 2.3-2.3 2.2 1.5 1.9-.8z"/><path class="icd" d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 1 0 0-6.8z"/></svg><span class="lbl">Menu</span></button>');
+  for(const k of ['log', 'set']) document.querySelector('#bar [data-sheet="' + k + '"]').addEventListener('click', () => { if(!G) return; UI.sheet = UI.sheet === k ? null : k; UI.target = null; sheetSig = ''; renderAll(); });
+  for(const b of document.querySelectorAll('#bar [data-sheet]')){
+    const k = HKL[b.dataset.sheet]; if(!k) continue;
+    b.insertAdjacentHTML('beforeend', '<kbd class="hk">' + k + '</kbd>'); b.title = (b.getAttribute('aria-label') || '') + ' (' + k + ')';
+  }
+  $('speedBtn').title = 'Snelheid (1–4, + en −)'; $('spdDn').title = 'Langzamer (−)'; $('spdUp').title = 'Sneller (+)';
+  $('spdDn').addEventListener('click', () => setSpeed(G ? G.speed - 1 : 1));
+  $('spdUp').addEventListener('click', () => setSpeed(G ? G.speed + 1 : 1));
+  $('hudNat').addEventListener('click', () => { if(!G) return; UI.sheet = UI.sheet === 'info' ? null : 'info'; sheetSig = ''; renderAll(); });
+  $('news').addEventListener('click', () => { if(!G || G.over) return; UI.sheet = UI.sheet === 'log' ? null : 'log'; sheetSig = ''; renderAll(); });
+  $('pausetag').addEventListener('click', () => { sfx('tap'); togglePause(); renderAll(); });
+  for(const id of ['hud', 'bar']) $(id).addEventListener('click', e => { if(e.target.closest('button')) sfx('tap'); });
+  if(SET.ui && SET.ui !== 1) applyUiScale();
+}
 
 /* ================= laden, opslaan, wisselen ================= */
 async function switchMap(name, force){
@@ -5146,9 +6252,11 @@ async function loadSaved(){
     catch(err){ G = prevG; onError(err, 'laden'); if(G) onGameLoaded(false); else { allFills(); fitAll(); renderAll(); } }
   }catch(err){ UI.loading = false; toast('Opgeslagen spel kon niet worden geladen', 'war'); renderAll(); }
 }
-function clearToasts(){ $('toasts').innerHTML = ''; }
-function toPick(){
+function clearToasts(){ $('toasts').innerHTML = ''; hideBanner(); }
+function toMenu(){ if(G && !G.over) autosave(); UI.menuPage = 'main'; toPick(true); }   // terug naar het hoofdmenu (het spel is opgeslagen: Doorgaan)
+function toPick(menu){
   clearToasts();
+  if(menu !== true) UI.menuPage = 'pick';
   G = null; UI.pick = null; UI.sheet = null; UI.target = null; UI.info = null; UI.confirm = null; UI.winShown = false; clearSel();
   allFills(); fitAll(); stripSig = null; renderAll();
 }
