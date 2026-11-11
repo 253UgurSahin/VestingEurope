@@ -5476,7 +5476,7 @@ function renderBase(coarse){
   const vx0 = V.cx - bw/2*V.k, vx1 = V.cx + bw/2*V.k, vy0 = V.cy - bh/2*V.k, vy1 = V.cy + bh/2*V.k;
   drawSea(ctx, s, tx, ty, px, vx0, vy0, vx1, vy1);
   // ingezoomd (en niet te veel kaart in beeld): scherpe data; anders vereenvoudigde versie per zoomniveau
-  const hd = !!HD && V.k < 0.8 && (vx1 - vx0)*(vy1 - vy0) < 1.4e6;
+  const hd = !coarse && !!HD && V.k < 0.8 && (vx1 - vx0)*(vy1 - vy0) < 1.4e6;   // tijdens slepen/zoomen altijd de vereenvoudigde vormen: de scherpe versie volgt als je loslaat
   const lv = hd ? 0 : Math.min(LOD_STEP.length - 1, lodLevel() + (coarse ? 1 : 0)), LP = lodPaths(lv);
   CVL = hd ? -1 : lv; if(coarse && !hd) baseDirty = true;
   const vis = [], vp = [];
@@ -8734,7 +8734,7 @@ function hudKey(e){
     if(tn === 'INPUT') return;
     e.preventDefault(); TW = null;
     const st = 90 * V.k * (e.shiftKey ? 3 : 1);
-    V.cx += (k === 'ArrowLeft' ? -st : k === 'ArrowRight' ? st : 0); V.cy += (k === 'ArrowUp' ? -st : k === 'ArrowDown' ? st : 0);
+    V.cx += (k === 'ArrowLeft' ? -st : k === 'ArrowRight' ? st : 0); V.cy += (k === 'ArrowUp' ? -st : k === 'ArrowDown' ? st : 0); lastWheel = performance.now();   // telt als slepen: niet bij elke toetsherhaling de hele kaart opnieuw tekenen
     clampView(); applyView(); hideTip();
   }
   else if(k === 'Tab'){ e.preventDefault(); if(tn === 'BUTTON') tg.blur(); nextFront(e.shiftKey ? -1 : 1); }
