@@ -1942,7 +1942,7 @@ function moveUnits(d){
     u.ent = 0;
     u.prog += d * mc.step;
     if(u.prog >= 1){
-      u.prog = 0; u.loc = nx; u.path.shift(); if(!u.path.length){ u.g = null; u.man = false; }
+      u.prog = 0; u.loc = nx; u.path.shift(); if(!u.path.length){ u.g = null; if(!u.gst) u.man = false; }   // gst: op jouw bevel in bevriend land, dat blijft zo tot je ze teruggeeft
       if(G.ctrl[nx] !== u.c && !friendly(u.c, G.ctrl[nx])) capture(nx, u.c);
     }
   }
@@ -1952,6 +1952,7 @@ function capture(p, c){
   const prev = G.ctrl[p];
   c = dipCapFor(p, c, prev);   // bevrijde provincie van een bondgenoot gaat terug naar die bondgenoot
   setCtrl(p, c);
+  fxdEvict(p, c);   // gasten (bondgenoot/doorgang) die niet met de veroveraar in oorlog zijn, trekken zich terug
   if(c === G.player) fx(p, 'cap'); else if(prev === G.player) fx(p, 'loss');
   if(G.nations[prev]){
     const st = starOf(p);
@@ -2289,7 +2290,7 @@ function battles(){
 // verloren divisies tellen voor de oorlogspunten van de winnaar en drukken de steun van de verliezer
 function kill(k, v){ const key = k + '>' + v; (G.kill ||= {})[key] = (G.kill[key] || 0) + 1; const n = G.nations[v]; if(n) n.ws = clamp(n.ws - 10 / Math.max(10, armyCap(v)), 0, 100); }
 function canDrop(u, p){
-  return u.t === 'para' && !u.att && !u.path.length && (u.dropCd||0) <= G.day && atWar(u.c, G.ctrl[p]) && distKm(u.loc, p) <= PARA_KM;
+  return u.t === 'para' && !u.att && !u.path.length && (u.dropCd||0) <= G.day && atWar(u.c, G.ctrl[p]) && distKm(u.loc, p) <= PARA_KM && dipBase(u.c, u.loc, G.ctrl[p]);   // ook door de lucht: een neutraal doorgangsland is geen uitvalsbasis
 }
 function doDrop(u, p){
   u.dropCd = G.day + 30;
@@ -3029,7 +3030,12 @@ function dipWar(a, b, joining){
   if(!G.ally) return;
   if(G.prot[a] === b) delete G.prot[a]; if(G.prot[b] === a) delete G.prot[b];
   if(a === me || b === me) dipDrop(a === me ? b : a);
-  if(b === me){
+  if(b === me && joining && joining !== 'coal'){
+    // een beschermer komt tussenbeide in jouw aanvalsoorlog: dat is geen aanval op jou. Je bondgenoten doen niet vanzelf mee
+    // (te wapen roepen kan, tegen de gewone prijs) en het blijft jouw aanvalsoorlog
+    const w0 = G.aggr[wk(me, joining)], w = G.aggr[wk(a, me)];
+    if(w && w0 && w0.a === me){ w.a = me; w.just = !!w0.just; }
+  } else if(b === me){
     // jij wordt aangevallen: je bondgenoten doen mee
     for(const y of Object.keys(G.ally)) if(alive(y) && y !== a && !atWar(y, a)){ declare(y, a, me); const w = G.aggr[wk(y, a)]; if(w && atWar(y, a)){ w.for = me; relAdd(y, 'hulp', 5, 30); } }
   } else if(a !== me && isAlly(b) && !joining && !atWar(me, a)) dipCard({k:'dipcall', x:b, y:a});   // je bondgenoot wordt aangevallen: hij vraagt je hulp
@@ -3059,19 +3065,19 @@ function dipHold(a, b){
   const me = G.player, y = isAlly(a) ? a : isAlly(b) ? b : null; if(!y || w.for !== me) return false;
   const e = y === a ? b : a;
   if(!atWar(me, e) || meterOf(y) >= 0.5) return false;
-  return owned(y).some(p => ADJ[p].some(n => G.ctrl[n] === e));
+  return frontOf(y).front.some(p => ADJ[p].some(n => G.ctrl[n] === e));   // ook jouw front telt: daar stuurt zijn generaal de divisies heen
 }
 // wie krijgt een veroverde provincie? Bevrijd kernland van een bondgenoot (of wat hij vóór de oorlog had) gaat terug
 function dipCapFor(p, c, prev){
   const A = G.ally; if(!A) return c;
-  const me = G.player, o = P[p].c;
+  const me = G.player, o = P[p].c, mine = alive(me) && (nat(me).base || []).includes(p);   // jouw eigen grondgebied (basis) gaat voor op de oorspronkelijke eigenaar
   let to = c;
-  if(o === c) return c;
+  if(o === c && !(mine && A[c])) return c;
   if(c === me){
-    if(o === me) return c;
-    if(A[o] && alive(o)) to = o;
-    else for(const y in A) if(alive(y) && (nat(y).base || []).includes(p)){ to = y; break; }
-  } else if(A[c] && alive(me) && (o === me || (nat(me).base || []).includes(p))) to = me;
+    if(o === me || mine) return c;
+    if(A[o] && alive(o) && atWar(o, prev)) to = o;   // alleen teruggeven aan wie zelf nog met de bezetter vecht (anders wordt het een neutraal schild)
+    else for(const y in A) if(alive(y) && atWar(y, prev) && (nat(y).base || []).includes(p)){ to = y; break; }
+  } else if(A[c] && alive(me) && atWar(me, prev) && (o === me || mine)) to = me;
   if(to !== c){
     if(atWar(c, prev)) (G.wlast ||= {})[wk(c, prev)] = G.day;
     if(c === me){ toast(P[p].n + ' bevrijd voor ' + cname(to), 'good', 'lib'); relAdd(to, 'hulp', 2, 30); sfx('cap'); }
@@ -3098,7 +3104,11 @@ function lendFlows(pp){
   return d;
 }
 // staat deze divisie op jouw bevel in bevriend land? Dan blijft de generaal eraf
-function dipGuest(u){ if(G.ctrl[u.loc] !== u.c || u.path.length || u.att) return true; u.gst = false; return false; }
+function dipGuest(u){
+  if(u.path.length || u.att) return true;
+  if(G.ctrl[u.loc] !== u.c && (u.man || u.hold || !(u.c === G.player && nat(u.c).auto))) return true;   // staat in bevriend land op jouw bevel
+  u.gst = false; return false;   // weer thuis, of teruggegeven aan de generaal (Generaal-knop, generaal aangezet): die haalt hem op
+}
 function dipOrder(u){ const c = u.c; if(G.ctrl[u.loc] !== c || u.path.some(q => G.ctrl[q] !== c && friendly(c, G.ctrl[q]))) u.gst = true; }
 // waarom kan een bevel niet? Doel ligt achter een neutraal land met doorgang: dat is geen uitvalsbasis
 function dipWhyNot(p){
@@ -3106,6 +3116,23 @@ function dipWhyNot(p){
   if(!atWar(me, own)) return '';
   for(const n of ADJ[p]){ const o = G.ctrl[n]; if(o !== me && friendly(me, o) && !atWar(o, own)) return 'Vanuit ' + cname(o) + ' kun je ' + cname(own) + ' niet aanvallen: ' + cname(o) + ' is zelf niet met ' + cname(own) + ' in oorlog'; }
   return '';
+}
+/* gasten bij een inname: provincie p is zojuist van land c geworden. Divisies die er te gast waren (bondgenoot of doorgang) en
+   niet met c in oorlog zijn, verdedigen niet mee; ze trekken zich te voet terug naar een aangrenzende eigen of bevriende
+   provincie. Kan dat niet, dan wijken ze uit naar de dichtstbijzijnde eigen provincie. Jij krijgt er een melding van. */
+function fxdEvict(p, c){
+  const me = G.player;
+  if(!G.ally || !(allyN() || Object.keys(G.access).length)) return;   // gasten bestaan alleen met een bondgenoot of doorgangsrecht
+  let n = 0, far = 0;
+  for(const u of G.units){
+    if(u.loc !== p || u.c === c || friendly(u.c, c) || atWar(u.c, c)) continue;
+    const adj = ADJ[p].filter(q => !LONG.has(ek(p, q)) && (G.ctrl[q] === u.c || friendly(u.c, G.ctrl[q])));
+    let to = adj.find(q => G.ctrl[q] === u.c) || adj[0];
+    if(!to){ let bd = Infinity; for(const q of owned(u.c)){ const d2 = dist(p, q); if(d2 < bd){ bd = d2; to = q; } } if(!to) continue; if(u.c === me) far++; }
+    u.loc = to; u.path = []; u.att = null; u.air = false; u.prog = 0; u.g = null; u.ent = 0;
+    if(u.c === me) n++;
+  }
+  if(n){ toast(n + (n === 1 ? ' divisie trekt' : ' divisies trekken') + ' zich terug uit ' + P[p].n + ': ' + cname(c) + ' heeft de provincie ingenomen' + (far ? ' (uitgeweken naar eigen gebied)' : '') + '. Gasten verdedigen alleen mee tegen een gezamenlijke vijand', 'war', 'evict'); sfx('lossmin'); }
 }
 
 /* ---- troepen overdragen ---- */
@@ -3116,12 +3143,14 @@ function dipPlace(u, c){
   if(!best) best = owned(c)[0];
   if(best) u.loc = best;
 }
+// een divisie die van eigenaar wisselt (schenken, lenen, teruggeven) hoort niet meer in een legergroep
+function fxdUngroup(u){ const gr = G.groups; if(gr) for(const k in gr){ const i = gr[k].indexOf(u.id); if(i >= 0) gr[k].splice(i, 1); } }
 function dipGive(us, to, loan){
   let n = 0;
   for(const u of us){
     if(u.home || u.c === to) continue;   // geleende troepen geef je niet door
     if(loan){ u.home = u.c; u.htp = u.tp; }
-    u.c = to; if(to !== G.player && !FIXT[u.tp]) u.tp = FIXT[u.t] ? u.t : 'inf';
+    u.c = to; fxdUngroup(u); if(to !== G.player && !FIXT[u.tp]) u.tp = FIXT[u.t] ? u.t : 'inf';
     u.t = domOfKey(u.tp); u.path = []; u.att = null; u.air = false; u.prog = 0; u.man = false; u.g = null; u.gst = false; u.ent = 0;
     dipPlace(u, to); UI.sel.delete(u.id); n++;
   }
@@ -3135,7 +3164,7 @@ function dipReturn(pred){
     if(!u.home || !pred(u)) continue;
     const h = u.home; u.home = null;
     if(!alive(h)){ u.htp = null; continue; }
-    u.c = h; if(u.htp) u.tp = u.htp; u.htp = null; u.t = domOfKey(u.tp);
+    u.c = h; fxdUngroup(u); if(u.htp) u.tp = u.htp; u.htp = null; u.t = domOfKey(u.tp);
     u.path = []; u.att = null; u.air = false; u.prog = 0; u.man = false; u.g = null; u.gst = false;
     if(h !== G.player || !friendly(h, G.ctrl[u.loc])) dipPlace(u, h);
     UI.sel.delete(u.id); n++;
@@ -3202,7 +3231,7 @@ const allyN = () => Object.keys(G.ally).length;
 function dipGuestsHome(){
   const me = G.player, auto = nat(me).auto;
   for(const u of G.units){
-    if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.exp || -99) >= G.day - 8 || (u.c === me && (!auto || u.man)) || !friendly(u.c, G.ctrl[u.loc])) continue;
+    if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.exp || -99) >= G.day - 8 || (u.c === me && (!auto || u.man || u.hold)) || !friendly(u.c, G.ctrl[u.loc])) continue;
     const c = u.c, prev = {[u.loc]: null}, q = [u.loc]; let goal = null;
     for(let i = 0; i < q.length && i < 600 && !goal; i++){
       const x = q[i];
@@ -3754,7 +3783,7 @@ function airTarget(c, divs, war, eAir, f){
 // legerleiding: het hele leger doet mee. Eerst aanvallen waar het kan, dan wordt de rest over het front verdeeld
 // (naar dreiging, breedte en kansen); pantser gaat naar de zwakke plekken van de vijand.
 function aiArmy(c){
-  if(c === G.player) for(const u of UBY[c] || []) if(u.man && !u.path.length && !u.att) u.man = false;   // bevel uitgevoerd: de generaal neemt het weer over
+  if(c === G.player) for(const u of UBY[c] || []) if(u.man && !u.path.length && !u.att && !u.hold) u.man = false;   // bevel uitgevoerd: de generaal neemt het weer over (na Halt niet: die houden positie)
   const mine = (UBY[c] || []).filter(u => c !== G.player || (!u.man && !u.hold));   // lopende bevelen van jou gaan voor; wie 'positie houden' kreeg blijft staan
   if(!mine.length) return;
   const own = owned(c);
@@ -3775,7 +3804,7 @@ function aiArmy(c){
     let t = TI[n]; if(t) return t;
     let d = 0, a = 0, cnt = 0;
     const dv = [];
-    for(const v of IDX[n] || []) if(v.c === G.ctrl[n]){ dv.push(defPlain(v, n)); a += atkPlain(v); cnt++; }
+    for(const v of defendersAt(n, c)){ dv.push(defPlain(v, n)); a += atkPlain(v); cnt++; }   // wie er werkelijk verdedigt: ook gasten (bondgenoot/doorgang) die met ons in oorlog zijn
     const W = widthOf(n);
     if(dv.length > W){ dv.sort((x, y) => y - x); for(let i = 0; i < W; i++) d += dv[i]; d *= 1 + 0.04*Math.min(10, dv.length - W); }   // reserves vallen in: iets meer nodig
     else for(const x of dv) d += x;
@@ -3828,10 +3857,10 @@ function aiArmy(c){
       const donors = [];
       for(const f of front){
         if(need.has(f)) continue;
-        const pool = (IDX[f] || []).filter(u => u.c === c && !u.att && !u.path.length && u.hp > 50 && u.t !== 'para' && u.t !== 'aa' && !(auto && u.man) && (u.gd || 0) <= G.day).sort((x, y) => (x.ent || 0) - (y.ent || 0));
+        const pool = (IDX[f] || []).filter(u => u.c === c && !u.att && !u.path.length && u.hp > 50 && u.t !== 'para' && u.t !== 'aa' && !(auto && (u.man || u.hold || u.gst)) && (u.gd || 0) <= G.day).sort((x, y) => (x.ent || 0) - (y.ent || 0));
         const n = Math.floor(pool.length * 0.4); for(let i = 0; i < n; i++) donors.push(pool[i]);
       }
-      for(const u of mine) if(!frontSet.has(u.loc) && !u.att && !u.path.length && u.hp >= 60 && u.t !== 'para' && !(auto && u.man)) donors.push(u);
+      for(const u of mine) if(!frontSet.has(u.loc) && !u.att && !u.path.length && u.hp >= 60 && u.t !== 'para' && !(auto && (u.man || u.hold || u.gst))) donors.push(u);
       if(donors.length){
         const from = donors.map(u => u.loc);
         sendTo(c, donors, need);
@@ -3849,11 +3878,12 @@ function aiArmy(c){
   // in de verdediging (vijand duidelijk sterker, of jouw opdracht): eerst het front houden, alleen aanvallen met duidelijke overmacht
   let enP = 0; for(const e of ens) enP += armyPow(e);
   const defensive = gc && gc.mode === 'def' ? true : gc && gc.mode === 'att' ? false : armyPow(c) < enP * 0.9;
+  const pwr = armyPow(c) / Math.max(1, enP);   // krachtsverhouding met alle vijanden samen: wie het front houdt valt alleen mee aan als je duidelijk sterker bent (1,2x)
   if(focus) for(const f of front) if(ADJ[f].some(n => G.ctrl[n] === focus)) opp[f] = opp[f] * 3 + 1;   // hoofddoel: daar de kansen
   const avail = new Map();   // frontstuk -> vrije troepen en wie blijft staan
   for(const f of front){
     const here = [];
-    for(const u of IDX[f] || []) if(u.c === c && !u.att && !u.path.length && u.hp > 50 && u.t !== 'para' && !(auto && u.man)) here.push(u);
+    for(const u of IDX[f] || []) if(u.c === c && !u.att && !u.path.length && u.hp > 50 && u.t !== 'para' && !(auto && (u.man || u.hold || u.gst))) here.push(u);
     if(!here.length) continue;
     // houders blijven staan: genoeg verdediging tegen wat er tegenover ligt
     const keep = new Set(); let kd = 0;
@@ -3914,28 +3944,32 @@ function aiArmy(c){
     const out = [];
     for(const f of pl.fs){
       const a = avail.get(f), sea = SEA.has(ek(f, pl.n));
-      for(const x of a.here){ if(used.has(x) || (!all && a.keep.has(x)) || x.t === 'aa' || (sea && x.t === 'art')) continue; out.push([x, pw(x, f, pl.n)]); }
+      const lone = pwr > 1.2 && !sea && !ADJ[f].some(m => m !== pl.n && tgt(f, m));   // het doel is hier de enige vijand: wie aanvalt bindt precies wat hij moest tegenhouden, dus ook de houders doen mee
+      for(const x of a.here){ if(used.has(x) || (!all && !lone && a.keep.has(x)) || x.t === 'aa' || (sea && x.t === 'art')) continue; out.push([x, pw(x, f, pl.n)]); }
     }
     return out;
   };
   const hit = [], hitSet = new Set();
   // staat alles al weken stil (geen aanval, geen opmars)? dan mag een belegering
   const N = nat(c);
-  if(mine.some(u => u.att || (u.path.length && G.ctrl[u.path[u.path.length - 1]] !== c))) N.stall = 0; else N.stall = (N.stall || 0) + 1;
-  const siegeOk = N.stall >= 12 && !(gc && gc.mode === 'def') && armyPow(c) > 1.6 * enP; let siege = null;   // alleen als je duidelijk de sterkste bent
+  if(mine.some(u => u.att || (u.path.length && atWar(c, G.ctrl[u.path[u.path.length - 1]])))) N.stall = 0; else N.stall = (N.stall || 0) + 1;   // een mars naar bevriend land telt niet
+  // twee trappen: ben je duidelijk de sterkste (1,6x), dan volstaat veel volk; ben je alleen wat sterker (1,2x), dan moet de kracht
+  // ter plaatse minstens de helft van de stelling zijn. Wie niet sterker is belegert niet: dat kost meer dan het oplevert
+  const strong = pwr > 1.6;
+  const siegeOk = N.stall >= 12 && !(gc && gc.mode === 'def') && !defensive && pwr > 1.2; let siege = null;
   for(const pl of plans.filter(pl => pl.ti.cnt).sort((a,b) => (focus ? (G.ctrl[b.n] === focus) - (G.ctrl[a.n] === focus) : 0) || a.ti.d/a.tm/(1 + 0.3*(a.ti.st - 1)) - b.ti.d/b.tm/(1 + 0.3*(b.ti.st - 1)))){   // terrein, rivier en stad meegewogen
     const t = pl.ti, cs = cands(pl);
-    if(!cs.some(([x]) => x.t !== 'art')) continue;
     const eng = engaged[pl.n] || 0;
     let total = eng; for(const [, v] of cs) total += v;
     // meer divisies dan de verdediger verdelen de klappen: tegen een kleine bezetting is minder kracht nodig (Lanchester)
     const lan = clamp(Math.min(t.cnt, t.W) / Math.max(1, Math.min(cs.length, t.W)), 0.35, 1);
     const pocket = pl.fs.some(f => SUP[f] === 0) && ADJ[pl.n].some(m => G.ctrl[m] === c && SUP[m] !== 0);   // uitbraak naar eigen linies
     const min = t.d * need * (t.push ? 0.85 : 1) * lan * (pocket ? 0.6 : 1);
-    if(!(total > min || (eng && total > t.d*0.9*lan))){
-      // belegering: al weken geen aanval mogelijk, maar wel ruim twee keer zoveel divisies: dan toch, de reserves lossen af
-      if(siegeOk && !eng){ const ca = cands(pl, true); let ta = 0; for(const [, v] of ca) ta += v;
-        if(ca.length >= 1.6*Math.min(t.cnt, t.W) + 1 && ta > t.d*0.3*lan && (!siege || ta/t.d > siege.r)) siege = {pl, cs: ca, r: ta/t.d}; }
+    if(!cs.some(([x]) => x.t !== 'art') || !(total > min || (eng && total > t.d*0.9*lan))){
+      // belegering: al weken geen aanval mogelijk, maar wel duidelijk meer divisies rond de stelling dan erin: dan toch, de reserves lossen af.
+      // Ook wie het front houdt telt mee en doet mee (ook als er verder niemand vrij is: een klein leger bestaat soms alleen uit houders)
+      if(siegeOk && !eng){ const ca = cands(pl, true), m = Math.min(t.cnt, t.W); let ta = 0; for(const [, v] of ca) ta += v;
+        if(ca.some(([x]) => x.t !== 'art') && ((strong && ca.length >= 1.6*m + 1 && ta > t.d*0.3*lan) || (ca.length >= m + 2 && ta > t.d*0.5)) && (!siege || ta/t.d > siege.r)) siege = {pl, cs: ca, r: ta/t.d}; }
       continue;
     }
     // 2:1 geeft veel minder eigen verlies: eerst één doel goed, met wat overblijft het volgende
@@ -4005,6 +4039,14 @@ function aiArmy(c){
       for(const p of watchP) tH[p] *= k;
       if(fs > 0) for(const f of front) tH[f] += back * tH[f] / fs;
     }
+    // in hele divisies: de wacht krijgt samen haar deel, afgerond, de zwaarst bedreigde provincies eerst; de rest gaat naar het front
+    // (anders houdt elke bewaakte provincie een hele divisie vast, ook als haar deel 0,1 is)
+    let fs = 0; for(const f of front) fs += tH[f];
+    if(fs > 0){
+      let back = Math.min(ws, lim), n = Math.round(back);
+      for(const p of watchP.slice().sort((a, b) => tH[b] - tH[a])){ const g = n > 0 ? Math.min(n, Math.max(1, Math.round(tH[p]))) : 0; tH[p] = g; n -= g; back -= g; }
+      for(const f of front) tH[f] = Math.max(0, tH[f] + back * tH[f] / fs);
+    }
   }
   // zwaartepunt: waar een aanval nét niet kan, verzamelt de generaal extra troepen tot het wel kan (in plaats van overal een beetje)
   if(!defensive && plans.length){
@@ -4047,7 +4089,7 @@ function aiArmy(c){
     let bestO = 0; for(const f of front) if(tS[f] > 0 && opp[f] > bestO) bestO = opp[f];
     for(const f of front){
       if(tS[f] > 0 || opp[f] >= bestO*0.67) continue;
-      for(const u of IDX[f] || []) if(u.c === c && ROLE[u.t] === 'shock' && !u.att && !u.path.length && u.hp >= 60 && !(auto && u.man)) movers.push(u);
+      for(const u of IDX[f] || []) if(u.c === c && ROLE[u.t] === 'shock' && !u.att && !u.path.length && u.hp >= 60 && !(auto && (u.man || u.hold || u.gst))) movers.push(u);
     }
   }
   // overvolle frontstukken geven troepen af aan stukken die tekortkomen
@@ -4056,10 +4098,10 @@ function aiArmy(c){
     const hH = tH[f] - defH[f], hS = tS[f] - defS[f];
     let rh = hH > 2*tH[f] + 6 ? Math.floor(hH - 1.5*tH[f] - 3) : 0, rs = hS > 2*tS[f] + 6 ? Math.floor(hS - 1.5*tS[f] - 3) : 0;
 
-    if(!frontSet.has(f)){ rh = Math.max(rh, Math.floor(hH - Math.ceil(tH[f]) - 0.5)); rs = Math.max(rs, Math.floor(hS - tS[f])); }   // bewaakte grens (geen front): overschot gaat meteen naar het front
+    if(!frontSet.has(f)){ rh = Math.max(rh, Math.round(hH) - Math.ceil(tH[f])); rs = Math.max(rs, Math.floor(hS - tS[f])); }   // bewaakte grens (geen front): overschot gaat meteen naar het front
     if(rh < 1 && rs < 1) continue;
     for(const u of IDX[f] || []){
-      if(u.c !== c || u.att || u.path.length || u.hp < 60 || u.t === 'para' || u.t === 'aa' || (auto && u.man)) continue;
+      if(u.c !== c || u.att || u.path.length || u.hp < 60 || u.t === 'para' || u.t === 'aa' || (auto && (u.man || u.hold || u.gst))) continue;
       if(ROLE[u.t] === 'shock'){ if(rs > 0){ movers.push(u); rs--; } }
       else if(rh > 0){ movers.push(u); rh--; }
       if(rh < 1 && rs < 1) break;
@@ -4191,8 +4233,8 @@ function watchBorders(c, own, calm){
     else if(c === G.player && G.aiJust && G.aiJust[x] != null) d = d*2 + 2;          // bereidt een oorlog tegen jou voor
     else if(c !== G.player && x === G.player && G.just && G.just.c === c) d = d*2 + 1;   // jij bereidt er een voor
     else if(c === G.player && (G.ae[x] || 0) >= COAL_THR()*0.7) d *= 1.5;               // bang en boos: coalitiegevaar
+    else if(calm) d = 0;                                                                  // in oorlog: rustige buren kosten geen troepen (ook die met een bestand)
     else if(G.truce && truceLeft(c, x) > 60) d *= 0.25;                                  // verdrag: rustig
-    else if(calm) d = 0;                                                                  // in oorlog: rustige buren kosten geen troepen
     return dz[x] = d;
   };
   for(const p of own){
@@ -4533,7 +4575,7 @@ function findPath(c, from, to, allowEnemy){
       for(const n of ADJ[x]){
         if(done.has(n) || !ok(n)) continue;
         const own = G.ctrl[n] === c || friendly(c, G.ctrl[n]);
-        if(!own && !dipBase(c, x, G.ctrl[n])) continue;   // vanuit een neutraal doorgangsland val je niemand aan
+        if(!own && !atWar(c, G.ctrl[x]) && !dipBase(c, x, G.ctrl[n])) continue;   // vanuit een neutraal doorgangsland val je niemand aan (veroverd vijandelijk gebied is wel een basis)
         const w = (own ? (G.ctrl[n] === c ? 1 : 1.25) : 3.5) + (SEA.has(ek(x, n)) ? 2 : 0) + (n !== to && !own && (IDX[n] || []).some(v => v.c === G.ctrl[n]) ? 6 : 0);
         const nd = dd[x] + w;
         if(dd[n] === undefined || nd < dd[n]){ dd[n] = nd; prev[n] = x; push(nd, n); }
@@ -4870,6 +4912,7 @@ function nukeStrike(c, p){
   }
   // de klap: de meeste divisies en eskaders weg, de rest gebroken; industrie verwoest; de provincie besmet
   const ds = defendersAt(p).slice().sort((x, y) => x.hp - y.hp), hit = ds.length, dead = Math.round(hit * 0.75);   // driekwart van de divisies is weg, de rest is gebroken
+  const myN = c === me ? 0 : ds.filter(d => d.c === me).length;   // jouw divisies in het doel (ook te gast bij een bondgenoot)
   ds.forEach((d, i) => { if(i < dead){ d.dead = true; kill(c, d.c); if(d.c === me) G.stats.lost++; } else { d.hp = Math.max(5, d.hp * 0.3); d.ent = 0; d.att = null; d.path = []; } });
   if(dead){ G.units = G.units.filter(u => !u.dead); for(const id of [...UI.sel]) if(!unitById(id)) UI.sel.delete(id); }
   const wings = G.air.filter(w => w.c === v && w.base === p); let wd = 0;
@@ -4885,13 +4928,13 @@ function nukeStrike(c, p){
     const nb = new Set(neighbors(v));
     for(const x of CIDS) if(x !== me && alive(x) && !atWar(x, me)) addAE(x, nb.has(x) ? pl.aeNb : pl.ae);
     achAward('atom');
-  } else if(v === me){ G.paused = true; }
+  } else if(v === me || myN){ G.paused = true; }
   SUPCC = {day:-1, m:{}}; FTC = {day:-1, m:{}}; POWC = null; METC = {day:-1, m:{}}; overDirty = true; stripSig = null; sheetSig = '';
   fx(p, 'nuke');
-  if(loud){
+  if(loud || myN){
     nukeFlash(); sfx('nuke');
     const what = (hit ? dead + ' van ' + hit + ' divisies vernietigd' : 'geen troepen geraakt') + (wd ? ', ' + wd + ' eskaders' : '') + ', industrie ' + NF.format(f0) + ' → ' + NF.format(facN(p)) + ' fabrieken, provincie besmet';
-    toast(c === me ? 'Kernaanval op ' + P[p].n + ': ' + what + '. De wereld is geschokt' : v === me ? cname(c) + ' werpt een kernbom op ' + P[p].n + ': ' + what : cname(c) + ' werpt een kernbom op ' + P[p].n + ' (' + cname(v) + ')', c === me ? 'good' : 'war', 'nuke');
+    toast(c === me ? 'Kernaanval op ' + P[p].n + ': ' + what + '. De wereld is geschokt' : v === me ? cname(c) + ' werpt een kernbom op ' + P[p].n + ': ' + what : cname(c) + ' werpt een kernbom op ' + P[p].n + ' (' + cname(v) + ')' + (myN ? ': ' + ds.filter(d => d.c === me && d.dead).length + ' van jouw ' + myN + ' divisies daar vernietigd' : ''), c === me ? 'good' : 'war', 'nuke');
   }
   return true;
 }
@@ -4902,11 +4945,11 @@ function aiNuke(c, n){
   if((n.nk || 0) < (n.ppd >= 20 ? 2 : 1) && n.ppd >= (ens.length ? 15 : 8) && !n.q.some(q => q.k === 'nuke')) n.q.unshift({k:'nuke', p:0});
   if(n.nkAim){
     const a = n.nkAim;
-    if(!atWar(c, a.e) || G.ctrl[a.p] !== a.e || !(n.nk > 0)){ delete n.nkAim; sheetSig = ''; if(a.e === me) toast(cname(c) + ' ziet af van de kernaanval op ' + P[a.p].n, 'good', 'nkw'); return; }
+    if(!atWar(c, a.e) || G.ctrl[a.p] !== a.e || !(n.nk > 0)){ delete n.nkAim; sheetSig = ''; if(friendly(me, a.e)) toast(cname(c) + ' ziet af van de kernaanval op ' + P[a.p].n, 'good', 'nkw'); return; }
     if(G.day >= a.day){
       delete n.nkAim; sheetSig = '';
       if(nukeReach(c, a.p)) nukeStrike(c, a.p);
-      else if(a.e === me) toast('De kernaanval van ' + cname(c) + ' gaat niet door: geen bommenwerper meer binnen bereik', 'good', 'nkw');
+      else if(friendly(me, a.e)) toast('De kernaanval van ' + cname(c) + ' gaat niet door: geen bommenwerper meer binnen bereik', 'good', 'nkw');
     }
     return;
   }
@@ -4923,6 +4966,11 @@ function aiNuke(c, n){
     if(!best) continue;
     n.nkAim = {p:best, e, day:G.day + ATOM.warn}; sheetSig = ''; overDirty = true;
     if(e === me){ toast(cname(c) + ' dreigt met een kernaanval op ' + P[best].n + ' over ' + ATOM.warn + ' dagen. Haal je troepen weg, zet jagers boven het doel of sluit vrede', 'war', 'nkw'); G.paused = true; sfx('war'); flash(); }
+    else if(friendly(me, e)){   // doel in bevriend land: noem de plaats; staan jouw divisies er, dan is het ook een dreiging tegen jou
+      const mine = (IDX[best] || []).some(u => u.c === me);
+      toast(cname(c) + ' dreigt met een kernaanval op ' + P[best].n + ' (' + cname(e) + ') over ' + ATOM.warn + ' dagen' + (mine ? '. Jouw divisies staan daar: haal ze weg of zet jagers boven het doel' : ''), mine ? 'war' : '', 'nkw');
+      if(mine){ G.paused = true; sfx('war'); flash(); }
+    }
     else if(MAPNAME === 'europe' || MAJORS.has(e)) toast(cname(c) + ' dreigt ' + cname(e) + ' met een kernaanval', '', 'nkw' + c);
     return;
   }
@@ -5969,7 +6017,7 @@ function orderMove(p){
   const gid = G.nid++, goers = [], routes = {};
   PATHV++;
   for(const id of UI.sel){
-    const u = unitById(id); if(!u) continue;
+    const u = unitById(id); if(!u || u.c !== G.player) continue;   // alleen je eigen divisies (een oude selectie of groep kan weggegeven divisies bevatten)
     if(u.air) continue;
     u.man = true; u.hold = false; u.wt = null;
     if(u.loc === p){ u.path = []; u.att = null; u.prog = 0; u.g = null; ok++; continue; }
@@ -7101,7 +7149,7 @@ $('strip').addEventListener('click', async e => {
   else if(a === 'clear'){ clearSel(); UI.info = null; UI.confirm = null; }
   else if(a === 'airhome'){ for(const id of UI.selAir){ const w = airById(id); if(w){ w.zone = null; w.man = false; } } }
   else if(a === 'drop'){ UI.target = 'drop'; UI.sheet = null; }
-  else if(a === 'halt'){ for(const id of UI.sel){ const u = unitById(id); if(u && !u.air){ u.path = []; u.att = null; u.prog = 0; u.man = true; u.g = null; } } }
+  else if(a === 'halt'){ const au = nat(G.player).auto; for(const id of UI.sel){ const u = unitById(id); if(u && !u.air && u.c === G.player){ u.path = []; u.att = null; u.prog = 0; u.man = true; u.g = null; if(au) u.hold = true; } } }   // met de generaal aan: Halt = positie houden (anders zet hij ze na een dag weer in)
   else if(a === 'front'){
     // verdeel de selectie over de frontprovincies, de leegste eerst
     const us2 = [...UI.sel].map(unitById).filter(u => u && !u.air);
@@ -8063,7 +8111,7 @@ function groupSave(k){
   renderAll();
 }
 function groupPick(k){
-  const us = ((G.groups || {})[k] || []).map(unitById).filter(Boolean);
+  const us = ((G.groups || {})[k] || []).map(unitById).filter(u => u && u.c === G.player);
   if(!us.length){ toast('Legergroep ' + k + ' is leeg: selecteer troepen en druk Shift+' + k, '', 'hud'); return; }
   const same = us.length === UI.sel.size && us.every(u => UI.sel.has(u.id));
   UI.sel = new Set(us.map(u => u.id)); UI.selAir = new Set(); UI.info = null; UI.target = null;
