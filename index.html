@@ -7795,7 +7795,7 @@ function peaceAlertsH(){
   for(const c of MAJORS){
     if(c === me || !alive(c)) continue;
     const m = nat(c), a = m.nkAim;
-    if(a && a.e === me) h += '<div class="alert">' + ic('nuke') + '<span><b>' + esc(cname(c)) + '</b> dreigt met een kernaanval op <b>' + esc(P[a.p].n) + '</b></span><span class="num">' + Math.max(0, a.day - G.day) + ' d</span></div>';
+    if(a && (a.e === me || friendly(me, a.e))) h += '<div class="alert">' + ic('nuke') + '<span><b>' + esc(cname(c)) + '</b> dreigt met een kernaanval op <b>' + esc(P[a.p].n) + '</b>' + (a.e !== me ? ' (' + esc(cname(a.e)) + ')' : '') + '</span><span class="num">' + Math.max(0, a.day - G.day) + ' d</span></div>';
     if(m.atom && m.atom.done) have.push(cname(c));
   }
   if(have.length) h += '<div class="alert" title="Wie zelf een kernbom heeft, wordt alleen in uiterste nood getroffen">' + ic('nuke') + '<span>Atoommacht' + (have.length > 1 ? 'en' : '') + ': <b>' + esc(have.join(', ')) + '</b></span></div>';
@@ -7947,7 +7947,7 @@ function drawMarks(ctx, u1){
   const me = G.player, marks = [];
   const cd = cardOpen() ? G.cards[0] : null;
   if(cd && cd.k === 'nuke') marks.push([cd.p, '']);
-  for(const c of MAJORS){ const a = G.nations[c] && G.nations[c].nkAim; if(a && (a.e === me || c === me)) marks.push([a.p, Math.max(0, a.day - G.day) + ' d']); }
+  for(const c of MAJORS){ const a = G.nations[c] && G.nations[c].nkAim; if(a && (a.e === me || friendly(me, a.e) || c === me)) marks.push([a.p, Math.max(0, a.day - G.day) + ' d']); }
   const t = performance.now() / 1000;
   for(const [p, lab] of marks){
     const [x, y] = toScreen(P[p].a[0], P[p].a[1]), r = 17*u1 + Math.sin(t * 4) * 1.5*u1;
