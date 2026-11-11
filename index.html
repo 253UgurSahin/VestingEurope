@@ -2511,7 +2511,12 @@ function aiArmy(c){
   }
   const allocSet = new Set(alloc);
   let nS = 0; for(const u of land) if(ROLE[u.t] === 'shock') nS++;
-  const nH = land.length - nS;
+  let nH = land.length - nS, farFirst = true;
+  // inzet naar wat de vijand waard is: tegen een dwergstaat zonder leger marcheert niet het hele leger op.
+  // Drie divisies per vijandelijke divisie, plus bezettingstroepen; de rest blijft waar hij staat (grenzen, reserve)
+  { let eDiv = 0, eProv = 0; for(const e of ens){ eDiv += UCNT[e] || 0; eProv += owned(e).length; }
+    const kC = Math.min(1, Math.ceil(3*eDiv + 4 + Math.min(front.length, eProv) + 0.15*eProv) / Math.max(1, land.length));
+    nH *= kC; nS *= kC; if(kC < 1) farFirst = false; }
   let sT = 0, sW = 0, sO = 0;
   for(const f of alloc){ sT += threat[f]; sW += wid[f]; sO += opp[f]; }
   const tH = {}, tS = {};
@@ -2602,8 +2607,6 @@ function aiArmy(c){
     if(land.length > 2.5 * fcap + 10){ G.bigT = G.day + 120; toast('Generaal: het front (' + front.length + ' provincie' + (front.length === 1 ? '' : 's') + ') voedt hooguit ~' + fcap + ' divisies; de rest staat in reserve. Meer front = een tweede oorlog of een aanval over zee', 'war', 'bigarmy'); }
   }
   if(movers.length && budget > 0){
-    movers.sort((a, b) => b.hp - a.hp);
-    if(movers.length > budget) movers.length = budget;
     // afstanden over eigen gebied vanaf elk frontstuk dat troepen nodig heeft (stopt zodra alle wachtenden gevonden zijn)
     const needF = alloc.filter(f => defH[f] > 0.25 || defS[f] > 0.25).sort((a,b) => Math.max(defH[b], defS[b]) - Math.max(defH[a], defS[a])).slice(0, 40);
     const locs = new Set(movers.map(u => u.loc));
@@ -2622,6 +2625,11 @@ function aiArmy(c){
       DF.set(f, {dist, par});
     }
     const routes = new Map();
+    // wie het dichtst bij staat gaat eerst
+    const near = u => { let m = 1e9; for(const f of needF){ const d = f === u.loc ? 0 : DF.get(f).dist.get(u.loc); if(d !== undefined && d < m) m = d; } return m; };
+    const ND = new Map(); if(!farFirst) for(const u of movers) if(!ND.has(u.loc)) ND.set(u.loc, near(u));
+    if(farFirst) movers.sort((a, b) => b.hp - a.hp); else movers.sort((a, b) => ND.get(a.loc) - ND.get(b.loc) || b.hp - a.hp);   // leger over: de dichtstbijzijnde gaan; anders de fitste
+    if(movers.length > budget) movers.length = budget;
     for(const u of new Set(movers)){
       const shock = ROLE[u.t] === 'shock';
       let best = null, bs = 0;
@@ -2645,7 +2653,9 @@ function aiArmy(c){
     }
     // wie geen frontstuk kreeg: naar de tweede linie (verzamelgebied met ruimte), zodat de aflossing dichtbij staat
     if(budget > 0 && roomAt.size){
-      const rest = movers.filter(u => !u.path.length && !stage.has(u.loc)).slice(0, budget);
+      // ook de tweede linie groeit niet verder dan de inzet die deze oorlog vraagt
+      let inSt = 0; for(const u of land) if(stage.has(u.path.length ? u.path[u.path.length - 1] : u.loc)) inSt++;
+      const rest = movers.filter(u => !u.path.length && !stage.has(u.loc)).slice(0, Math.max(0, Math.min(budget, Math.ceil((nH + nS) * (farFirst ? 1.25 : 1)) - inSt)));
       if(rest.length) sendTo(c, rest, roomAt);
     }
   }
