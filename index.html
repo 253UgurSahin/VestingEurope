@@ -1461,7 +1461,7 @@ function decongest(c){
   for(const p of over){
     let ex = st[p] - lim(p);
     // wie weg mag: gewonden eerst (die herstellen hier toch niet), dan wie niets doet. Aanvallers en jouw eigen bevelen blijven
-    const idle = mine.filter(u => u.loc === p && !u.path.length && !u.att && !(c === G.player && u.man) && u.t !== 'para').sort((a, b) => b.hp - a.hp);
+    const idle = mine.filter(u => u.loc === p && !u.path.length && !u.att && !(c === G.player && (u.man || u.hold)) && u.t !== 'para').sort((a, b) => b.hp - a.hp);
     if(!idle.length) continue;
     const seen = new Map([[p, null]]), q = [p], spots = [];
     for(let i = 0; i < q.length && spots.length < ex; i++){
@@ -3572,7 +3572,7 @@ function airTarget(c, divs, war, eAir, f){
 // (naar dreiging, breedte en kansen); pantser gaat naar de zwakke plekken van de vijand.
 function aiArmy(c){
   if(c === G.player) for(const u of UBY[c] || []) if(u.man && !u.path.length && !u.att) u.man = false;   // bevel uitgevoerd: de generaal neemt het weer over
-  const mine = (UBY[c] || []).filter(u => c !== G.player || !u.man);   // lopende bevelen van jou gaan voor
+  const mine = (UBY[c] || []).filter(u => c !== G.player || (!u.man && !u.hold));   // lopende bevelen van jou gaan voor; wie 'positie houden' kreeg blijft staan
   if(!mine.length) return;
   const own = owned(c);
   const auto = c === G.player;
@@ -5020,7 +5020,7 @@ function orderMove(p){
   for(const id of UI.sel){
     const u = unitById(id); if(!u) continue;
     if(u.air) continue;
-    u.man = true; u.wt = null;
+    u.man = true; u.hold = false; u.wt = null;
     if(u.loc === p){ u.path = []; u.att = null; u.prog = 0; u.g = null; ok++; continue; }
     if(!(u.loc in routes)) routes[u.loc] = findPath(u.c, u.loc, p, true);
     const path = routes[u.loc] && routes[u.loc].slice();
@@ -5943,7 +5943,7 @@ $('strip').addEventListener('click', async e => {
       clearSel();
     } else toast('Geen frontprovincies gevonden', 'war', 'bad');
   }
-  else if(a === 'toai'){ for(const id of UI.sel){ const u = unitById(id); if(u){ u.man = false; u.g = null; u.gst = false; } } toast('De generaal neemt deze troepen over', 'good'); clearSel(); }
+  else if(a === 'toai'){ for(const id of UI.sel){ const u = unitById(id); if(u){ u.man = false; u.hold = false; u.g = null; u.gst = false; } } toast('De generaal neemt deze troepen over', 'good'); clearSel(); }
   else if(a.startsWith('tt:')){ const t = a.slice(3); const rest = [...UI.sel].filter(id => { const u = unitById(id); return u && u.t !== t; }); if(rest.length) UI.sel = new Set(rest); }
   else if(a.startsWith('war:')){
     const c = a.slice(4);
@@ -6607,11 +6607,13 @@ function armyPanelH(){
   if(nMove) stat.push(nMove + ' onderweg' + (oneDest && dest ? ' naar ' + esc(P[dest].n) : ''));
   if(nDug) stat.push(nDug + ' ingegraven');
   if(nOos) stat.push('<span class="oosc" style="margin:0">' + nOos + ' afgesneden</span>');
+  { const nHold = us.filter(u => u.hold).length; if(nHold) stat.push(nHold + (nHold === 1 ? ' houdt positie' : ' houden positie')); }
   if(n.auto) stat.push(nMan ? nMan + ' op jouw bevel' : 'onder de generaal');
   h += '</div><div class="apst">' + (UI.hintN < 4 ? '<span class="hint2">' + ic('zwaard') + (isTouch ? 'Tik of sleep naar een doel' : 'Klik, rechtsklik of sleep naar een doel') + '</span>' : '') + '<span>' + (stat.join(' · ') || 'Paraat: wacht op je bevel') + '</span></div><div class="acts apb">';
   h += '<button class="btn sm" data-act="halt"' + (moving ? '' : ' disabled') + ' title="Halt: stop en houd deze positie. Wie stilstaat graaft zich in (tot +20% verdediging)">' + ic('stop') + 'Halt' + kb('H') + '</button>';
   h += '<button class="btn sm" data-act="front" title="Verdeel deze troepen over je frontprovincies">' + ic('schild') + 'Front' + kb('F') + '</button>';
-  if(n.auto && nMan) h += '<button class="btn sm" data-act="toai" title="Laat de auto-generaal deze troepen weer besturen">' + ic('gen') + 'Generaal' + kb('G') + '</button>';
+  if(n.auto) h += '<button class="btn sm' + (us.length && us.every(u => u.hold) ? ' on' : '') + '" data-act="hold" title="Positie houden: deze divisies blijven hier staan, ook met de generaal aan, tot je ze een nieuw bevel geeft of teruggeeft aan de generaal">' + ic('schild') + 'Positie</button>';
+  if(n.auto && (nMan || us.some(u => u.hold))) h += '<button class="btn sm" data-act="toai" title="Laat de auto-generaal deze troepen weer besturen">' + ic('gen') + 'Generaal' + kb('G') + '</button>';
   if(paras.length){
     const cd = paras.reduce((m, u) => Math.max(m, (u.dropCd || 0) - G.day), 0), war = enemiesOf(me).length;
     h += paraReady.length && war ? '<button class="btn sm pri" data-act="drop" title="Luchtlanding: kies daarna een gemarkeerde provincie">' + ic('para') + 'Landing</button>'
@@ -6634,6 +6636,7 @@ function armyAct(a){
     if(s.length > 1) UI.sel = new Set(s.filter((_, i) => i % 2 === 0).map(u => u.id));
     return true;
   }
+  if(a === 'hold'){ const on = !us.every(u => u.hold); for(const u of us){ if(u.air) continue; u.hold = on; if(on){ u.path = []; u.att = null; u.prog = 0; u.g = null; u.man = false; } } toast(on ? 'Positie houden: de generaal laat deze divisies staan' : 'Deze divisies vallen weer onder de generaal', 'good', 'hud'); return true; }
   if(a === 'center'){ fitSel(); return true; }
   if(a === 'selview'){
     const ids = []; for(const g of Object.values(GROUPS)) if(g.c === me && g.sx >= 0 && g.sx <= cw() && g.sy >= 0 && g.sy <= chh()) ids.push(...g.ids);
