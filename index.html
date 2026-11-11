@@ -2602,7 +2602,7 @@ const allyN = () => Object.keys(G.ally).length;
 function dipGuestsHome(){
   const me = G.player, auto = nat(me).auto;
   for(const u of G.units){
-    if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.c === me && (!auto || u.man)) || !friendly(u.c, G.ctrl[u.loc])) continue;
+    if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.exp || -99) >= G.day - 8 || (u.c === me && (!auto || u.man)) || !friendly(u.c, G.ctrl[u.loc])) continue;
     const c = u.c, prev = {[u.loc]: null}, q = [u.loc]; let goal = null;
     for(let i = 0; i < q.length && i < 600 && !goal; i++){
       const x = q[i];
@@ -3161,7 +3161,11 @@ function aiArmy(c){
   const auto = c === G.player;
   const ens = enemiesOf(c);
   if(!ens.length){ aiGarrison(c, mine, own); return; }
-  const front = own.filter(p => ADJ[p].some(n => atWar(c, G.ctrl[n])));
+  // bondgenoten: het land van een bevriend land dat tegen dezelfde vijand vecht hoort bij het front (van daaruit mag je aanvallen)
+  const {front, hosts} = frontOf(c);
+  const mineL = n => { const o = G.ctrl[n]; return o === c || hosts.has(o); };
+  const passL = hosts.size || (auto ? allyN() || Object.keys(G.access).length : friendly(c, G.player)) ? n => { const o = G.ctrl[n]; return o === c || friendly(c, o); } : n => G.ctrl[n] === c;
+  const tgt = (f, n) => { const o = G.ctrl[n]; return atWar(c, o) && (G.ctrl[f] === c || atWar(G.ctrl[f], o)); };   // mag je vanuit frontstuk f provincie n aanvallen?
   if(!front.length){ aiParas(c); if(auto) noFront(ens); aiGarrison(c, mine, own); return; }   // geen front: dan toch de gevaarlijke grenzen bewaken
   const frontSet = new Set(front);
   const BREAK = {}; for(const e of ens) BREAK[e] = meterOf(e);   // breekt de vijand? dan doordrukken
@@ -3186,12 +3190,16 @@ function aiArmy(c){
   for(const f of front){
     let t = 1, o = 0, w = 0, sea = false;
     for(const n of ADJ[f]){
-      if(!atWar(c, G.ctrl[n])) continue;
+      if(!tgt(f, n)) continue;
       const ti = tinfo(n), s = SEA.has(ek(f, n)), m = s ? 0.5 : 1;
       t += ti.a * m; w += m; if(s) sea = true;
       o += (ti.st + (ti.push ? 1 : 0)) * m / (1 + ti.d * (s ? 1.8 : 1) / 8);   // waardevol en zwak verdedigd = kans
     }
     if(underFire.has(f)) t *= 1.5;   // hier wordt nu gevochten: versterken gaat voor
+    if(G.ctrl[f] !== c){   // front van een bondgenoot: wat hij daar zelf heeft staan telt mee, en eigen grond gaat voor
+      let hd = 0; for(const v of IDX[f] || []) if(v.c === G.ctrl[f]) hd += defPlain(v, f);
+      t = Math.max(1, t - 0.8*hd) * 0.7; o *= 0.8;
+    }
     let a = 0; for(const e of ens) a += cover(e, f, 'cas') + cover(e, f, 'bo');
     threat[f] = t; airT[f] = a; hold[f] = 0; opp[f] = o; wid[f] = w; seaF[f] = sea;
   }
@@ -3199,7 +3207,7 @@ function aiArmy(c){
   // 1) gewonden terugtrekken om te herstellen, als het front dat toelaat
   for(const u of mine){
     if(u.att || u.path.length || u.hp >= 50 || !frontSet.has(u.loc)) continue;
-    const back = ADJ[u.loc].find(n => G.ctrl[n] === c && !frontSet.has(n) && !LONG.has(ek(u.loc, n)));
+    const back = ADJ[u.loc].find(n => mineL(n) && !frontSet.has(n) && !LONG.has(ek(u.loc, n)));
     const d = ROLE[u.t] === 'hold' ? defPlain(u, u.loc) : 0;
     if(back && hold[u.loc] - d > threat[u.loc]*0.4){ u.path = [back]; u.prog = 0; hold[u.loc] -= d; }
   }
@@ -3254,10 +3262,10 @@ function aiArmy(c){
   }
   const used = new Set();
   const plans = [], seenT = new Set();
-  for(const f of avail.keys()) for(const n of ADJ[f]) if(!seenT.has(n) && atWar(c, G.ctrl[n])){
+  for(const f of avail.keys()) for(const n of ADJ[f]) if(!seenT.has(n) && tgt(f, n)){
     seenT.add(n);
     if(gc && gc.mode === 'def' && P[n].c !== c && !((BREAK[G.ctrl[n]] || 0) >= 0.6)) continue;   // opdracht verdedigen: alleen eigen grond terug
-    const fs = []; for(const g of ADJ[n]) if(avail.has(g)) fs.push(g);
+    const fs = []; for(const g of ADJ[n]) if(avail.has(g) && tgt(g, n)) fs.push(g);
     let tm = 0; for(const g of fs) tm = Math.max(tm, terrMod(g, n));
     plans.push({n, ti: tinfo(n), fs, tm: tm || 1});
   }
@@ -3288,7 +3296,7 @@ function aiArmy(c){
     if(sent) continue;
     // niemand naast het doel vrij: iemand van een frontstuk ernaast loopt er via dat stuk naartoe
     for(const g of ADJ[pl.n]){
-      if(sent || !frontSet.has(g) || SEA.has(ek(g, pl.n))) continue;
+      if(sent || !frontSet.has(g) || SEA.has(ek(g, pl.n)) || !tgt(g, pl.n)) continue;
       for(const h of ADJ[g]){
         const a = avail.get(h); if(!a || h === g) continue;
         const pool = a.here.filter(x => !used.has(x));
@@ -3459,7 +3467,7 @@ function aiArmy(c){
   // wat er niet in past wacht in de rug als reserve, binnen de aanvoer, en schuift op zodra er plek komt
   const stage = new Set(alloc);
   { const q = [...alloc], dd = new Map(q.map(f => [f, 0]));
-    for(let i = 0; i < q.length; i++){ const x = q[i], dx = dd.get(x) + 1; if(dx > 2) continue; for(const n of ADJ[x]) if(!dd.has(n) && G.ctrl[n] === c && !LONG.has(ek(x, n))){ dd.set(n, dx); q.push(n); stage.add(n); } } }
+    for(let i = 0; i < q.length; i++){ const x = q[i], dx = dd.get(x) + 1; if(dx > 2) continue; for(const n of ADJ[x]) if(!dd.has(n) && mineL(n) && !LONG.has(ek(x, n))){ dd.set(n, dx); q.push(n); stage.add(n); } } }
   const stDest = stackAt(c);
   let room = 0; const roomAt = new Map();
   for(const p of stage){ const r = (frontSet.has(p) ? Math.floor(supCap(p, c) * FRONT_MUL) + 1 : Math.floor(supCap(p, c))) - (stDest[p] || 0); if(r > 0 && SUP[p] !== 0){ room += r; if(!allocSet.has(p)) roomAt.set(p, r); } }
@@ -3480,7 +3488,7 @@ function aiArmy(c){
       for(let i = 0; i < q.length && left > 0; i++){
         const x = q[i], dx = dist.get(x) + 1;
         for(const n of ADJ[x]){
-          if(dist.has(n) || G.ctrl[n] !== c) continue;
+          if(dist.has(n) || !passL(n)) continue;
           dist.set(n, dx); par.set(n, x); q.push(n);
           if(locs.has(n)) left--;
         }
@@ -3529,7 +3537,7 @@ function aiArmy(c){
   for(const u of mine){
     if(u.t !== 'para' || u.att || u.path.length || u.hp < 60) continue;
     let dest = null;
-    if(frontSet.has(u.loc)) dest = ADJ[u.loc].find(n => G.ctrl[n] === c && !frontSet.has(n)) || null;
+    if(frontSet.has(u.loc)) dest = ADJ[u.loc].find(n => mineL(n) && !frontSet.has(n)) || null;
     else {
       let nd = Infinity, nf = null;
       for(const f of front){ const k = distKm(u.loc, f); if(k < nd){ nd = k; nf = f; } }
@@ -3540,6 +3548,20 @@ function aiArmy(c){
     if(path){ u.path = path; u.prog = 0; if(++pm >= 6) break; }
   }
   aiParas(c);
+  // wie de generaal in bevriend land inzet (front of opmars daarheen) blijft daar: anders stuurt de diplomatie hem naar huis
+  if(hosts.size) for(const u of mine){ const d = u.path.length ? u.path[u.path.length - 1] : u.att || u.loc; if(G.ctrl[u.loc] !== c || (G.ctrl[d] !== c && friendly(c, G.ctrl[d]))) u.exp = G.day; }
+}
+/* het front van land c: eigen provincies naast de vijand, plus die van bevriende landen (bondgenoot of doorgang) die tegen
+   dezelfde vijand vechten. hosts = die landen. */
+function frontOf(c){
+  const me = G.player, ens = enemiesOf(c), hosts = new Set();
+  if(ens.length){
+    const cand = c === me ? Object.keys(G.ally || {}).concat(Object.keys(G.access || {})) : [me];
+    for(const x of cand) if(x !== c && G.nations[x] && alive(x) && friendly(c, x) && !atWar(c, x) && ens.some(e => atWar(x, e))) hosts.add(x);
+  }
+  const front = owned(c).filter(p => ADJ[p].some(n => atWar(c, G.ctrl[n])));
+  for(const h of hosts) for(const p of owned(h)) if(ADJ[p].some(n => { const o = G.ctrl[n]; return atWar(c, o) && atWar(h, o); })) front.push(p);
+  return {front, hosts};
 }
 // aanvalsmodifier van terrein, rivier en stad voor gewone infanterie (voor de keuze waar de generaal aanvalt)
 const TMU = {t:'inf', air:false, tp:null};
@@ -3588,7 +3610,7 @@ function sendTo(c, movers, need){
     let left = locs.size - (locs.has(f) ? 1 : 0);
     for(let i = 0; i < q.length && left > 0; i++){
       const x = q[i], dx = dist.get(x) + 1;
-      for(const n of ADJ[x]){ if(dist.has(n) || G.ctrl[n] !== c) continue; dist.set(n, dx); par.set(n, x); q.push(n); if(locs.has(n)) left--; }
+      for(const n of ADJ[x]){ if(dist.has(n)) continue; const o = G.ctrl[n]; if(o !== c && !friendly(c, o)) continue; dist.set(n, dx); par.set(n, x); q.push(n); if(locs.has(n)) left--; }
     }
     DF.set(f, {dist, par});
   }
@@ -3685,10 +3707,9 @@ function prepInfo(c, x){
 function prepReady(c, x){ return prepInfo(c, x).r; }
 // wat doet de generaal met je troepen? (voor het overzicht)
 function genStatus(c){
-  const own = owned(c), front = new Set();
-  for(const p of own) if(ADJ[p].some(n => atWar(c, G.ctrl[n]))) front.add(p);
+  const fo = frontOf(c), front = new Set(fo.front);
   const reach = new Set(front), q = [...front];
-  for(let i = 0; i < q.length; i++) for(const n of ADJ[q[i]]) if(!reach.has(n) && G.ctrl[n] === c){ reach.add(n); q.push(n); }
+  for(let i = 0; i < q.length; i++) for(const n of ADJ[q[i]]) if(!reach.has(n) && (G.ctrl[n] === c || friendly(c, G.ctrl[n]))){ reach.add(n); q.push(n); }
   const st = {front: front.size, att:0, mv:0, fr:0, rest:0, res:0, stuck:0, man:0};
   for(const u of G.units){
     if(u.c !== c) continue;
