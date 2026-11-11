@@ -3908,11 +3908,11 @@ function aiArmy(c){
   // verdedigde provincies: zwakst verdedigd (naar waarde) eerst
   const pw = (x, f, n) => atkPlain(x) * seaMul(x, f, n) * atkMods(x, f, n);
   const engW = {};
-  const cands = pl => {
+  const cands = (pl, all) => {   // all: ook wie anders het front houdt (belegering: de vijand valt toch niet aan)
     const out = [];
     for(const f of pl.fs){
       const a = avail.get(f), sea = SEA.has(ek(f, pl.n));
-      for(const x of a.here){ if(used.has(x) || a.keep.has(x) || x.t === 'aa' || (sea && x.t === 'art')) continue; out.push([x, pw(x, f, pl.n)]); }
+      for(const x of a.here){ if(used.has(x) || (!all && a.keep.has(x)) || x.t === 'aa' || (sea && x.t === 'art')) continue; out.push([x, pw(x, f, pl.n)]); }
     }
     return out;
   };
@@ -3920,7 +3920,7 @@ function aiArmy(c){
   // staat alles al weken stil (geen aanval, geen opmars)? dan mag een belegering
   const N = nat(c);
   if(mine.some(u => u.att || (u.path.length && G.ctrl[u.path[u.path.length - 1]] !== c))) N.stall = 0; else N.stall = (N.stall || 0) + 1;
-  const siegeOk = N.stall >= 12 && !(gc && gc.mode === 'def'); let siege = null;
+  const siegeOk = N.stall >= 12 && !(gc && gc.mode === 'def') && armyPow(c) > 1.6 * enP; let siege = null;   // alleen als je duidelijk de sterkste bent
   for(const pl of plans.filter(pl => pl.ti.cnt).sort((a,b) => (focus ? (G.ctrl[b.n] === focus) - (G.ctrl[a.n] === focus) : 0) || a.ti.d/a.tm/(1 + 0.3*(a.ti.st - 1)) - b.ti.d/b.tm/(1 + 0.3*(b.ti.st - 1)))){   // terrein, rivier en stad meegewogen
     const t = pl.ti, cs = cands(pl);
     if(!cs.some(([x]) => x.t !== 'art')) continue;
@@ -3932,7 +3932,8 @@ function aiArmy(c){
     const min = t.d * need * (t.push ? 0.85 : 1) * lan * (pocket ? 0.6 : 1);
     if(!(total > min || (eng && total > t.d*0.9*lan))){
       // belegering: al weken geen aanval mogelijk, maar wel ruim twee keer zoveel divisies: dan toch, de reserves lossen af
-      if(siegeOk && !eng && cs.length >= 2*Math.min(t.cnt, t.W) + 2 && total > t.d*0.38*lan && (!siege || total/t.d > siege.r)) siege = {pl, cs, r: total/t.d};
+      if(siegeOk && !eng){ const ca = cands(pl, true); let ta = 0; for(const [, v] of ca) ta += v;
+        if(ca.length >= 1.6*Math.min(t.cnt, t.W) + 1 && ta > t.d*0.3*lan && (!siege || ta/t.d > siege.r)) siege = {pl, cs: ca, r: ta/t.d}; }
       continue;
     }
     // 2:1 geeft veel minder eigen verlies: eerst één doel goed, met wat overblijft het volgende
