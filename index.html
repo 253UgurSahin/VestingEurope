@@ -10,23 +10,27 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wdth,wght@75..125,400..700&family=Nunito:wght@400..800&display=swap">
 <style>
 /* Layout: de kaart vult het hele scherm; onderaan één compacte dock (balk, contextstrook, uitklapvel) */
 :root{
   --sea:#0A1117;
   --land-bg:#161F27;
-  --glass:rgba(11,17,23,.9);
-  --glass-2:rgba(255,255,255,.06);
-  --line:rgba(255,255,255,.1);
-  --ink:#E8EDE6;
-  --dim:#8E9CA5;
-  --accent:#E3A23C;
-  --accent-ink:#1B1204;
-  --war:#D4553F;
-  --ok:#73B06C;
-  --f-ui:'Barlow Condensed','Arial Narrow',sans-serif;
-  --f-body:'Barlow','Segoe UI',system-ui,sans-serif;
+  --glass:rgba(24,36,76,.96);
+  --glass-2:rgba(150,180,255,.11);
+  --line:rgba(170,195,255,.2);
+  --ink:#F6F8FF;
+  --dim:#A9B9DB;
+  --accent:#FFC43A;
+  --accent-ink:#3B2600;
+  --war:#FF5E57;
+  --ok:#6DDB7B;
+  --f-ui:'Fredoka','Baloo 2','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --f-body:'Nunito','Segoe UI',system-ui,sans-serif;
+  /* speelse skin: ronde hoeken, dikke knoppen */
+  --r-s:.6rem; --r-m:.95rem; --r-l:1.35rem;
+  --panel:#1B2A52; --panel-2:#24366A; --edge:#4365AE;
+  --go:#58CC6A; --go-d:#2F9443; --gold-d:#C98A12; --war-d:#B8322D; --info:#57B9FF;
   color-scheme:dark;
   font-size:clamp(13px, calc(0.5vmin + 0.25vw + 8px), 30px);
 }
@@ -1192,6 +1196,26 @@ body.has-card #stage::after{background:rgba(4,7,10,.5)}
 #flash.nuke.on{animation:flash 1.6s ease-out}
 #stage.shake.big{animation:shake .3s ease-out 4}
 @media (prefers-reduced-motion: reduce){ #flash.nuke.on{animation:none} #stage.shake.big{animation:none} }
+</style>
+<style id="skin">
+/* ================= speelse skin (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
+/* grote 3D-knop voor de belangrijkste keuzes: .kbtn + .go (groen) / .war (rood) / .gold (geel) / .ghost (rustig) */
+.kbtn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.9rem;padding:.55rem 1.15rem .6rem;border:0;border-radius:var(--r-m);cursor:pointer;font-family:var(--f-ui);font-weight:600;font-size:1.12rem;line-height:1.1;color:#fff;background:linear-gradient(#4E6FB8,#3D5A9C);box-shadow:0 .28rem 0 #263C70, 0 .5rem .9rem rgba(0,0,0,.28);transition:transform .07s ease, box-shadow .07s ease, filter .12s ease;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.kbtn:hover{filter:brightness(1.07)}
+.kbtn:active{transform:translateY(.2rem);box-shadow:0 .08rem 0 #263C70, 0 .2rem .4rem rgba(0,0,0,.28)}
+.kbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.kbtn[disabled]{filter:grayscale(.7) brightness(.8);cursor:default;transform:none}
+.kbtn .ic{width:1.35rem;height:1.35rem;flex:none}
+.kbtn.go{background:linear-gradient(#6BDB7C,var(--go));color:#0C3214;box-shadow:0 .28rem 0 var(--go-d), 0 .5rem .9rem rgba(0,0,0,.28)}
+.kbtn.go:active{box-shadow:0 .08rem 0 var(--go-d), 0 .2rem .4rem rgba(0,0,0,.28)}
+.kbtn.gold{background:linear-gradient(#FFD768,var(--accent));color:var(--accent-ink);box-shadow:0 .28rem 0 var(--gold-d), 0 .5rem .9rem rgba(0,0,0,.28)}
+.kbtn.gold:active{box-shadow:0 .08rem 0 var(--gold-d), 0 .2rem .4rem rgba(0,0,0,.28)}
+.kbtn.war{background:linear-gradient(#FF7B72,var(--war));color:#fff;box-shadow:0 .28rem 0 var(--war-d), 0 .5rem .9rem rgba(0,0,0,.28)}
+.kbtn.war:active{box-shadow:0 .08rem 0 var(--war-d), 0 .2rem .4rem rgba(0,0,0,.28)}
+.kbtn.ghost{background:rgba(255,255,255,.1);color:var(--ink);box-shadow:0 .28rem 0 rgba(0,0,0,.28)}
+.kbtn.ghost:active{box-shadow:0 .08rem 0 rgba(0,0,0,.28)}
+.kbtn.big{min-height:3.6rem;font-size:1.35rem;padding:.7rem 1.6rem .8rem;border-radius:var(--r-l)}
+.kbtn.wide{display:flex;width:100%}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -5074,7 +5098,7 @@ const stage = $('stage'), baseC = $('base'), overC = $('over');
 const bctx = baseC.getContext('2d', {alpha:false}), octx = overC.getContext('2d');
 const hitCtx = document.createElement('canvas').getContext('2d');
 const SEA_COL = '#0A1117', LAND_BG = '#161F27';
-const FONT_UI = "'Barlow Condensed','Arial Narrow',sans-serif";
+const FONT_UI = "'Fredoka','Baloo 2','Trebuchet MS','Segoe UI',system-ui,sans-serif";
 let PATH = {}, BBOX = {}, FILL = {}, BACK = null, OUTL = null, LABELS = [], WARSET = new Set();
 let mapDirty = true, baseDirty = true, overDirty = true, labelsDirty = false, CVL = 0;
 const DIRTYP = new Set();
