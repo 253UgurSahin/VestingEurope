@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Oswald:wght@400..600&family=Saira+Stencil+One&display=swap">
 <style>
 /* Layout: de kaart vult het hele scherm; onderaan één compacte dock (balk, contextstrook, uitklapvel) */
 :root{
@@ -1501,7 +1501,7 @@ body.ez #toasts{top:calc(var(--hud-h) + .5rem)}
 .ez-warn::-webkit-scrollbar{display:none}
 .ez-warn > *{pointer-events:auto}
 .ez-pill{flex:none;min-height:1.6rem;padding:.1rem .6rem;gap:.3rem;border:1px solid var(--a3);border-radius:var(--r-m);font:600 .78rem var(--f-ui);white-space:nowrap;color:#fff;background:rgba(150,48,44,.94);box-shadow:0 .25rem .7rem rgba(0,0,0,.35)}
-.ez-pill.gold{background:var(--pbg);color:var(--accent);border-color:rgba(227,176,75,.5)}
+.ez-pill.gold{background:var(--pbg);color:var(--accent);border-color:rgba(201,164,74,.5)}
 .ez-pill .ez-ic{width:.85rem;height:.85rem}
 @media (pointer:coarse){ .ez-pill{min-height:max(1.9rem, 30px)} }
 body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
@@ -1696,10 +1696,10 @@ body{letter-spacing:0;-webkit-font-smoothing:antialiased}
 b,strong{font-weight:600}
 
 /* ---- kaart en schermrand ---- */
-#stage::after{box-shadow:inset 0 0 5rem rgba(4,10,24,.25)}
-body[data-mode="menu"] #stage::after{background:linear-gradient(90deg, rgba(9,14,24,.88) 0, rgba(9,14,24,.5) 32%, rgba(9,14,24,0) 64%)}
+#stage::after{box-shadow:inset 0 0 5rem rgba(8,8,4,.3)}
+body[data-mode="menu"] #stage::after{background:linear-gradient(90deg, rgba(14,15,11,.88) 0, rgba(14,15,11,.5) 32%, rgba(14,15,11,0) 64%)}
 body[data-mode="pick"] #stage::after{background:none}
-@media (max-width:720px){ body[data-mode="menu"] #stage::after{background:linear-gradient(180deg, rgba(9,14,24,0) 0, rgba(9,14,24,.3) 45%, rgba(9,14,24,.92) 100%)} }
+@media (max-width:720px){ body[data-mode="menu"] #stage::after{background:linear-gradient(180deg, rgba(14,15,11,0) 0, rgba(14,15,11,.3) 45%, rgba(14,15,11,.92) 100%)} }
 
 /* ---- panelen ---- */
 .glass{background:var(--pbg);border:1px solid var(--a2);border-radius:var(--r-l);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:var(--shadow)}
@@ -1736,7 +1736,7 @@ body[data-mode="pick"] #stage::after{background:none}
 /* ---- tegels, keuzes, tabs ---- */
 .tile,.fsb,.copt,.pchip,.uchip,.pkc{border:1px solid var(--a2);border-radius:var(--r-m);background:var(--a1);box-shadow:none}
 .tile:hover:not(:disabled),.fsb:hover,.copt:hover,.pkc:hover{border-color:var(--a4);background:var(--a2);box-shadow:none}
-.tile.arm,.pchip.on,.copt.pri{border-color:var(--accent);background:rgba(227,176,75,.13);box-shadow:none}
+.tile.arm,.pchip.on,.copt.pri{border-color:var(--accent);background:rgba(201,164,74,.14);box-shadow:none}
 .tile .tico,#strip .sico,.arow .aico{border-radius:var(--r-s);background:rgba(0,0,0,.28);box-shadow:none}
 .kt,.blk,.flow2,.neg{background:rgba(0,0,0,.2);border:1px solid var(--a1);border-radius:var(--r-m);box-shadow:none}
 .kt.win{border-color:var(--accent);box-shadow:none}
@@ -1812,11 +1812,11 @@ body.paused #clock{background:none}
 .mmb{border-radius:var(--r-s)}
 .mmb.on{box-shadow:none}
 #minimap{border-radius:var(--r-m);padding:3px}
-#mmtog{border:1px solid var(--a3);background:#141B29;color:var(--dim)}
+#mmtog{border:1px solid var(--a3);background:#1C1E17;color:var(--dim)}
 #mapmodes{border-radius:var(--r-m);padding:.2rem}
 
 /* ---- hoofdmenu ---- */
-.mlg{width:3.2rem;height:3.2rem;color:var(--accent);--plate:#0D1220;filter:none}
+.mlg{width:3.2rem;height:3.2rem;color:var(--accent);--plate:#14150F;filter:none}
 .mt b{font:700 clamp(2rem, 4.2vmin + 1rem, 3.2rem)/1 var(--f-ui);letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 14px rgba(0,0,0,.6)}
 .mt span{font:600 .72rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border-top:0;padding-top:.1rem}
 #menu{width:min(22rem, calc(100vw - var(--pl) - var(--pr)));gap:.8rem}
@@ -1837,7 +1837,7 @@ body.paused #clock{background:none}
 .pkh{background:none;border-bottom:1px solid var(--a2);box-shadow:none;border-radius:0}
 #hero{background:none}
 #hero b{font:700 clamp(1.4rem, 2.6vmin + .8rem, 2.2rem) var(--f-ui);letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-#veil{background:#0D1220}
+#veil{background:#14150F}
 #veil:not(.on) .vbar::after{animation:none}   /* verborgen laadbalk hoeft niet door te lopen */
 .vbar{height:3px;border-radius:999px;background:var(--a3)}
 .vl b{font:700 clamp(1.6rem, 4vmin + .6rem, 2.6rem) var(--f-ui);letter-spacing:-.02em;padding-left:0}
@@ -1867,6 +1867,70 @@ body.paused #clock{background:none}
   #minimap #mmc{display:none}
   #minimap #mmtog{position:static;width:2.15rem;height:2.15rem;border:0;background:transparent;color:var(--ink)}
 }
+
+/* ================= militair: veldgrijs, messing en stafkaart ================= */
+/* Vlakken in donker veldgrijs met een vleugje olijf, een messing haarlijn bovenaan elk paneel, koppen en knoppen in een smalle
+   kapitaal (Oswald), titel in sjabloonletter, cijfers tabellarisch. Hoeken bijna recht; diepte met licht van boven, geen randjes om alles. */
+:root{
+  --pbg:rgba(30,32,25,.97); --pbg-h:rgba(46,49,38,.98); --bar-bg:rgba(23,24,19,.97);
+  --a1:rgba(226,214,170,.055); --a2:rgba(226,214,170,.1); --a3:rgba(226,214,170,.15); --a4:rgba(226,214,170,.26);
+  --ink:#E7E2CF; --dim:#A9A48D; --accent:#C9A44A; --accent-ink:#1E1806; --war:#B9472F; --war-d:#8E3322; --go:#5D7A2E; --go-d:#425A1E; --ok:#93AC59; --info:#93A9AD;
+  --gold-d:#8E7330; --brass:#C9A44A; --edge-hi:rgba(201,164,74,.55);
+  --r-s:1px; --r-m:2px; --r-l:3px;
+  --f-ui:'Oswald','Arial Narrow','Roboto Condensed',sans-serif-condensed,sans-serif;
+  --f-body:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --f-stencil:'Saira Stencil One','Oswald','Arial Narrow',sans-serif;
+  --shadow:0 .5rem 1.4rem rgba(0,0,0,.5); --shadow-s:0 .3rem .9rem rgba(0,0,0,.42);
+  --plate:#1E2019;
+  --metal:linear-gradient(180deg, rgba(255,250,225,.05), rgba(255,250,225,0) 40%, rgba(0,0,0,.12));
+  --brassline:inset 0 1px 0 rgba(201,164,74,.42);
+}
+body{background:#1B2224}
+/* panelen en balken: metaal met een messing bovenrand */
+.glass,#ezSheet,#ezTop,#hud,#bar,#ezNav .kbtn,.ez-bub,.ez-gen,.al,#minimap,#mapmodes,.toast,#card,#endcard,#pickcard,#menu .mpanel{background-image:var(--metal)}
+.glass,#ezSheet,#card,#endcard,#pickcard,#menu .mpanel{border-color:rgba(0,0,0,.55);box-shadow:var(--brassline), var(--shadow)}
+#hud,#ezTop{border-bottom:1px solid rgba(201,164,74,.35);box-shadow:0 .25rem .9rem rgba(0,0,0,.45)}
+@media (max-width:899px){ #ezNav{border-top:1px solid rgba(201,164,74,.35)} #bar{border-top:1px solid rgba(201,164,74,.35)} }
+
+/* typografie: koppen, knoppen en labels in kapitaal */
+.btn,.kbtn,.tab,.gseg,.ez-seg,.mb b,.sec,.ez-sh > b,.hn b,.ez-me b,#bar .ib .lbl,#ezNav .kbtn,.ez-pill,.pen b,#pausetag b,.fxj-mt,#card .ct b,#card .ez-ct,.ez-q > b,.ez-nb > b,.pkh b{font-family:var(--f-ui);text-transform:uppercase;letter-spacing:.06em}
+.btn,.kbtn{font-weight:500;font-size:.8rem}
+.kbtn.big{font-size:.86rem}
+#ezNav .kbtn,#bar .ib .lbl{font-size:.74rem;font-weight:500}
+.sec,.ez-q > b,.ez-nb > b{font-size:.72rem;letter-spacing:.14em;color:var(--accent);border-bottom-color:rgba(201,164,74,.2)}
+.sec::before{content:"";display:inline-block;width:.5rem;height:2px;margin-right:.45rem;vertical-align:middle;background:var(--accent)}
+.ez-sh > b,#card .ez-ct,#card .ct b{font-size:.95rem;font-weight:500;letter-spacing:.08em}
+.hn b,.ez-me b{font-weight:600;font-size:.95rem;letter-spacing:.08em}
+.hc b,.ez-stat b,.ez-date b,#clock .date b,.tc,.num,.ez-goaltxt b{font-family:var(--f-ui);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.ez-goaltxt,.hc small,.ez-stat small,.ez-date small{text-transform:uppercase;letter-spacing:.08em;font-size:.66rem}
+
+/* knoppen: gestanst metaal, licht van boven */
+.btn,.kbtn{background-image:linear-gradient(180deg, rgba(255,250,225,.08), rgba(0,0,0,.14));border-color:rgba(0,0,0,.5);box-shadow:inset 0 1px 0 rgba(255,250,225,.09)}
+.btn:hover:not(:disabled),.kbtn:hover{border-color:rgba(201,164,74,.45);box-shadow:inset 0 1px 0 rgba(255,250,225,.12)}
+.btn.pri,.btn.pri:hover:not(:disabled),.kbtn.gold,.kbtn.gold:hover{background:linear-gradient(180deg,#D6B35C,#A9883A);color:var(--accent-ink);border-color:#6E5A26;box-shadow:inset 0 1px 0 rgba(255,245,200,.45)}
+.kbtn.go,.kbtn.go:hover{background:linear-gradient(180deg,#6E8C38,#4C6524);color:#F2EFDF;border-color:#33441A;box-shadow:inset 0 1px 0 rgba(230,245,190,.25)}
+.btn.war,.btn.war:hover:not(:disabled),.kbtn.war,.kbtn.war:hover{background:linear-gradient(180deg,#C55238,#933825);color:#FBEFE6;border-color:#5E2216;box-shadow:inset 0 1px 0 rgba(255,210,190,.25)}
+.btn.ghost,.btn.ghost:hover:not(:disabled){background:none;border-color:transparent;box-shadow:none}
+.tab.on{background:var(--a2);box-shadow:inset 0 -2px 0 var(--accent)}
+.gseg.on,.ez-seg.on{background:linear-gradient(180deg,#D6B35C,#A9883A);border-color:#6E5A26;color:var(--accent-ink)}
+.tile,.copt,.pkc,.fsb,.ez-tile,.ez-rec,.ez-land{border-color:rgba(0,0,0,.4);background-image:linear-gradient(180deg, rgba(255,250,225,.045), rgba(0,0,0,.08))}
+.meter i,.ez-goalbar i{background-image:repeating-linear-gradient(90deg, transparent 0 6px, rgba(0,0,0,.28) 6px 7px)}
+.ez-goalbar{height:.4rem;border-radius:0}
+.ez-pill{border-radius:var(--r-m);border-color:rgba(0,0,0,.45);background:linear-gradient(180deg,#A9452F,#7E2F1F)}
+.ez-pill.gold{background:var(--pbg);color:var(--accent);border-color:rgba(201,164,74,.5)}
+.hflag,.ez-flag{border-radius:0;box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 0 2px rgba(201,164,74,.45)}
+.cdot{box-shadow:0 0 0 1px rgba(0,0,0,.7)}
+
+/* hoofdmenu: sjabloontitel */
+.mt b{font-family:var(--f-stencil);font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);font-size:clamp(2rem, 4vmin + 1.1rem, 3.3rem)}
+.mt span{color:var(--accent);letter-spacing:.3em}
+.mlg{color:var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.vl b{font-family:var(--f-stencil);font-weight:400;text-transform:uppercase;letter-spacing:.05em}
+#hero b{font-family:var(--f-stencil);font-weight:400;text-transform:uppercase;letter-spacing:.05em}
+.mb.pri{background:linear-gradient(180deg,#D6B35C,#A9883A);border-color:#6E5A26}
+#veil{background:#14150F}
+/* adviesregel: een ster in messing */
+.ez-gen::before{background:var(--accent)}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2070,7 +2134,7 @@ function assignColors(){
   for(const c of order) pick(c);
   for(let it = 0; it < 4; it++) for(let i = order.length - 1; i >= 0; i--){ delete ok[order[i]]; pick(order[i]); }
   // speelse kaart: dezelfde tinten, maar lichter en voller (de zee is donkerblauw, dus elk land blijft er duidelijk van los)
-  const vivid = hex => { const o = hex2ok(hex), ch = Math.hypot(o[1], o[2]), f = ch < 0.03 ? 1 : 1.1; return ok2hex(clamp(0.5 + (o[0] - 0.38)*0.74, 0.5, 0.82), o[1]*f, o[2]*f); };
+  const vivid = hex => { const o = hex2ok(hex), ch = Math.hypot(o[1], o[2]), f = ch < 0.03 ? 1 : 0.95; return ok2hex(clamp(0.47 + (o[0] - 0.38)*0.74, 0.47, 0.79), o[1]*f, o[2]*f); };   // stafkaart: aards en iets gedempt, buren blijven uit elkaar
   for(const c of CIDS) CN[c].col = vivid(cur[c]);
   for(const k in PLATE) delete PLATE[k];
 }
@@ -5864,8 +5928,8 @@ function doSpecial(c, k, p){
 const stage = $('stage'), baseC = $('base'), overC = $('over');
 const bctx = baseC.getContext('2d', {alpha:false}), octx = overC.getContext('2d');
 const hitCtx = document.createElement('canvas').getContext('2d');
-const SEA_COL = '#143A5E', LAND_BG = '#3A4A60';
-const FONT_UI = "'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif";
+const SEA_COL = '#2A3A3C', LAND_BG = '#4A4A3E';
+const FONT_UI = "'Oswald','Arial Narrow','Roboto Condensed',sans-serif";
 let PATH = {}, BBOX = {}, FILL = {}, BACK = null, OUTL = null, LABELS = [], WARSET = new Set();
 let mapDirty = true, baseDirty = true, overDirty = true, labelsDirty = false, CVL = 0;
 const DIRTYP = new Set();
@@ -6090,10 +6154,10 @@ function renderBase(coarse){
   ctx.setTransform(s, 0, 0, s, tx, ty);
   ctx.lineJoin = 'miter'; ctx.miterLimit = 2;
   ctx.fillStyle = LAND_BG; ctx.fill(LODB[lv], 'evenodd');
-  ctx.strokeStyle = 'rgba(10,24,52,.55)'; ctx.lineWidth = 0.8*px; ctx.stroke(LODB[lv]);
+  ctx.strokeStyle = 'rgba(14,14,8,.6)'; ctx.lineWidth = 0.8*px; ctx.stroke(LODB[lv]);
   // lichte branding langs de kust: het land ligt als een puzzelstuk op de zee
   // (omtrek per land in stukken: goedkoper dan elke provincie; wat over land valt verdwijnt onder de vulkleuren)
-  ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(190,225,245,.32)'; ctx.lineWidth = 3.4*px;
+  ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(225,215,175,.28)'; ctx.lineWidth = 3*px;
   outlineNear(ctx, vx0, vy0, vx1, vy1, hd, Math.max(lv, lodFor(2.5*px)));
   ctx.lineJoin = 'miter';
   for(let i = 0; i < vis.length; i++){ ctx.fillStyle = FILL[vis[i]]; ctx.fill(vp[i], 'evenodd'); }
@@ -6110,7 +6174,7 @@ function renderBase(coarse){
     const me = G.player;
     for(let i = 0; i < vis.length; i++){ const c = G.ctrl[vis[i]]; if(c !== me && atWar(me, c)) ctx.fill(vp[i], 'evenodd'); }
   }
-  ctx.strokeStyle = 'rgba(8,18,44,.3)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
+  ctx.strokeStyle = 'rgba(20,18,8,.32)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
   if(whole) ctx.stroke(lodAll(lv));
   else for(const path of vp) ctx.stroke(path);
   drawBorders(ctx, vx0, vy0, vx1, vy1, hd, lv, px);
@@ -6143,7 +6207,7 @@ function paintProvinces(){
       if(SET.cb && c === me){ OWNPAT ||= ownPattern(); if(OWNPAT.setTransform) OWNPAT.setTransform(new DOMMatrix().scale(Q/s)); ctx.fillStyle = OWNPAT; ctx.fill(pathOf(q), 'evenodd'); }
       if(mode === 'pol' && c !== me && atWar(me, c)){ if(!HATCH || HATCHCB !== SET.cb) HATCH = hatchPattern(); ctx.fillStyle = HATCH; ctx.fill(pathOf(q), 'evenodd'); }
     }
-    ctx.strokeStyle = 'rgba(8,18,44,.3)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
+    ctx.strokeStyle = 'rgba(20,18,8,.32)'; ctx.lineWidth = (hd ? 0.9 : 0.6)*px;
     for(const q of group) ctx.stroke(pathOf(q));
     const x0 = b[0]-pad, y0 = b[1]-pad, x1 = b[2]+pad, y1 = b[3]+pad;
     drawBorders(ctx, x0, y0, x1, y1, hd, undefined, px);
@@ -6172,10 +6236,11 @@ function baseTransform(){
 // de camera van de buffer en het stuk kaart dat getekend moet worden, zodat dezelfde code ook één provincie kan bijwerken.
 let SEAPAT = null, GLOWC = null, GLOWC2 = null, GLOWC3 = null;
 function seaPattern(){   // één ondoorzichtige tegel: zeekleur met golfjes (één vulling in plaats van twee)
-  const c = document.createElement('canvas'); c.width = 96; c.height = 54;
-  const x = c.getContext('2d'); x.fillStyle = SEA_COL; x.fillRect(0, 0, 96, 54);
-  x.strokeStyle = 'rgba(190,230,255,.17)'; x.lineWidth = 1.3; x.lineCap = 'round';
-  for(const [a, b] of [[8, 13], [56, 40]]){ x.beginPath(); x.moveTo(a, b); x.quadraticCurveTo(a + 4, b - 3.2, a + 8, b); x.quadraticCurveTo(a + 12, b + 3.2, a + 16, b); x.quadraticCurveTo(a + 20, b - 3.2, a + 24, b); x.stroke(); }
+  // stafkaart: effen zee met een fijn coördinatenraster en een lichte korrel
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const x = c.getContext('2d'); x.fillStyle = SEA_COL; x.fillRect(0, 0, 64, 64);
+  x.fillStyle = 'rgba(220,230,215,.035)'; for(let i = 0; i < 40; i++) x.fillRect((i*37) % 64, (i*23 + (i >> 2)*11) % 64, 1, 1);
+  x.fillStyle = 'rgba(210,225,210,.07)'; x.fillRect(0, 0, 64, 1); x.fillRect(0, 0, 1, 64);
   return bctx.createPattern(c, 'repeat');
 }
 // zee: donker vlak met golfjes (vast aan de kaart) en een dun raster zoals op een stafkaart
@@ -6194,7 +6259,7 @@ function coastGlow(ctx, vis, s, tx, ty, px){
   GLOWC ||= document.createElement('canvas'); GLOWC2 ||= document.createElement('canvas'); GLOWC3 ||= document.createElement('canvas');
   if(GLOWC.width !== w || GLOWC.height !== h){ GLOWC.width = GLOWC3.width = w; GLOWC.height = GLOWC3.height = h; GLOWC2.width = Math.ceil(w/4); GLOWC2.height = Math.ceil(h/4); }
   const g = GLOWC.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h);
-  g.setTransform(s/F, 0, 0, s/F, tx/F, ty/F); g.fillStyle = '#7FD4F4';
+  g.setTransform(s/F, 0, 0, s/F, tx/F, ty/F); g.fillStyle = '#7FA6A2';
   const gl = lodFor(3*px), LP = lodPaths(gl);   // de gloed is wazig: een grove vorm volstaat en tekent veel sneller
   if(vis.length > 250 && gl) g.fill(lodAll(gl)); else for(const p of vis) g.fill(LP[p], 'evenodd');
   g.fill(LODB[gl], 'evenodd');
@@ -6232,9 +6297,9 @@ function drawBorders(ctx, x0, y0, x1, y1, hd, lv, px){
   if(px < 2.4){
     const band = new Path2D(); let n = 0;
     for(const ch of landBorders(lodFor(1.2*px))){ const b = ch.b; if(b[2] < x0 || b[0] > x1 || b[3] < y0 || b[1] > y1) continue; band.addPath(ch.p); n++; }
-    if(n){ ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(8,18,44,.26)'; ctx.lineWidth = 6.5*px; ctx.stroke(band); ctx.lineJoin = 'miter'; }
+    if(n){ ctx.lineJoin = 'bevel'; ctx.strokeStyle = 'rgba(20,18,8,.24)'; ctx.lineWidth = 6.5*px; ctx.stroke(band); ctx.lineJoin = 'miter'; }
   }
-  ctx.lineJoin = 'bevel'; ctx.strokeStyle = '#0D1A3A'; ctx.lineWidth = 2.3*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv); ctx.lineJoin = 'miter';
+  ctx.lineJoin = 'bevel'; ctx.strokeStyle = '#18170F'; ctx.lineWidth = 2.1*px; outlineNear(ctx, x0, y0, x1, y1, hd, lv); ctx.lineJoin = 'miter';
 }
 /* ---- rivieren: lopen langs de gedeelde grens van de twee provincies van een rivierovergang ---- */
 let RIVG = null, HDR = {hd:null, r:{}};
@@ -7234,12 +7299,14 @@ function renderOver(){
     ctx.save(); ctx.translate(g.sx, g.sy); ctx.scale(u1, u1);
     // fiche: plaat in landskleur, wit silhouet per troepsoort, aantal ernaast, sterktebalk eronder
     const col = plateCol(g.c);
-    rrect(ctx, x0 - 0.5, -10, g.w + 1, 23.5, 6.5); ctx.fillStyle = 'rgba(4,10,24,.45)'; ctx.fill();   // goedkope schaduw
-    rrect(ctx, x0, -11, g.w, 22, 6); ctx.fillStyle = col; ctx.fill();
-    rrect(ctx, x0, -11, g.w, 22, 6);
-    ctx.lineWidth = g.sel ? 2.2 : 1.4; ctx.strokeStyle = g.sel ? '#F2C55C' : foe ? '#E0605A' : 'rgba(255,255,255,.85)'; ctx.stroke();
+    rrect(ctx, x0 + 1, -9, g.w, 22, 1.5); ctx.fillStyle = 'rgba(8,8,4,.5)'; ctx.fill();   // schaduw: het fiche ligt op de kaart
+    rrect(ctx, x0, -11, g.w, 22, 1.5); ctx.fillStyle = col; ctx.fill();
+    ctx.fillStyle = 'rgba(255,250,225,.12)'; ctx.fillRect(x0 + 1, -10, g.w - 2, 1.2);   // licht van boven
+    rrect(ctx, x0, -11, g.w, 22, 1.5);
+    ctx.lineWidth = g.sel ? 2.2 : foe ? 1.8 : 1.2; ctx.strokeStyle = g.sel ? '#D9B95E' : foe ? '#D8553D' : 'rgba(16,15,8,.9)'; ctx.stroke();
+    if(foe){ ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,220,200,.35)'; rrect(ctx, x0 + 1.5, -9.5, g.w - 3, 19, 1); ctx.stroke(); }
     if(g.oos){   // afgesneden van bevoorrading
-      rrect(ctx, x0 - 3, -14, g.w + 6, 28, 8); ctx.setLineDash([3, 2.5]); ctx.strokeStyle = '#F0962E'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]);
+      rrect(ctx, x0 - 3, -14, g.w + 6, 28, 2); ctx.setLineDash([3, 2.5]); ctx.strokeStyle = '#F0962E'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]);
     }
     ctx.font = '700 12.5px ' + FONT_UI; ctx.textAlign = 'left';
     g.types.forEach((t, i) => {
@@ -7554,7 +7621,7 @@ function tipExtra(p){
 /* ================= geluid: synthetisch (WebAudio), geen bestanden nodig ================= */
 // instellingen (ook voor latere opties) in één opslagsleutel
 const SETTINGS_KEY = 've_settings';
-const SET = Object.assign({sound:true, music:true, vol:0.6, cb:false}, (() => { try{ return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); }catch(e){ return {}; } })());
+const SET = Object.assign({sound:true, music:true, vol:0.6, cb:false, nato:true}, (() => { try{ return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); }catch(e){ return {}; } })());
 function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(SET)); }catch(e){} }
 let AC = null, MASTER = null, MUSIC = null, musicTimer = 0;
 const SFX_LAST = {};
@@ -9023,6 +9090,7 @@ function settingsH(){
   return '<div class="setrow">' + chk('data-set', 'sound', SET.sound, 'Geluidseffecten') + chk('data-set', 'music', SET.music, 'Muziek')
     + '<label class="vol">' + ic('steun') + '<input type="range" min="0" max="1" step="0.05" value="' + SET.vol + '" data-set="vol" aria-label="Volume"></label>'
     + chk('data-set', 'cb', SET.cb, 'Kleurenblind: dikke grenzen en patronen')
+    + chk('data-set2', 'nato', SET.nato !== false, 'NAVO-tekens op de legerfiches (anders plaatjes)')
     + chk('data-set2', 'fx', SET.fx !== false, 'Effecten: beweging op de kaart, confetti en schudden')
     + chk('data-set2', 'fxmore', SET.fxmore === true, 'Extra veel effecten: ook andere landen, golven, rook en sporen')
     + chk('data-set2', 'banner', SET.banner === true, 'Grote melding midden in beeld bij oorlog en verovering')
@@ -9031,7 +9099,7 @@ function settingsH(){
 }
 // wijzigingen in de instellingen; all = ook de bestaande sleutels (in het paneel doet de eigen luisteraar van het vel die al)
 function setChange(i, all){
-  if(i.dataset.set2){ SET[i.dataset.set2] = i.checked; saveSettings(); if(SET.tips === false) $('tip2').hidden = true; return true; }
+  if(i.dataset.set2){ SET[i.dataset.set2] = i.checked; saveSettings(); if(SET.tips === false) $('tip2').hidden = true; if(i.dataset.set2 === 'nato'){ overDirty = true; sheetSig = ''; stripSig = null; } return true; }
   const k = i.dataset.set; if(!k || !all) return false;
   if(k === 'sound'){ setSound(i.checked); if(i.checked){ audioInit(); sfx('tap'); } }
   else if(k === 'music'){ audioInit(); setMusic(i.checked); }
