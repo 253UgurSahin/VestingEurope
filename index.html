@@ -7254,7 +7254,7 @@ function renderStrip(){
   el.innerHTML = h;
 }
 $('strip').addEventListener('pointerdown', () => { stripPress = true; });
-addEventListener('pointerup', () => { stripPress = false; sheetPress = false; });
+{ const rel = () => { stripPress = false; sheetPress = false; }; addEventListener('pointerup', rel); addEventListener('pointercancel', rel); }   // een veeg om te scrollen eindigt met pointercancel, niet met pointerup
 $('strip').addEventListener('click', async e => {
   const b = e.target.closest('[data-act],[data-map]'); if(!b || b.disabled) return;
   sfx('tap');
