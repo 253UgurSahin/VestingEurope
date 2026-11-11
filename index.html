@@ -1459,193 +1459,8 @@ button.ez-chip{cursor:pointer}
 }
 @media (max-width:360px){ .ez-date small{display:none} #ezTop .ez-spd{padding:.3rem .4rem .4rem;font-size:.95rem} #ezTop .ez-play{min-width:5.4rem;padding-left:.5rem;padding-right:.5rem} }
 </style>
-<style id="skin">
-/* ================= strakke skin: rustig, compact, volwassen (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
-/* Uitgangspunten: één neutraal lettertype, platte vlakken met een dunne rand, weinig kleur (accent alleen waar het iets betekent),
-   en maten die de schermhoogte volgen zodat het op een telefoon, een laptop en een 5K2K-scherm even compact oogt. */
-:root{--hud-h:2.6rem;--bar-h:2.7rem;--ctl:2.15rem;
-  /* extra breed scherm (21:9, 5K2K): balken, adviseur en hoekpanelen blijven bij elkaar rond het midden in plaats van 5000 pixels uit elkaar */
-  --pl:max(12px, env(safe-area-inset-left, 0px), calc(50vw - 70rem)); --pr:max(12px, env(safe-area-inset-right, 0px), calc(50vw - 70rem))}
-#mapui{right:var(--pr)}
-@media (max-width:899px){ :root{--hud-h:4.9rem;--bar-h:0rem} }   /* volledige stand op een telefoon: de balk houdt daar twee regels, de knoppen staan onderaan */
-@media (pointer:coarse){ :root{--ctl:max(2.5rem, 38px)} }
-body{letter-spacing:0;-webkit-font-smoothing:antialiased}
-b,strong{font-weight:600}
-
-/* ---- kaart en schermrand ---- */
-#stage::after{box-shadow:inset 0 0 5rem rgba(4,10,24,.25)}
-body[data-mode="menu"] #stage::after{background:linear-gradient(90deg, rgba(9,14,24,.88) 0, rgba(9,14,24,.5) 32%, rgba(9,14,24,0) 64%)}
-body[data-mode="pick"] #stage::after{background:none}
-@media (max-width:720px){ body[data-mode="menu"] #stage::after{background:linear-gradient(180deg, rgba(9,14,24,0) 0, rgba(9,14,24,.3) 45%, rgba(9,14,24,.92) 100%)} }
-
-/* ---- panelen ---- */
-.glass{background:rgba(16,22,34,.96);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-l);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 .5rem 1.6rem rgba(0,0,0,.42)}
-#tip,#tip2{border-radius:var(--r-m);box-shadow:0 .3rem 1rem rgba(0,0,0,.45)}
-#tip2{box-shadow:0 .3rem 1rem rgba(0,0,0,.45)}
-
-/* ---- knoppen: plat, één hoogte ---- */
-.btn,.kbtn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:var(--ctl);padding:.2rem .8rem;border:1px solid rgba(255,255,255,.13);border-radius:var(--r-m);
-  background:rgba(255,255,255,.07);color:var(--ink);font:600 .9rem/1.15 var(--f-ui);letter-spacing:0;text-shadow:none;box-shadow:none;cursor:pointer;text-decoration:none;white-space:nowrap;
-  transform:none;transition:background-color .12s ease, border-color .12s ease, filter .12s ease;-webkit-tap-highlight-color:transparent}
-.btn:hover:not(:disabled),.kbtn:hover{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);box-shadow:none;filter:none}
-.btn:active:not(:disabled),.kbtn:active{transform:none;background:rgba(255,255,255,.2);box-shadow:none}
-.btn:focus-visible,.kbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.btn:disabled,.kbtn[disabled]{opacity:.45;filter:none;cursor:default;transform:none}
-.btn .ic,.kbtn .ic,.kbtn .ez-ic{width:1.05rem;height:1.05rem;flex:none}
-.btn.sm{font-size:.82rem;min-height:calc(var(--ctl) - .25rem);padding:.15rem .6rem}
-.btn.pri,.btn.pri:hover:not(:disabled),.kbtn.gold,.kbtn.gold:hover{background:var(--accent);border-color:transparent;color:var(--accent-ink);box-shadow:none;text-shadow:none}
-.btn.war,.btn.war:hover:not(:disabled),.kbtn.war,.kbtn.war:hover{background:var(--war);border-color:transparent;color:#fff;box-shadow:none}
-.kbtn.go,.kbtn.go:hover{background:var(--go);border-color:transparent;color:#fff;box-shadow:none}
-.btn.pri:hover:not(:disabled),.btn.war:hover:not(:disabled),.kbtn.gold:hover,.kbtn.war:hover,.kbtn.go:hover{filter:brightness(1.1)}
-.btn.pri:active:not(:disabled),.btn.war:active:not(:disabled),.kbtn.gold:active,.kbtn.war:active,.kbtn.go:active{filter:brightness(.92);box-shadow:none}
-.btn.ghost,.btn.ghost:hover:not(:disabled){background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);min-height:0}
-.btn.ghost:hover:not(:disabled){color:var(--ink)}
-.kbtn.ghost{background:rgba(255,255,255,.07);color:var(--ink);box-shadow:none}
-.kbtn.big{min-height:calc(var(--ctl) + .3rem);font-size:.98rem;padding:.3rem 1.1rem;border-radius:var(--r-m)}
-.kbtn.wide{display:flex;width:100%}
-.btn.wide{font-size:1rem;min-height:calc(var(--ctl) + .45rem);border-radius:var(--r-m)}
-.btn kbd,.fsb kbd{border-radius:.2rem;border-color:rgba(255,255,255,.2);color:var(--dim)}
-.btn.pri kbd{border-color:rgba(0,0,0,.3);color:rgba(0,0,0,.6)}
-.xclose,.ez-x{flex:none;width:1.9rem;height:1.9rem;display:grid;place-items:center;border:1px solid rgba(255,255,255,.12);border-radius:var(--r-s);background:rgba(255,255,255,.06);box-shadow:none;color:var(--dim);font-size:1.1rem;cursor:pointer}
-.xclose:hover,.ez-x:hover{background:rgba(220,85,80,.35);color:#fff}
-@media (pointer:coarse){ .xclose,.ez-x{width:max(2.3rem, 36px);height:max(2.3rem, 36px)} }
-
-/* ---- tegels, keuzes, tabs ---- */
-.tile,.fsb,.copt,.pchip,.uchip,.pkc{border:1px solid rgba(255,255,255,.1);border-radius:var(--r-m);background:rgba(255,255,255,.05);box-shadow:none}
-.tile:hover:not(:disabled),.fsb:hover,.copt:hover,.pkc:hover{border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.09);box-shadow:none}
-.tile.arm,.pchip.on,.copt.pri{border-color:var(--accent);background:rgba(227,176,75,.13);box-shadow:none}
-.tile .tico,#strip .sico,.arow .aico{border-radius:var(--r-s);background:rgba(0,0,0,.28);box-shadow:none}
-.kt,.blk,.flow2,.neg{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);border-radius:var(--r-m);box-shadow:none}
-.kt.win{border-color:var(--accent);box-shadow:none}
-.gseg{border:1px solid rgba(255,255,255,.12);border-radius:var(--r-s);background:rgba(255,255,255,.06);box-shadow:none;font:600 .82rem var(--f-ui);min-height:calc(var(--ctl) - .2rem);padding:0 .7rem;color:var(--ink)}
-.gseg.on{background:var(--accent);border-color:transparent;color:var(--accent-ink);box-shadow:none}
-.tab{border:0;border-radius:var(--r-s);font:600 .85rem var(--f-ui);padding:.4rem .5rem;color:var(--dim)}
-.tab.on{border:0;background:rgba(255,255,255,.08);box-shadow:inset 0 -2px 0 var(--accent);color:var(--ink)}
-.sec{font:600 .78rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.08);margin:.9rem 0 .45rem;padding-bottom:.25rem}
-.sec .sr{text-transform:none;letter-spacing:0}
-.meter,.prog,.aebar,.tug{border-radius:999px;background:rgba(255,255,255,.1);box-shadow:none;overflow:hidden}
-.meter{height:.32rem}
-.meter i,.prog i,.aebar i,.tug i{border-radius:999px}
-.meter i,.meter.warn i{background:var(--accent)} .meter.ok i{background:var(--ok)} .meter.hot i{background:var(--war)}
-.sw{border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(0,0,0,.3);box-shadow:none}
-.sw::after{border-radius:50%}
-.sw[aria-checked="true"]{border-color:transparent;background:var(--go);box-shadow:none}
-.cdot{box-shadow:0 0 0 1px rgba(255,255,255,.55)}
-.medal{border:1px solid rgba(255,255,255,.1);border-radius:var(--r-s);box-shadow:none;background:rgba(0,0,0,.22)}
-.copt b{font-size:1rem}
-.copt > .ic{width:1.35rem;height:1.35rem}
-
-/* ---- topbalk (volledige stand): één smalle balk ---- */
-#hud{background:rgba(13,18,29,.95);border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 .3rem 1rem rgba(0,0,0,.3)}
-#hudNat{gap:.5rem;padding:0 .8rem 0 0}
-.hflag{width:1.75rem;height:1.2rem;border-radius:.15rem;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
-.hflag::before,.hflag::after{display:none}
-.hflag.big{width:2.4rem;height:1.65rem}
-.hn b{font:600 1rem var(--f-ui);letter-spacing:0}
-.hn small{font:500 .64rem var(--f-ui);color:var(--dim)}
-.hc{border-left:1px solid rgba(255,255,255,.07);box-shadow:none;padding:0 .6rem;gap:.35rem}
-.hc:hover{background:rgba(255,255,255,.06)}
-.hc .ic{width:1rem;height:1rem;color:var(--accent)}
-.hc b{font:600 .98rem var(--f-ui)}
-.hc b em{font:500 .72rem var(--f-ui)}
-.hc small{font:500 .6rem var(--f-ui);color:var(--dim)}
-#hud .warpill{border-left:1px solid rgba(255,255,255,.07)}
-#news{border-left:1px solid rgba(255,255,255,.07);font:500 .82rem var(--f-body);margin-left:0}
-#news i{color:var(--dim)}
-#clock{border-left:1px solid rgba(255,255,255,.07);box-shadow:none;gap:.2rem}
-#clock .ib{width:1.85rem;height:1.85rem;border-radius:var(--r-s);border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);box-shadow:none;font:600 1rem var(--f-ui)}
-#clock .ib:hover:not(:disabled){background:rgba(255,255,255,.13);box-shadow:none}
-#clock #playBtn{width:2.3rem;height:1.85rem;background:var(--go);border-color:transparent;color:#fff}
-#clock #playBtn svg{width:1.05rem;height:1.05rem}
-#clock #playBtn.pulse{background:var(--accent);color:var(--accent-ink);border-color:transparent}
-#clock #speedBtn{width:2.2rem}
-#clock .date b{font:600 1rem var(--f-ui)}
-#clock .date small{color:var(--dim)}
-body.paused #clock{background:none}
-
-/* ---- gepauzeerd, meldingen ---- */
-#pausetag{border:0;border-radius:var(--r-m);padding:.25rem .8rem .25rem .65rem;background:var(--accent);color:var(--accent-ink);box-shadow:0 .3rem 1rem rgba(0,0,0,.35)}
-#pausetag i{border-color:var(--accent-ink)}
-#pausetag b{font:600 .88rem var(--f-ui)}
-#pausetag span{font:500 .68rem var(--f-ui)}
-.toast{border:1px solid rgba(255,255,255,.12);border-left:3px solid var(--dim);border-radius:var(--r-m);padding:.32rem .8rem .32rem .55rem;font:500 .85rem var(--f-body);box-shadow:0 .3rem 1rem rgba(0,0,0,.4)}
-.toast.war{border-color:rgba(255,255,255,.12);border-left-color:var(--war)} .toast.good{border-color:rgba(255,255,255,.12);border-left-color:var(--ok)}
-
-/* ---- knoppenbalk (volledige stand): compacte rij met icoon en woord ---- */
-#bar{background:rgba(16,22,34,.96);border:1px solid rgba(255,255,255,.1);box-shadow:0 .4rem 1.2rem rgba(0,0,0,.35);padding:.2rem;gap:.15rem;border-radius:var(--r-m)}
-#bar .ib{border:0;border-radius:var(--r-s);background:none;box-shadow:none;color:var(--ink)}
-#bar .ib:hover:not(:disabled){background:rgba(255,255,255,.1);box-shadow:none}
-#bar .ib .ic,#bar .ib svg{width:1.1rem;height:1.1rem;color:var(--dim)}
-#bar .ib .lbl{font:600 .78rem var(--f-ui);letter-spacing:0}
-#bar .ib.on,#bar .ib.on:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);box-shadow:none;border:0}
-#bar .ib.on .ic,#bar .ib.on svg{color:var(--accent-ink)}
-@media (min-width:900px){
-  #bar .ib{flex-direction:row;gap:.4rem;height:2.1rem;min-width:0;padding:0 .7rem}
-  #bar .ib .cdot{width:.9rem;height:.9rem;margin:0}
-  #bar .ib .hk{display:none}
-}
-.al{border:1px solid var(--ac,rgba(255,255,255,.16));border-radius:var(--r-s);background:rgba(16,22,34,.96);box-shadow:0 .3rem .8rem rgba(0,0,0,.35)}
-.al.grp{border-radius:var(--r-s)}
-.mmb{border-radius:var(--r-s)}
-.mmb.on{box-shadow:none}
-#minimap{border-radius:var(--r-m);padding:3px}
-#mmtog{border:1px solid rgba(255,255,255,.16);background:#141B29;color:var(--dim)}
-#mapmodes{border-radius:var(--r-m);padding:.2rem}
-
-/* ---- hoofdmenu ---- */
-.mlg{width:3.2rem;height:3.2rem;color:var(--accent);--plate:#0D1220;filter:none}
-.mt b{font:700 clamp(2rem, 4.2vmin + 1rem, 3.2rem)/1 var(--f-ui);letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 14px rgba(0,0,0,.6)}
-.mt span{font:600 .72rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border-top:0;padding-top:.1rem}
-#menu{width:min(22rem, calc(100vw - var(--pl) - var(--pr)));gap:.8rem}
-#menu .mpanel{padding:.5rem;gap:.3rem}
-.mbtns{gap:.25rem}
-.mb{padding:.5rem .7rem;gap:.7rem;border:1px solid transparent;border-radius:var(--r-m);background:none;box-shadow:none}
-.mb:hover{transform:none;background:rgba(255,255,255,.08);box-shadow:none}
-.mb:active{transform:none;background:rgba(255,255,255,.14)}
-.mb > .ic{width:1.25rem;height:1.25rem;color:var(--dim)}
-.mb b{font:600 .98rem var(--f-ui);letter-spacing:0}
-.mb small{font-size:.76rem}
-.mb.pri{background:var(--accent);color:var(--accent-ink);box-shadow:none;border-color:transparent;--plate:var(--accent)}
-.mb.pri:hover{background:var(--accent);filter:brightness(1.08);box-shadow:none}
-.mb.pri > .ic{color:var(--accent-ink)} .mb.pri small{color:rgba(35,24,3,.75)}
-.mfoot{font-size:.74rem}
-
-/* ---- landkeuze, laadscherm ---- */
-.pkh{background:none;border-bottom:1px solid rgba(255,255,255,.08);box-shadow:none;border-radius:0}
-#hero{background:none}
-#hero b{font:700 clamp(1.4rem, 2.6vmin + .8rem, 2.2rem) var(--f-ui);letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-#veil{background:#0D1220}
-#veil:not(.on) .vbar::after{animation:none}   /* verborgen laadbalk hoeft niet door te lopen */
-.vbar{height:3px;border-radius:999px;background:rgba(255,255,255,.12)}
-.vl b{font:700 clamp(1.6rem, 4vmin + .6rem, 2.6rem) var(--f-ui);letter-spacing:-.02em;padding-left:0}
-
-/* ---- grote momenten: kleiner en soberder ---- */
-#fxjm{z-index:40;padding-bottom:22vh}   /* blijft onder een open beslissingskaart */
-.fxj-mb{padding:.9rem 1.6rem 1rem;gap:.15rem}
-.fxj-mb::before{inset:-.2rem;border-radius:var(--r-l);background:rgba(13,18,29,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 .6rem 2rem rgba(0,0,0,.5)}
-.fxj-me{width:2.8rem;height:2.8rem;border:0;box-shadow:none;animation:none}
-.fxj-me .ic{width:1.5rem;height:1.5rem;filter:none}
-.fxj-rays{display:none}
-.fxj-mc{width:1rem;height:1rem;border-width:2px;right:-.3rem;bottom:-.2rem;box-shadow:none}
-.fxj-mt{margin-top:.35rem;font:700 1.35rem/1.1 var(--f-ui);letter-spacing:-.01em;text-shadow:none}
-.fxj-ms{font:500 .88rem/1.35 var(--f-body);color:var(--dim);text-shadow:none}
-.fxj-tap{animation:none}
-#endcard .eico.fxj-eico{width:4.2rem;height:4.2rem}
-#endcard .eico.fxj-eico svg{animation:none}
-#endcard.win .eico.fxj-eico::before{display:none}
-
-/* ---- liggende telefoon: kaartknoppen klein houden, geen minimap (er is geen plek) ---- */
-@media (max-height:520px){
-  #mapui{flex-direction:row-reverse;align-items:flex-end;gap:.3rem}
-  #mapmodes:not(.open){border-radius:var(--r-m);padding:0}
-  #mapmodes:not(.open) .mmb:not(.mmx), #mapmodes:not(.open) #mapleg{display:none}
-  .mmb.mmx{display:grid;color:var(--ink)}
-  #minimap{padding:0}
-  #minimap #mmc{display:none}
-  #minimap #mmtog{position:static;width:2.15rem;height:2.15rem;border:0;background:transparent;color:var(--ink)}
-}
-
-/* ================= eenvoudige stand: dezelfde strakke stijl, zo klein als het kan ================= */
+<style id="ez-layout">
+/* ================= eenvoudige stand: indeling en maten (kleur, rand en vorm komen uit de tokens en uit het skin-blok hierna) ================= */
 body.ez .toast{font-size:.85rem;border-radius:var(--r-m);padding:.32rem .8rem .32rem .55rem}
 body.ez #toasts{top:calc(var(--hud-h) + .5rem)}
 .ez-ic{width:1.1rem;height:1.1rem}
@@ -1657,17 +1472,17 @@ body.ez #toasts{top:calc(var(--hud-h) + .5rem)}
 .ez-light.big i{width:.9rem;height:.9rem}
 
 /* de balk: één smalle regel over de volle breedte */
-#ezTop{left:0;right:0;top:0;flex-wrap:nowrap;gap:.3rem .7rem;min-height:var(--hud-h);padding:calc(var(--sat) + .25rem) var(--pr) .25rem var(--pl);border:0;border-bottom:1px solid rgba(255,255,255,.1);border-radius:0;
-  background:rgba(13,18,29,.95);box-shadow:0 .3rem 1rem rgba(0,0,0,.3)}
+#ezTop{left:0;right:0;top:0;flex-wrap:nowrap;gap:.3rem .7rem;min-height:var(--hud-h);padding:calc(var(--sat) + .25rem) var(--pr) .25rem var(--pl);border:0;border-bottom:1px solid var(--a2);border-radius:0;
+  background:var(--bar-bg);box-shadow:var(--shadow-s)}
 .ez-me{gap:.45rem;max-width:12rem;flex:0 1 auto}
 .ez-me b{font:600 1rem var(--f-ui)}
 .ez-goal{flex:1 1 12rem;max-width:32rem;display:flex;align-items:center;gap:.6rem}
-.ez-goalbar{order:2;flex:1 1 5rem;min-width:3rem;height:.35rem;background:rgba(255,255,255,.12);box-shadow:none}
+.ez-goalbar{order:2;flex:1 1 5rem;min-width:3rem;height:.35rem;background:var(--a3);box-shadow:none}
 .ez-goalbar i{min-width:.3rem;background:var(--go);box-shadow:none}
 .ez-goaltxt{order:1;flex:0 1 auto;font:500 .82rem var(--f-ui);color:var(--dim)}
 .ez-goaltxt b{color:var(--ink);font-weight:600}
 .ez-stats{margin-left:auto;gap:0}
-.ez-stat,.ez-date{min-height:0;padding:0 .55rem;gap:.3rem;border-radius:0;background:none;border-left:1px solid rgba(255,255,255,.07)}
+.ez-stat,.ez-date{min-height:0;padding:0 .55rem;gap:.3rem;border-radius:0;background:none;border-left:1px solid var(--a1)}
 .ez-stat .ez-ic{width:1rem;height:1rem}
 .ez-stat b,.ez-date b{font:600 .95rem var(--f-ui)}
 .ez-stat small,.ez-date small{font-size:.74rem}
@@ -1685,23 +1500,23 @@ body.ez #toasts{top:calc(var(--hud-h) + .5rem)}
 .ez-warn{position:absolute;left:var(--pl);right:var(--pr);top:100%;margin-top:.35rem;flex:none;display:flex;flex-wrap:nowrap;gap:.3rem;overflow-x:auto;scrollbar-width:none;pointer-events:none}
 .ez-warn::-webkit-scrollbar{display:none}
 .ez-warn > *{pointer-events:auto}
-.ez-pill{flex:none;min-height:1.6rem;padding:.1rem .6rem;gap:.3rem;border:1px solid rgba(255,255,255,.14);border-radius:var(--r-m);font:600 .78rem var(--f-ui);white-space:nowrap;color:#fff;background:rgba(150,48,44,.94);box-shadow:0 .25rem .7rem rgba(0,0,0,.35)}
-.ez-pill.gold{background:rgba(16,22,34,.96);color:var(--accent);border-color:rgba(227,176,75,.5)}
+.ez-pill{flex:none;min-height:1.6rem;padding:.1rem .6rem;gap:.3rem;border:1px solid var(--a3);border-radius:var(--r-m);font:600 .78rem var(--f-ui);white-space:nowrap;color:#fff;background:rgba(150,48,44,.94);box-shadow:0 .25rem .7rem rgba(0,0,0,.35)}
+.ez-pill.gold{background:var(--pbg);color:var(--accent);border-color:rgba(227,176,75,.5)}
 .ez-pill .ez-ic{width:.85rem;height:.85rem}
 @media (pointer:coarse){ .ez-pill{min-height:max(1.9rem, 30px)} }
 body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 
 /* de vier knoppen */
 #ezNav{gap:.35rem}
-#ezNav .kbtn{min-width:7.2rem;min-height:calc(var(--ctl) + .25rem);padding:.2rem .9rem;font-size:.9rem;background:rgba(16,22,34,.96);border:1px solid rgba(255,255,255,.14);color:var(--ink);box-shadow:0 .3rem 1rem rgba(0,0,0,.35)}
-#ezNav .kbtn:hover{background:rgba(34,44,64,.98);filter:none}
-#ezNav .kbtn.on{filter:none;transform:none;border-color:var(--accent);background:rgba(34,44,64,.98)}
+#ezNav .kbtn{min-width:7.2rem;min-height:calc(var(--ctl) + .25rem);padding:.2rem .9rem;font-size:.9rem;background:var(--pbg);border:1px solid var(--a3);color:var(--ink);box-shadow:var(--shadow-s)}
+#ezNav .kbtn:hover{background:var(--pbg-h);filter:none}
+#ezNav .kbtn.on{filter:none;transform:none;border-color:var(--accent);background:var(--pbg-h)}
 #ezNav .ez-ic{width:1.1rem;height:1.1rem;color:var(--info)}
 #ezNav .kbtn.war .ez-ic{color:var(--war)} #ezNav .kbtn.gold .ez-ic{color:var(--accent)} #ezNav .kbtn.ghost .ez-ic{color:var(--dim)}
-#ezNav .kbtn.ghost{background:rgba(16,22,34,.96);box-shadow:0 .3rem 1rem rgba(0,0,0,.35)}
+#ezNav .kbtn.ghost{background:var(--pbg);box-shadow:var(--shadow-s)}
 
 /* bladen */
-#ezSheet{width:min(30rem, calc(100vw - 1rem));max-height:min(62vh, 34rem);padding:.55rem .65rem .65rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-l);background:rgba(16,22,34,.97);box-shadow:0 .5rem 1.6rem rgba(0,0,0,.45)}
+#ezSheet{width:min(30rem, calc(100vw - 1rem));max-height:min(62vh, 34rem);padding:.55rem .65rem .65rem;border:1px solid var(--a2);border-radius:var(--r-l);background:var(--pbg);box-shadow:var(--shadow)}
 .ez-sh{gap:.5rem;margin-bottom:.4rem}
 .ez-sh > b{font:600 1.02rem var(--f-ui)}
 .ez-sh > .ez-ic{width:1.15rem;height:1.15rem;color:var(--dim)}
@@ -1709,7 +1524,7 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 .ez-tip b{color:var(--ink)}
 .ez-tip .ez-gsvg,.ez-minigen{display:none}
 .ez-list{gap:.25rem}
-.ez-land{gap:.55rem;padding:.35rem .5rem;border:1px solid rgba(255,255,255,.07);border-radius:var(--r-m);background:rgba(255,255,255,.04);box-shadow:none}
+.ez-land{gap:.55rem;padding:.35rem .5rem;border:1px solid var(--a1);border-radius:var(--r-m);background:var(--a1);box-shadow:none}
 .ez-land > .ez-ic{width:1.3rem;height:1.3rem}
 #ezSheet > .ez-land{margin-bottom:.35rem}
 .ez-lt{gap:.05rem;line-height:1.25}
@@ -1725,28 +1540,28 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 .ez-warbar b{font:600 .9rem var(--f-ui)}
 .ez-warbar .ez-goalbar{flex:none} .ez-warbar .ez-goalbar i{background:var(--accent)}
 .ez-tiles{grid-template-columns:repeat(auto-fill, minmax(8.2rem, 1fr));gap:.35rem}
-.ez-tile{grid-template-columns:auto 1fr;justify-items:start;align-items:center;text-align:left;gap:.05rem .55rem;padding:.5rem .6rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-m);color:var(--ink);background:rgba(255,255,255,.05);box-shadow:none}
-.ez-tile:hover{filter:none;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.24)}
-.ez-tile:active{transform:none;box-shadow:none;background:rgba(255,255,255,.16)}
+.ez-tile{grid-template-columns:auto 1fr;justify-items:start;align-items:center;text-align:left;gap:.05rem .55rem;padding:.5rem .6rem;border:1px solid var(--a2);border-radius:var(--r-m);color:var(--ink);background:var(--a1);box-shadow:none}
+.ez-tile:hover{filter:none;background:var(--a2);border-color:var(--a4)}
+.ez-tile:active{transform:none;box-shadow:none;background:var(--a3)}
 .ez-tile .ez-ic{grid-row:1 / span 3;width:1.5rem;height:1.5rem;color:var(--accent)}
 .ez-tile b{font:600 .92rem var(--f-ui)}
 .ez-tile span{font-size:.78rem;line-height:1.25;color:var(--dim)}
 .ez-tile small{font-size:.72rem;color:var(--dim)}
 .ez-tile > :not(.ez-ic){grid-column:2}
 .ez-tile.off{filter:none;opacity:.45}
-.ez-q{gap:.35rem;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.08)}
+.ez-q{gap:.35rem;margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--a2)}
 .ez-q > b{font:600 .78rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
 .ez-qi{gap:.35rem;padding:.2rem .55rem;border-radius:var(--r-s);background:rgba(0,0,0,.25);font-size:.82rem}
 .ez-qi small{font-size:.72rem}
 
 /* de adviseur: een rustige regel met één knop, geen tekenfilmfiguur */
 #ezAdv{align-items:center;gap:.45rem;width:min(27rem, calc(100vw - 1rem))}
-.ez-gen{display:grid;place-items:center;width:var(--ctl);height:var(--ctl);border:1px solid rgba(255,255,255,.16);border-radius:var(--r-m);background:rgba(16,22,34,.96);box-shadow:0 .3rem 1rem rgba(0,0,0,.35);overflow:visible}
-.ez-gen:hover{transform:none;background:rgba(34,44,64,.98)}
+.ez-gen{display:grid;place-items:center;width:var(--ctl);height:var(--ctl);border:1px solid var(--a3);border-radius:var(--r-m);background:var(--pbg);box-shadow:var(--shadow-s);overflow:visible}
+.ez-gen:hover{transform:none;background:var(--pbg-h)}
 .ez-gen .ez-gsvg{display:none}
 .ez-gen::before{content:"";width:1.05rem;height:1.05rem;background:var(--accent);clip-path:polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)}
 .ez-gen[aria-expanded="false"]::after{right:-.25rem;top:-.25rem;width:.6rem;height:.6rem;content:"";background:var(--accent);box-shadow:none;animation:none}
-.ez-bub{display:flex;align-items:center;gap:.5rem .7rem;flex-wrap:wrap;padding:.4rem .6rem;border:1px solid rgba(255,255,255,.12);border-radius:var(--r-m);background:rgba(16,22,34,.96);color:var(--ink);font:500 .88rem/1.35 var(--f-body);box-shadow:0 .3rem 1rem rgba(0,0,0,.35);animation:none}
+.ez-bub{display:flex;align-items:center;gap:.5rem .7rem;flex-wrap:wrap;padding:.4rem .6rem;border:1px solid var(--a3);border-radius:var(--r-m);background:var(--pbg);color:var(--ink);font:500 .88rem/1.35 var(--f-body);box-shadow:var(--shadow-s);animation:none}
 .ez-bub::before{display:none}
 .ez-bt{flex:1 1 11rem;min-width:0}
 .ez-bt b{color:var(--accent)}
@@ -1765,7 +1580,7 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 #card .ez-ct{font:600 1.08rem/1.25 var(--f-ui)}
 #card .ez-cp{font-size:.9rem;line-height:1.4;color:var(--dim)}
 #card .ez-cp b{color:var(--ink)}
-#card .ez-cadv{gap:.45rem;padding:.5rem;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-m);background:rgba(255,255,255,.04);color:var(--ink)}
+#card .ez-cadv{gap:.45rem;padding:.5rem;border:1px solid var(--a2);border-radius:var(--r-m);background:var(--a1);color:var(--ink)}
 #card .ez-cav{gap:0;font-size:.85rem;font-weight:500}
 #card .ez-cav b{font-weight:600;color:var(--accent)}
 #card .ez-cav .ez-gsvg{display:none}
@@ -1781,23 +1596,23 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 .ez-row{gap:.3rem .5rem;margin:.4rem 0}
 .ez-rl{min-width:4.6rem;font:500 .82rem var(--f-ui)}
 .ez-segs{gap:0}
-.ez-seg{min-height:calc(var(--ctl) - .15rem);padding:.1rem .7rem;border:1px solid rgba(255,255,255,.13);border-radius:0;margin-left:-1px;font:600 .82rem var(--f-ui);background:rgba(255,255,255,.05);box-shadow:none}
+.ez-seg{min-height:calc(var(--ctl) - .15rem);padding:.1rem .7rem;border:1px solid var(--a3);border-radius:0;margin-left:-1px;font:600 .82rem var(--f-ui);background:var(--a1);box-shadow:none}
 .ez-seg:first-child{border-radius:var(--r-s) 0 0 var(--r-s);margin-left:0} .ez-seg:last-child{border-radius:0 var(--r-s) var(--r-s) 0}
 .ez-seg.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:none;position:relative}
-.ez-rec{gap:.6rem;padding:.45rem .6rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-m);color:var(--ink);background:rgba(255,255,255,.05);box-shadow:none}
-.ez-rec:hover{filter:none;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.24)} .ez-rec:active{transform:none;box-shadow:none}
+.ez-rec{gap:.6rem;padding:.45rem .6rem;border:1px solid var(--a2);border-radius:var(--r-m);color:var(--ink);background:var(--a1);box-shadow:none}
+.ez-rec:hover{filter:none;background:var(--a2);border-color:var(--a4)} .ez-rec:active{transform:none;box-shadow:none}
 .ez-rec .ez-light{font-size:.74rem;background:none;padding:0}
 .ez-rec .ez-lt b{font-size:.98rem} .ez-rec small{color:var(--dim)}
 .ez-pstats{gap:.3rem;margin:.45rem 0}
-.ez-pstats .ez-stat{border:1px solid rgba(255,255,255,.08);border-radius:var(--r-s);padding:.15rem .5rem}
+.ez-pstats .ez-stat{border:1px solid var(--a2);border-radius:var(--r-s);padding:.15rem .5rem}
 .ez-nb{gap:.2rem;margin:.45rem 0}
 .ez-nb > b{font:600 .78rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)} .ez-nb > small{font-size:.76rem}
 .ez-nbl{gap:.25rem}
-.ez-chip{min-height:1.7rem;padding:.1rem .55rem;gap:.3rem;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-s);font:500 .8rem var(--f-ui);background:rgba(255,255,255,.04)}
+.ez-chip{min-height:1.7rem;padding:.1rem .55rem;gap:.3rem;border:1px solid var(--a2);border-radius:var(--r-s);font:500 .8rem var(--f-ui);background:var(--a1)}
 @media (pointer:coarse){ .ez-chip{min-height:max(1.9rem, 30px)} }
 .ez-more summary{min-height:var(--ctl);font:500 .82rem var(--f-ui)}
 .ez-more summary::before{width:1.1rem;height:1.1rem;border-radius:var(--r-s)}
-.ez-pgo{background:linear-gradient(to top, rgb(16,22,34) 70%, transparent)}
+.ez-pgo{background:linear-gradient(to top, var(--pbg) 70%, transparent)}
 #pickcard{width:min(23rem, calc(100vw - var(--pl) - var(--pr)))}
 #pickcard .ez-sh{padding-top:.6rem}
 
@@ -1838,9 +1653,9 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 }
 @media (max-width:899px){
   #dock{padding-left:0;padding-right:0}
-  #ezNav{width:100%;gap:0;padding:0 0 var(--sab);background:rgba(13,18,29,.97);border-top:1px solid rgba(255,255,255,.1)}
+  #ezNav{width:100%;gap:0;padding:0 0 var(--sab);background:var(--bar-bg);border-top:1px solid var(--a2)}
   #ezNav .kbtn{flex:1 1 0;min-width:0;flex-direction:column;gap:.1rem;min-height:max(3rem, 44px);padding:.25rem .1rem;font-size:.72rem;font-weight:500;border:0;border-radius:0;background:none;box-shadow:none}
-  #ezNav .kbtn.on{background:rgba(255,255,255,.07);box-shadow:inset 0 2px 0 var(--accent)}
+  #ezNav .kbtn.on{background:var(--a1);box-shadow:inset 0 2px 0 var(--accent)}
   #ezNav .kbtn.ghost{background:none;box-shadow:none}
   #ezNav .ez-ic{width:1.25rem;height:1.25rem}
   body.ez #dock{padding-bottom:0;gap:.35rem}
@@ -1858,10 +1673,200 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
   .ez-me{order:0;flex:0 1 auto;max-width:7rem} .ez-goal{order:0;display:flex;flex:1 1 6rem} .ez-stats{order:0} .ez-date{order:0} .ez-clock{order:0} #ezTop .ez-menu{order:0}
   .ez-warn{display:none}
   #ezNav{width:auto;background:none;border-top:0;gap:.3rem;padding-bottom:calc(.4rem + var(--sab))}
-  #ezNav .kbtn{flex:none;flex-direction:row;min-height:var(--ctl);gap:.35rem;padding:.1rem .7rem;font-size:.8rem;border:1px solid rgba(255,255,255,.14);border-radius:var(--r-m);background:rgba(16,22,34,.96)}
+  #ezNav .kbtn{flex:none;flex-direction:row;min-height:var(--ctl);gap:.35rem;padding:.1rem .7rem;font-size:.8rem;border:1px solid var(--a3);border-radius:var(--r-m);background:var(--pbg)}
   #ezSheet{max-height:calc(100vh - var(--hud-h) - 4rem)}
 }
 @media (max-width:360px){ .ez-me b{font-size:.9rem} #ezTop .ez-stat{padding:0 .35rem} #ezTop .ez-spd{padding:0 .45rem;font-size:.8rem} #ezTop .ez-play{padding:0 .55rem} }
+</style>
+<style id="skin">
+/* ================= strakke skin: rustig, compact, volwassen (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
+/* Uitgangspunten: één neutraal lettertype, platte vlakken met een dunne rand, weinig kleur (accent alleen waar het iets betekent),
+   en maten die de schermhoogte volgen zodat het op een telefoon, een laptop en een 5K2K-scherm even compact oogt. */
+:root{--hud-h:2.6rem;--bar-h:2.7rem;--ctl:2.15rem;
+  /* vlakken en randen van alle panelen, balken en knoppen: één plek om de hele schil om te kleuren */
+  --pbg:rgba(16,22,34,.96); --pbg-h:rgba(34,44,64,.98); --bar-bg:rgba(13,18,29,.95);
+  --a1:rgba(255,255,255,.055); --a2:rgba(255,255,255,.1); --a3:rgba(255,255,255,.14); --a4:rgba(255,255,255,.22);
+  --shadow:0 .5rem 1.6rem rgba(0,0,0,.42); --shadow-s:0 .3rem 1rem rgba(0,0,0,.35);
+  /* extra breed scherm (21:9, 5K2K): balken, adviseur en hoekpanelen blijven bij elkaar rond het midden in plaats van 5000 pixels uit elkaar */
+  --pl:max(12px, env(safe-area-inset-left, 0px), calc(50vw - 70rem)); --pr:max(12px, env(safe-area-inset-right, 0px), calc(50vw - 70rem))}
+#mapui{right:var(--pr)}
+@media (max-width:899px){ :root{--hud-h:4.9rem;--bar-h:0rem} }   /* volledige stand op een telefoon: de balk houdt daar twee regels, de knoppen staan onderaan */
+@media (pointer:coarse){ :root{--ctl:max(2.5rem, 38px)} }
+body{letter-spacing:0;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:600}
+
+/* ---- kaart en schermrand ---- */
+#stage::after{box-shadow:inset 0 0 5rem rgba(4,10,24,.25)}
+body[data-mode="menu"] #stage::after{background:linear-gradient(90deg, rgba(9,14,24,.88) 0, rgba(9,14,24,.5) 32%, rgba(9,14,24,0) 64%)}
+body[data-mode="pick"] #stage::after{background:none}
+@media (max-width:720px){ body[data-mode="menu"] #stage::after{background:linear-gradient(180deg, rgba(9,14,24,0) 0, rgba(9,14,24,.3) 45%, rgba(9,14,24,.92) 100%)} }
+
+/* ---- panelen ---- */
+.glass{background:var(--pbg);border:1px solid var(--a2);border-radius:var(--r-l);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:var(--shadow)}
+#tip,#tip2{border-radius:var(--r-m);box-shadow:var(--shadow-s)}
+#tip2{box-shadow:var(--shadow-s)}
+
+/* ---- knoppen: plat, één hoogte ---- */
+.btn,.kbtn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:var(--ctl);padding:.2rem .8rem;border:1px solid var(--a3);border-radius:var(--r-m);
+  background:var(--a1);color:var(--ink);font:600 .9rem/1.15 var(--f-ui);letter-spacing:0;text-shadow:none;box-shadow:none;cursor:pointer;text-decoration:none;white-space:nowrap;
+  transform:none;transition:background-color .12s ease, border-color .12s ease, filter .12s ease;-webkit-tap-highlight-color:transparent}
+.btn:hover:not(:disabled),.kbtn:hover{background:var(--a3);border:1px solid var(--a4);box-shadow:none;filter:none}
+.btn:active:not(:disabled),.kbtn:active{transform:none;background:var(--a4);box-shadow:none}
+.btn:focus-visible,.kbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn:disabled,.kbtn[disabled]{opacity:.45;filter:none;cursor:default;transform:none}
+.btn .ic,.kbtn .ic,.kbtn .ez-ic{width:1.05rem;height:1.05rem;flex:none}
+.btn.sm{font-size:.82rem;min-height:calc(var(--ctl) - .25rem);padding:.15rem .6rem}
+.btn.pri,.btn.pri:hover:not(:disabled),.kbtn.gold,.kbtn.gold:hover{background:var(--accent);border-color:transparent;color:var(--accent-ink);box-shadow:none;text-shadow:none}
+.btn.war,.btn.war:hover:not(:disabled),.kbtn.war,.kbtn.war:hover{background:var(--war);border-color:transparent;color:#fff;box-shadow:none}
+.kbtn.go,.kbtn.go:hover{background:var(--go);border-color:transparent;color:#fff;box-shadow:none}
+.btn.pri:hover:not(:disabled),.btn.war:hover:not(:disabled),.kbtn.gold:hover,.kbtn.war:hover,.kbtn.go:hover{filter:brightness(1.1)}
+.btn.pri:active:not(:disabled),.btn.war:active:not(:disabled),.kbtn.gold:active,.kbtn.war:active,.kbtn.go:active{filter:brightness(.92);box-shadow:none}
+.btn.ghost,.btn.ghost:hover:not(:disabled){background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);min-height:0}
+.btn.ghost:hover:not(:disabled){color:var(--ink)}
+.kbtn.ghost{background:var(--a1);color:var(--ink);box-shadow:none}
+.kbtn.big{min-height:calc(var(--ctl) + .3rem);font-size:.98rem;padding:.3rem 1.1rem;border-radius:var(--r-m)}
+.kbtn.wide{display:flex;width:100%}
+.btn.wide{font-size:1rem;min-height:calc(var(--ctl) + .45rem);border-radius:var(--r-m)}
+.btn kbd,.fsb kbd{border-radius:.2rem;border-color:var(--a4);color:var(--dim)}
+.btn.pri kbd{border-color:rgba(0,0,0,.3);color:rgba(0,0,0,.6)}
+.xclose,.ez-x{flex:none;width:1.9rem;height:1.9rem;display:grid;place-items:center;border:1px solid var(--a3);border-radius:var(--r-s);background:var(--a1);box-shadow:none;color:var(--dim);font-size:1.1rem;cursor:pointer}
+.xclose:hover,.ez-x:hover{background:rgba(220,85,80,.35);color:#fff}
+@media (pointer:coarse){ .xclose,.ez-x{width:max(2.3rem, 36px);height:max(2.3rem, 36px)} }
+
+/* ---- tegels, keuzes, tabs ---- */
+.tile,.fsb,.copt,.pchip,.uchip,.pkc{border:1px solid var(--a2);border-radius:var(--r-m);background:var(--a1);box-shadow:none}
+.tile:hover:not(:disabled),.fsb:hover,.copt:hover,.pkc:hover{border-color:var(--a4);background:var(--a2);box-shadow:none}
+.tile.arm,.pchip.on,.copt.pri{border-color:var(--accent);background:rgba(227,176,75,.13);box-shadow:none}
+.tile .tico,#strip .sico,.arow .aico{border-radius:var(--r-s);background:rgba(0,0,0,.28);box-shadow:none}
+.kt,.blk,.flow2,.neg{background:rgba(0,0,0,.2);border:1px solid var(--a1);border-radius:var(--r-m);box-shadow:none}
+.kt.win{border-color:var(--accent);box-shadow:none}
+.gseg{border:1px solid var(--a3);border-radius:var(--r-s);background:var(--a1);box-shadow:none;font:600 .82rem var(--f-ui);min-height:calc(var(--ctl) - .2rem);padding:0 .7rem;color:var(--ink)}
+.gseg.on{background:var(--accent);border-color:transparent;color:var(--accent-ink);box-shadow:none}
+.tab{border:0;border-radius:var(--r-s);font:600 .85rem var(--f-ui);padding:.4rem .5rem;color:var(--dim)}
+.tab.on{border:0;background:var(--a2);box-shadow:inset 0 -2px 0 var(--accent);color:var(--ink)}
+.sec{font:600 .78rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--a2);margin:.9rem 0 .45rem;padding-bottom:.25rem}
+.sec .sr{text-transform:none;letter-spacing:0}
+.meter,.prog,.aebar,.tug{border-radius:999px;background:var(--a2);box-shadow:none;overflow:hidden}
+.meter{height:.32rem}
+.meter i,.prog i,.aebar i,.tug i{border-radius:999px}
+.meter i,.meter.warn i{background:var(--accent)} .meter.ok i{background:var(--ok)} .meter.hot i{background:var(--war)}
+.sw{border:1px solid var(--a3);border-radius:999px;background:rgba(0,0,0,.3);box-shadow:none}
+.sw::after{border-radius:50%}
+.sw[aria-checked="true"]{border-color:transparent;background:var(--go);box-shadow:none}
+.cdot{box-shadow:0 0 0 1px rgba(255,255,255,.55)}
+.medal{border:1px solid var(--a2);border-radius:var(--r-s);box-shadow:none;background:rgba(0,0,0,.22)}
+.copt b{font-size:1rem}
+.copt > .ic{width:1.35rem;height:1.35rem}
+
+/* ---- topbalk (volledige stand): één smalle balk ---- */
+#hud{background:var(--bar-bg);border-bottom:1px solid var(--a2);box-shadow:var(--shadow-s)}
+#hudNat{gap:.5rem;padding:0 .8rem 0 0}
+.hflag{width:1.75rem;height:1.2rem;border-radius:.15rem;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.hflag::before,.hflag::after{display:none}
+.hflag.big{width:2.4rem;height:1.65rem}
+.hn b{font:600 1rem var(--f-ui);letter-spacing:0}
+.hn small{font:500 .64rem var(--f-ui);color:var(--dim)}
+.hc{border-left:1px solid var(--a1);box-shadow:none;padding:0 .6rem;gap:.35rem}
+.hc:hover{background:var(--a1)}
+.hc .ic{width:1rem;height:1rem;color:var(--accent)}
+.hc b{font:600 .98rem var(--f-ui)}
+.hc b em{font:500 .72rem var(--f-ui)}
+.hc small{font:500 .6rem var(--f-ui);color:var(--dim)}
+#hud .warpill{border-left:1px solid var(--a1)}
+#news{border-left:1px solid var(--a1);font:500 .82rem var(--f-body);margin-left:0}
+#news i{color:var(--dim)}
+#clock{border-left:1px solid var(--a1);box-shadow:none;gap:.2rem}
+#clock .ib{width:1.85rem;height:1.85rem;border-radius:var(--r-s);border:1px solid var(--a3);background:var(--a1);box-shadow:none;font:600 1rem var(--f-ui)}
+#clock .ib:hover:not(:disabled){background:var(--a3);box-shadow:none}
+#clock #playBtn{width:2.3rem;height:1.85rem;background:var(--go);border-color:transparent;color:#fff}
+#clock #playBtn svg{width:1.05rem;height:1.05rem}
+#clock #playBtn.pulse{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+#clock #speedBtn{width:2.2rem}
+#clock .date b{font:600 1rem var(--f-ui)}
+#clock .date small{color:var(--dim)}
+body.paused #clock{background:none}
+
+/* ---- gepauzeerd, meldingen ---- */
+#pausetag{border:0;border-radius:var(--r-m);padding:.25rem .8rem .25rem .65rem;background:var(--accent);color:var(--accent-ink);box-shadow:var(--shadow-s)}
+#pausetag i{border-color:var(--accent-ink)}
+#pausetag b{font:600 .88rem var(--f-ui)}
+#pausetag span{font:500 .68rem var(--f-ui)}
+.toast{border:1px solid var(--a3);border-left:3px solid var(--dim);border-radius:var(--r-m);padding:.32rem .8rem .32rem .55rem;font:500 .85rem var(--f-body);box-shadow:var(--shadow-s)}
+.toast.war{border-color:var(--a3);border-left-color:var(--war)} .toast.good{border-color:var(--a3);border-left-color:var(--ok)}
+
+/* ---- knoppenbalk (volledige stand): compacte rij met icoon en woord ---- */
+#bar{background:var(--pbg);border:1px solid var(--a2);box-shadow:var(--shadow-s);padding:.2rem;gap:.15rem;border-radius:var(--r-m)}
+#bar .ib{border:0;border-radius:var(--r-s);background:none;box-shadow:none;color:var(--ink)}
+#bar .ib:hover:not(:disabled){background:var(--a2);box-shadow:none}
+#bar .ib .ic,#bar .ib svg{width:1.1rem;height:1.1rem;color:var(--dim)}
+#bar .ib .lbl{font:600 .78rem var(--f-ui);letter-spacing:0}
+#bar .ib.on,#bar .ib.on:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);box-shadow:none;border:0}
+#bar .ib.on .ic,#bar .ib.on svg{color:var(--accent-ink)}
+@media (min-width:900px){
+  #bar .ib{flex-direction:row;gap:.4rem;height:2.1rem;min-width:0;padding:0 .7rem}
+  #bar .ib .cdot{width:.9rem;height:.9rem;margin:0}
+  #bar .ib .hk{display:none}
+}
+.al{border:1px solid var(--ac,var(--a3));border-radius:var(--r-s);background:var(--pbg);box-shadow:0 .3rem .8rem rgba(0,0,0,.35)}
+.al.grp{border-radius:var(--r-s)}
+.mmb{border-radius:var(--r-s)}
+.mmb.on{box-shadow:none}
+#minimap{border-radius:var(--r-m);padding:3px}
+#mmtog{border:1px solid var(--a3);background:#141B29;color:var(--dim)}
+#mapmodes{border-radius:var(--r-m);padding:.2rem}
+
+/* ---- hoofdmenu ---- */
+.mlg{width:3.2rem;height:3.2rem;color:var(--accent);--plate:#0D1220;filter:none}
+.mt b{font:700 clamp(2rem, 4.2vmin + 1rem, 3.2rem)/1 var(--f-ui);letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 14px rgba(0,0,0,.6)}
+.mt span{font:600 .72rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border-top:0;padding-top:.1rem}
+#menu{width:min(22rem, calc(100vw - var(--pl) - var(--pr)));gap:.8rem}
+#menu .mpanel{padding:.5rem;gap:.3rem}
+.mbtns{gap:.25rem}
+.mb{padding:.5rem .7rem;gap:.7rem;border:1px solid transparent;border-radius:var(--r-m);background:none;box-shadow:none}
+.mb:hover{transform:none;background:var(--a2);box-shadow:none}
+.mb:active{transform:none;background:var(--a3)}
+.mb > .ic{width:1.25rem;height:1.25rem;color:var(--dim)}
+.mb b{font:600 .98rem var(--f-ui);letter-spacing:0}
+.mb small{font-size:.76rem}
+.mb.pri{background:var(--accent);color:var(--accent-ink);box-shadow:none;border-color:transparent;--plate:var(--accent)}
+.mb.pri:hover{background:var(--accent);filter:brightness(1.08);box-shadow:none}
+.mb.pri > .ic{color:var(--accent-ink)} .mb.pri small{color:rgba(35,24,3,.75)}
+.mfoot{font-size:.74rem}
+
+/* ---- landkeuze, laadscherm ---- */
+.pkh{background:none;border-bottom:1px solid var(--a2);box-shadow:none;border-radius:0}
+#hero{background:none}
+#hero b{font:700 clamp(1.4rem, 2.6vmin + .8rem, 2.2rem) var(--f-ui);letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+#veil{background:#0D1220}
+#veil:not(.on) .vbar::after{animation:none}   /* verborgen laadbalk hoeft niet door te lopen */
+.vbar{height:3px;border-radius:999px;background:var(--a3)}
+.vl b{font:700 clamp(1.6rem, 4vmin + .6rem, 2.6rem) var(--f-ui);letter-spacing:-.02em;padding-left:0}
+
+/* ---- grote momenten: kleiner en soberder ---- */
+#fxjm{z-index:40;padding-bottom:22vh}   /* blijft onder een open beslissingskaart */
+.fxj-mb{padding:.9rem 1.6rem 1rem;gap:.15rem}
+.fxj-mb::before{inset:-.2rem;border-radius:var(--r-l);background:var(--bar-bg);border:1px solid var(--a3);box-shadow:0 .6rem 2rem rgba(0,0,0,.5)}
+.fxj-me{width:2.8rem;height:2.8rem;border:0;box-shadow:none;animation:none}
+.fxj-me .ic{width:1.5rem;height:1.5rem;filter:none}
+.fxj-rays{display:none}
+.fxj-mc{width:1rem;height:1rem;border-width:2px;right:-.3rem;bottom:-.2rem;box-shadow:none}
+.fxj-mt{margin-top:.35rem;font:700 1.35rem/1.1 var(--f-ui);letter-spacing:-.01em;text-shadow:none}
+.fxj-ms{font:500 .88rem/1.35 var(--f-body);color:var(--dim);text-shadow:none}
+.fxj-tap{animation:none}
+#endcard .eico.fxj-eico{width:4.2rem;height:4.2rem}
+#endcard .eico.fxj-eico svg{animation:none}
+#endcard.win .eico.fxj-eico::before{display:none}
+
+/* ---- liggende telefoon: kaartknoppen klein houden, geen minimap (er is geen plek) ---- */
+@media (max-height:520px){
+  #mapui{flex-direction:row-reverse;align-items:flex-end;gap:.3rem}
+  #mapmodes:not(.open){border-radius:var(--r-m);padding:0}
+  #mapmodes:not(.open) .mmb:not(.mmx), #mapmodes:not(.open) #mapleg{display:none}
+  .mmb.mmx{display:grid;color:var(--ink)}
+  #minimap{padding:0}
+  #minimap #mmc{display:none}
+  #minimap #mmtog{position:static;width:2.15rem;height:2.15rem;border:0;background:transparent;color:var(--ink)}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -8813,7 +8818,7 @@ function logAdd(msg, kind, key){
     }
     newsSig = null;
   }
-  if(big && SET.banner !== false && fxjBigOk(big[1])){ showBanner(big[1], msg, kind || big[2]); return true; }
+  if(big && SET.banner === true && fxjBigOk(big[1])){ showBanner(big[1], msg, kind || big[2]); return true; }
   return false;
 }
 function jumpTo(p){ const [x, y] = P[p].a, m = Math.max(60, 420 / KM); fitBox(x - m, y - m, x + m, y + m, 1); }
@@ -9020,7 +9025,7 @@ function settingsH(){
     + chk('data-set', 'cb', SET.cb, 'Kleurenblind: dikke grenzen en patronen')
     + chk('data-set2', 'fx', SET.fx !== false, 'Effecten: beweging op de kaart, confetti en schudden')
     + chk('data-set2', 'fxmore', SET.fxmore === true, 'Extra veel effecten: ook andere landen, golven, rook en sporen')
-    + chk('data-set2', 'banner', SET.banner !== false, 'Groot moment bij belangrijke gebeurtenissen')
+    + chk('data-set2', 'banner', SET.banner === true, 'Grote melding midden in beeld bij oorlog en verovering')
     + chk('data-set2', 'tips', SET.tips !== false, 'Uitleg bij aanwijzen in spelstijl')
     + '</div><div class="gord"><span class="gl">Interface</span><span class="gsegs">' + [[0.9, 'Klein'], [1, 'Normaal'], [1.12, 'Groot']].map(([v, l]) => '<button class="gseg' + (sc === v ? ' on' : '') + '" data-ui="' + v + '">' + l + '</button>').join('') + '</span></div>' + ezSetH();   // + speelstijl Eenvoudig / Volledig
 }
@@ -10106,7 +10111,8 @@ function ezCardH(cd){
     if(cd.k === 'conf' && !c.ezp){ c.ezp = 1; ezConfPick(c); }
     return head(e, ezNm(e) + ' capituleert.') + '<p class="ez-cp">' + ezTerms(confTerms(c)) + '</p>'
       + adv('Teken de vrede. De oorlog eindigt en je land groeit.', '<button type="button" class="kbtn big wide go" data-ezc="sign" data-ezrec="1">' + ezIc('check') + 'Teken de vrede</button>')
-      + '<button type="button" class="kbtn wide ghost" data-ezc="full">Zelf kiezen</button>';
+      + '<div class="ez-acts"><button type="button" class="kbtn ghost" data-ezc="full" style="flex:1">Voorwaarden kiezen</button>'
+      + (cd.k === 'surr' ? '<button type="button" class="kbtn ghost" data-c="fight" style="flex:1" title="Geen vrede: vecht door tot het hele land veroverd is (kost meer agressie)">' + ezIc('zwaard') + 'Vecht door</button>' : '') + '</div>';
   }
   if(cd.k === 'mysurr'){
     let lose = 0; for(const T of capTerms()) lose += T.keep.length;
@@ -10238,7 +10244,7 @@ function ezSay(msg, kind, key){
     if(!re.test(msg)) continue;
     if(to == null) return null;
     const m = re.exec(msg), t = ezDot(to.replace(/\$(\d)/g, (_, i) => m[+i] || '')).replace(' helpt ' + cname(G.player) + ' tegen ', ' helpt jou tegen ');
-    if(big && SET.banner !== false && fxjBigOk(big)){ logAdd(t, kind, key); showBanner(big, t, kind === 'war' ? 'war' : 'good'); return null; }
+    if(big && SET.banner === true && fxjBigOk(big)){ logAdd(t, kind, key); showBanner(big, t, kind === 'war' ? 'war' : 'good'); return null; }
     return t;
   }
   let t = msg; for(const [re, to] of EZ_WORDS) t = t.replace(re, to);
