@@ -1118,6 +1118,78 @@ body.has-card #stage::after{background:rgba(4,7,10,.5)}
   .mmb.mmx{display:grid;color:var(--ink);border-radius:999px}
   #mapmodes.open .mmb.mmx{color:var(--accent)}
 }
+/* ===== vrede & verdragen, kernwapen, kleine landen ===== */
+/* elke beslissing over vrede staat naast (breed scherm) of onder (telefoon) de kaart, zodat je het gebied blijft zien */
+#card.dock{animation:cfin .2s ease-out;max-height:min(60vh,36rem)}
+@media (min-width:900px){ #card.dock{left:auto;right:max(1.5rem, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%);max-height:min(86vh,50rem)} }
+@media (max-width:899px){ #card.dock{top:auto;bottom:calc(4.4rem + env(safe-area-inset-bottom, 0px));transform:translateX(-50%)} }
+#card .cfoot{position:sticky;bottom:-1rem;margin:0 -1.05rem -1rem;padding:.9rem 1.05rem 1rem;background:linear-gradient(to top, #0E151C 86%, rgba(14,21,28,0));z-index:1;display:grid;gap:.5rem}
+.tv{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.tvc{border:1px solid var(--line);border-radius:.7rem;padding:.42rem .5rem .45rem;display:grid;gap:.32rem;align-content:start;background:rgba(255,255,255,.035);min-width:0}
+.tvc h4{margin:0;font:700 .9rem var(--f-ui);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:.35rem;color:var(--dim)}
+.tvc.me{border-color:rgba(227,162,60,.45)} .tvc.me h4{color:var(--accent)}
+.tvr{display:flex;gap:.38rem;align-items:flex-start;font-size:.8rem;line-height:1.32;min-width:0}
+.tvr > .ic{width:.92rem;height:.92rem;flex:none;margin-top:.12rem;color:var(--dim);--plate:#121A21}
+.tvr > span{min-width:0} .tvr b{font-weight:600;color:var(--ink)}
+.tvr.bad,.tvr.bad b{color:#F08A76} .tvr.bad > .ic{color:var(--war)}
+.tvr.mut{color:var(--dim)}
+.tvt{font-size:.76rem;color:var(--dim);border-top:1px solid rgba(255,255,255,.08);padding-top:.28rem;margin-top:.05rem}
+.tvt b{color:var(--ink);font:600 .9rem var(--f-ui)}
+.tvp{min-width:0}
+.tvp summary{list-style:none;display:flex;gap:.38rem;align-items:flex-start;cursor:pointer;font-size:.8rem;line-height:1.3}
+.tvp summary::-webkit-details-marker{display:none}
+.tvp summary > span{flex:1;min-width:0} .tvp summary b{font:700 1rem var(--f-ui);color:var(--ink)}
+.tvp summary small{display:flex;align-items:center;gap:.15rem;color:var(--dim);font-size:.74rem}
+.tvp summary small .ic{width:.72rem;height:.72rem;margin-right:.1rem;--plate:#121A21}
+.tvp summary small .ic:first-of-type{color:#E8C054}
+.tvp .chev,.secd[open] .tvp:not([open]) .chev{width:.45rem;height:.45rem;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);transform:rotate(45deg);margin:.3rem .1rem 0 0;flex:none;transition:transform .15s ease}
+.tvp[open] .chev,.secd[open] .tvp[open] .chev{transform:rotate(225deg);margin-top:.5rem}
+.tvp .pls{margin-top:.3rem;gap:.2rem}
+.tvp .pl{font-size:.74rem;padding:.08rem .4rem}
+.tvp .pl small{display:inline-flex;align-items:center;gap:.1rem;color:var(--dim);font-size:.68rem}
+.tvp .pl small .ic{width:.62rem;height:.62rem;--plate:#121A21}
+.tsw{width:.8rem;height:.8rem;border-radius:.2rem;flex:none;margin-top:.14rem;border:1.5px solid rgba(255,255,255,.5)}
+.tsw.gain{background:rgba(227,162,60,.85);border-color:#E3A23C}
+.tsw.ret{background:rgba(115,176,108,.75);border-color:#8FD286}
+.tsw.lose{background:rgba(212,85,63,.85);border-color:#F08A76}
+.tsw.dmz{display:inline-block;vertical-align:-.1em;margin:0;background:radial-gradient(circle, #EBF5FF 1.2px, transparent 1.6px) 0 0/4px 4px, rgba(110,180,255,.6);border-color:#A9D4FF;border-style:dashed}
+.tsw.back{background:repeating-linear-gradient(135deg, rgba(255,255,255,.75) 0 1.5px, transparent 1.5px 4px), var(--oc, #888)}
+.tvx{display:grid;gap:.3rem;padding:.42rem .5rem;border-radius:.7rem;border:1px solid var(--line);background:rgba(255,255,255,.035)}
+.tvx.foot{background:transparent;border-style:dashed}
+.tvx.done{border-color:rgba(115,176,108,.45)} .tvx.done .tvr > .ic{color:var(--ok)}
+.tvs{margin:0;font-size:.88rem;line-height:1.38;color:var(--ink);padding:.1rem .1rem 0}
+.tvs.mut{color:var(--dim)}
+@media (min-width:900px){ .tvs.only-s{display:none} }
+@media (max-width:899px){ .tvs.only-w{display:none} #card .cfoot{padding-top:.6rem} }
+.tvn{display:flex;align-items:center;gap:.4rem;font:700 .95rem var(--f-ui);letter-spacing:.03em;margin-bottom:-.3rem}
+.pchip.sx{align-items:flex-start;gap:.45rem;padding:.38rem .55rem;font-family:var(--f-body);font-weight:400}
+.pchip.sx > .ic{margin-top:.15rem;flex:none}
+.pchip.sx > span{display:grid;gap:.02rem;text-align:left;min-width:0}
+.pchip.sx b{font:600 .92rem var(--f-ui);letter-spacing:.02em}
+.pchip.sx small{font-size:.76rem;line-height:1.28;color:var(--dim)}
+.pchip.sx:disabled{opacity:.42;cursor:not-allowed}
+.pchip.sx i{font:700 1rem var(--f-ui);flex:none;padding-left:.3rem}
+.nopt{border:1px solid var(--line);border-radius:.7rem;padding:.45rem .55rem;display:grid;gap:.4rem;cursor:pointer;background:rgba(255,255,255,.025)}
+.nopt.on{border-color:var(--accent);background:rgba(227,162,60,.07);cursor:default}
+.nopt.off{cursor:default;opacity:.75}
+.noh{display:flex;align-items:center;gap:.45rem}
+.noh > .ic{width:1rem;height:1rem;color:var(--accent);--plate:#121A21;flex:none}
+.noh b{font:700 .98rem var(--f-ui);letter-spacing:.02em;flex:1}
+.trow2{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.07);display:grid;gap:.25rem}
+.trow2:last-child{border-bottom:0;padding-bottom:.1rem} .trow2:first-child{padding-top:.1rem}
+.trow2 .tvr{margin-left:1.3rem}
+.chip2.trc{background:rgba(227,162,60,.14)} .chip2.trc .ic{color:var(--accent)}
+.chip2.hot .ic{color:var(--war)}
+.alert.ud span small,.alert small{display:block;font-size:.76rem;color:var(--dim);line-height:1.3;margin-top:.1rem}
+.hint2.chance,.hint2.udl{align-items:flex-start;line-height:1.35}
+.hint2.chance b,.hint2.udl b{font:700 .88rem var(--f-ui);letter-spacing:.02em}
+.hint2.chance .ic,.hint2.udl .ic{margin-top:.12rem;flex:none}
+.hint2.chance.k0 b{color:var(--ok)} .hint2.chance.k1 b{color:var(--accent)} .hint2.chance.k2 b{color:#F0962E} .hint2.chance.k3 b{color:var(--war)}
+.tile.atomt .tmeta .meter{flex:1 1 100%;height:.3rem}
+#flash.nuke{background:var(--fc)}
+#flash.nuke.on{animation:flash 1.6s ease-out}
+#stage.shake.big{animation:shake .3s ease-out 4}
+@media (prefers-reduced-motion: reduce){ #flash.nuke.on{animation:none} #stage.shake.big{animation:none} }
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -1398,6 +1470,7 @@ for(const i2 of [0, 1, 2]) ITEMS['p' + i2] = {kind:'unit', get name(){ return G 
 for(const t in AIR) ITEMS[t] = {name:AIR[t].name, pp:AIR[t].pp, kind:'air'};
 ITEMS.rocket = {name:'Raket', pp:150, kind:'rocket'};
 ITEMS.fab = {name:'Fabriek', pp:200, kind:'fab'};
+ITEMS.nuke = {name:'Kernbom', pp:1200, kind:'nuke'};   // kan pas na het atoomproject (zie het blok kernwapen)
 const FAB_ADD = 1.5;   // één fabriek = 1,5 capaciteit = +0,9 productie per dag
 /* ---- bouwplekken (zoals HOI4): elke provincie heeft een vast aantal plekken voor fabrieken.
    Dorp 2, grote stad 5, hoofdstad of wereldstad 8; grote provincies +1, piepkleine 1.
@@ -1452,7 +1525,7 @@ let FTC = {day:-1, m:{}};
 function facTot(c){ if(FTC.day !== G.day || FTC.g !== G) FTC = {day:G.day, g:G, m:{}}; const v = FTC.m[c]; if(v != null) return v; let t = 0; for(const p of owned(c)) t += facN(p) * yieldOf(p); return FTC.m[c] = t; }
 function slotTot(c){ let u = 0, t = 0; for(const p of owned(c)){ u += facN(p); t += SLOTS[p] || 0; } return [u, t]; }
 // luchtmacht: vliegtuigen hebben fabrieken nodig
-function airCap(c){ return Math.round((4 + facTot(c)*0.8) * (c === G.player ? (D().meCap || 1) : 1)); }
+function airCap(c){ return Math.round((4 + facTot(c)*0.8) * (c === G.player ? (D().meCap || 1) : 1) * ((nat(c).demil || 0) > G.day ? 0.5 : 1)); }
 ITEMS.t_inf = {name:'Wapens', pp:250, kind:'tech', tech:'inf'};
 ITEMS.t_arm = {name:'Pantserstaal', pp:300, kind:'tech', tech:'arm'};
 ITEMS.t_air = {name:'Luchtvaart', pp:280, kind:'tech', tech:'air'};
@@ -1461,7 +1534,8 @@ const SPECIALS = {
   sabot: {name:'Sabotage',       cp:25, cd:30,  km:900,  desc:'Legt de industrie van een vijandelijke provincie 60 dagen half stil.'},
   blitz: {name:'Blitzoffensief', cp:50, cd:80,           desc:'+35% aanvalskracht voor al je divisies, 15 dagen lang.'},
   mobil: {name:'Mobilisatie',    cp:30, cd:200,          desc:'Legerlimiet 180 dagen lang +30%: meer divisies tegelijk.'},
-  bunker:{name:'Bunkerlinie',    cp:20, cd:0,            desc:'Eigen provincie: +20% verdediging per niveau, maximaal 3.'}
+  bunker:{name:'Bunkerlinie',    cp:20, cd:0,            desc:'Eigen provincie: +20% verdediging per niveau, maximaal 3.'},
+  nuke:  {name:'Kernaanval',     cp:60, cd:150,          desc:'Kost één kernbom. Een bommenwerper brengt hem naar een vijandelijke provincie binnen 1400 km van zijn basis. Vernietigt de meeste divisies daar, verwoest de industrie en besmet de provincie. De hele wereld schrikt.'}
 };
 // moeilijkheid: alle AI-voordelen staan open en bloot in het startmenu
 const DIFF = [
@@ -1523,7 +1597,8 @@ function owned(c){
   return OWN[c] || [];
 }
 const isAI = c => c !== G.player;
-const D = () => DIFF[G.diff];
+let DC = {g:null, day:-1, d:-1, o:null, ud:0};   // moeilijkheid van vandaag, inclusief de bonus voor kleine landen (zie dCalc)
+const D = () => DC.g === G && DC.day === G.day && DC.d === G.diff ? DC.o : dCalc();
 
 function newGame(player, diff){
   ownDirty = true; warsChanged(); POWC = null; AIRBY = null;
@@ -1598,7 +1673,7 @@ function decongest(c){
     const seen = new Map([[p, null]]), q = [p], spots = [];
     for(let i = 0; i < q.length && spots.length < ex; i++){
       const x = q[i];
-      if(x !== p && SUP[x] !== 0){ const room = lim(x) - (st[x] || 0); for(let r = 0; r < room && spots.length < ex + 8; r++) spots.push(x); }
+      if(x !== p && SUP[x] !== 0 && !(G.tr && inDmz(x))){ const room = lim(x) - (st[x] || 0); for(let r = 0; r < room && spots.length < ex + 8; r++) spots.push(x); }
       for(const n of ADJ[x]) if(!seen.has(n) && G.ctrl[n] === c && !LONG.has(ek(x, n))){ seen.set(n, x); q.push(n); }
     }
     const send = (u, x) => { const path = []; let y = x; while(y !== p){ path.unshift(y); y = seen.get(y); } u.path = path; u.prog = 0; st[x] = (st[x] || 0) + 1; st[p]--; ex--; moved++; };
@@ -1649,7 +1724,7 @@ function armyCap(c){ const n = nat(c); return Math.round(((n.capB || 8) * (n.ws 
 function unitsQueued(c){ return nat(c).q.filter(q => (ITEMS[q.k] || {}).kind === 'unit').length; }
 const meB = c => c === G.player ? (D().meCbt || 1) : 1;   // hulp voor de speler op lagere niveaus
 const atkPlain = u => tstat(u.c, u.tp).a * u.hp/100 * supMul(u) * meB(u.c);
-const defPlain = (u,p) => tstat(u.c, u.tp).d * u.hp/100 * supMul(u) * meB(u.c) * (1 + 0.2*(G.forts[p]||0)) * (1 + (u.ent||0)/100) * 1.3 * (STAR[p] >= 2 && (G.nations[u.c].lsT || 0) > G.day ? 1.2 : 1);
+const defPlain = (u,p) => tstat(u.c, u.tp).d * u.hp/100 * supMul(u) * meB(u.c) * (1 + 0.2*(G.forts[p]||0)) * (1 + (u.ent||0)/100) * 1.3 * (STAR[p] >= 2 && (G.nations[u.c].lsT || 0) > G.day ? 1.2 : 1) * (u.c === G.player ? homeDef(p) : 1);
 /* ---- terrein & rivieren: de aanvaller betaalt (pantser extra in bergen, moeras en steden) ---- */
 const TER_NM = {m:'bergen', h:'heuvels', d:'woestijn', w:'moeras'};
 /* ---- rollen: wat een divisie kan, volgt uit haar bataljons (de ontwerper doet er dus toe) ----
@@ -1683,7 +1758,7 @@ function atkMods(u, from, t){
 function seaMul(u, from, t){
   if(!from || u.air || !SEA.has(ek(from, t))) return 1;
   const mf = frOf(u).mar;
-  return LONG.has(ek(from, t)) ? 0.45 + 0.65*mf : 0.6 + 0.5*mf;
+  return (LONG.has(ek(from, t)) ? 0.45 + 0.65*mf : 0.6 + 0.5*mf) * (G.ctrl[t] === G.player ? coastDef(t) : 1);
 }
 /* ---- frontbreedte (zoals HOI4): per gevecht vechten maar zoveel divisies tegelijk; de rest is reserve en valt in
    als de voorste linie breekt. ---- */
@@ -1715,7 +1790,7 @@ function supCap(p, c){
 function supCap0(p, c){
   const st = STAR[p] || 1, tr = TER[p];
   const v = P[p].c === c ? 6 + 3*st + (CN[c] && CN[c].cap === p ? 4 : 0) : integ(p) && G.ctrl[p] === c ? 5 + 3*st : 4 + 2*st;
-  return Math.max(3, v - (tr === 'm' || tr === 'd' || tr === 'w' ? 2 : 0)) * (portW(p, c) ? 2 : 1);
+  return Math.max(3, v - (tr === 'm' || tr === 'd' || tr === 'w' ? 2 : 0)) * (portW(p, c) ? 2 : 1) * (radLeft(p) ? 0.5 : 1);
 }
 // verdeel n divisies naar gewicht over provincies, zonder de aanvoer te overschrijden (wat niet past blijft achter)
 function capFill(c, wts, n, mul){
@@ -1905,6 +1980,7 @@ function dailyTick(){
   battles();
   warEnds();
   if(G.over) return;
+  peaceTick();   // lopende verdragen (ontwapening, herstel, grensstrook), atoomprojecten en kerndreiging
   buildIdx();
   CIDS.forEach((c, i) => {
     if(!alive(c)) return;
@@ -1937,16 +2013,18 @@ function economy(initOnly){
   for(const p of PIDS){
     const c = G.ctrl[p], home = P[p].c === c;
     const y = home ? 1 : integ(p) ? 0.75 : 0.4;
-    pp[c] += G.fac[p] * y * ((G.dmg[p]||0) > G.day ? 0.5 : 1);
+    pp[c] += G.fac[p] * y * ((G.dmg[p]||0) > G.day ? 0.5 : 1) * (G.rad && G.rad[p] > G.day ? 0.5 : 1);
     pe[c] += PPOP[p] * (home ? 1 : y === 0.75 ? 0.7 : c === G.player ? (D().occ || 0.3) : 0.3);       // mankracht: bezet land levert weinig, geïntegreerd land veel
   }
   const LL = lendFlows(pp);   // steun (lend-lease): deel van de productie gaat naar een ander land
+  if(G.tr) tribFlow(pp);   // herstelbetalingen en vazallen: een deel van de productie gaat naar de winnaar
   for(const c of CIDS){
     const n = nat(c);
     if(!n.alive) continue;
     const mul = isAI(c) ? D().pp : (D().mePp || 1);
     n.ppd = pp[c] * 0.6 * mul * (n.ws != null && n.ws < 20 ? 0.85 : 1);
     if(LL && LL[c]) n.ppd = Math.max(0, n.ppd + LL[c]);
+    if(n.atom && n.atom.on && !initOnly) n.ppd -= atomDrain(c, n);   // atoomproject: slokt een deel van de productie op
     // legerlimiet = mankracht (bevolking), niet fabrieken: nieuw land en integratie maken je leger groter
     n.man = pe[c]; n.capB = manCap(pe[c]) + 0.3 * pp[c] / FAB_ADD;   // + een beetje industrie (begrensd door de bouwplekken)
     if(initOnly) continue;
@@ -2027,6 +2105,7 @@ function complete(c, k, at){
     spawnAir(c, k, loc); where = ' · basis ' + P[loc].n;
     if(c === G.player) fx(loc, 'spawn');
   } else if(k === 'rocket') n.ro++;
+  else if(k === 'nuke') n.nk = (n.nk || 0) + 1;
   else if(k === 'fab'){
     const tgt = at && G.ctrl[at] === c && slotFree(at) >= FAB_MIN ? at : bestFab(c);
     if(tgt){ const add = Math.min(1, slotFree(tgt)); G.fac[tgt] += FAB_ADD*add; where = ' · ' + P[tgt].n + ' (' + NF.format(facN(tgt)) + '/' + SLOTS[tgt] + ' plekken, +' + NF.format(FAB_ADD*add*0.6*yieldOf(tgt)) + ' productie per dag)'; }
@@ -2038,6 +2117,7 @@ function complete(c, k, at){
       : it.kind === 'air' ? it.name + ' gereed' + where
       : it.kind === 'fab' ? 'Nieuwe fabriek' + where
       : it.kind === 'rocket' ? 'Raket gereed (' + n.ro + ' op voorraad)'
+      : it.kind === 'nuke' ? 'Kernbom gereed (' + n.nk + ' op voorraad). Inzetten via Acties → Kernaanval'
       : it.name + ' gereed' + where;
     toast(msg, 'good');
   }
@@ -2273,7 +2353,7 @@ function meterOf0(c){
   let lost = 0;
   for(let i = 0; i < b.length; i++) if(G.ctrl[b[i]] !== c) lost += m.w[i];
   if(!m.tot) return 0;
-  const base = lost / m.tot / surrLim(c);
+  const base = lost / m.tot / surrLim(c) + (nat(c).nkS || 0);   // + de schok van een kernaanval
   // kansloos: een vijand die vele malen sterker is laat de meter sneller vollopen (tot +30%);
   // na een half jaar oorlog tegen een overmacht van 4× of meer ook zonder landverlies (onderhandelen wordt dan zinvol)
   let ep = 0, old = 0; for(const e of enemiesOf(c)){ ep += armyPow(e); old = Math.max(old, G.day - (G.wars[wk(c, e)] ?? G.day)); }
@@ -2377,6 +2457,7 @@ function surrender(c){
   dipOnFall(c);
   const ens = enemiesOf(c).slice();
   n.sur = G.day;
+  n.surN = [G.units.reduce((s, u) => s + (u.c === c), 0), G.air.reduce((s, w) => s + (w.c === c), 0)];   // zoveel divisies en eskaders legden de wapens neer
   G.units = G.units.filter(u => u.c !== c);
   G.air = G.air.filter(w => w.c !== c);
   for(const id of [...UI.sel]) if(!unitById(id)) UI.sel.delete(id);
@@ -2407,59 +2488,50 @@ function fightOn(e){
   for(const x of neighbors(e)) if(x !== me) addAE(x, 8 * aeMult(e));
   toast('Onvoorwaardelijke overgave: verover de rest van ' + cname(e) + '. De buren kijken angstig toe.', 'war');
 }
-// jij capituleert: elke vijand houdt wat hij bezet, je leger halveert, een jaar verdrag
+// jij capituleert: elke vijand houdt wat hij bezet; de sterkste legt ook herstelbetalingen, ontwapening en een grensstrook op
 function capitulateMe(){
-  const me = G.player, n = nat(me);
-  for(const e of enemiesOf(me).slice()) settle(e, me, occBy(e, me), []);
-  const mine = G.units.filter(u => u.c === me).sort((a, b) => a.hp - b.hp);
-  const drop = new Set(mine.slice(0, Math.floor(mine.length / 2)).map(u => u.id));
-  G.units = G.units.filter(u => !drop.has(u.id));
+  const me = G.player, n = nat(me), parts = [];
+  for(const T of capTerms()){ const r = applyTerms(T); if(r) parts.push(r); }
   n.ws = 45;
   G.stats.capd = (G.stats.capd || 0) + 1;
   clearSel();
-  toast('Je capituleert: de vijand houdt wat hij bezet. Een jaar verdrag.', 'war', 'cap-me');
+  toast('Je capituleert: de vijand houdt wat hij bezet en legt je zijn voorwaarden op', 'war', 'cap-me');
+  peaceCard('Capitulatie getekend', parts);
 }
 // ---- vredesconferentie ----
-const REP_COST = 3, DEM_COST = 3;
 function confInit(e){
   const me = G.player, occ = occBy(me, e), os = starSum(occ);
   const kills = (G.kill || {})[me + '>' + e] || 0;
-  const c = {e, occ, pts: os + Math.min(os, Math.floor(kills / 2)) + 3, kills, sel:new Set(), rep:false, dem:false, preset:null};
+  const c = {e, occ, pts: os + Math.min(os, Math.floor(kills / 2)) + 3, kills, sel:new Set(), s:{}, preset:null, rev:0};
   confPreset(c, 'alles');
   return c;
 }
-const confUsed = c => starSum([...c.sel]) + (c.rep ? REP_COST : 0) + (c.dem ? DEM_COST : 0);
+const confUsed = c => starSum([...c.sel]) + sancOn(c.s).reduce((t, k) => t + SANC[k].cost, 0);
 function confPreset(c, k){
   const home = new Set(baseOf(G.player));
-  c.sel = new Set(); c.rep = false; c.dem = false;
-  if(k === 'alles') c.occ.forEach(p => c.sel.add(p));
-  else if(k === 'grens'){ c.occ.filter(p => ADJ[p].some(q => home.has(q))).forEach(p => c.sel.add(p)); c.rep = true; }
-  else if(k === 'veilig'){ c.rep = true; c.dem = true; }
-  if(k === 'alles' && confUsed(c) + REP_COST <= c.pts) c.rep = true;
-  if(confUsed(c) > c.pts) c.dem = false;
-  if(confUsed(c) > c.pts) c.rep = false;
+  c.sel = new Set(); c.s = {}; c.rev = (c.rev || 0) + 1;
+  const add = x => { if(sancOk(c, x) && confUsed(c) + SANC[x].cost <= c.pts) c.s[x] = true; };
+  if(k === 'alles'){ c.occ.forEach(p => c.sel.add(p)); add('rep'); }
+  else if(k === 'grens'){ c.occ.filter(p => ADJ[p].some(q => home.has(q))).forEach(p => c.sel.add(p)); ['rep', 'trib', 'dmz'].forEach(add); }
+  else if(k === 'veilig') ['trib', 'dem', 'rep', 'dmz', 'pact', 'reg'].forEach(add);
   c.preset = k;
+}
+// een sanctie aan- of uitzetten; een vazal sluit herstelbetalingen en garantie in
+function confToggle(c, k){
+  c.rev = (c.rev || 0) + 1; c.preset = null;
+  if(c.s[k]){ delete c.s[k]; return true; }
+  c.s[k] = true;
+  if(k === 'vas'){ delete c.s.trib; delete c.s.pact; }
+  else if(k === 'trib' || k === 'pact') delete c.s.vas;
+  if(confUsed(c) > c.pts){ delete c.s[k]; return false; }
+  return true;
 }
 function repAmount(e){ return Math.round((0.3 * (CN[e].f || 1) + 0.5) * 10) / 10; }
 function signConf(c){
   const me = G.player, e = c.e;
   if(!atWar(me, e)) return;
-  const sel = [...c.sel].filter(p => G.ctrl[p] === me);
-  annexAE(e, sel, c.dem ? 2 : 0);
-  let fac = 0;
-  if(c.rep){
-    fac = repAmount(e);
-    const rem = owned(e).filter(p => !sel.includes(p)); let tot = 0; for(const p of rem) tot += G.fac[p];
-    const take = Math.min(fac, tot * 0.25);   // hooguit een kwart van wat ze nog hebben; de rest betalen ze af
-    if(tot > 0) for(const p of rem) G.fac[p] -= G.fac[p] / tot * take;
-    addFac(me, fac);
-  }
-  if(c.dem) nat(e).demil = G.day + 1095;
-  settle(me, e, sel, []);
-  rumpArmy(e);
-  G.stats.caps++;
-  nat(me).ws = clamp(nat(me).ws + 10, 0, 100);
-  toast('Vrede getekend met ' + cname(e) + ': ' + (sel.length ? sel.length + (sel.length === 1 ? ' provincie' : ' provincies') : 'geen land') + (fac ? ', ' + NF.format(fac) + ' fabrieken' : '') + (c.dem ? ', ontwapend' : ''), 'good');
+  const r = applyTerms(confTerms(c));
+  if(r) peaceCard('Vrede met ' + cname(e), [r]);
 }
 // ---- onderhandelen: wat accepteert de vijand nu? ----
 function dealInfo(e){
@@ -2468,26 +2540,16 @@ function dealInfo(e){
   const keep = mE > mM ? pickDeal(occ, Math.min(0.95, mE), me) : [];
   const white = mE >= mM - 0.05 || (dur > 365 && Math.abs(mE - mM) < 0.3);
   const give = mM > mE + 0.1 ? pickDeal(lost, mM, e) : [];
-  return {mE, mM, occ, keep, white, give};
+  return {mE, mM, occ, lost, keep, white, give, ks: keep.length ? loseSanc(mE) : {}, gs: give.length ? aiSanc(e, mM) : {}};
 }
 function playerDeal(e, kind){
   const me = G.player;
   if(!atWar(me, e)) return false;
-  const d = dealInfo(e);
-  if(kind === 'keep' && d.keep.length){
-    annexAE(e, d.keep); settle(me, e, d.keep, []);
-    G.stats.wins++; nat(me).ws = clamp(nat(me).ws + 6, 0, 100);
-    toast('Vrede met ' + cname(e) + ': je houdt ' + plist(d.keep), 'good'); return true;
-  }
-  if(kind === 'white' && d.white){
-    settle(me, e, [], []); for(const x of neighbors(e)) addAE(x, -6);
-    toast('Witte vrede met ' + cname(e) + ': alles terug naar de oude grenzen', 'good'); return true;
-  }
-  if(kind === 'give' && d.give.length){
-    settle(me, e, [], d.give);
-    toast('Vrede met ' + cname(e) + ': je staat ' + plist(d.give) + ' af', 'war'); return true;
-  }
-  return false;
+  const T = dealTerms(e, kind);
+  if(!T) return false;
+  const r = applyTerms(T);
+  if(r) peaceCard((kind === 'white' ? 'Witte vrede met ' : 'Vrede met ') + cname(e), [r]);
+  return !!r;
 }
 // ---- beslissingskaarten ----
 function queueCard(cd){
@@ -2504,6 +2566,7 @@ function resolveCard(choice){
   const me = G.player, e = cd.e;
   if(cd.k === 'surr' && choice === 'conf'){ cd.k = 'conf'; UI.conf = confInit(e); fitConf(e); cardSig = ''; return; }
   if(cd.k === 'conf' && choice === 'back'){ cd.k = 'surr'; UI.conf = null; cardSig = ''; return; }
+  const T = (cd.k === 'offer' || cd.k === 'demand' || cd.k === 'arm') && choice === 'yes' && atWar(me, e) ? cardTerms(cd) : null;   // vóór het wegleggen: de voorwaarden zoals ze op de kaart stonden
   G.cards.shift(); cardSig = '';
   const c = UI.conf; UI.conf = null;
   if(cd.dip) dipResolve(cd, choice); else
@@ -2513,22 +2576,8 @@ function resolveCard(choice){
     if(choice === 'yes') capitulateMe();
     else { nat(me).ws = clamp(nat(me).ws + 5, 0, 100); toast('Je vecht door tot het einde', 'war'); }
   }
-  else if(cd.k === 'offer' && choice === 'yes' && atWar(me, e)){
-    const give = cd.give.filter(p => G.ctrl[p] === me);
-    annexAE(e, give); settle(me, e, give, []);
-    G.stats.wins++; nat(me).ws = clamp(nat(me).ws + 6, 0, 100);
-    toast('Vrede met ' + cname(e) + ': je krijgt ' + plist(give), 'good');
-  }
-  else if(cd.k === 'demand' && choice === 'yes' && atWar(me, e)){
-    const take = cd.take.filter(p => G.ctrl[p] === e);
-    settle(me, e, [], take);
-    toast('Vrede met ' + cname(e) + ': je staat ' + plist(take) + ' af', 'war');
-  }
-  else if(cd.k === 'arm' && choice === 'yes' && atWar(me, e)){
-    const mine = occBy(me, e);
-    annexAE(e, mine); settle(me, e, mine, occBy(e, me));
-    toast('Wapenstilstand met ' + cname(e) + ': iedereen houdt wat hij heeft', 'good');
-  }
+  else if(T){ const r = applyTerms(T); if(r) peaceCard((cd.k === 'arm' ? 'Wapenstilstand met ' : 'Vrede met ') + cname(e), [r]); }
+  else if(cd.k === 'nuke' && choice === 'yes') nukeStrike(me, cd.p);
   if(!G.cards.length && G.cardPause){ G.cardPause = false; G.paused = false; }
 }
 // dagelijks: laatste verzet, overgave en volledige verovering
@@ -2588,8 +2637,8 @@ function aiCards(){
     if(dur < 45) continue;
     const mE = meterOf(e), mM = meterOf(me);
     let cd = null;
-    if(mE >= 0.4 && mE > mM + 0.15 && nat(e).ws < 55){ const give = pickDeal(occBy(me, e), mE, me); if(give.length) cd = {k:'offer', e, give}; }
-    else if(mM >= 0.35 && mM > mE + 0.15){ const take = pickDeal(occBy(e, me), mM, e); if(take.length) cd = {k:'demand', e, take}; }
+    if(mE >= 0.4 && mE > mM + 0.15 && nat(e).ws < 55){ const give = pickDeal(occBy(me, e), mE, me); if(give.length) cd = {k:'offer', e, give, s:loseSanc(mE)}; }
+    else if(mM >= 0.35 && mM > mE + 0.15){ const take = pickDeal(occBy(e, me), mM, e); if(take.length) cd = {k:'demand', e, take, s:aiSanc(e, mM)}; }
     // niets meer te halen of vastgelopen: wapenstilstand (ook als er niets bezet is om af te staan, of als jullie elkaar niet kunnen bereiken)
     if(!cd){
       const quiet = G.day - Math.max(G.wars[k], (G.wlast || {})[k] || 0);
@@ -2763,7 +2812,7 @@ function score(){
   if(!G) return 0;
   const me = G.player, sh = owned(me).length / PIDS.length;
   const done = (G.obj || []).filter(o => o.done).length;
-  return Math.max(0, Math.round(sh*1500 + done*150 + G.stats.caps*60 + (G.won ? 500 : 0) - G.stats.lost*3 - (G.stats.capd || 0)*150 - (G.over === 'lost' ? 300 : 0)));
+  return Math.max(0, Math.round((sh*1500 + done*150 + G.stats.caps*60 + (G.won ? 500 : 0) - G.stats.lost*3 - (G.stats.capd || 0)*150 - (G.over === 'lost' ? 300 : 0)) * udScore(me)));   // klein begonnen = hogere score
 }
 const rankOf = s => s >= 1400 ? 'Goud' : s >= 800 ? 'Zilver' : s >= 350 ? 'Brons' : 'Geen medaille';
 function saveBest(){
@@ -4145,7 +4194,7 @@ function watchBorders(c, own, calm){
   for(const p of own){
     let v = 0;
     for(const n of ADJ[p]){ const x = G.ctrl[n]; if(x === c || !G.nations[x] || !alive(x) || atWar(c, x) || !danger(x)) continue; v += danger(x) * (LONG.has(ek(p, n)) ? (x === prep ? 0.5 : 0.08) : SEA.has(ek(p, n)) ? 0.4 : 1); }
-    if(v > 0) w.set(p, v);
+    if(v > 0 && !(G.tr && inDmz(p))) w.set(p, v);   // een gedemilitariseerde grensstrook blijft leeg
   }
   return {prep, w};
 }
@@ -4513,27 +4562,486 @@ function frontier(c, hops){
   return [...all];
 }
 
+/* ================= vrede, verdragen en sancties ================= */
+/* Elke vrede is één set voorwaarden T = {w, l, keep, hold, s, kind}:
+     w / l   winnaar en verliezer (bij wapenstilstand en witte vrede wint niemand; w is dan de speler, even = true)
+     keep    provincies uit het gebied van l die w houdt · hold: provincies uit het gebied van w die l houdt
+     s       sancties tegen l (zie SANC) · kind: conf, offer, keep, arm, white, demand, give of cap
+   termsView(T) rekent uit wat dat betekent (voor de kaart en de twee kolommen), applyTerms(T) voert het uit.
+   Lopende verplichtingen staan in G.tr[verliezer] = {by, day, dem, trib, rate, dmz, pact, vas, reg, flow} (einddagen). */
+const SANC = {
+  rep:  {name:'Industrie ontmantelen',    cost:3, ic:'fab',    ae:0},
+  trib: {name:'Herstelbetalingen',        cost:3, ic:'tijd',   ae:1, days:1825, rate:0.2},
+  dem:  {name:'Ontwapening',              cost:3, ic:'schild', ae:2, days:1095},
+  dmz:  {name:'Gedemilitariseerde grens', cost:2, ic:'bunker', ae:1, days:1095},
+  pact: {name:'Niet-aanvalsgarantie',     cost:1, ic:'vrede',  ae:0, days:1825},
+  reg:  {name:'Bevriend bewind',          cost:2, ic:'steun',  ae:-8},
+  vas:  {name:'Vazalstaat',               cost:6, ic:'vlag',   ae:6, days:3650, rate:0.3}
+};
+const SANC_ORDER = ['rep', 'trib', 'dem', 'dmz', 'pact', 'reg', 'vas'];
+const TRT = () => (G.tr ||= {});
+const dTxt = d => 'dag ' + Math.floor(d);   // de kalender van het spel telt in dagen
+const treatyOf = c => (G.tr && G.tr[c]) || null;
+const sancOn = s => s ? SANC_ORDER.filter(k => s[k]) : [];
+const sancAE = s => sancOn(s).reduce((t, k) => t + SANC[k].ae, 0);
+const termsDays = T => T.s && T.s.vas ? SANC.vas.days : T.s && T.s.pact ? SANC.pact.days : TRUCE;
+// wat de AI eist als jij verliest (m = jouw overgavemeter) en wat ze zelf toegeeft als zij verliest
+function aiSanc(e, m){ const s = {}; if(m >= 0.5) s.trib = true; if(m >= 0.7) s.dem = true; if(m >= 0.9) s.dmz = true; return s; }
+function loseSanc(m){ const s = {}; if(m >= 0.55) s.trib = true; if(m >= 0.75) s.dem = true; return s; }
+function confTerms(c){ const me = G.player; return {w:me, l:c.e, keep:[...c.sel].filter(p => G.ctrl[p] === me), hold:[], s:Object.assign({}, c.s), kind:'conf'}; }
+function sancOk(c, k){ return k !== 'dmz' || termsView(Object.assign(confTerms(c), {s:{dmz:true}})).dmz.length > 0; }
+function cardTerms(cd){
+  const me = G.player, e = cd.e;
+  if(cd.k === 'conf') return UI.conf ? confTerms(UI.conf) : null;
+  if(cd.k === 'offer') return {w:me, l:e, keep:(cd.give || []).filter(p => G.ctrl[p] === me), hold:[], s:cd.s || {}, kind:'offer'};
+  if(cd.k === 'demand') return {w:e, l:me, keep:(cd.take || []).filter(p => G.ctrl[p] === e), hold:[], s:cd.s || {}, kind:'demand'};
+  if(cd.k === 'arm') return {w:me, l:e, keep:occBy(me, e), hold:occBy(e, me), s:{}, kind:'arm', even:true};
+  return null;
+}
+function dealTerms(e, kind){
+  const me = G.player, d = dealInfo(e);
+  if(kind === 'keep' && d.keep.length) return {w:me, l:e, keep:d.keep, hold:[], s:d.ks, kind:'keep'};
+  if(kind === 'white' && d.white) return {w:me, l:e, keep:[], hold:[], s:{}, kind:'white', even:true};
+  if(kind === 'give' && d.give.length) return {w:e, l:me, keep:d.give, hold:[], s:d.gs, kind:'give'};
+  return null;
+}
+// jouw capitulatie: elke vijand houdt wat hij bezet; wie het meest bezet (of anders de sterkste) legt ook de sancties op
+function capTerms(){
+  const me = G.player, ens = enemiesOf(me).slice();
+  if(!ens.length) return [];
+  const main = ens.slice().sort((a, b) => starSum(occBy(b, me)) - starSum(occBy(a, me)) || armyPow(b) - armyPow(a))[0];
+  return ens.map(e => ({w:e, l:me, keep:occBy(e, me), hold:[], s: e === main ? {trib:true, dem:true, dmz:true} : {}, kind:'cap'}));
+}
+// de grensstrook zoals die na deze vrede ligt: provincies van de verliezer die over land aan de winnaar grenzen
+function dmzAfter(T, keep, hold){
+  const w = T.w, l = T.l, kA = new Set(keep), kB = new Set(hold), bw = new Set(baseOf(w)), bl = new Set(baseOf(l));
+  const after = p => { const c = G.ctrl[p]; if(c === w && bl.has(p) && !kA.has(p)) return l; if(c === l && bw.has(p) && !kB.has(p)) return w; return c; };
+  const out = [];
+  for(const p of new Set([...owned(l), ...baseOf(l)])) if(after(p) === l && ADJ[p].some(q => !SEA.has(ek(p, q)) && after(q) === w)) out.push(p);
+  return out;
+}
+// legerlimiet van land c als het de provincies ps heeft (schatting voor het overzicht vooraf)
+function capEst(c, ps){
+  let pe = 0, pp = 0;
+  for(const p of ps){ const home = P[p].c === c; pe += PPOP[p] * (home ? 1 : 0.3); pp += G.fac[p] * (home ? 1 : 0.4); }
+  return Math.max(1, Math.round(((manCap(pe) + 0.3 * pp / FAB_ADD) * wsMul(c) + (nat(c).capX || 0)) * (c === G.player ? (D().meCap || 1) : (D().aiCap || 1))));
+}
+// ontwapening: leger en luchtmacht gaan direct naar de helft (of naar de nieuwe limiet als die lager is); de limiet blijft drie jaar gehalveerd
+function disarmPlan(c, after){
+  const n = nat(c);
+  let u = 0, a = 0; for(const x of G.units) if(x.c === c) u++; for(const x of G.air) if(x.c === c) a++;
+  const full = capEst(c, after), half = Math.max(1, Math.round(full * 0.5));
+  return {u, a, du: u - Math.min(half, Math.ceil(u / 2)), da: a - Math.ceil(a / 2), full, half, sur: n.sur && n.surN ? n.surN : null, until: G.day + SANC.dem.days};
+}
+function disarm(c, until, du, da){
+  const n = nat(c);
+  n.demil = Math.max(n.demil || 0, until);
+  if(du > 0){
+    const drop = new Set(G.units.filter(u => u.c === c).sort((a, b) => a.hp - b.hp).slice(0, du).map(u => u.id));   // de zwakste divisies eerst
+    G.units = G.units.filter(u => !drop.has(u.id)); for(const id of [...UI.sel]) if(drop.has(id)) UI.sel.delete(id);
+  }
+  if(da > 0){
+    const drop = new Set(G.air.filter(w => w.c === c).sort((a, b) => a.hp - b.hp).slice(0, da).map(w => w.id));
+    G.air = G.air.filter(w => !drop.has(w.id)); for(const id of [...UI.selAir]) if(drop.has(id)) UI.selAir.delete(id); AIRBY = null;
+  }
+  n.q = n.q.filter(q => { const k = (ITEMS[q.k] || {}).kind; return k !== 'unit' && k !== 'air'; });   // geen nieuwe troepen in aanbouw
+  POWC = null;
+}
+// industrie ontmantelen: hooguit een kwart van wat de verliezer nog heeft; de rest betaalt hij af
+function takeIndustry(w, l, keep){
+  const fac = repAmount(l), ks = new Set(keep), rem = owned(l).filter(p => !ks.has(p));
+  let tot = 0; for(const p of rem) tot += G.fac[p];
+  const take = Math.min(fac, tot * 0.25);
+  if(tot > 0) for(const p of rem) G.fac[p] -= G.fac[p] / tot * take;
+  addFac(w, fac);
+  return fac;
+}
+let TVC = new Map(), TVG = null, TVD = -1;
+function termsView(T){
+  if(TVG !== G || TVD !== G.day || TVC.size > 60){ TVC = new Map(); TVG = G; TVD = G.day; }
+  const key = [CTRLV, WARV, T.kind, T.w, T.l, T.keep.join(','), (T.hold || []).join(','), sancOn(T.s).join(',')].join('|');
+  let v = TVC.get(key); if(!v){ v = termsView0(T); TVC.set(key, v); }
+  return v;
+}
+function termsView0(T){
+  const me = G.player, w = T.w, l = T.l, s = T.s || {}, iWin = w === me, o = iWin ? l : w;
+  const keep = T.keep.filter(p => G.ctrl[p] === w), hold = (T.hold || []).filter(p => G.ctrl[p] === l);
+  const gain = iWin ? keep : hold, lose = iWin ? hold : keep;        // wat jij krijgt uit hun gebied · wat zij krijgen uit het jouwe
+  const gs = new Set(gain), ls = new Set(lose);
+  const back = occBy(me, o).filter(p => !gs.has(p)), ret = occBy(o, me).filter(p => !ls.has(p));   // terug naar hen · terug naar jou
+  const dmz = s.dmz ? dmzAfter(T, keep, hold) : [];
+  const v = {T, o, iWin, even:!!T.even, gain, lose, back, ret, dmz, days:termsDays(T), on:sancOn(s).filter(k => k !== 'dmz' || dmz.length),
+    nMe: owned(me).length - back.length + ret.length, nO: owned(o).length + back.length - ret.length};
+  const after = l === me ? owned(me).concat(ret) : owned(o).concat(back);   // wat de verliezer na de vrede heeft
+  if(s.rep) v.fac = repAmount(l);
+  if(s.trib || s.vas){
+    v.rate = s.vas ? SANC.vas.rate : SANC.trib.rate; v.tribDays = s.vas ? SANC.vas.days : SANC.trib.days;
+    let raw = 0; for(const p of after) raw += G.fac[p] * (P[p].c === l ? 1 : 0.4) * ((G.dmg[p] || 0) > G.day ? 0.5 : 1);   // hun productie zoals die na de vrede is
+    v.trib = raw * 0.6 * v.rate * (w === me ? (D().mePp || 1) : D().pp);
+  }
+  if(s.dem) v.dis = disarmPlan(l, after);
+  if(iWin && (gain.length || sancAE(s))) v.ae = aePreview(o, gain, sancAE(s));
+  else if(T.kind === 'white') v.aeDown = 6;
+  v.ws = T.kind === 'conf' ? 10 : T.kind === 'offer' || T.kind === 'keep' ? 6 : 0;
+  v.txt = termsTxt(v);
+  return v;
+}
+// één zin in gewone taal
+const andJoin = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' en ' + a[a.length - 1] : a.join('');
+function termsTxt(v){
+  const T = v.T, on = cname(v.o), s = T.s || {}, pv = n => n + (n === 1 ? ' provincie' : ' provincies'), yrs = d => Math.round(d / 365) + ' jaar';
+  let t; const c = [];
+  if(T.kind === 'white') t = 'Alles gaat terug naar de grenzen van vóór de oorlog: jij houdt ' + pv(v.nMe) + ', ' + on + ' ' + v.nO + '.';
+  else if(v.even) t = 'Iedereen houdt wat hij nu bezet: jij ' + (v.gain.length ? 'wordt ' + pv(v.gain.length) + ' groter' : 'krijgt niets') + (v.lose.length ? ' maar verliest er ' + v.lose.length : '') + '; ' + on + ' houdt ' + pv(v.nO) + ' over.';
+  else if(v.iWin){
+    t = 'Na deze vrede ben jij ' + (v.gain.length ? pv(v.gain.length) + ' groter' : 'niet groter') + '; ' + on + ' houdt ' + pv(v.nO) + ' over';
+    if(s.vas) c.push('wordt jouw vazal');
+    if(v.dis) c.push('mag ' + yrs(SANC.dem.days) + ' maar een half leger hebben');
+    if(s.trib && !s.vas) c.push('betaalt je ' + yrs(SANC.trib.days) + ' herstel');
+    if(v.dmz.length) c.push('moet zijn grens met jou ontruimen');
+    if(s.reg) c.push('krijgt een bevriend bewind');
+    t += c.length ? ' en ' + andJoin(c) + '.' : '.';
+  } else {
+    t = 'Na deze vrede ben jij ' + (v.lose.length ? pv(v.lose.length) + ' kleiner' : 'niet kleiner') + ' (je houdt er ' + v.nMe + ' over)' + (v.ret.length ? ' en krijg je ' + pv(v.ret.length) + ' terug' : '');
+    if(s.trib) c.push('je betaalt ' + on + ' ' + yrs(SANC.trib.days) + ' herstel');
+    if(v.dis) c.push('je leger wordt gehalveerd en blijft ' + yrs(SANC.dem.days) + ' klein');
+    if(v.dmz.length) c.push('je grens met ' + on + ' wordt ontruimd');
+    t += c.length ? '; ' + andJoin(c) + '.' : '.';
+  }
+  return esc(t);
+}
+// de vrede uitvoeren; geeft terug wat er getekend is (voor de samenvatting achteraf)
+function applyTerms(T){
+  const me = G.player, w = T.w, l = T.l, s = T.s || {};
+  if(!atWar(w, l)) return null;
+  const v = termsView(T), html = termsH(T), o = v.o, ln = l === me ? 'Jij' : esc(cname(l)), lines = [];
+  const keep = T.keep.filter(p => G.ctrl[p] === w), hold = (T.hold || []).filter(p => G.ctrl[p] === l);
+  if(w === me && (keep.length || sancAE(s))) annexAE(l, keep, sancAE(s));
+  if(T.kind === 'white') for(const x of neighbors(l)) addAE(x, -6);
+  if(s.rep){ const f = takeIndustry(w, l, keep); lines.push((w === me ? 'Jij kreeg ' : esc(cname(w)) + ' kreeg ') + NF.format(f) + ' fabrieken uit ' + (l === me ? 'jouw' : 'hun') + ' industrie'); }
+  settle(w, l, keep, hold, v.days);
+  if(G.tr && G.tr[w] && G.tr[w].by === l) endTreaty(w);   // de rollen zijn omgedraaid: het oude verdrag vervalt
+  if(v.on.length){
+    const old = treatyOf(l), t = TRT()[l] = {by:w, day:G.day};
+    if(old && old.by === w && old.dem > G.day) t.dem = old.dem;
+    if(v.dis){
+      const d = v.dis; disarm(l, d.until, d.du, d.da); t.dem = d.until;
+      lines.push(ln + (d.du || d.da ? ' ontbond ' + d.du + ' van ' + d.u + ' divisies en ' + d.da + ' van ' + d.a + ' eskaders' : ' had geen leger meer om te ontbinden') + '; limiet tot ' + dTxt(d.until) + ' ±' + d.half + ' divisies');
+    }
+    if(s.vas){ t.vas = t.trib = G.day + SANC.vas.days; t.rate = SANC.vas.rate; }
+    else if(s.trib){ t.trib = G.day + SANC.trib.days; t.rate = SANC.trib.rate; }
+    if(v.dmz.length){ t.dmz = G.day + SANC.dmz.days; const r = dmzTick(l, t); lines.push('Grensstrook ontruimd: ' + r.n + ' provincies, ' + r.moved + ' divisies teruggetrokken' + (r.forts ? ', ' + r.forts + ' bunkerniveaus gesloopt' : '')); }
+    if(s.pact || s.vas) t.pact = G.day + v.days;
+    if(s.reg){ t.reg = G.day; if(w === me) G.ae[l] = 0; nat(l).ws = Math.max(nat(l).ws, 50); }
+  }
+  if(l !== me) rumpArmy(l);
+  if(T.kind === 'conf'){ G.stats.caps++; nat(me).ws = clamp(nat(me).ws + 10, 0, 100); }
+  else if(T.kind === 'offer' || T.kind === 'keep'){ G.stats.wins++; nat(me).ws = clamp(nat(me).ws + 6, 0, 100); }
+  POWC = null; stripSig = null; sheetSig = '';
+  if(T.kind !== 'cap') toast((T.kind === 'arm' ? 'Wapenstilstand met ' : T.kind === 'white' ? 'Witte vrede met ' : 'Vrede met ') + cname(o) + ': ' + (v.gain.length ? 'jij krijgt ' + plist(v.gain) : v.lose.length ? 'je staat ' + plist(v.lose) + ' af' : 'geen land van eigenaar gewisseld') + (v.on.length ? ' · ' + v.on.map(k => SANC[k].name.toLowerCase()).join(', ') : ''), v.iWin || v.even ? 'good' : 'war');
+  return {o, html, lines};
+}
+// een beslissingskaart toevoegen (vooraan als hij bij de zojuist genomen beslissing hoort)
+function pushCard(cd, front){
+  G.cards ||= []; cd.day = G.day;
+  if(front) G.cards.unshift(cd); else G.cards.push(cd);
+  if(!G.paused){ G.paused = true; G.cardPause = true; }
+  cardSig = '';
+}
+// na het tekenen: de samenvatting van wat er getekend is en wat er meteen gebeurde
+function peaceCard(title, parts){
+  if(!parts.length) return;
+  pushCard({k:'treaty', t:title, o:parts[0].o,
+    h: parts.map(p => (parts.length > 1 ? '<div class="tvn"><span class="cdot" style="background:' + colorOf(p.o) + '"></span>' + esc(cname(p.o)) + '</div>' : '') + p.html).join(''),
+    r: parts.reduce((a, p) => a.concat(p.lines), [])}, true);
+}
+function endTreaty(c){
+  const t = treatyOf(c); if(!t) return;
+  delete G.tr[c];
+  if(t.dem && G.nations[c]) nat(c).demil = 0;
+  sheetSig = ''; stripSig = null;
+}
+// herstelbetalingen en vazallen: een deel van de ruwe productie verhuist elke dag naar de winnaar
+function tribFlow(pp){
+  for(const c in G.tr){
+    const t = G.tr[c];
+    if(!(t.trib > G.day) || !G.nations[t.by] || !alive(t.by) || !alive(c)){ t.flow = 0; continue; }
+    const amt = pp[c] * (t.rate || 0.2); pp[c] -= amt; pp[t.by] += amt;
+    t.flow = amt * 0.6; t.paid = (t.paid || 0) + t.flow;
+  }
+}
+// gedemilitariseerde grens: geen bunkers en geen troepen in provincies die over land aan de winnaar grenzen
+function dmzStrip(c, by){ const out = []; for(const p of owned(c)) if(ADJ[p].some(q => G.ctrl[q] === by && !SEA.has(ek(p, q)))) out.push(p); return out; }
+function inDmz(p){ const t = treatyOf(G.ctrl[p]); return !!(t && t.dmz > G.day && ADJ[p].some(q => G.ctrl[q] === t.by && !SEA.has(ek(p, q)))); }
+function dmzTick(c, t){
+  const strip = dmzStrip(c, t.by), res = {n:strip.length, forts:0, moved:0};
+  if(!strip.length) return res;
+  const set = new Set(strip), ens = enemiesOf(c), dest = {};
+  for(const p of strip) if(G.forts[p]){ res.forts += G.forts[p]; delete G.forts[p]; baseDirty = true; }
+  // per strookprovincie de dichtstbijzijnde eigen provincie erbuiten
+  const find = p => { if(p in dest) return dest[p]; const seen = new Set([p]), q = [p]; for(let i = 0; i < q.length && i < 300; i++){ const x = q[i]; if(!set.has(x)) return dest[p] = x; for(const n of ADJ[x]) if(!seen.has(n) && G.ctrl[n] === c){ seen.add(n); q.push(n); } } return dest[p] = null; };
+  for(const u of G.units){
+    if(u.c !== c || u.att) continue;
+    if(set.has(u.loc)){
+      if(ens.length && ADJ[u.loc].some(q => atWar(c, G.ctrl[q]))) continue;   // front tegen een ander land: verdedigen mag
+      const d = find(u.loc); if(!d) continue;
+      u.loc = d; u.path = []; u.prog = 0; u.g = null; u.ent = 0; u.man = false; res.moved++;
+    } else if(u.path.length && !ens.length && set.has(u.path[u.path.length - 1])){ u.path = []; u.prog = 0; u.g = null; }   // op weg naar de strook: omkeren
+  }
+  return res;
+}
+// dagelijks: verdragen lopen af of vervallen door een nieuwe oorlog; de grensstrook wordt gehandhaafd
+function peaceTick(){
+  const me = G.player;
+  if(G.tr) for(const c of Object.keys(G.tr)){
+    const t = G.tr[c], inv = c === me || t.by === me, on = cname(c === me ? t.by : c);
+    if(!G.nations[c] || !alive(c) || !G.nations[t.by] || !alive(t.by)){ endTreaty(c); continue; }
+    if(atWar(c, t.by)){ endTreaty(c); if(inv) toast('Het verdrag met ' + on + ' is vervallen: jullie zijn weer in oorlog. Ontwapening en betalingen stoppen', 'war', 'trv' + c); continue; }
+    for(const k of ['dem', 'trib', 'dmz', 'pact', 'vas']) if(t[k] && t[k] <= G.day){
+      delete t[k];
+      if(inv && k !== 'pact' && !(k === 'trib' && t.vas)) toast((k === 'dem' ? 'De ontwapening van ' : k === 'trib' ? 'De herstelbetalingen van ' : k === 'dmz' ? 'De gedemilitariseerde grens van ' : 'De vazalstatus van ') + (c === me ? 'jouw land' : on) + ' is afgelopen', c === me ? 'good' : '', 'tre' + c);
+      sheetSig = '';
+    }
+    if(!t.dem && !t.trib && !t.dmz && !t.pact && !t.vas && !(t.reg && G.day - t.reg < 1825)){ delete G.tr[c]; continue; }
+    if(t.dmz && G.day % 2 === 0){ const r = dmzTick(c, t); if(c === me && r.moved) toast('Gedemilitariseerde grens: ' + r.moved + (r.moved === 1 ? ' divisie' : ' divisies') + ' teruggetrokken uit de grensstrook met ' + on, 'war', 'dmz'); }
+  }
+  nukeTick();
+  udTick();
+}
+
+/* ================= kernwapen: atoomproject, kernbom, kernaanval, afschrikking ================= */
+/* Atoomproject: alleen met minstens ATOM.fabs fabrieken; het loopt naast de wachtrij en slokt 35% van de productie op.
+   Daarna bouw je kernbommen in de wachtrij. Een kernaanval wordt gevlogen door een bommenwerper: het doel moet binnen
+   zijn bereik (1400 km van de basis) liggen, en vijandelijke jagers boven het doel kunnen hem onderscheppen.
+   Grootmachten beginnen er laat in het spel ook aan; ze waarschuwen 21 dagen van tevoren en treffen een land dat zelf
+   een bom heeft alleen in uiterste nood. */
+const ATOM = {cost:2400, drain:0.35, fabs:12, aiDay:600, warn:21, rad:540, dmg:365};
+const atomCan = c => facTot(c) >= ATOM.fabs;
+function atomToggle(c){
+  const n = nat(c);
+  if(n.atom){ if(!n.atom.done) n.atom.on = !n.atom.on; return n.atom.on; }
+  if(!atomCan(c)) return false;
+  n.atom = {p:0, on:true, done:0};
+  return true;
+}
+function atomDrain(c, n){
+  const a = n.atom; if(a.done) return 0;
+  const d = n.ppd * ATOM.drain, me = G.player; a.p += d;
+  if(c !== me && !a.half && a.p >= ATOM.cost / 2){ a.half = 1; toast('Inlichtingen: ' + cname(c) + ' werkt aan een atoomproject en is halverwege', 'war', 'atom' + c); }
+  if(a.p >= ATOM.cost){
+    a.p = ATOM.cost; a.done = G.day; a.on = false; sheetSig = '';
+    if(c === me){ toast('Atoomproject voltooid: je kunt nu kernbommen bouwen (Productie)', 'good', 'atom'); sfx('ach'); }
+    else toast('Inlichtingen: ' + cname(c) + ' heeft de atoombom', 'war', 'atom' + c);
+  }
+  return d;
+}
+const radLeft = p => G.rad && G.rad[p] > G.day ? G.rad[p] - G.day : 0;
+function nukeReach(c, p){ for(const w of (AIRBY && AIRBY[c]) || G.air) if(w.c === c && w.t === 'bo' && w.hp > 20 && distKm(w.base, p) <= AIR.bo.range) return true; return false; }
+// kans dat vijandelijke jagers boven het doel de bommenwerper neerhalen (eigen jagers als escorte helpen)
+function nukeIcpt(c, p){ const v = G.ctrl[p]; return clamp(0.12 * (cover(v, p, 'fi') - cover(c, p, 'fi')), 0, 0.6); }
+function nukePlan(c, p){
+  const v = G.ctrl[p], st = starOf(p), me = G.player, thr = COAL_THR();
+  const nb = new Set(neighbors(v)); let coal = 0;
+  if(c === me) for(const x of CIDS) if(x !== me && x !== v && alive(x) && !atWar(x, me) && (G.ae[x] || 0) < thr && (G.ae[x] || 0) + (nb.has(x) ? 35 : 22) * (D().ae || 1) >= thr) coal++;
+  const w = G.aggr[wk(c, v)];
+  return {v, divs:defNow(p).length, fac:facN(p), icpt:nukeIcpt(c, p), ws:10 + 7*st, shock:0.12 + 0.04*st, ae:22, aeNb:35, coal, wsMe: w && w.a === c ? 10 : 4};
+}
+function nukeOrder(c, p){
+  if(c === G.player){ if(!(G.cards || []).some(cd => cd.k === 'nuke')) pushCard({k:'nuke', e:G.ctrl[p], p}); return true; }
+  return nukeStrike(c, p);
+}
+function nukeStrike(c, p){
+  const n = nat(c), v = G.ctrl[p], me = G.player, s = SPECIALS.nuke;
+  if(!(n.nk > 0) || !atWar(c, v) || !nukeReach(c, p)){ if(c === me) toast('De kernaanval gaat niet door: geen bom, geen oorlog of geen bommenwerper binnen bereik', 'war', 'bad'); return false; }
+  const loud = c === me || v === me || MAPNAME === 'europe' || MAJORS.has(c) || MAJORS.has(v);
+  buildIdx();
+  const pl = nukePlan(c, p), vn = nat(v);
+  n.nk--; n.cp = Math.max(0, n.cp - s.cp); n.cd.nuke = G.day + s.cd; delete n.nkAim;
+  if(Math.random() < pl.icpt){
+    // onderschept: de bommenwerper met de bom wordt neergehaald
+    const b = G.air.filter(w => w.c === c && w.t === 'bo' && distKm(w.base, p) <= AIR.bo.range).sort((x, y) => y.hp - x.hp)[0];
+    if(b){ G.air = G.air.filter(w => w !== b); UI.selAir.delete(b.id); AIRBY = null; }
+    if(loud) toast((c === me ? 'Je bommenwerper met de kernbom' : 'De bommenwerper van ' + cname(c) + ' met een kernbom') + ' is onderschept boven ' + P[p].n + ': bom en toestel verloren', c === me ? 'war' : 'good', 'nuke');
+    return false;
+  }
+  // de klap: de meeste divisies en eskaders weg, de rest gebroken; industrie verwoest; de provincie besmet
+  const ds = defendersAt(p).slice().sort((x, y) => x.hp - y.hp), hit = ds.length, dead = Math.round(hit * 0.75);   // driekwart van de divisies is weg, de rest is gebroken
+  ds.forEach((d, i) => { if(i < dead){ d.dead = true; kill(c, d.c); if(d.c === me) G.stats.lost++; } else { d.hp = Math.max(5, d.hp * 0.3); d.ent = 0; d.att = null; d.path = []; } });
+  if(dead){ G.units = G.units.filter(u => !u.dead); for(const id of [...UI.sel]) if(!unitById(id)) UI.sel.delete(id); }
+  const wings = G.air.filter(w => w.c === v && w.base === p); let wd = 0;
+  for(const w of wings) if(Math.random() < 0.7){ w.dead = true; wd++; UI.selAir.delete(w.id); }
+  if(wd){ G.air = G.air.filter(w => !w.dead); AIRBY = null; }
+  const f0 = facN(p);
+  G.fac[p] *= 0.25; G.dmg[p] = Math.max(G.dmg[p] || 0, G.day + ATOM.dmg); (G.rad ||= {})[p] = G.day + ATOM.rad;
+  if(G.forts[p]){ delete G.forts[p]; baseDirty = true; }
+  vn.ws = clamp(vn.ws - pl.ws, 0, 100); vn.nkS = Math.min(0.5, (vn.nkS || 0) + pl.shock);
+  n.ws = clamp(n.ws - pl.wsMe, 0, 100);
+  G.stats.nukes = (G.stats.nukes || 0) + 1;
+  if(c === me){
+    const nb = new Set(neighbors(v));
+    for(const x of CIDS) if(x !== me && alive(x) && !atWar(x, me)) addAE(x, nb.has(x) ? pl.aeNb : pl.ae);
+    achAward('atom');
+  } else if(v === me){ G.paused = true; }
+  SUPCC = {day:-1, m:{}}; FTC = {day:-1, m:{}}; POWC = null; METC = {day:-1, m:{}}; overDirty = true; stripSig = null; sheetSig = '';
+  fx(p, 'nuke');
+  if(loud){
+    nukeFlash(); sfx('nuke');
+    const what = (hit ? dead + ' van ' + hit + ' divisies vernietigd' : 'geen troepen geraakt') + (wd ? ', ' + wd + ' eskaders' : '') + ', industrie ' + NF.format(f0) + ' → ' + NF.format(facN(p)) + ' fabrieken, provincie besmet';
+    toast(c === me ? 'Kernaanval op ' + P[p].n + ': ' + what + '. De wereld is geschokt' : v === me ? cname(c) + ' werpt een kernbom op ' + P[p].n + ': ' + what : cname(c) + ' werpt een kernbom op ' + P[p].n + ' (' + cname(v) + ')', c === me ? 'good' : 'war', 'nuke');
+  }
+  return true;
+}
+// de AI: voorraad aanleggen, dreigen (met datum) en pas daarna toeslaan
+function aiNuke(c, n){
+  const ens = enemiesOf(c), me = G.player;
+  // voorraad: één bom, een tweede alleen met een grote industrie; midden in een oorlog gaan divisies voor, tenzij de productie het makkelijk kan dragen
+  if((n.nk || 0) < (n.ppd >= 20 ? 2 : 1) && n.ppd >= (ens.length ? 15 : 8) && !n.q.some(q => q.k === 'nuke')) n.q.unshift({k:'nuke', p:0});
+  if(n.nkAim){
+    const a = n.nkAim;
+    if(!atWar(c, a.e) || G.ctrl[a.p] !== a.e || !(n.nk > 0)){ delete n.nkAim; sheetSig = ''; if(a.e === me) toast(cname(c) + ' ziet af van de kernaanval op ' + P[a.p].n, 'good', 'nkw'); return; }
+    if(G.day >= a.day){
+      delete n.nkAim; sheetSig = '';
+      if(nukeReach(c, a.p)) nukeStrike(c, a.p);
+      else if(a.e === me) toast('De kernaanval van ' + cname(c) + ' gaat niet door: geen bommenwerper meer binnen bereik', 'good', 'nkw');
+    }
+    return;
+  }
+  if(!(n.nk > 0) || !ens.length || (n.cd.nuke || 0) > G.day) return;
+  const mC = meterOf(c), pc = armyPow(c);
+  for(const e of ens){
+    if(G.day - (G.wars[wk(c, e)] ?? G.day) < 90 || nat(e).sur) continue;
+    const desperate = mC >= 0.5;
+    if(!desperate && armyPow(e) < 0.7 * pc) continue;                // een zwakke vijand is geen bom waard
+    if(nat(e).nk > 0 && mC < 0.75) continue;                          // afschrikking: wie zelf een bom heeft, wordt alleen in uiterste nood getroffen
+    if(Math.random() > (desperate ? 0.3 : 0.12)) continue;
+    let best = null, bs = 0;                                          // doel: de grootste troepenmacht of een grote stad binnen bereik
+    for(const p of owned(e)){ const ds = (IDX[p] || []).length, sc = ds*2 + starOf(p)*2 + facN(p); if(sc > bs && (ds >= 5 || starOf(p) >= 2) && nukeReach(c, p)){ bs = sc; best = p; } }
+    if(!best) continue;
+    n.nkAim = {p:best, e, day:G.day + ATOM.warn}; sheetSig = ''; overDirty = true;
+    if(e === me){ toast(cname(c) + ' dreigt met een kernaanval op ' + P[best].n + ' over ' + ATOM.warn + ' dagen. Haal je troepen weg, zet jagers boven het doel of sluit vrede', 'war', 'nkw'); G.paused = true; sfx('war'); flash(); }
+    else if(MAPNAME === 'europe' || MAJORS.has(e)) toast(cname(c) + ' dreigt ' + cname(e) + ' met een kernaanval', '', 'nkw' + c);
+    return;
+  }
+}
+function nukeTick(){
+  const me = G.player;
+  if(G.rad) for(const p in G.rad) if(G.rad[p] <= G.day){ delete G.rad[p]; overDirty = true; }
+  for(const c of CIDS){ const n = G.nations[c]; if(n.nkS){ n.nkS -= 0.0015; if(n.nkS <= 0) delete n.nkS; } }   // de schok ebt weg
+  if(G.day % 5) return;
+  for(const c of MAJORS){
+    if(c === me || !alive(c)) continue;
+    const n = nat(c);
+    if(!n.atom){ if(G.day >= ATOM.aiDay && n.ppd >= 8 && atomCan(c) && Math.random() < 0.08) n.atom = {p:0, on:true, done:0}; continue; }
+    if(n.atom.done) aiNuke(c, n);
+    else n.atom.on = atomCan(c) && !(enemiesOf(c).length && meterOf(c) >= 0.25);   // een land dat aan het verliezen is of zijn industrie kwijt is, legt het project stil
+  }
+}
+
+/* ================= kleine landen: bonus voor de underdog en kansinschatting ================= */
+/* Alleen voor de speler. Hoe kleiner het gekozen land (fabrieken + bevolking), hoe groter de bonus; hij slinkt met de
+   bevolking die je erbij verovert en is weg zodra je er 40 miljoen bij hebt (een land als Polen of Spanje).
+   De bonus zit in D(): alle plekken die de moeilijkheid gebruiken (productie, legerlimiet, integratie, agressie, hoe snel
+   de AI je aanvalt) krijgen hem vanzelf mee. Thuisverdediging en landingen staan in homeDef() en coastDef(). */
+const UD = {ref:9, pop:40, pp:2.5, cap:7, res:3, def:0.4, hill:0.3, coast:0.35, integ:0.5, occ:0.2, ae:0.4, grace:2, prey:1, surr:0.15, score:0.5};
+const sIdx = c => CN[c].f + popE(c) / 10;                                   // grove maat voor de kracht van een land
+const udBase = c => clamp((UD.ref - sIdx(c)) / (UD.ref - 1), 0, 1);        // 1 = dwergstaat, 0 = middelgroot of groter
+const udScore = c => 1 + UD.score * udBase(c);
+function udNow(){
+  const me = G.player, u0 = udBase(me); if(!u0) return 0;
+  let pop = 0; for(const p of owned(me)) if(P[p].c !== me) pop += PPOP[p];
+  return u0 * clamp(1 - pop / UD.pop, 0, 1);
+}
+function dCalc(){
+  const b = DIFF[G.diff], me = G.player;
+  DC = {g:G, day:G.day, d:G.diff, o:b, ud:0};
+  if(!me || !G.nations || !G.nations[me]) return b;
+  const ud = udNow(); if(ud <= 0) return b;
+  const n = nat(me);
+  let f = 0; for(const p of owned(me)) f += G.fac[p] * (P[p].c === me ? 1 : 0.5);
+  const capB = Math.max(4, (n.capB || 8) * (n.ws == null ? 1 : wsMul(me)));
+  const o = Object.assign({}, b);
+  o.mePp = (b.mePp || 1) * (1 + UD.pp * ud / Math.max(0.5, f));    // werkplaatsen: een vaste hoeveelheid extra capaciteit
+  o.meCap = (b.meCap || 1) * (1 + UD.cap * ud / capB);             // volksleger: een vast aantal extra divisies
+  o.integ = Math.round((b.integ || INTEG) * (1 - UD.integ * ud));
+  o.occ = (b.occ || 0.3) + UD.occ * ud;
+  o.ae = (b.ae || 1) * (1 - UD.ae * ud);
+  o.grace = Math.round(b.grace * (1 + UD.grace * ud));
+  o.prey = (b.prey || 2) * (1 + UD.prey * ud);
+  o.meSurr = (b.meSurr || 0) + UD.surr * ud;
+  DC.o = o; DC.ud = ud;
+  return o;
+}
+// verdediging van je eigen kernland (bergen en heuvels extra) en landingen op je eigen kust
+function homeDef(p){ D(); const ud = DC.ud; return !ud || P[p].c !== G.player ? 1 : (1 + UD.def * ud) * (TER[p] === 'm' || TER[p] === 'h' ? 1 + UD.hill * ud : 1); }
+function coastDef(t){ D(); const ud = DC.ud; return ud && P[t].c === G.player ? 1 - UD.coast * ud : 1; }
+// bij de start: het volksleger roept reservisten op
+function udTick(){
+  if(G.udInit) return;
+  G.udInit = 1;
+  const me = G.player, k = G.day <= 3 ? Math.round(UD.res * udBase(me)) : 0;
+  if(!k) return;
+  for(let i = 0; i < k; i++){ const loc = spawnLoc(me, 'unit'); if(loc) spawn(me, 'inf', loc); }
+  toast('Volksleger: ' + k + (k === 1 ? ' divisie' : ' divisies') + ' reservisten opgeroepen. Je bonus als klein land staat in Overzicht', 'good', 'ud');
+}
+// de bonus in getallen (voor het keuzescherm en het overzicht); ud = de factor van nu, of die bij de start
+function udFacts(c, ud, diff){
+  const b = DIFF[diff], inD = Math.round((b.integ || INTEG) * (1 - UD.integ * ud));
+  const mnt = (CPROV[c] || []).some(p => TER[p] === 'm' || TER[p] === 'h'), isl = !(CPROV[c] || []).some(p => ADJ[p].some(q => P[q].c !== c && !SEA.has(ek(p, q))));
+  const coast = (CPROV[c] || []).some(p => ADJ[p].some(q => SEA.has(ek(p, q))));   // zonder kust geen landingen
+  return [   // [icoon, voluit, kort]
+    ['fab', '+' + NF.format(UD.pp * ud * 0.6 * (b.mePp || 1)) + ' productie per dag', '+' + NF.format(UD.pp * ud * 0.6 * (b.mePp || 1)) + ' productie/dag'],
+    ['leger', '+' + Math.round(UD.cap * ud * (b.meCap || 1)) + ' legerlimiet', '+' + Math.round(UD.cap * ud * (b.meCap || 1)) + ' legerlimiet'],
+    ['schild', 'eigen land +' + Math.round(100 * UD.def * ud) + '% verdediging' + (mnt ? ', in bergen en heuvels nog eens +' + Math.round(100 * UD.hill * ud) + '%' : ''), 'thuis +' + Math.round(100 * UD.def * ud) + '% verdediging' + (mnt ? ' (bergen +' + Math.round(100 * UD.hill * ud) + '% extra)' : '')],
+    coast && ['mar', 'landingen op jouw kust −' + Math.round(100 * UD.coast * ud) + '%' + (isl ? ' (je bent alleen over zee te bereiken)' : ''), 'landingen op jouw kust −' + Math.round(100 * UD.coast * ud) + '%'],
+    ['tijd', 'veroverd land na ' + inD + ' dagen geïntegreerd', 'integratie in ' + inD + ' d'],
+    ['agr', 'agressie bij de buren −' + Math.round(100 * UD.ae * ud) + '%', 'agressie −' + Math.round(100 * UD.ae * ud) + '%'],
+    ['vrede', 'de eerste ' + Math.round(b.grace * (1 + UD.grace * ud)) + ' dagen verklaart geen AI-land je de oorlog', 'eerste ' + Math.round(b.grace * (1 + UD.grace * ud)) + ' d geen oorlogsverklaring van de AI']
+  ].filter(Boolean);
+}
+// kansinschatting vóór de start: jouw kracht (met bonus) tegenover je zwakste en je sterkste buur
+function chanceOf(c, diff){
+  const b = DIFF[diff], near = new Set(), far = new Set();
+  for(const p of CPROV[c]) for(const q of ADJ[p]){ const x = P[q].c; if(x === c) continue; (LONG.has(ek(p, q)) ? far : near).add(x); }
+  for(const x of near) far.delete(x);
+  const nb = near.size ? [...near] : [...far], sea = !near.size;
+  const me = sIdx(c) * (1 + 0.9 * udBase(c)) * (b.mePp || 1) * Math.sqrt(b.meCbt || 1) / b.pp;
+  if(!nb.length) return {k:1, lab:'Uitdagend', why:'Geen buren: je moet eerst overzee.'};
+  nb.sort((x, y) => sIdx(x) - sIdx(y));
+  const weak = nb[0], strong = nb[nb.length - 1];
+  // een zwakke buur geeft een eerste prooi (telt tot een bepaalde hoogte), de sterkste buur bepaalt of je het overleeft
+  const sc = Math.min(1.5, Math.log2(me / sIdx(weak))) + 0.75 * Math.log2(me / sIdx(strong)) - (sea ? 1 : 0);
+  const k = sc >= 1 ? 0 : sc >= -0.5 ? 1 : sc >= -4.2 ? 2 : 3;
+  const r = sIdx(strong) / sIdx(c);
+  const why = (sea ? 'Alleen over zee te bereiken. ' : '') + (nb.length === 1 ? 'Je enige buur, ' + cname(strong) + ', is ' : 'Sterkste buur ' + cname(strong) + ' is ') + (r >= 1.5 ? NF.format(r) + '× zo sterk als jij' : r >= 0.8 ? 'ongeveer even sterk' : 'zwakker dan jij')
+    + (nb.length > 1 ? '; zwakste buur: ' + cname(weak) : '') + '.';
+  return {k, lab:['Makkelijk', 'Uitdagend', 'Zwaar', 'Bijna onmogelijk'][k], why, sc};
+}
+
 /* ================= speciale acties ================= */
-function ready(c, k){ const n = nat(c), s = SPECIALS[k]; return n.cp >= s.cp && (n.cd[k] || 0) <= G.day && (k !== 'rocket' || n.ro > 0); }
+function ready(c, k){ const n = nat(c), s = SPECIALS[k]; return n.cp >= s.cp && (n.cd[k] || 0) <= G.day && (k !== 'rocket' || n.ro > 0) && (k !== 'nuke' || n.nk > 0); }
 function specStatus(c, k){
   const n = nat(c), s = SPECIALS[k];
   if((n.cd[k]||0) > G.day) return 'Nog ' + Math.ceil(n.cd[k] - G.day) + ' d';
   if(k === 'rocket' && n.ro < 1) return 'Bouw eerst een raket';
-  if((k === 'rocket' || k === 'sabot') && !enemiesOf(c).length) return 'Niet in oorlog';
+  if(k === 'nuke' && !(n.nk > 0)) return n.atom && n.atom.done ? 'Bouw eerst een kernbom' : 'Eerst het atoomproject';
+  if((k === 'rocket' || k === 'sabot' || k === 'nuke') && !enemiesOf(c).length) return 'Niet in oorlog';
+  if(k === 'nuke' && !(AT[c] || {}).bo) return 'Geen bommenwerper';
   if(n.cp < s.cp) return 'Te weinig bevelpunten';
   return '';
 }
 function validTarget(c, k, p){
   if(k === 'drop') return [...UI.sel].some(id => { const u = unitById(id); return u && canDrop(u, p); });
   const s = SPECIALS[k];
-  if(k === 'bunker') return G.ctrl[p] === c && (G.forts[p]||0) < 3;
+  if(k === 'bunker') return G.ctrl[p] === c && (G.forts[p]||0) < 3 && !inDmz(p);
   if(!atWar(c, G.ctrl[p])) return false;
+  if(k === 'nuke') return nukeReach(c, p);   // een bommenwerper moet het doel kunnen halen
   return minDistOwned(c, p) <= s.km;
 }
 function doSpecial(c, k, p){
   const n = nat(c), s = SPECIALS[k];
   if(!ready(c,k)) return false;
   if(p && !validTarget(c, k, p)) return false;
+  if(k === 'nuke') return p ? nukeOrder(c, p) : false;   // jij krijgt eerst een beslissingskaart met de gevolgen
   n.cp -= s.cp; n.cd[k] = G.day + s.cd;
   const vic = p ? G.ctrl[p] : null;
   let msg = '';
@@ -5505,6 +6013,7 @@ function hover(e){
     if(w){ const km = Math.round(distKm(w.base, p)); h += ' <span class="' + (km <= AIR[w.t].range ? 'okc' : 'warc') + '">' + km + ' km</span>'; }
   }
   if(G && TER[p]) h += ' <span class="mut">· ' + TER_NM[TER[p]] + '</span>';
+  if(G) h += tipPeace(p);
   if(STAR[p] >= 2) h += ' ' + starsH(STAR[p]) + (CITY[p] && !CAPS.has(p) ? ' <span class="mut">' + esc(CITY[p]) + '</span>' : '');
   if(G && UI.sel.size && !UI.selAir.size && c !== G.player && atWar(G.player, c)){
     const o = selOdds(p);
@@ -5689,18 +6198,16 @@ function renderOver(){
     ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.8*px;
     for(const p of sel){ ctx.fill(PATH[p], 'evenodd'); ctx.stroke(PATH[p]); }
   }
-  // vredesconferentie: wat je eist licht goud op, de rest van je bezetting gaat terug
-  if(G && UI.conf && cardOpen()){
-    ctx.lineWidth = 1.6*px;
-    for(const p of UI.conf.occ){ const on = UI.conf.sel.has(p); ctx.fillStyle = on ? 'rgba(227,162,60,.42)' : 'rgba(255,255,255,.07)'; ctx.strokeStyle = on ? '#E3A23C' : 'rgba(255,255,255,.4)'; ctx.fill(PATH[p], 'evenodd'); ctx.stroke(PATH[p]); }
-  }
+  // vrede op de kaart: wat naar jou gaat goud, wat teruggaat gearceerd in hun kleur, wat jij afstaat rood; ook besmet gebied en grensstroken
+  if(G) drawDeal(ctx, px);
   // --- alles verder in schermruimte ---
   ctx.setTransform(Q2, 0, 0, Q2, 0, 0);
   const now = performance.now();
   const drawFx = () => {
-    FX = FX.filter(f => now - f.t0 < 1200);
+    FX = FX.filter(f => now - f.t0 < (f.kind === 'nuke' ? 3600 : 1200));
     for(const f of FX){
       if(!P[f.p]) continue;
+      if(f.kind === 'nuke'){ drawNukeFx(ctx, f, now); continue; }
       const a = (now - f.t0)/1200, [x, y] = toScreen(P[f.p].a[0], P[f.p].a[1]);
       const r = (0.15 + 1.55*a) * REM * 1.5;
       ctx.globalAlpha = 1 - a;
@@ -5965,6 +6472,7 @@ function renderOver(){
     rrect(ctx, -12, 11, 24*mine, 3, 1.5); ctx.fillStyle = '#73B06C'; ctx.fill();
     ctx.restore();
   }
+  drawMarks(ctx, u1);   // kerndreiging en besmetting
   drawFx();
 }
 /* ================= kaartmodi, minimap en kaart-extra's in de bovenlaag ================= */
@@ -6253,6 +6761,7 @@ function sfx(k){
     case 'card': tone(880, t, 0.35, 'sine', 0.1); tone(1320, t + 0.02, 0.5, 'sine', 0.06); tone(1760, t + 0.04, 0.6, 'sine', 0.03); break;
     case 'ach': tone(784, t, 0.1, 'triangle', 0.1); tone(988, t + 0.1, 0.1, 'triangle', 0.1); tone(1175, t + 0.2, 0.3, 'triangle', 0.12); break;
     case 'win': [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i*0.13, i === 3 ? 0.7 : 0.14, 'triangle', 0.13)); [262, 330, 392].forEach(f => tone(f, t + 0.39, 0.9, 'sine', 0.06)); break;
+    case 'nuke': noise(t, 2.6, 0.5, 180); noise(t + 0.05, 0.5, 0.35, 2400); tone(70, t, 2.8, 'sine', 0.5, 28); tone(46, t + 0.25, 3.2, 'sine', 0.35, 24); tone(880, t, 0.12, 'sine', 0.12, 220); break;
     case 'lose': tone(392, t, 0.25, 'sawtooth', 0.07); tone(311, t + 0.25, 0.25, 'sawtooth', 0.07); tone(233, t + 0.5, 0.7, 'sawtooth', 0.08); noise(t, 0.5, 0.1, 250); break;
   }
 }
@@ -6469,7 +6978,7 @@ function renderStrip(){
       h = '<div class="sel"><span class="sb"><span class="cdot big" style="background:' + colorOf(c) + '"></span><b style="font:700 1.25rem var(--f-ui)">' + esc(cname(c)) + '</b></span>'
         + '<span class="chips"><span class="chip2" title="Provincies">' + ic('prov') + CPROV[c].length + '</span><span class="chip2" title="Fabrieken">' + ic('fab') + Math.round(cc.f/FAB_ADD) + '</span><span class="chip2" title="Divisies bij de start">' + ic('leger') + divs + '</span>'
         + (best ? '<span class="chip2" title="Je beste score met dit land">' + ic('medaille') + best + '</span>' : '') + '</span>'
-        + '<span class="hint2">' + ic('info') + DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc + '</span></div>'
+        + '<span class="hint2">' + ic('info') + DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc + '</span>' + pickInfoH(c, UI.diff) + '</div>'
         + '<div class="acts">' + seg + '<button class="btn pri" data-act="start">' + ic('vlag') + 'Speel</button></div>';
     } else {
       h = '<div class="txt"><b>Kies je land</b><span class="mut">Tik een land op de kaart</span><span class="hint2">' + DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc + '</span></div><div class="acts">' + seg + '</div>';
@@ -6489,6 +6998,7 @@ function renderStrip(){
     const nm = UI.target === 'drop' ? 'Luchtlanding' : SPECIALS[UI.target].name;
     const how = UI.target === 'bunker' ? 'Tik een eigen provincie'
       : UI.target === 'drop' ? 'Tik een gemarkeerde provincie. Onverdedigd = direct ingenomen.'
+      : UI.target === 'nuke' ? 'Tik een gemarkeerde provincie (binnen ' + AIR.bo.range + ' km van een bommenwerper). Je ziet eerst de gevolgen.'
       : 'Tik een gemarkeerde provincie';
     h = '<div class="txt"><b>' + nm + '</b><span class="mut">' + how + '</span></div><div class="acts"><button class="btn" data-act="cancelT">Annuleer</button></div>';
   } else if(UI.selAir.size){
@@ -6511,6 +7021,7 @@ function renderStrip(){
     chips += '<span class="chip2" title="Fabrieken / bouwplekken">' + ic('fab') + NF.format(Math.round(facN(p)*10)/10) + '/' + SLOTS[p] + '</span>';
     if(core !== c){ const il = integLeft(p); chips += '<span class="chip2' + (il ? '' : ' good') + '" title="Bezet land levert 40% productie en 30% mankracht; geïntegreerd 75% en 70%. Integreren: een jaar houden zonder oorlog met de oude eigenaar.">' + (il === 0 ? 'geïntegreerd' : il < 0 ? 'bezet · oorlog' : 'bezet · ' + il + ' d') + '</span>'; }
     if(G.forts[p]) chips += '<span class="chip2" title="Bunkerlinie">' + ic('bunker') + G.forts[p] + '</span>';
+    chips += treatyChips(p, c);   // lopende verdragen van dit land, grensstrook, besmetting
     if(c === me){ const nu = (IDX[p] || []).filter(u => u.c === me).length, sc = supCap(p, me), ov = G.over2 && G.over2[p];
       chips += '<span class="chip2' + (ov ? ' hot' : '') + '" title="Aanvoer: zoveel divisies kan deze provincie voeden' + (ov ? '. Te vol: slijtage en geen herstel' : '') + '. Frontbreedte hier: ' + widthOf(p) + '">' + ic('prov') + nu + '/' + sc + '</span>'; }
     if((G.dmg[p]||0) > G.day) chips += '<span class="chip2 hot" title="Beschadigd: halve productie">' + ic('rocket') + '</span>';
@@ -6518,7 +7029,7 @@ function renderStrip(){
     h = '<div class="sel"><span class="sb"><b>' + esc(P[p].n) + '</b></span><span class="chips">' + chips + '</span></div><div class="acts">';
     const tl = c !== me && alive(c) && !atWar(me, c) ? truceLeft(me, c) : 0;
     if(tl > 0){
-      h += '<span class="chip2" title="Vredesverdrag: een jaar geen oorlog">' + ic('vrede') + 'verdrag ' + tl + ' d</span>';
+      h += '<span class="chip2" title="Bestand: geen oorlog tussen jullie tot deze dag (nog ' + tl + ' dagen)">' + ic('vrede') + 'Bestand tot ' + dTxt(G.day + tl) + '</span>';
       h += '<button class="btn two' + (UI.confirm === 'brk:' + c ? ' war' : '') + '" data-act="brk:' + c + '" title="Verbreek het verdrag: meteen oorlog, veel agressie en −15% oorlogssteun.">' + ic('oorlog') + '<span>' + (UI.confirm === 'brk:' + c ? 'Bevestig' : 'Verbreek verdrag') + '<small>nu · −15% steun</small></span></button>';
     }
     if(c === me){
@@ -6691,16 +7202,17 @@ function unitTable(){
 // inklapbare sectie: dichtgeklapt is het één regel met het belangrijkste getal
 const starsH = n => '<span class="stars" aria-label="' + n + ' sterren">' + ic('ster').repeat(n) + '</span>';
 const pchipsH = ps => '<div class="pls">' + ps.slice(0, 10).map(p => '<span class="pl">' + esc(P[p].n) + starsH(starOf(p)) + '</span>').join('') + (ps.length > 10 ? '<span class="pl mut">+' + (ps.length - 10) + '</span>' : '') + '</div>';
+// onderhandelen: drie mogelijke vredes, elk met precies wat jij krijgt en wat zij krijgen of houden (de kaart kleurt mee)
 function negBlock(e){
-  const d = dealInfo(e);
+  const d = dealInfo(e), nm = esc(cname(e));
+  const cur = negOpt(e, d);
+  const optH = (kind, icon, title, T, why, btn, cls) => '<div class="nopt' + (cur === kind ? ' on' : '') + (T ? '' : ' off') + '" data-nopt="' + kind + '"><div class="noh">' + ic(icon) + '<b>' + title + '</b>'
+    + (T ? '<button class="btn sm ' + cls + '" data-deal="' + kind + ':' + e + '">' + btn + '</button>' : '') + '</div>'
+    + (T ? (cur === kind ? termsH(T) : '<p class="tvs">' + termsView(T).txt + ' <span class="mut">Tik voor de details en de kaart.</span></p>') : '<p class="tvs mut">' + why + '</p>') + '</div>';
   let h = '<div class="neg">';
-  if(d.keep.length){
-    const ae = aePreview(e, d.keep);
-    h += '<div class="nrow"><span class="nt">' + ic('check') + 'Ze staan af<small>' + pct(Math.min(0.95, d.mE)) + '% van wat je bezet · agressie +' + Math.round(ae.v) + '</small></span>' + pchipsH(d.keep)
-      + '<button class="btn sm pri" data-deal="keep:' + e + '">' + ic('vrede') + 'Teken: jij houdt ' + d.keep.length + '</button></div>';
-  } else h += '<div class="nrow mut">' + ic('info') + '<span>' + (d.occ.length ? 'Ze staan nog niets af: hun meter moet boven de jouwe komen' : 'Je bezet nog niets van hun land') + '</span></div>';
-  h += '<div class="nrow"><button class="btn sm" data-deal="white:' + e + '"' + (d.white ? '' : ' disabled') + '>' + ic('wit') + 'Witte vrede</button><small class="mut">' + (d.white ? 'alles terug naar de oude grenzen' : 'ze winnen, dus geen witte vrede') + '</small></div>';
-  if(d.give.length) h += '<div class="nrow"><span class="nt">' + ic('agr') + 'Zij eisen</span>' + pchipsH(d.give) + '<button class="btn sm war" data-deal="give:' + e + '">Accepteer hun eis</button></div>';
+  h += optH('keep', 'check', 'Zij staan land af', dealTerms(e, 'keep'), d.occ.length ? nm + ' staat nog niets af: hun overgavemeter (' + pct(d.mE) + '%) moet boven de jouwe (' + pct(d.mM) + '%) komen.' : 'Je bezet nog niets van hun land.', ic('vrede') + 'Teken', 'pri');
+  h += optH('white', 'wit', 'Witte vrede', dealTerms(e, 'white'), nm + ' is aan de winnende hand en weigert een vrede zonder winst.', ic('wit') + 'Teken', '');
+  if(d.give.length) h += optH('give', 'agr', 'Hun eis aanvaarden', dealTerms(e, 'give'), '', 'Accepteer', 'war');
   return h + '</div>';
 }
 const det = (k, sum, body, def) => { const open = UI.od && UI.od[k] !== undefined ? UI.od[k] : def; return '<details class="secd" data-d="' + k + '"' + (open ? ' open' : '') + '><summary>' + sum + '<i class="chev"></i></summary>' + body + '</details>'; };
@@ -6752,6 +7264,7 @@ function renderSheet(){
       const it = ITEMS[k], lvl = n.tech[it.tech], queued = n.q.some(q => q.k === k);
       h += tile(k, n, lvl >= 3 || queued || full, lvl >= 3 ? 'max' : queued ? 'in wachtrij' : tsub(k));
     }
+    h += nukeTilesH(n, full);   // atoomproject en kernbom
     h += '</div><div class="sec">' + ic('prov') + 'Nieuwe troepen naar</div><div class="seg">'
       + '<button class="btn sm' + (G.rally !== 'front' ? ' pri' : '') + '" data-rally="cap">' + ic('stad') + 'Hoofdstad</button>'
       + '<button class="btn sm' + (G.rally === 'front' ? ' pri' : '') + '" data-rally="front">' + ic('zwaard') + 'Front</button></div>';
@@ -6794,6 +7307,7 @@ function renderSheet(){
     for(const x of threats) h += '<div class="alert">' + ic('oorlog') + '<span><b>' + esc(cname(x)) + '</b> bereidt oorlog voor</span><span class="num">' + (G.aiJust[x] > G.day ? (G.aiJust[x] - G.day) + ' d' : 'nu') + '</span></div>';
     if(G.just) h += '<div class="alert own">' + ic('vrede') + '<span>Oorlogsdoel tegen <b>' + esc(cname(G.just.c)) + '</b></span><span class="num">' + (G.just.until - G.day) + ' d</span></div>';
     for(const x in G.wg) if(G.wg[x] >= G.day && alive(x) && !atWar(me, x)) h += '<div class="alert own">' + ic('check') + '<span>Oorlogsdoel klaar: <b>' + esc(cname(x)) + '</b></span><span class="num">' + (G.wg[x] - G.day) + ' d</span></div>';
+    h += peaceAlertsH();   // kerndreiging, atoomproject, bonus voor kleine landen
     h += '<div class="blk slim"><div class="tog"><span><span class="tgt">' + ic('gen') + 'Auto-generaal</span><small>Jouw bevelen gaan voor, daarna neemt hij het over</small></span><button class="sw" role="switch" aria-checked="' + (n.auto ? 'true' : 'false') + '" data-auto="1" aria-label="Auto-generaal"></button></div>' + (n.auto ? genStatusH(me) + genOrdersH(me) : '') + '</div>';
     const done = G.obj.filter(o => o.done).length;
     let b = '<div class="blk">';
@@ -6820,6 +7334,7 @@ function renderSheet(){
     }
     const topM = ens.reduce((m2, e) => Math.max(m2, meterOf(e)), 0);
     h += det('oorlog', ic('oorlog') + 'Oorlogen<span class="sumv">' + (ens.length ? ens.length + ' · ' + pct(topM) + '%' : 'vrede') + '</span>', b, ens.length > 0);
+    h += treatySecH();   // lopende verdragen: ontwapening, herstelbetalingen, grensstroken, vazallen, bestanden
     const thr = COAL_THR(), am = maxAE();
     const fear = CIDS.filter(x => x !== me && alive(x) && !atWar(x, me) && (G.ae[x] || 0) >= 5).sort((a2, b2) => G.ae[b2] - G.ae[a2]).slice(0, 6);
     b = '<div class="blk">';
@@ -6844,6 +7359,7 @@ function renderSheet(){
       + '<p>' + ic('schild') + '<span><b>Laatste verzet</b>: bij 75% roept een land de noodtoestand uit: milities en steden +25% verdediging. Het einde is het zwaarst.</span></p>'
       + '<p>' + ic('vlag') + '<span><b>Overgave</b>: bij 100% legt het leger de wapens neer. Jij kiest: vredesconferentie (verdeel de buit) of doorvechten tot je alles hebt.</span></p>'
       + '<p>' + ic('vrede') + '<span><b>Onderhandelen</b> kan altijd: een vijand staat af wat zijn meter aangeeft (op 40% houd je 40% van wat je bezet). Na elke vrede volgt een verdrag van een jaar.</span></p>'
+      + rulesExtraH()
       + '<p>' + ic('schild') + '<span><b>Ingraven</b>: stilstaande troepen tot +20% verdediging.</span></p>'
       + '<p>' + ic('prov') + '<span><b>Bevoorrading</b>: afgesneden troepen (oranje) vechten op 65% en slijten.</span></p>'
       + '<p>' + ic('zwaard') + '<span>' + (isTouch ? 'Tik een stapel, tik of sleep naar een doel. Lang vasthouden voegt toe. Dubbel tikken = inzoomen.' : 'Klik een stapel, klik, rechtsklik of sleep naar een doel. Shift+klik voegt toe. Spatie = pauze, 1–4 = snelheid, Esc = selectie wissen, Shift+slepen = kader selecteren.') + '</span></p>'
@@ -6907,7 +7423,7 @@ $('sheet').addEventListener('click', e => {
     }
     else { UI.armAct = null; UI.target = k; UI.sheet = null; clearSel(); UI.info = null; }
   }
-  else if(ng){ UI.neg = UI.neg === ng.dataset.neg ? null : ng.dataset.neg; }
+  else if(ng){ UI.neg = UI.neg === ng.dataset.neg ? null : ng.dataset.neg; UI.negOpt = null; if(UI.neg) fitDeal(); }
   else if(dl && !dl.disabled){
     const [kind, e2] = dl.dataset.deal.split(':');
     if(!playerDeal(e2, kind)) toast(cname(e2) + ' weigert', 'war'); else UI.neg = null;
@@ -6928,12 +7444,331 @@ $('sheet').addEventListener('click', e => {
 });
 
 function renderAll(){ renderBar(); renderStrip(); renderSheet(); renderEnd(); renderCard(); overC.classList.toggle('targeting', !!UI.target); overDirty = true; }
+/* ================= vrede, kernwapen en kleine landen: interface ================= */
+SIL.nuke = {p:'M16.9 20.49A9.8 9.8 0 0 1 7.1 20.49L10.3 14.94A3.4 3.4 0 0 0 13.7 14.94ZM2.2 12A9.8 9.8 0 0 1 7.1 3.51L10.3 9.06A3.4 3.4 0 0 0 8.6 12ZM16.9 3.51A9.8 9.8 0 0 1 21.8 12L15.4 12A3.4 3.4 0 0 0 13.7 9.06ZM10.1 12a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 1 0-3.8 0z'};
+SHORT.nuke = 'Vernietigt een provincie; de wereld schrikt'; SICON.nuke = 'nuke';
+ROLE_TXT.nuke = 'Munitie voor een kernaanval (Acties)';
+ACH.push({id:'atom', t:'Vernietiger van werelden', d:'Zet een kernwapen in', ic:'nuke'});
+const yrsTxt = d => { const y = d / 365; return (y >= 1 ? NF.format(Math.round(y * 2) / 2) : NF.format(Math.round(y * 10) / 10)) + ' jaar'; };
+// ---- de twee kolommen: wat jij krijgt, wat zij krijgen of houden, de beperkingen en één zin in gewone taal ----
+function termsH(T, noTxt){
+  const v = termsView(T), me = G.player, o = v.o, on = esc(cname(o)), oc = colorOf(o), s = T.s || {}, L = T.l, mineL = L === me;
+  const pv = n => n === 1 ? 'provincie' : 'provincies';
+  const prow = (cls, lab, ps) => {
+    let f = 0; for(const p of ps) f += facN(p);
+    const names = ps.slice().sort((x, y) => starOf(y) - starOf(x) || facN(y) - facN(x)).map(p => '<span class="pl" title="' + esc(CITY[p] && !CAPS.has(p) ? CITY[p] + ' · ' : CAPS.has(p) ? 'hoofdstad · ' : '') + NF.format(Math.round(facN(p) * 10) / 10) + ' fabrieken">' + esc(P[p].n) + (starOf(p) > 1 ? starsH(starOf(p)) : '') + (facN(p) >= 0.45 ? '<small>' + NF.format(Math.round(facN(p) * 10) / 10) + ic('fab') + '</small>' : '') + '</span>').join('');
+    const dk = 'tv' + cls + o, open = UI.od && UI.od[dk] !== undefined ? UI.od[dk] : ps.length <= 3;
+    return '<details class="tvp" data-d="' + dk + '"' + (open ? ' open' : '') + '><summary><i class="tsw ' + cls + '" style="--oc:' + oc + '"></i><span><b>' + ps.length + '</b> ' + pv(ps.length) + ' ' + lab
+      + '<small>' + starSum(ps) + ic('ster') + ' · ' + NF.format(Math.round(f * 10) / 10) + ic('fab') + '</small></span><i class="chev"></i></summary><div class="pls">' + names + '</div></details>';
+  };
+  const row = (icon, txt, cls) => '<div class="tvr' + (cls ? ' ' + cls : '') + '">' + ic(icon) + '<span>' + txt + '</span></div>';
+  let a = '', b = '', m = '';
+  if(v.gain.length) a += prow('gain', 'erbij', v.gain);
+  if(v.ret.length) a += prow('ret', 'terug van hun bezetting', v.ret);
+  if(v.lose.length) b += prow('lose', 'van jou', v.lose);
+  if(v.back.length) b += prow('back', 'terug uit jouw bezetting', v.back);
+  if(v.fac) m += row('fab', '<b>+' + NF.format(v.fac) + ' fabrieken</b>, eenmalig uit ' + (mineL ? 'jouw' : 'hun') + ' industrie');
+  if(v.trib != null) m += row('tijd', '<b>+' + NF.format(Math.round(v.trib * 10) / 10) + ' productie per dag</b>, ' + yrsTxt(v.tribDays) + ' lang (' + Math.round(100 * v.rate) + '% van ' + (mineL ? 'jouw' : 'hun') + ' productie)');
+  if(v.iWin) a += m; else b += m;
+  if(!a) a = row('vrede', v.iWin || v.even ? 'Geen land' : 'Vrede: de oorlog stopt', 'mut');
+  if(!b) b = row('vrede', 'Niets erbij', 'mut');
+  a += '<div class="tvt">Daarna heb jij <b>' + v.nMe + '</b> ' + pv(v.nMe) + '</div>';
+  b += '<div class="tvt">Daarna hebben zij <b>' + v.nO + '</b> ' + pv(v.nO) + '</div>';
+  // beperkingen: wie moet wat, en tot wanneer
+  let x = '';
+  if(v.dis){
+    const d = v.dis, tot = 'tot ' + dTxt(d.until);
+    x += row('schild', d.sur ? '<b>' + on + ' ontwapend ' + tot + '</b>: bij de overgave zijn al ' + d.sur[0] + ' divisies en ' + d.sur[1] + ' eskaders ontbonden; ze mogen er hooguit <b>±' + d.half + '</b> opbouwen (zonder deze eis ±' + d.full + ') en half zoveel vliegtuigen'
+      : '<b>' + (mineL ? 'Jij wordt' : on + ' wordt') + ' ontwapend ' + tot + '</b>: direct ontbonden <b>' + d.du + ' van ' + d.u + ' divisies</b> en ' + d.da + ' van ' + d.a + ' eskaders; daarna hooguit ±' + d.half + ' divisies (anders ±' + d.full + ')', mineL ? 'bad' : '');
+  }
+  if(v.dmz.length) x += row('bunker', '<b>Gedemilitariseerde grens tot ' + dTxt(G.day + SANC.dmz.days) + '</b>: ' + v.dmz.length + ' ' + pv(v.dmz.length) + ' van ' + (mineL ? 'jou' : on) + ' langs de grens (<i class="tsw dmz"></i> blauw gestippeld op de kaart) zonder troepen en bunkers', mineL ? 'bad' : '');
+  if(s.vas) x += row('vlag', '<b>' + on + ' wordt jouw vazal tot ' + dTxt(G.day + SANC.vas.days) + '</b>: het land blijft bestaan, valt je niet aan, doet niet mee aan coalities en draagt ' + Math.round(100 * SANC.vas.rate) + '% van zijn productie af');
+  else if(s.pact) x += row('vrede', '<b>Niet-aanvalsgarantie tot ' + dTxt(G.day + SANC.pact.days) + '</b>: ' + on + ' valt je niet aan en doet niet mee aan coalities');
+  if(s.reg) x += row('steun', '<b>Bevriend bewind in ' + on + '</b>: hun wrok tegen jou verdwijnt en de buren kalmeren');
+  // bestand, agressie, oorlogssteun
+  const thr = COAL_THR();
+  let f = row('vrede', 'Bestand tot <b>' + dTxt(G.day + v.days) + '</b> (' + yrsTxt(v.days) + ' geen oorlog tussen jullie)');
+  if(v.ae){ const hot = v.ae.top >= thr; f += row('agr', 'Agressie bij de buren <b>' + (v.ae.v >= 0 ? '+' : '−') + Math.abs(Math.round(v.ae.v)) + '</b>' + (v.ae.who && v.ae.v > 0 ? ' · ' + esc(cname(v.ae.who)) + ' komt op ' + Math.round(v.ae.top) + '/' + thr + (hot ? ': coalitiegevaar' : '') : ''), hot ? 'bad' : ''); }
+  else if(v.aeDown) f += row('agr', 'Agressie bij de buren <b>−' + v.aeDown + '</b>');
+  if(v.ws) f += row('steun', 'Jouw oorlogssteun <b>+' + v.ws + '%</b>');
+  else if(T.kind === 'cap') f += row('steun', 'Jouw oorlogssteun zakt naar <b>45%</b>', 'bad');
+  return '<div class="tv"><div class="tvc me"><h4>Jij krijgt</h4>' + a + '</div><div class="tvc they"><h4><span class="cdot" style="background:' + oc + '"></span>Zij ' + (v.iWin ? 'houden' : 'krijgen') + '</h4>' + b + '</div></div>'
+    + (x ? '<div class="tvx">' + x + '</div>' : '') + '<div class="tvx foot">' + f + '</div>' + (noTxt ? '' : '<p class="tvs">' + v.txt + '</p>');
+}
+// ---- sanctieknop in de conferentie: naam, wat het voor dit land betekent, prijs ----
+function sancBtnH(c, k){
+  const S = SANC[k], e = c.e, on = !!c.s[k], v = termsView(Object.assign(confTerms(c), {s:{[k]:true}}));
+  let t, dis = false;
+  if(k === 'rep') t = '+' + NF.format(repAmount(e)) + ' fabrieken voor jou, eenmalig';
+  else if(k === 'trib') t = '+' + NF.format(Math.round(v.trib * 10) / 10) + ' productie per dag, 5 jaar (20% van de hunne)';
+  else if(k === 'dem') t = 'Leger en luchtmacht 3 jaar gehalveerd: max ±' + v.dis.half + ' i.p.v. ±' + v.dis.full + ' divisies';
+  else if(k === 'dmz'){ if(v.dmz.length) t = v.dmz.length + (v.dmz.length === 1 ? ' grensprovincie' : ' grensprovincies') + ' 3 jaar zonder troepen en bunkers'; else { t = 'Jullie grenzen na deze vrede niet over land'; dis = true; } }
+  else if(k === 'pact') t = 'Bestand 5 jaar in plaats van 1; geen coalitie tegen jou';
+  else if(k === 'reg') t = 'Agressie bij de buren −8; hun wrok tegen jou gewist';
+  else t = '10 jaar: 30% van hun productie, geen aanval, geen coalitie' + (c.s.trib || c.s.pact ? ' (vervangt herstel en garantie)' : '');
+  return '<button class="pchip wide sx' + (on ? ' on' : '') + '" data-cx="' + k + '"' + (dis ? ' disabled' : '') + '>' + ic(S.ic) + '<span><b>' + S.name + '</b><small>' + t + '</small></span><i>' + S.cost + '</i></button>';
+}
+// ---- lopende verdragen: bij het land in de contextstrook en in het overzicht ----
+function treatyFacts(c){
+  const t = treatyOf(c), me = G.player; if(!t) return [];
+  const bn = t.by === me ? 'jou' : cname(t.by), out = [];
+  if(t.vas > G.day) out.push(['vlag', 'Vazal van ' + bn + ' tot ' + dTxt(t.vas), 'Vazal: valt ' + bn + ' niet aan, doet niet mee aan coalities en draagt ' + Math.round(100 * (t.rate || 0.3)) + '% van zijn productie af']);
+  if(t.dem > G.day) out.push(['schild', 'Ontwapend tot ' + dTxt(t.dem), 'Legerlimiet en luchtmacht gehalveerd: nu hooguit ' + armyCap(c) + ' divisies']);
+  if(t.trib > G.day) out.push(['tijd', 'Betaalt ' + (t.vas > G.day ? 'tribuut' : 'herstel') + ' aan ' + bn + ': ' + NF.format(Math.round((t.flow || 0) * (t.by === me ? (D().mePp || 1) : D().pp) * 10) / 10) + '/dag tot ' + dTxt(t.trib), Math.round(100 * (t.rate || 0.2)) + '% van de productie gaat elke dag naar ' + bn]);
+  if(t.dmz > G.day) out.push(['bunker', 'Grens met ' + bn + ' gedemilitariseerd tot ' + dTxt(t.dmz), 'Geen troepen en geen bunkers in de provincies die over land aan ' + bn + ' grenzen']);
+  if(t.pact > G.day && !(t.vas > G.day)) out.push(['vrede', 'Niet-aanvalsgarantie tot ' + dTxt(t.pact), 'Valt ' + bn + ' niet aan en doet niet mee aan coalities']);
+  if(t.reg) out.push(['steun', 'Bevriend bewind sinds ' + dTxt(t.reg), 'Na de vrede is hier een gematigd bewind aan de macht gekomen']);
+  return out;
+}
+function treatyChips(p, c){
+  let h = '';
+  for(const [icn, txt, tip] of treatyFacts(c)) h += '<span class="chip2 trc" title="' + esc(tip) + '">' + ic(icn) + esc(txt) + '</span>';
+  if(inDmz(p)) h += '<span class="chip2 trc" title="Gedemilitariseerde grensstrook: hier mogen geen troepen en bunkers staan">' + ic('bunker') + 'grensstrook</span>';
+  const rl = radLeft(p); if(rl) h += '<span class="chip2 hot" title="Radioactief besmet na een kernaanval: halve fabrieksopbrengst en halve aanvoer">' + ic('nuke') + 'besmet · ' + rl + ' d</span>';
+  return h;
+}
+function treatySecH(){
+  const me = G.player, rows = [];
+  const blk = (c, facts, note) => '<div class="trow2"><div class="wtop"><span class="cdot" style="background:' + colorOf(c) + '"></span><span class="wn">' + esc(cname(c)) + '</span>' + (note ? '<span class="wd">' + note + '</span>' : '') + '</div>'
+    + facts.map(([icn, txt, tip]) => '<div class="tvr" title="' + esc(tip) + '">' + ic(icn) + '<span>' + esc(txt) + '</span></div>').join('') + '</div>';
+  const mineT = treatyOf(me);
+  if(mineT) rows.push(blk(me, treatyFacts(me), 'opgelegd door ' + esc(cname(mineT.by))));
+  for(const c in (G.tr || {})) if(G.tr[c].by === me && alive(c)) rows.push(blk(c, treatyFacts(c), 'sinds ' + dTxt(G.tr[c].day)));
+  const seen = new Set(Object.keys(G.tr || {}).filter(c => G.tr[c].by === me)); if(mineT) seen.add(mineT.by);
+  const tr = [];
+  for(const k in (G.truce || {})){ const [a, b] = k.split('|'); if(a !== me && b !== me) continue; const o = a === me ? b : a; if(!G.nations[o] || !alive(o) || atWar(me, o)) continue; const tl = truceLeft(me, o); if(tl > 0) tr.push([o, tl]); }
+  tr.sort((x, y) => x[1] - y[1]);
+  let b2 = '<div class="blk">' + rows.join('');
+  if(tr.length) b2 += '<div class="trow2">' + tr.map(([o, tl]) => '<div class="tvr">' + ic('vrede') + '<span><b>' + esc(cname(o)) + '</b>: bestand tot ' + dTxt(G.day + tl) + ' <span class="mut">(' + tl + ' d)</span></span></div>').join('') + '</div>';
+  if(!rows.length && !tr.length) b2 += '<div class="empty">' + ic('vrede') + '<span>Geen lopende verdragen. Na een vrede zie je hier wat er geldt en tot wanneer.</span></div>';
+  b2 += '</div>';
+  return det('verdrag', ic('vrede') + 'Verdragen<span class="sumv">' + (rows.length + tr.length || '–') + '</span>', b2, rows.length > 0);
+}
+// ---- meldingen bovenaan het overzicht: kerndreiging, atoommachten, eigen project, bonus als klein land ----
+function peaceAlertsH(){
+  const me = G.player, n = nat(me);
+  let h = '';
+  const have = [];
+  for(const c of MAJORS){
+    if(c === me || !alive(c)) continue;
+    const m = nat(c), a = m.nkAim;
+    if(a && a.e === me) h += '<div class="alert">' + ic('nuke') + '<span><b>' + esc(cname(c)) + '</b> dreigt met een kernaanval op <b>' + esc(P[a.p].n) + '</b></span><span class="num">' + Math.max(0, a.day - G.day) + ' d</span></div>';
+    if(m.atom && m.atom.done) have.push(cname(c));
+  }
+  if(have.length) h += '<div class="alert" title="Wie zelf een kernbom heeft, wordt alleen in uiterste nood getroffen">' + ic('nuke') + '<span>Atoommacht' + (have.length > 1 ? 'en' : '') + ': <b>' + esc(have.join(', ')) + '</b></span></div>';
+  if(n.atom && !n.atom.done) h += '<div class="alert own">' + ic('nuke') + '<span>Atoomproject' + (n.atom.on ? '' : ' (gepauzeerd)') + '</span><span class="num">' + Math.round(100 * n.atom.p / ATOM.cost) + '%</span></div>';
+  else if(n.nk > 0) h += '<div class="alert own">' + ic('nuke') + '<span>Kernbommen op voorraad</span><span class="num">' + n.nk + '</span></div>';
+  const u0 = udBase(me);
+  if(u0 > 0){
+    D(); const ud = DC.ud, facts = udFacts(me, ud, G.diff);
+    h += ud > 0 ? '<div class="alert own ud" title="Bonus voor kleine landen. Hij slinkt met de bevolking die je verovert en verdwijnt bij ' + UD.pop + ' miljoen erbij.">' + ic('schild') + '<span><b>Klein land</b> · bonus nu ' + Math.round(100 * ud / u0) + '%<small>' + facts.map(x => x[2]).join(' · ') + ' · score ×' + NF.format(udScore(me)) + '</small></span></div>'
+      : '<div class="alert own ud">' + ic('schild') + '<span><b>Geen klein land meer</b><small>Je bent te groot geworden voor de bonus; je score telt nog wel ×' + NF.format(udScore(me)) + '</small></span></div>';
+  }
+  return h;
+}
+function rulesExtraH(){
+  return '<p>' + ic('vrede') + '<span><b>Sancties</b>: in een vredesconferentie koop je met oorlogspunten ook eisen: herstelbetalingen (20% van hun productie, 5 jaar), ontwapening (leger en luchtmacht direct gehalveerd, 3 jaar een halve limiet), een gedemilitariseerde grens, een niet-aanvalsgarantie, een bevriend bewind of een vazalstaat. Een winnende vijand eist hetzelfde van jou. Lopende verdragen staan onder Verdragen.</span></p>'
+    + '<p>' + ic('nuke') + '<span><b>Kernwapen</b>: met ' + ATOM.fabs + ' fabrieken start je het atoomproject (Productie). Het kost ' + Math.round(100 * ATOM.drain) + '% van je productie tot het af is. Daarna bouw je kernbommen; een bommenwerper brengt er één naar een doel binnen ' + AIR.bo.range + ' km (jagers kunnen hem onderscheppen). De klap is enorm, maar de hele wereld schrikt (+22 agressie, buren +35). Grootmachten bouwen ze laat in het spel ook, en waarschuwen ' + ATOM.warn + ' dagen vooraf. Wie zelf een bom heeft, wordt minder snel getroffen.</span></p>'
+    + '<p>' + ic('schild') + '<span><b>Kleine landen</b> krijgen een bonus: extra productie en legerlimiet, sterke verdediging van eigen land, snellere integratie, minder agressie en een hogere score. De bonus slinkt naarmate je groeit en is weg als je ' + UD.pop + ' miljoen inwoners hebt veroverd.</span></p>';
+}
+// ---- landkeuze: kansinschatting en de bonus voor kleine landen ----
+function pickInfoH(c, diff){
+  const ch = chanceOf(c, diff), u0 = udBase(c);
+  let h = '<span class="hint2 chance k' + ch.k + '" title="Inschatting op basis van jouw kracht tegenover je buren, op dit niveau">' + ic('doel') + '<span><b>Kans: ' + ch.lab + '.</b> ' + esc(ch.why) + '</span></span>';
+  if(u0 >= 0.05){
+    const res = Math.round(UD.res * u0);
+    h += '<span class="hint2 udl">' + ic('schild') + '<span><b>Klein land, dus een bonus:</b> ' + udFacts(c, u0, diff).map(x => x[2]).join(', ') + (res ? ', ' + res + ' divisies reservisten' : '') + ', score ×' + NF.format(udScore(c)) + '. Slinkt naarmate je groeit.</span></span>';
+  }
+  return h;
+}
+const tipPeace = p => { const rl = radLeft(p); return (rl ? ' <span class="warc">besmet ' + rl + ' d</span>' : '') + (inDmz(p) ? ' <span class="mut">· grensstrook</span>' : ''); };
+// ---- productie: atoomproject (loopt naast de wachtrij) en kernbom ----
+function nukeTilesH(n, full){
+  const me = G.player, a = n.atom;
+  let sub, dis = false;
+  if(a && a.done) sub = '<span class="st2 okc">voltooid</span>';
+  else if(a){
+    const rate = a.on ? n.ppd / (1 - ATOM.drain) * ATOM.drain : n.ppd * ATOM.drain;
+    sub = meter(a.p, ATOM.cost) + '<span class="st2">' + Math.round(100 * a.p / ATOM.cost) + '% · ' + (a.on ? '~' + Math.ceil((ATOM.cost - a.p) / Math.max(0.05, rate)) + ' d' : 'gepauzeerd') + '</span>';
+  }
+  else if(atomCan(me)) sub = '<span class="st2">kost ' + Math.round(100 * ATOM.drain) + '% van je productie</span>';
+  else { sub = '<span class="st2" style="color:var(--war)">' + NF.format(Math.floor(facTot(me) * 10) / 10) + '/' + ATOM.fabs + ' fabrieken</span>'; dis = true; }
+  let h = '<button class="tile atomt' + (a && a.on ? ' arm' : '') + '" data-nk="atom"' + (dis || (a && a.done) ? ' disabled' : '')
+    + ' title="Atoomproject: nodig voor kernbommen. Vereist ' + ATOM.fabs + ' fabrieken. Loopt naast de wachtrij en gebruikt ' + Math.round(100 * ATOM.drain) + '% van je productie tot het af is. Tik om te starten of te pauzeren.">'
+    + '<span class="tico">' + ic('nuke') + '</span><span class="tb"><span class="tn">Atoomproject</span><span class="tmeta">' + sub + '</span></span></button>';
+  if(a && a.done) h += tile('nuke', n, full, (n.nk || 0) + '× · ' + ic('tijd') + Math.ceil(ITEMS.nuke.pp / Math.max(0.1, n.ppd)) + ' d');
+  return h;
+}
+$('sheet').addEventListener('click', e => {
+  if(!G || G.over) return;
+  const nk = e.target.closest('[data-nk]'), no = e.target.closest('[data-nopt]');
+  if(nk && !nk.disabled){
+    const me = G.player, had = !!nat(me).atom, on = atomToggle(me);
+    toast(on ? (had ? 'Atoomproject hervat' : 'Atoomproject gestart: ' + Math.round(100 * ATOM.drain) + '% van je productie gaat erheen. Tik nogmaals om te pauzeren') : 'Atoomproject gepauzeerd: je productie is weer helemaal beschikbaar', on ? 'good' : '', 'atom');
+  }
+  else if(no && !no.classList.contains('off') && !e.target.closest('button') && !e.target.closest('summary') && negOpt(UI.neg) !== no.dataset.nopt){ UI.negOpt = no.dataset.nopt; fitDeal(); }
+  else return;
+  sheetSig = ''; sheetPress = false; renderAll();
+});
+// uitgeklapte provincielijsten blijven open als de kaart opnieuw wordt opgebouwd
+$('card').addEventListener('toggle', e => { const d = e.target; if(d && d.dataset && d.dataset.d) (UI.od ||= {})[d.dataset.d] = d.open; }, true);
+// ---- kernaanval: de beslissingskaart met alle gevolgen ----
+function nukeCardH(cd, head, opt){
+  const p = cd.p, e = cd.e, me = G.player, pl = nukePlan(me, p), thr = COAL_THR(), m0 = meterOf(e);
+  const row = (icn, lab, val) => '<div>' + ic(icn) + '<span>' + lab + '</span><b>' + val + '</b></div>';
+  return head('nuke', 'Kernaanval op ' + esc(P[p].n) + '?', esc(cname(e)) + ' · dit is niet terug te draaien', 'lose')
+    + '<div class="crows">'
+    + row('leger', 'Divisies in het doel', pl.divs ? pl.divs + ' · ' + Math.round(pl.divs * 0.75) + ' vernietigd, de rest gebroken' : 'geen')
+    + row('fab', 'Industrie', NF.format(Math.round(pl.fac * 10) / 10) + ' → ' + NF.format(Math.round(pl.fac * 2.5) / 10) + ' fabrieken')
+    + row('vlag', 'Hun overgavemeter', pct(m0) + '% → ±' + pct(m0 + pl.shock + 0.03) + '%')
+    + row('steun', 'Hun oorlogssteun', '−' + pl.ws + '%')
+    + row('fi', 'Kans op onderschepping', Math.round(100 * pl.icpt) + '%')
+    + row('agr', 'Agressie in de hele wereld', '+' + Math.round(pl.ae * (D().ae || 1)) + ' · buren +' + Math.round(pl.aeNb * (D().ae || 1)))
+    + row('steun', 'Jouw oorlogssteun', '−' + pl.wsMe + '%')
+    + row('nuke', 'Besmetting', Math.round(ATOM.rad / 30) + ' maanden halve opbrengst')
+    + '</div>'
+    + (pl.coal ? '<div class="aeline hot">' + ic('agr') + '<span>' + pl.coal + (pl.coal === 1 ? ' land komt' : ' landen komen') + ' hierdoor boven de coalitiegrens (' + thr + ')</span></div>' : '')
+    + '<div class="copts">' + opt('yes', 'nuke', 'Werp de bom', 'Kost de kernbom en ' + SPECIALS.nuke.cp + ' bevelpunten', 'war') + opt('no', 'vrede', 'Zie ervan af', 'De bom blijft in het arsenaal') + '</div>';
+}
+function nukeFlash(){
+  const f = $('flash'), s = $('stage');
+  f.classList.add('nuke'); flash('#FFF6DC'); s.classList.add('big'); shake();
+  setTimeout(() => { f.classList.remove('nuke', 'on'); s.classList.remove('big'); }, 1700);
+}
+// ---- de kaart bij een vrede: goud = naar jou, gearceerd in hun kleur = terug naar hen, rood = jij staat af, groen = terug naar jou ----
+function negOpt(e, d){
+  if(!e || !G.nations[e] || !atWar(G.player, e)) return null;
+  d ||= dealInfo(e);
+  const ok = {keep:d.keep.length > 0, white:d.white, give:d.give.length > 0};
+  return ok[UI.negOpt] ? UI.negOpt : ok.keep ? 'keep' : ok.white ? 'white' : ok.give ? 'give' : null;
+}
+let DMC = {k:null, v:null};
+function dealMap(){
+  const me = G.player, cd = cardOpen() ? G.cards[0] : null;
+  const neg = !cd && UI.sheet === 'info' && UI.neg && G.nations[UI.neg] && atWar(me, UI.neg) ? UI.neg : null;
+  if(!cd && !neg) return null;
+  const key = [G.day, CTRLV, WARV, cd ? cd.k + (cd.e || '') + cd.day + (UI.conf ? UI.conf.rev : '') : 'n' + neg + (UI.negOpt || '')].join('|');
+  if(DMC.k === key && DMC.g === G) return DMC.v;
+  let Ts = null, v = null;
+  if(cd){
+    if(cd.k === 'conf' || cd.k === 'offer' || cd.k === 'demand' || cd.k === 'arm'){ const T = cardTerms(cd); Ts = T ? [T] : null; }
+    else if(cd.k === 'mysurr') Ts = capTerms();
+    else if(cd.k === 'nuke') v = {nuke:cd.p, gain:[], lose:[], ret:[], back:[], dmz:[]};
+  } else { const k = negOpt(neg), T = k && dealTerms(neg, k); Ts = T ? [T] : null; }
+  if(Ts && Ts.length){
+    v = {gain:[], lose:[], ret:[], back:[], dmz:[]};
+    for(const T of Ts){ const x = termsView(T), col = colorOf(x.o); v.gain.push(...x.gain); v.lose.push(...x.lose); v.ret.push(...x.ret); for(const p of x.back) v.back.push([p, col]); v.dmz.push(...x.dmz); }
+  }
+  DMC = {k:key, v, g:G};
+  return v;
+}
+const DPAT = {};
+function dealPat(kind){   // arcering die op het scherm even groot blijft, hoe ver je ook inzoomt
+  let p = DPAT[kind];
+  if(!p){
+    const c = document.createElement('canvas'); c.width = c.height = 8;
+    const x = c.getContext('2d');
+    if(kind === 'dot'){ x.fillStyle = 'rgba(235,245,255,.9)'; x.beginPath(); x.arc(4, 4, 1.3, 0, Math.PI * 2); x.fill(); }
+    else { x.strokeStyle = kind === 'rad' ? 'rgba(214,236,84,.7)' : 'rgba(255,255,255,.6)'; x.lineWidth = kind === 'rad' ? 1.4 : 2; x.beginPath(); x.moveTo(-1, 9); x.lineTo(9, -1); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(6, 10); x.lineTo(10, 6); x.stroke(); }
+    p = DPAT[kind] = octx.createPattern(c, 'repeat');
+  }
+  if(p.setTransform) p.setTransform(new DOMMatrix([V.k, 0, 0, V.k, 0, 0]));
+  return p;
+}
+function dmzDraw(ctx, px, ps, al){   // gedemilitariseerde grens: blauwe waas met stippen en een gestreepte rand
+  ctx.lineWidth = 1.8*px; ctx.setLineDash([5*px, 3.5*px]);
+  for(const p of ps){ if(!PATH[p]) continue; ctx.globalAlpha = al; ctx.fillStyle = 'rgba(110,180,255,.38)'; ctx.fill(PATH[p], 'evenodd'); ctx.fillStyle = dealPat('dot'); ctx.fill(PATH[p], 'evenodd'); ctx.strokeStyle = '#A9D4FF'; ctx.stroke(PATH[p]); }
+  ctx.globalAlpha = 1; ctx.setLineDash([]);
+}
+function drawDeal(ctx, px){
+  const fillP = (ps, fill, stroke, dash) => {
+    ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.setLineDash(dash || []);
+    for(const p of ps) if(PATH[p]){ ctx.fill(PATH[p], 'evenodd'); ctx.stroke(PATH[p]); }
+    ctx.setLineDash([]);
+  };
+  ctx.lineWidth = 1.2*px;
+  // besmet gebied blijft zichtbaar zolang het duurt
+  if(G.rad){ const ps = Object.keys(G.rad).filter(p => G.rad[p] > G.day); if(ps.length){ fillP(ps, 'rgba(160,190,40,.2)', 'rgba(214,236,84,.85)', [2*px, 3*px]); ctx.fillStyle = dealPat('rad'); for(const p of ps) if(PATH[p]) ctx.fill(PATH[p], 'evenodd'); } }
+  // gedemilitariseerde grenzen van verdragen waar jij partij bent
+  if(G.tr){ const me = G.player; for(const c in G.tr){ const t = G.tr[c]; if(t.dmz > G.day && (c === me || t.by === me)) dmzDraw(ctx, px, dmzStrip(c, t.by), 0.6); } }
+  const m = dealMap(); if(!m) return;
+  ctx.lineWidth = 1.6*px;
+  for(const [p, col] of m.back){ if(!PATH[p]) continue; ctx.globalAlpha = .5; ctx.fillStyle = col; ctx.fill(PATH[p], 'evenodd'); ctx.globalAlpha = 1; ctx.fillStyle = dealPat('hatch'); ctx.fill(PATH[p], 'evenodd'); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.stroke(PATH[p]); }
+  fillP(m.ret, 'rgba(115,176,108,.4)', '#8FD286');
+  fillP(m.lose, 'rgba(212,85,63,.5)', '#F08A76');
+  fillP(m.gain, 'rgba(227,162,60,.45)', '#E3A23C');
+  if(m.dmz.length) dmzDraw(ctx, px, m.dmz, 1);
+}
+// schermruimte: het doel van een kernaanval (jouw keuze of een dreiging van de AI) en het besmettingsteken
+function drawMarks(ctx, u1){
+  const me = G.player, marks = [];
+  const cd = cardOpen() ? G.cards[0] : null;
+  if(cd && cd.k === 'nuke') marks.push([cd.p, '']);
+  for(const c of MAJORS){ const a = G.nations[c] && G.nations[c].nkAim; if(a && (a.e === me || c === me)) marks.push([a.p, Math.max(0, a.day - G.day) + ' d']); }
+  const t = performance.now() / 1000;
+  for(const [p, lab] of marks){
+    const [x, y] = toScreen(P[p].a[0], P[p].a[1]), r = 17*u1 + Math.sin(t * 4) * 1.5*u1;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle = 'rgba(212,85,63,.25)'; ctx.fill(); ctx.strokeStyle = '#F08A76'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 10*u1, 0, Math.PI*2); ctx.fillStyle = '#F2D34B'; ctx.fill();
+    drawSil(ctx, 'nuke', x, y, 15*u1, '#F2D34B', '#15191C');
+    if(lab){ ctx.font = '700 ' + (12*u1).toFixed(1) + 'px ' + FONT_UI; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(5,9,12,.85)'; ctx.strokeText(lab, x, y + 26*u1); ctx.fillStyle = '#fff'; ctx.fillText(lab, x, y + 26*u1); }
+  }
+  if(marks.length) overDirty = true;   // blijft pulseren
+  if(G.rad) for(const p in G.rad){
+    if(!(G.rad[p] > G.day) || !P[p]) continue;
+    const bb = P[p].b; if(bb && (bb[2] - bb[0]) / V.k < 30*u1) continue;   // te klein in beeld
+    const [x, y] = toScreen(P[p].a[0], P[p].a[1] ); if(x < -20 || x > CW + 20 || y < -20 || y > CH + 20) continue;
+    ctx.beginPath(); ctx.arc(x, y - 16*u1, 7.5*u1, 0, Math.PI*2); ctx.fillStyle = '#F2D34B'; ctx.fill();
+    drawSil(ctx, 'nuke', x, y - 16*u1, 11.5*u1, '#F2D34B', '#15191C');
+  }
+}
+function drawNukeFx(ctx, f, now){
+  const a = (now - f.t0) / 3600, [x, y] = toScreen(P[f.p].a[0], P[f.p].a[1]), R = Math.max(REM * 3.2, 110 / KM / V.k);
+  ctx.save();
+  for(let i = 0; i < 3; i++){   // schokgolven
+    const b = a * 1.3 - i * 0.14; if(b <= 0 || b >= 1) continue;
+    ctx.globalAlpha = (1 - b) * 0.85; ctx.strokeStyle = i ? '#FFD08A' : '#fff'; ctx.lineWidth = 3.5 - i;
+    ctx.beginPath(); ctx.arc(x, y, R * (0.3 + 2.6 * b), 0, Math.PI * 2); ctx.stroke();
+  }
+  const fb = Math.min(1, a / 0.16), fr = R * (0.25 + 0.75 * fb) * (1 - 0.35 * Math.max(0, a - 0.3)), g = ctx.createRadialGradient(x, y, 0, x, y, fr);   // vuurbal
+  g.addColorStop(0, 'rgba(255,255,255,' + (1 - a) + ')'); g.addColorStop(0.35, 'rgba(255,226,140,' + 0.95 * (1 - a) + ')'); g.addColorStop(0.75, 'rgba(240,110,40,' + 0.75 * (1 - a) + ')'); g.addColorStop(1, 'rgba(120,30,10,0)');
+  ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, fr, 0, Math.PI * 2); ctx.fill();
+  if(a > 0.1){   // de paddenstoel stijgt op
+    const m = Math.min(1, (a - 0.1) / 0.5), up = R * 1.5 * m;
+    ctx.globalAlpha = Math.min(1, (1 - a) * 1.7) * 0.9; ctx.fillStyle = '#5A4A42';
+    ctx.beginPath(); ctx.moveTo(x - R*0.17, y); ctx.quadraticCurveTo(x - R*0.07, y - up*0.5, x - R*0.14, y - up); ctx.lineTo(x + R*0.14, y - up); ctx.quadraticCurveTo(x + R*0.07, y - up*0.5, x + R*0.17, y); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#7C675A'; ctx.beginPath(); ctx.ellipse(x, y - up, R * (0.3 + 0.36*m), R * (0.17 + 0.14*m), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,170,80,' + 0.75 * (1 - a) + ')'; ctx.beginPath(); ctx.ellipse(x, y - up + R*0.05, R * (0.2 + 0.2*m), R * 0.085, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+// camera: de provincies van de beslissing in het vrije deel van het scherm (naast of boven de kaart of het vel)
+function fitDeal(){
+  const cd = cardOpen() ? G.cards[0] : null;
+  if(cd && cd.k === 'conf'){ fitConf(cd.e); return; }
+  const m = dealMap();
+  let ps = m ? (m.nuke ? [m.nuke].concat(ADJ[m.nuke]) : [...m.gain, ...m.lose, ...m.ret, ...m.back.map(x => x[0])]) : [];
+  if(!ps.length){ const o = cd ? (cd.e || cd.o) : UI.neg; if(o && G.nations[o] && alive(o)) ps = owned(o).filter(p => dist(p, CN[o].cap) * KM < 2600); }
+  if(!ps.length) return;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for(const p of ps){ const [x, y] = P[p].a; x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  const mg = Math.max(30, 150 / KM); x0 -= mg; y0 -= mg; x1 += mg; y1 += mg;
+  // het vrije deel van het scherm: links van de kaart of het vel (breed scherm) of erboven (telefoon)
+  const wide = cw() >= 900, sh = $('sheet'), top = 4 * REM;
+  const sideW = cd ? Math.min(25 * REM, cw() - 32) + 40 : (cw() + (sh.offsetWidth || Math.min(29 * REM, cw()))) / 2 + 12;   // zoveel is rechts bezet
+  const lowH = cd ? Math.min(chh() * 0.6, 36 * REM) + 5 * REM : (sh.offsetHeight || Math.min(chh() * 0.56, 33 * REM)) + 5.5 * REM;   // zoveel is onderaan bezet
+  const fw = wide ? cw() - sideW - 24 : cw() - 32, fh = wide ? chh() - top - 5 * REM : Math.max(120, chh() - lowH - top);
+  const fx0 = wide ? 12 : 16, k = Math.max((x1 - x0) / fw, (y1 - y0) / fh) * 1.06;
+  tweenView((x0 + x1) / 2 - (fx0 + fw / 2 - cw() / 2) * k, (y0 + y1) / 2 - (top + fh / 2 - chh() / 2) * k, k);
+}
+
 /* ---- beslissingskaart: overgave, vredesconferentie, voorstellen van de vijand ---- */
 let cardSig = '';
 function renderCard(){
   const el = $('card');
   if(!G || G.over || !cardOpen()){
     if(!el.hidden){ el.hidden = true; cardSig = ''; UI.conf = null; overDirty = true; }
+    UI.cardFit = null;
     if(G && G.cardPause && !cardOpen()){ G.cardPause = false; G.paused = false; }
     return;
   }
@@ -6941,6 +7776,8 @@ function renderCard(){
   if(e && (!alive(e) || !atWar(me, e))){ G.cards.shift(); UI.conf = null; cardSig = ''; renderCard(); return; }
   if(cd.dip && !dipCardOk(cd)){ G.cards.shift(); cardSig = ''; renderCard(); return; }
   if(cd.k === 'conf' && !UI.conf) UI.conf = confInit(e);
+  // de kaart schuift mee: het betrokken gebied komt in het vrije deel van het scherm, naast of boven de beslissing
+  { const fk = cd.k + ':' + (e || cd.o || '') + ':' + cd.day; if(UI.cardFit !== fk){ UI.cardFit = fk; if(cd.k !== 'surr') fitDeal(); } }
   const head = (icon, t, sub, cls) => '<div class="chead"><span class="eico ' + (cls || '') + '">' + ic(icon) + '</span><span class="ct"><b>' + t + '</b><small>' + sub + '</small></span></div>';
   const opt = (k, icon, t, sub, cls) => '<button class="copt ' + (cls || '') + '" data-c="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
   const nm = e ? esc(cname(e)) : '';
@@ -6954,39 +7791,47 @@ function renderCard(){
       + '<div>' + ic('vlag') + '<span>Nog in hun handen</span><b>' + owned(e).length + ' prov</b></div></div>'
       + '<div class="copts">' + opt('conf', 'vrede', 'Vredesconferentie', 'Oorlog voorbij: verdeel de buit', 'pri') + opt('fight', 'oorlog', 'Doorvechten', 'Neem alles in. Kost meer agressie', 'war') + '</div>';
   } else if(cd.k === 'conf'){
-    const c = UI.conf, used = confUsed(c), ae = aePreview(e, [...c.sel], c.dem ? 2 : 0), thr = COAL_THR();
+    const c = UI.conf, used = confUsed(c);
     h = head('vrede', 'Vredesconferentie', nm + ' · kies je eisen', 'win')
       + '<div class="pts"><span>Oorlogspunten<small>bezette sterren + vernietigde divisies</small></span><b>' + used + ' / ' + c.pts + '</b></div>' + meter(used, c.pts, used > c.pts ? 'hot' : '')
-      + '<div class="seg3">' + [['alles', 'Alles', 'Houd alles wat je bezet'], ['grens', 'Grens + herstel', 'Alleen provincies aan je grens, plus herstelbetaling: minder agressie'], ['veilig', 'Veilig', 'Geen land, wel herstelbetaling en ontwapening: bijna geen agressie']].map(([k, l, t]) => '<button class="btn sm' + (c.preset === k ? ' pri' : '') + '" data-cp="' + k + '" title="' + t + '">' + l + '</button>').join('') + '</div>'
+      + '<div class="seg3">' + [['alles', 'Alles', 'Houd alles wat je bezet'], ['grens', 'Grens + herstel', 'Alleen provincies aan je grens, plus herstel en een grensstrook: minder agressie'], ['veilig', 'Veilig', 'Geen land, wel herstel, ontwapening en garanties: bijna geen agressie']].map(([k, l, t]) => '<button class="btn sm' + (c.preset === k ? ' pri' : '') + '" data-cp="' + k + '" title="' + t + '">' + l + '</button>').join('') + '</div>'
       + '<div class="sub2">Provincies<small>tik om te kiezen · kost hun sterren</small></div>'
       + '<div class="pchips">' + (c.occ.length ? c.occ.slice().sort((x, y) => starOf(y) - starOf(x)).map(p => '<button class="pchip' + (c.sel.has(p) ? ' on' : '') + '" data-cpp="' + p + '">' + esc(P[p].n) + starsH(starOf(p)) + '</button>').join('') : '<span class="mut">Je bezet niets van hun land</span>') + '</div>'
-      + '<button class="pchip wide' + (c.rep ? ' on' : '') + '" data-cx="rep">' + ic('fab') + 'Herstelbetaling: +' + NF.format(repAmount(e)) + ' fabrieken<i>' + REP_COST + '</i></button>'
-      + '<button class="pchip wide' + (c.dem ? ' on' : '') + '" data-cx="dem">' + ic('schild') + 'Ontwapenen: hun leger −50%, 3 jaar<i>' + DEM_COST + '</i></button>'
-      + '<div class="aeline' + (ae.top >= thr ? ' hot' : '') + '">' + ic('agr') + '<span>Agressie +' + Math.round(ae.v) + (ae.who ? ' · ' + esc(cname(ae.who)) + ' komt op ' + Math.round(ae.top) + '/' + thr + (ae.top >= thr ? ': coalitiegevaar' : '') : '') + '</span></div>'
-      + '<div class="cbtns"><button class="btn sm" data-c="back">Terug</button><button class="btn pri wide" data-c="sign">' + ic('check') + 'Teken vrede</button></div>';
+      + '<div class="sub2">Sancties<small>tik om te eisen · prijs in oorlogspunten</small></div>'
+      + SANC_ORDER.map(k => sancBtnH(c, k)).join('')
+      + '<div class="sub2">Dit teken je</div>' + termsH(confTerms(c), true) + '<p class="tvs only-s">' + termsView(confTerms(c)).txt + '</p>'
+      + '<div class="cfoot"><p class="tvs only-w">' + termsView(confTerms(c)).txt + '</p><div class="cbtns"><button class="btn sm" data-c="back">Terug</button><button class="btn pri wide" data-c="sign">' + ic('check') + 'Teken vrede</button></div></div>';
   } else if(cd.k === 'mysurr'){
+    const Ts = capTerms();
     h = head('vlag', 'Je land staat op instorten', 'Overgave ' + pct(meterOf(me)) + '% · ' + fmtDate(G.day), 'lose')
-      + '<div class="copts">' + opt('yes', 'vlag', 'Capituleer', 'De vijand houdt wat hij bezet, je leger halveert, een jaar verdrag', 'war')
+      + '<div class="sub2">Als je capituleert<small>dit zijn hun voorwaarden</small></div>'
+      + Ts.map(T => (Ts.length > 1 ? '<div class="tvn"><span class="cdot" style="background:' + colorOf(T.w) + '"></span>' + esc(cname(T.w)) + '</div>' : '') + termsH(T)).join('')
+      + '<div class="copts">' + opt('yes', 'vlag', 'Capituleer', 'Je tekent de voorwaarden hierboven. De oorlog is voorbij', 'war')
       + opt('no', 'schild', 'Vecht door', 'Tot de laatste provincie. Over 60 dagen komt deze keuze terug') + '</div>';
   } else if(cd.k === 'offer'){
-    const give = cd.give.filter(p => G.ctrl[p] === me), ae = aePreview(e, give);
-    h = head('vrede', nm + ' biedt vrede aan', 'Ze staan dit af, de rest gaat terug naar de oude grens', 'win')
-      + pchipsH(give) + '<div class="aeline">' + ic('agr') + '<span>Agressie +' + Math.round(ae.v) + '</span></div>'
-      + '<div class="copts">' + opt('yes', 'check', 'Accepteer', 'Vrede en een jaar verdrag', 'pri') + opt('no', 'oorlog', 'Vecht door', 'Wie weet krijg je straks meer') + '</div>';
+    h = head('vrede', nm + ' biedt vrede aan', 'Dit is hun voorstel · ' + fmtDate(G.day), 'win')
+      + termsH(cardTerms(cd))
+      + '<div class="copts">' + opt('yes', 'check', 'Accepteer', 'Teken deze vrede', 'pri') + opt('no', 'oorlog', 'Vecht door', 'Wie weet krijg je straks meer') + '</div>';
   } else if(cd.k === 'demand'){
-    const take = cd.take.filter(p => G.ctrl[p] === e);
-    h = head('agr', nm + ' eist vrede', 'Ze willen houden wat ze bezetten', 'lose')
-      + pchipsH(take)
-      + '<div class="copts">' + opt('yes', 'vrede', 'Accepteer', 'Je staat dit af, de rest krijg je terug', 'war') + opt('no', 'schild', 'Vecht door', 'Weiger en vecht verder') + '</div>';
+    h = head('agr', nm + ' eist vrede', 'Dit zijn hun voorwaarden · ' + fmtDate(G.day), 'lose')
+      + termsH(cardTerms(cd))
+      + '<div class="copts">' + opt('yes', 'vrede', 'Accepteer', 'Je tekent hun voorwaarden. De oorlog is voorbij', 'war') + opt('no', 'schild', 'Vecht door', 'Weiger en vecht verder') + '</div>';
   } else if(cd.k === 'arm'){
     const k2 = wk(me, e), quiet = G.day - Math.max(G.wars[k2] ?? G.day, (G.wlast || {})[k2] || 0);
     h = head('wit', 'Wapenstilstand met ' + nm + '?', 'Het front ligt al ' + quiet + (quiet === 1 ? ' dag' : ' dagen') + ' stil', '')
-      + '<div class="crows"><div>' + ic('prov') + '<span>Jij houdt</span><b>' + occBy(me, e).length + ' prov</b></div><div>' + ic('prov') + '<span>Zij houden</span><b>' + occBy(e, me).length + ' prov</b></div></div>'
+      + termsH(cardTerms(cd))
       + '<div class="copts">' + opt('yes', 'check', 'Accepteer', 'Iedereen houdt wat hij nu heeft', 'pri') + opt('no', 'oorlog', 'Vecht door', 'De oorlog gaat verder') + '</div>';
+  } else if(cd.k === 'treaty'){
+    h = head('vrede', esc(cd.t || 'Vrede getekend'), 'Getekend op ' + fmtDate(cd.day) + ' · zo is het geworden', 'win')
+      + (cd.h || '') + (cd.r && cd.r.length ? '<div class="tvx done">' + cd.r.map(x => '<div class="tvr">' + ic('check') + '<span>' + x + '</span></div>').join('') + '</div>' : '')
+      + '<p class="tvs mut">Lopende verdragen vind je terug in Overzicht → Verdragen en bij het land op de kaart.</p>'
+      + '<div class="cbtns"><button class="btn pri wide" data-c="ok">' + ic('check') + 'Sluiten</button></div>';
+  } else if(cd.k === 'nuke'){
+    h = nukeCardH(cd, head, opt);
   }
   if(G.cards.length > 1) h += '<div class="cmore">Nog ' + (G.cards.length - 1) + (G.cards.length > 2 ? ' beslissingen' : ' beslissing') + '</div>';
   if(h === cardSig) return;
-  cardSig = h; el.className = 'glass k-' + cd.k; el.innerHTML = h; el.hidden = false;
+  cardSig = h; el.className = 'glass k-' + cd.k + (cd.k === 'surr' ? '' : ' dock'); el.innerHTML = h; el.hidden = false; overDirty = true;
 }
 $('card').addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b || !G || !cardOpen()) return;
@@ -6998,9 +7843,9 @@ $('card').addEventListener('click', e => {
     const p = b.dataset.cpp;
     if(c.sel.has(p)) c.sel.delete(p);
     else { c.sel.add(p); if(confUsed(c) > c.pts){ c.sel.delete(p); toast('Te weinig oorlogspunten', 'war', 'pts'); } }
-    c.preset = null;
+    c.preset = null; c.rev = (c.rev || 0) + 1;
   }
-  else if(c && b.dataset.cx){ const k = b.dataset.cx; c[k] = !c[k]; if(confUsed(c) > c.pts){ c[k] = false; toast('Te weinig oorlogspunten', 'war', 'pts'); } c.preset = null; }
+  else if(c && b.dataset.cx){ if(!confToggle(c, b.dataset.cx)) toast('Te weinig oorlogspunten', 'war', 'pts'); }
   cardSig = ''; stripSig = null; sheetSig = ''; renderAll();
 });
 /* ---- eindkaart: overwinning, capitulatie of 1946 ---- */
