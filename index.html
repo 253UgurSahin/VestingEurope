@@ -1318,6 +1318,7 @@ function setMap(name, d){
   MAJORS = new Set(CIDS.slice().sort((a,b) => CN[b].f - CN[a].f).slice(0, name === 'world' ? 14 : 7));
   assignColors();   // landkleuren: buren duidelijk verschillend
   buildMap();
+  fxeRouteRules();   // landverbindingen (op de kaart geen oversteek) tellen ook in de regels niet als landing
   V.cx = W/2; V.cy = H/2;
 }
 
@@ -1496,14 +1497,16 @@ const slotSpots = p => { const f = slotFree(p); return f < FAB_MIN ? 0 : Math.ce
 const INTEG = 365;
 const integDays = c => c === G.player ? (D().integ || INTEG) : INTEG;
 const heldSince = p => (G.hold || {})[p] ?? -1e9;
-const integ0 = p => { const c = G.ctrl[p], o = P[p].c; return o !== c && G.day - heldSince(p) >= integDays(c) && !atWar(c, o); };
+// de speler: de duur ligt vast vanaf de verovering (G.intD[p] = [dag van inname, duur]); de bonus voor kleine landen slinkt, maar verlengt lopende of voltooide integratie niet meer
+const integNeed = p => { const c = G.ctrl[p]; if(c !== G.player) return INTEG; const h = heldSince(p), m = (G.intD ||= {}), e = m[p]; if(e && e[0] === h) return e[1]; const d = integDays(c); m[p] = [h, d]; return d; };
+const integ0 = p => { const c = G.ctrl[p], o = P[p].c; return o !== c && G.day - heldSince(p) >= integNeed(p) && !atWar(c, o); };
 // per dag gecachet (bezit en oorlogen veranderen zelden binnen een dag; bij verandering wordt de cache geleegd)
 let INTC = {day:-1, v:-1, w:-1, m:{}};
 const integ = p => { if(INTC.day !== G.day || INTC.v !== CTRLV || INTC.w !== WARV || INTC.g !== G) INTC = {day:G.day, v:CTRLV, w:WARV, g:G, m:{}}; let r = INTC.m[p]; if(r === undefined) r = INTC.m[p] = integ0(p); return r; };
 const yieldOf = p => P[p].c === G.ctrl[p] ? 1 : integ(p) ? 0.75 : 0.4;   // fabrieksopbrengst
 const manOf = p => P[p].c === G.ctrl[p] ? 1 : integ(p) ? 0.7 : 0.3;      // mankracht
 const provState = p => P[p].c === G.ctrl[p] ? 'kern' : integ(p) ? 'geïntegreerd' : 'bezet';
-function integLeft(p){ const c = G.ctrl[p], o = P[p].c; if(o === c || integ(p)) return 0; return atWar(c, o) ? -1 : Math.max(1, Math.ceil(integDays(c) - (G.day - heldSince(p)))); }
+function integLeft(p){ const c = G.ctrl[p], o = P[p].c; if(o === c || integ(p)) return 0; return atWar(c, o) ? -1 : Math.max(1, Math.ceil(integNeed(p) - (G.day - heldSince(p)))); }
 // waar komt een nieuwe fabriek? De beste vrije plek: eigen land eerst, liefst niet aan het front
 function fabSpots(c){
   const res = {};   // plekken die al door de wachtrij zijn geclaimd
@@ -1722,7 +1725,7 @@ function computeSupply(force){
 }
 /* ---- legerlimiet: hoeveel divisies je land tegelijk op de been kan houden ---- */
 function manCap(pe){ const e = Math.min(pe, 300) + 0.15*Math.max(0, pe - 300); return 4 + 2.2*Math.sqrt(e) + 0.05*e; }
-function armyCap(c){ const n = nat(c); return Math.round(((n.capB || 8) * (n.ws == null ? 1 : wsMul(c)) * ((n.mobil || 0) > G.day ? 1.3 : 1) + (n.capX || 0)) * ((n.demil || 0) > G.day ? 0.5 : 1) * (c === G.player ? (D().meCap || 1) : (D().aiCap || 1))); }
+function armyCap(c){ const n = nat(c), me = c === G.player; return Math.round((((n.capB || 8) * (n.ws == null ? 1 : wsMul(c)) * ((n.mobil || 0) > G.day ? 1.3 : 1) + (n.capX || 0)) * (me ? (D().meCap || 1) : (D().aiCap || 1)) + (me ? D().udCap || 0 : 0)) * ((n.demil || 0) > G.day ? 0.5 : 1)); }   // udCap: vaste bonus voor kleine landen
 function unitsQueued(c){ return nat(c).q.filter(q => (ITEMS[q.k] || {}).kind === 'unit').length; }
 const meB = c => c === G.player ? (D().meCbt || 1) : 1;   // hulp voor de speler op lagere niveaus
 const atkPlain = u => tstat(u.c, u.tp).a * u.hp/100 * supMul(u) * meB(u.c);
@@ -2025,8 +2028,9 @@ function economy(initOnly){
     if(!n.alive) continue;
     const mul = isAI(c) ? D().pp : (D().mePp || 1);
     n.ppd = pp[c] * 0.6 * mul * (n.ws != null && n.ws < 20 ? 0.85 : 1);
+    if(c === G.player) n.ppd += D().udPp || 0;   // bonus voor kleine landen: een vast bedrag per dag
     if(LL && LL[c]) n.ppd = Math.max(0, n.ppd + LL[c]);
-    if(n.atom && n.atom.on && !initOnly) n.ppd -= atomDrain(c, n);   // atoomproject: slokt een deel van de productie op
+    if(n.atom && n.atom.on && !initOnly && fxeAtomRun(c, n)) n.ppd -= atomDrain(c, n);   // atoomproject: slokt een deel van de productie op
     // legerlimiet = mankracht (bevolking), niet fabrieken: nieuw land en integratie maken je leger groter
     n.man = pe[c]; n.capB = manCap(pe[c]) + 0.3 * pp[c] / FAB_ADD;   // + een beetje industrie (begrensd door de bouwplekken)
     if(initOnly) continue;
@@ -2394,10 +2398,12 @@ function endLog(k, a, b){ const d = G.day - (G.wars[wk(a, b)] ?? G.day); const e
 function settle(a, b, keepA, keepB, days){
   const kA = new Set(keepA || []), kB = new Set(keepB || []);
   const ba = baseOf(a).slice(), bb = baseOf(b).slice();
-  for(const p of bb) if(G.ctrl[p] === a && !kA.has(p)) setCtrl(p, b);
-  for(const p of ba) if(G.ctrl[p] === b && !kB.has(p)) setCtrl(p, a);
-  nat(a).base = ba.filter(p => !kB.has(p)).concat([...kA]);
-  nat(b).base = bb.filter(p => !kA.has(p)).concat([...kB]);
+  // eerst bepalen wat er wisselt, dan pas wisselen: een provincie die in het gebied van beide landen staat, gaat één keer over (niet heen en meteen terug)
+  const toB = bb.filter(p => G.ctrl[p] === a && !kA.has(p)), toA = ba.filter(p => G.ctrl[p] === b && !kB.has(p)), sB = new Set(toB), sA = new Set(toA);
+  for(const p of toB) setCtrl(p, b);
+  for(const p of toA) setCtrl(p, a);
+  nat(a).base = [...new Set(ba.filter(p => !kB.has(p) && !sB.has(p)).concat([...kA]))];   // na de vrede staat geen provincie meer in beide gebieden
+  nat(b).base = [...new Set(bb.filter(p => !kA.has(p) && !sA.has(p)).concat([...kB]))];
   ownDirty = true;
   makePeace(a, b, true);
   relocate(a); relocate(b);
@@ -2414,6 +2420,7 @@ function annex(c, by){
   for(const k of Object.keys(G.wars)) if(k.split('|').includes(c)){ const [x, y] = k.split('|'); endLog('ingelijfd', x, y); delete G.wars[k]; }
   if(G.cards) G.cards = G.cards.filter(cd => cd.e !== c);
   const wasFoe = atWar(me, c);
+  if(n.nkAim){ delete n.nkAim; overDirty = true; sheetSig = ''; }   // een ingelijfd land dreigt niet meer met een kernaanval
   n.alive = false; n.q = []; n.base = [];
   warsChanged(); if(wasFoe) baseDirty = true;
   if(c === me){ gameOver('lost'); return; }
@@ -2478,7 +2485,7 @@ function surrender(c){
 // na de vrede houdt een verslagen land een klein restleger (zoals Duitsland na 1919)
 function rumpArmy(c){
   if(!alive(c) || enemiesOf(c).length || G.units.some(u => u.c === c)) return;
-  const own = owned(c), k = clamp(Math.round(own.length / 3), 1, 3);
+  const own = owned(c).slice().sort((x, y) => inDmz(x) - inDmz(y)), k = clamp(Math.round(own.length / 3), 1, 3);   // liefst buiten een gedemilitariseerde grensstrook
   for(let i = 0; i < k && own.length; i++) spawn(c, 'inf', own[i % own.length], 70);
 }
 // jij eist onvoorwaardelijke overgave: de oorlog gaat door tegen milities, tot je het hele land hebt
@@ -2492,8 +2499,11 @@ function fightOn(e){
 }
 // jij capituleert: elke vijand houdt wat hij bezet; de sterkste legt ook herstelbetalingen, ontwapening en een grensstrook op
 function capitulateMe(){
-  const me = G.player, n = nat(me), parts = [];
-  for(const T of capTerms()){ const r = applyTerms(T); if(r) parts.push(r); }
+  const me = G.player, n = nat(me), Ts = capTerms(), res = [];
+  if(!Ts.length) return;
+  // de vijand die de sancties oplegt tekent als laatste: ontwapening en grensstrook gelden dan voor de definitieve grenzen
+  for(const i of Ts.map((T, i) => i).sort((x, y) => sancOn(Ts[x].s).length - sancOn(Ts[y].s).length || x - y)) res[i] = applyTerms(Ts[i]);
+  const parts = res.filter(Boolean);
   n.ws = 45;
   G.stats.capd = (G.stats.capd || 0) + 1;
   clearSel();
@@ -2536,13 +2546,14 @@ function signConf(c){
   if(r) peaceCard('Vrede met ' + cname(e), [r]);
 }
 // ---- onderhandelen: wat accepteert de vijand nu? ----
+const WHITE_MIN = 45;   // zoveel dagen moet een oorlog duren voor de vijand over een witte vrede wil praten
 function dealInfo(e){
   const me = G.player, mE = meterOf(e), mM = meterOf(me), dur = G.day - (G.wars[wk(me, e)] ?? G.day);
   const occ = occBy(me, e), lost = occBy(e, me);
   const keep = mE > mM ? pickDeal(occ, Math.min(0.95, mE), me) : [];
-  const white = mE >= mM - 0.05 || (dur > 365 && Math.abs(mE - mM) < 0.3);
+  const white = dur >= WHITE_MIN && (mE >= mM - 0.05 || (dur > 365 && Math.abs(mE - mM) < 0.3));   // niet in de eerste weken: een verse oorlogsverklaring, coalitie of verdragsbreuk is niet met één klik weg (zelfde drempel als aiCards)
   const give = mM > mE + 0.1 ? pickDeal(lost, mM, e) : [];
-  return {mE, mM, occ, lost, keep, white, give, ks: keep.length ? loseSanc(mE) : {}, gs: give.length ? aiSanc(e, mM) : {}};
+  return {mE, mM, dur, occ, lost, keep, white, give, ks: keep.length ? loseSanc(mE) : {}, gs: give.length ? aiSanc(e, mM) : {}};
 }
 function playerDeal(e, kind){
   const me = G.player;
@@ -2575,12 +2586,13 @@ function resolveCard(choice){
   if(cd.k === 'surr' && choice === 'fight' && atWar(me, e)) fightOn(e);
   else if(cd.k === 'conf' && choice === 'sign' && c) signConf(c);
   else if(cd.k === 'mysurr'){
-    if(choice === 'yes') capitulateMe();
+    if(!enemiesOf(me).length){}   // de oorlog is al voorbij (vrede langs een andere weg): er valt niets te capituleren
+    else if(choice === 'yes') capitulateMe();
     else { nat(me).ws = clamp(nat(me).ws + 5, 0, 100); toast('Je vecht door tot het einde', 'war'); }
   }
   else if(T){ const r = applyTerms(T); if(r) peaceCard((cd.k === 'arm' ? 'Wapenstilstand met ' : 'Vrede met ') + cname(e), [r]); }
   else if(cd.k === 'nuke' && choice === 'yes') nukeStrike(me, cd.p);
-  if(!G.cards.length && G.cardPause){ G.cardPause = false; G.paused = false; }
+  if(!G.cards.length && G.cardPause){ G.cardPause = false; if(!(G.won && UI.winShown)) G.paused = false; }   // achter het eindverslag blijft het spel staan
 }
 // dagelijks: laatste verzet, overgave en volledige verovering
 function warEnds(){
@@ -2663,6 +2675,7 @@ function declare(a, b, joining){
   if(atWar(a,b) || !alive(a) || !alive(b)) return;
   if(G.truce && truceLeft(a, b) > 0 && a !== G.player) return;   // bestand na capitulatie
   if(!dipOnDeclare(a, b, joining)) return;   // verdragen: de AI breekt ze niet, jij alleen tegen een zware prijs
+  fxeBaseSplit(a, b);   // wat de ander bij het begin al heeft, hoort niet (meer) bij jouw grondgebied
   G.wars[wk(a,b)] = G.day;
   if(G.aggr){
     const just = a !== G.player || (G.wg[b] || 0) >= G.day;
@@ -2703,6 +2716,7 @@ function makePeace(a, b, quiet){
   if(G.wlast) delete G.wlast[wk(a, b)];
   if(G.cards && (a === me || b === me)){ const o = a === me ? b : a; G.cards = G.cards.filter(cd => cd.e !== o); }
   warsChanged();
+  if(G.cards && (a === me || b === me) && !enemiesOf(me).length) G.cards = G.cards.filter(cd => cd.k !== 'mysurr');   // geen vijand meer: de capitulatiekaart vervalt
   dipOnPeace(a, b);   // bondgenoten die voor jou meevochten sluiten ook vrede
   if(a === me || b === me) baseDirty = true;
   for(const u of G.units) if(u.att && (u.c === a || u.c === b)){ const o = G.ctrl[u.att]; if(o === a || o === b){ u.att = null; u.air = false; u.path = []; } }
@@ -2822,13 +2836,16 @@ function saveBest(){
     const b = JSON.parse(localStorage.getItem('ve_best') || '{}'), k = MAPNAME + ':' + G.player, s = score();
     if(!b[k] || s > b[k]) b[k] = s;
     localStorage.setItem('ve_best', JSON.stringify(b));
+    const nm = fxeNames(); if(nm[k] !== CN[G.player].name){ nm[k] = CN[G.player].name; localStorage.setItem('ve_names', JSON.stringify(nm)); }   // landnaam bij het record (Records toont hem ook als die kaart niet geladen is)
   }catch(e){}
 }
+const fxeNames = () => { try{ return JSON.parse(localStorage.getItem('ve_names') || '{}') || {}; }catch(e){ return {}; } };
 const bestOf = (m, c) => { try{ return JSON.parse(localStorage.getItem('ve_best') || '{}')[m + ':' + c] || 0; }catch(e){ return 0; } };
 function gameOver(kind){
   G.over = kind; G.paused = true; saveBest(); shake(); flash(); sfx('lose');
   clearSel(); UI.target = null; UI.sheet = null;
-  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_KEY + '.bak'); }catch(e){}   // ook de reservekopie: een verloren spel is niet te hervatten
+  menuSave = undefined;
   renderAll();
 }
 
@@ -3699,7 +3716,7 @@ function aiProduce(c){
   const front = own.filter(p => ADJ[p].some(x => war.length ? atWar(c, G.ctrl[x]) : G.ctrl[x] !== c)).length;
   let eAir = 0; const ens = new Set(war);
   for(const e of war) eAir += ACNT[e] || 0;
-  const seaFront = war.length > 0 && own.some(p => (RTOUCH[p] || []).some(i => { const r = ROUTES[i], o = r[0] === p ? r[1] : r[0]; return atWar(c, G.ctrl[o]); }));
+  const seaFront = war.length > 0 && own.some(p => (RTOUCH[p] || []).some(i => { const r = ROUTES[i], o = r[0] === p ? r[1] : r[0]; return SEA.has(ek(p, o)) && atWar(c, G.ctrl[o]); }));
   const share = t => cnt[t] / Math.max(1, divs);
   // alleen nog vijanden overzee (of een voorbereiding overzee): dan vooral mariniers
   const px = prepOf(c);
@@ -4572,7 +4589,8 @@ function frontier(c, hops){
      keep    provincies uit het gebied van l die w houdt · hold: provincies uit het gebied van w die l houdt
      s       sancties tegen l (zie SANC) · kind: conf, offer, keep, arm, white, demand, give of cap
    termsView(T) rekent uit wat dat betekent (voor de kaart en de twee kolommen), applyTerms(T) voert het uit.
-   Lopende verplichtingen staan in G.tr[verliezer] = {by, day, dem, trib, rate, dmz, pact, vas, reg, flow} (einddagen). */
+   Lopende verplichtingen staan in G.tr[verliezer] = {by, day, dem, trib, rate, dmz, pact, vas, reg, flow} (einddagen).
+   Verliest een land daarna van een ándere winnaar, dan blijft het oudere verdrag doorlopen: het hangt via t.prev aan het nieuwe (zie fxeTrAll). */
 const SANC = {
   rep:  {name:'Industrie ontmantelen',    cost:3, ic:'fab',    ae:0},
   trib: {name:'Herstelbetalingen',        cost:3, ic:'tijd',   ae:1, days:1825, rate:0.2},
@@ -4614,34 +4632,37 @@ function capTerms(){
   const me = G.player, ens = enemiesOf(me).slice();
   if(!ens.length) return [];
   const main = ens.slice().sort((a, b) => starSum(occBy(b, me)) - starSum(occBy(a, me)) || armyPow(b) - armyPow(a))[0];
-  return ens.map(e => ({w:e, l:me, keep:occBy(e, me), hold:[], s: e === main ? {trib:true, dem:true, dmz:true} : {}, kind:'cap'}));
+  // alle vredes worden tegelijk getekend: aft = wat jij overhoudt als ze allemaal gelden (wat je van welke vijand ook bezet, gaat terug)
+  const back = new Set(); for(const e of ens) for(const p of occBy(me, e)) back.add(p);
+  const aft = owned(me).filter(p => !back.has(p));
+  return ens.map(e => ({w:e, l:me, keep:occBy(e, me), hold:[], s: e === main ? {trib:true, dem:true, dmz:true} : {}, kind:'cap', aft}));
 }
 // de grensstrook zoals die na deze vrede ligt: provincies van de verliezer die over land aan de winnaar grenzen
 function dmzAfter(T, keep, hold){
   const w = T.w, l = T.l, kA = new Set(keep), kB = new Set(hold), bw = new Set(baseOf(w)), bl = new Set(baseOf(l));
   const after = p => { const c = G.ctrl[p]; if(c === w && bl.has(p) && !kA.has(p)) return l; if(c === l && bw.has(p) && !kB.has(p)) return w; return c; };
-  const out = [];
-  for(const p of new Set([...owned(l), ...baseOf(l)])) if(after(p) === l && ADJ[p].some(q => !SEA.has(ek(p, q)) && after(q) === w)) out.push(p);
+  const out = [], aft = T.aft ? new Set(T.aft) : null;   // capitulatie voor meer vijanden: alleen wat je na álle vredes nog hebt
+  for(const p of new Set([...owned(l), ...baseOf(l)])) if(after(p) === l && (!aft || aft.has(p)) && ADJ[p].some(q => !SEA.has(ek(p, q)) && after(q) === w)) out.push(p);
   return out;
 }
 // legerlimiet van land c als het de provincies ps heeft (schatting voor het overzicht vooraf)
-function capEst(c, ps){
+function capEst(c, ps, ws){   // ws: de oorlogssteun waarmee gerekend wordt (na een capitulatie 45%), anders die van nu
   let pe = 0, pp = 0;
   for(const p of ps){ const home = P[p].c === c; pe += PPOP[p] * (home ? 1 : 0.3); pp += G.fac[p] * (home ? 1 : 0.4); }
-  return Math.max(1, Math.round(((manCap(pe) + 0.3 * pp / FAB_ADD) * wsMul(c) + (nat(c).capX || 0)) * (c === G.player ? (D().meCap || 1) : (D().aiCap || 1))));
+  return Math.max(1, Math.round(((manCap(pe) + 0.3 * pp / FAB_ADD) * (ws != null ? 0.6 + 0.6 * ws / 100 : wsMul(c)) + (nat(c).capX || 0)) * (c === G.player ? (D().meCap || 1) : (D().aiCap || 1)) + (c === G.player ? D().udCap || 0 : 0)));
 }
 // ontwapening: leger en luchtmacht gaan direct naar de helft (of naar de nieuwe limiet als die lager is); de limiet blijft drie jaar gehalveerd
-function disarmPlan(c, after){
+function disarmPlan(c, after, ws){
   const n = nat(c);
-  let u = 0, a = 0; for(const x of G.units) if(x.c === c) u++; for(const x of G.air) if(x.c === c) a++;
-  const full = capEst(c, after), half = Math.max(1, Math.round(full * 0.5));
+  let u = 0, a = 0; for(const x of G.units) if(x.c === c && !x.home) u++; for(const x of G.air) if(x.c === c) a++;   // geleende divisies tellen niet mee: die zijn van de bondgenoot
+  const full = capEst(c, after, ws), half = Math.max(1, Math.round(full * 0.5));
   return {u, a, du: u - Math.min(half, Math.ceil(u / 2)), da: a - Math.ceil(a / 2), full, half, sur: n.sur && n.surN ? n.surN : null, until: G.day + SANC.dem.days};
 }
 function disarm(c, until, du, da){
   const n = nat(c);
   n.demil = Math.max(n.demil || 0, until);
   if(du > 0){
-    const drop = new Set(G.units.filter(u => u.c === c).sort((a, b) => a.hp - b.hp).slice(0, du).map(u => u.id));   // de zwakste divisies eerst
+    const drop = new Set(G.units.filter(u => u.c === c && !u.home).sort((a, b) => a.hp - b.hp).slice(0, du).map(u => u.id));   // de zwakste divisies eerst
     G.units = G.units.filter(u => !drop.has(u.id)); for(const id of [...UI.sel]) if(drop.has(id)) UI.sel.delete(id);
   }
   if(da > 0){
@@ -4654,9 +4675,8 @@ function disarm(c, until, du, da){
 // industrie ontmantelen: hooguit een kwart van wat de verliezer nog heeft; de rest betaalt hij af
 function takeIndustry(w, l, keep){
   const fac = repAmount(l), ks = new Set(keep), rem = owned(l).filter(p => !ks.has(p));
-  let tot = 0; for(const p of rem) tot += G.fac[p];
-  const take = Math.min(fac, tot * 0.25);
-  if(tot > 0) for(const p of rem) G.fac[p] -= G.fac[p] / tot * take;
+  const cut = fxeRepCut(l, keep);
+  if(cut > 0) for(const p of rem) G.fac[p] -= G.fac[p] * cut;
   addFac(w, fac);
   return fac;
 }
@@ -4675,15 +4695,16 @@ function termsView0(T){
   const back = occBy(me, o).filter(p => !gs.has(p)), ret = occBy(o, me).filter(p => !ls.has(p));   // terug naar hen · terug naar jou
   const dmz = s.dmz ? dmzAfter(T, keep, hold) : [];
   const v = {T, o, iWin, even:!!T.even, gain, lose, back, ret, dmz, days:termsDays(T), on:sancOn(s).filter(k => k !== 'dmz' || dmz.length),
-    nMe: owned(me).length - back.length + ret.length, nO: owned(o).length + back.length - ret.length};
-  const after = l === me ? owned(me).concat(ret) : owned(o).concat(back);   // wat de verliezer na de vrede heeft
+    nMe: T.aft ? T.aft.length : owned(me).length - back.length + ret.length, nO: owned(o).length + back.length - ret.length};
+  const after = T.aft || (l === me ? owned(me).concat(ret) : owned(o).concat(back));   // wat de verliezer na de vrede heeft (capitulatie: na alle vredes samen)
   if(s.rep) v.fac = repAmount(l);
   if(s.trib || s.vas){
     v.rate = s.vas ? SANC.vas.rate : SANC.trib.rate; v.tribDays = s.vas ? SANC.vas.days : SANC.trib.days;
-    let raw = 0; for(const p of after) raw += G.fac[p] * (P[p].c === l ? 1 : 0.4) * ((G.dmg[p] || 0) > G.day ? 0.5 : 1);   // hun productie zoals die na de vrede is
+    const cut = s.rep ? fxeRepCut(l, keep) : 0;   // ontmanteling in dezelfde vrede: het herstel wordt over de kleinere industrie geheven
+    let raw = 0; for(const p of after) raw += G.fac[p] * (cut && G.ctrl[p] === l ? 1 - cut : 1) * (P[p].c === l ? 1 : 0.4) * ((G.dmg[p] || 0) > G.day ? 0.5 : 1);   // hun productie zoals die na de vrede is
     v.trib = raw * 0.6 * v.rate * (w === me ? (D().mePp || 1) : D().pp);
   }
-  if(s.dem) v.dis = disarmPlan(l, after);
+  if(s.dem) v.dis = disarmPlan(l, after, T.kind === 'cap' ? 45 : null);   // jouw capitulatie zet je oorlogssteun op 45%: de limiet daarna hoort daarbij
   if(iWin && (gain.length || sancAE(s))) v.ae = aePreview(o, gain, sancAE(s));
   else if(T.kind === 'white') v.aeDown = 6;
   v.ws = T.kind === 'conf' ? 10 : T.kind === 'offer' || T.kind === 'keep' ? 6 : 0;
@@ -4724,10 +4745,11 @@ function applyTerms(T){
   if(T.kind === 'white') for(const x of neighbors(l)) addAE(x, -6);
   if(s.rep){ const f = takeIndustry(w, l, keep); lines.push((w === me ? 'Jij kreeg ' : esc(cname(w)) + ' kreeg ') + NF.format(f) + ' fabrieken uit ' + (l === me ? 'jouw' : 'hun') + ' industrie'); }
   settle(w, l, keep, hold, v.days);
-  if(G.tr && G.tr[w] && G.tr[w].by === l) endTreaty(w);   // de rollen zijn omgedraaid: het oude verdrag vervalt
+  { const t0 = fxeTrAll(w).find(x => x.by === l); if(t0) endTreaty(w, t0); }   // de rollen zijn omgedraaid: het oude verdrag vervalt
   if(v.on.length){
-    const old = treatyOf(l), t = TRT()[l] = {by:w, day:G.day};
-    if(old && old.by === w && old.dem > G.day) t.dem = old.dem;
+    const all = fxeTrAll(l), old = all.find(x => x.by === w) || null, t = {by:w, day:G.day};
+    fxeTrSet(l, [t].concat(all.filter(x => x !== old)));   // een verdrag met een andere winnaar blijft doorlopen
+    if(old && old.dem > G.day) t.dem = old.dem;
     if(v.dis){
       const d = v.dis; disarm(l, d.until, d.du, d.da); t.dem = d.until;
       lines.push(ln + (d.du || d.da ? ' ontbond ' + d.du + ' van ' + d.u + ' divisies en ' + d.da + ' van ' + d.a + ' eskaders' : ' had geen leger meer om te ontbinden') + '; limiet tot ' + dTxt(d.until) + ' ±' + d.half + ' divisies');
@@ -4741,7 +4763,7 @@ function applyTerms(T){
   if(l !== me) rumpArmy(l);
   if(T.kind === 'conf'){ G.stats.caps++; nat(me).ws = clamp(nat(me).ws + 10, 0, 100); }
   else if(T.kind === 'offer' || T.kind === 'keep'){ G.stats.wins++; nat(me).ws = clamp(nat(me).ws + 6, 0, 100); }
-  POWC = null; stripSig = null; sheetSig = '';
+  POWC = null; stripSig = null; sheetSig = ''; buildIdx();   // tellers (leger/lucht in de topbalk) kloppen meteen na ontwapening en ontruiming
   if(T.kind !== 'cap') toast((T.kind === 'arm' ? 'Wapenstilstand met ' : T.kind === 'white' ? 'Witte vrede met ' : 'Vrede met ') + cname(o) + ': ' + (v.gain.length ? 'jij krijgt ' + plist(v.gain) : v.lose.length ? 'je staat ' + plist(v.lose) + ' af' : 'geen land van eigenaar gewisseld') + (v.on.length ? ' · ' + v.on.map(k => SANC[k].name.toLowerCase()).join(', ') : ''), v.iWin || v.even ? 'good' : 'war');
   return {o, html, lines};
 }
@@ -4759,16 +4781,13 @@ function peaceCard(title, parts){
     h: parts.map(p => (parts.length > 1 ? '<div class="tvn"><span class="cdot" style="background:' + colorOf(p.o) + '"></span>' + esc(cname(p.o)) + '</div>' : '') + p.html).join(''),
     r: parts.reduce((a, p) => a.concat(p.lines), [])}, true);
 }
-function endTreaty(c){
-  const t = treatyOf(c); if(!t) return;
-  delete G.tr[c];
-  if(t.dem && G.nations[c]) nat(c).demil = 0;
-  sheetSig = ''; stripSig = null;
+function endTreaty(c, t0){
+  const t = t0 || treatyOf(c); if(!t) return;
+  fxeTrDrop(c, t);
 }
 // herstelbetalingen en vazallen: een deel van de ruwe productie verhuist elke dag naar de winnaar
 function tribFlow(pp){
-  for(const c in G.tr){
-    const t = G.tr[c];
+  for(const c in G.tr) for(let t = G.tr[c]; t; t = t.prev){
     if(!(t.trib > G.day) || !G.nations[t.by] || !alive(t.by) || !alive(c)){ t.flow = 0; continue; }
     const amt = pp[c] * (t.rate || 0.2); pp[c] -= amt; pp[t.by] += amt;
     t.flow = amt * 0.6; t.paid = (t.paid || 0) + t.flow;
@@ -4776,14 +4795,16 @@ function tribFlow(pp){
 }
 // gedemilitariseerde grens: geen bunkers en geen troepen in provincies die over land aan de winnaar grenzen
 function dmzStrip(c, by){ const out = []; for(const p of owned(c)) if(ADJ[p].some(q => G.ctrl[q] === by && !SEA.has(ek(p, q)))) out.push(p); return out; }
-function inDmz(p){ const t = treatyOf(G.ctrl[p]); return !!(t && t.dmz > G.day && ADJ[p].some(q => G.ctrl[q] === t.by && !SEA.has(ek(p, q)))); }
+function inDmz(p){ for(let t = treatyOf(G.ctrl[p]); t; t = t.prev) if(t.dmz > G.day && ADJ[p].some(q => G.ctrl[q] === t.by && !SEA.has(ek(p, q)))) return true; return false; }
 function dmzTick(c, t){
   const strip = dmzStrip(c, t.by), res = {n:strip.length, forts:0, moved:0};
   if(!strip.length) return res;
   const set = new Set(strip), ens = enemiesOf(c), dest = {};
   for(const p of strip) if(G.forts[p]){ res.forts += G.forts[p]; delete G.forts[p]; baseDirty = true; }
   // per strookprovincie de dichtstbijzijnde eigen provincie erbuiten
-  const find = p => { if(p in dest) return dest[p]; const seen = new Set([p]), q = [p]; for(let i = 0; i < q.length && i < 300; i++){ const x = q[i]; if(!set.has(x)) return dest[p] = x; for(const n of ADJ[x]) if(!seen.has(n) && G.ctrl[n] === c){ seen.add(n); q.push(n); } } return dest[p] = null; };
+  const find = p => { if(p in dest) return dest[p]; const seen = new Set([p]), q = [p]; for(let i = 0; i < q.length && i < 300; i++){ const x = q[i]; if(!set.has(x)) return dest[p] = x; for(const n of ADJ[x]) if(!seen.has(n) && G.ctrl[n] === c){ seen.add(n); q.push(n); } }
+    let best = null, bd = 1e9; for(const x of owned(c)) if(!set.has(x)){ const d = distKm(p, x); if(d < bd){ bd = d; best = x; } }   // geen landverbinding met de rest: de dichtstbijzijnde eigen provincie buiten de strook
+    return dest[p] = best; };
   for(const u of G.units){
     if(u.c !== c || u.att) continue;
     if(set.has(u.loc)){
@@ -4797,20 +4818,53 @@ function dmzTick(c, t){
 // dagelijks: verdragen lopen af of vervallen door een nieuwe oorlog; de grensstrook wordt gehandhaafd
 function peaceTick(){
   const me = G.player;
-  if(G.tr) for(const c of Object.keys(G.tr)){
-    const t = G.tr[c], inv = c === me || t.by === me, on = cname(c === me ? t.by : c);
-    if(!G.nations[c] || !alive(c) || !G.nations[t.by] || !alive(t.by)){ endTreaty(c); continue; }
-    if(atWar(c, t.by)){ endTreaty(c); if(inv) toast('Het verdrag met ' + on + ' is vervallen: jullie zijn weer in oorlog. Ontwapening en betalingen stoppen', 'war', 'trv' + c); continue; }
+  if(G.tr) for(const c of Object.keys(G.tr)) for(const t of fxeTrAll(c)){
+    const inv = c === me || t.by === me, on = cname(c === me ? t.by : c);
+    if(!G.nations[c] || !alive(c) || !G.nations[t.by] || !alive(t.by)){ endTreaty(c, t); continue; }
+    if(atWar(c, t.by)){ endTreaty(c, t); if(inv) toast('Het verdrag met ' + on + ' is vervallen: jullie zijn weer in oorlog. Ontwapening en betalingen stoppen', 'war', 'trv' + c); continue; }
     for(const k of ['dem', 'trib', 'dmz', 'pact', 'vas']) if(t[k] && t[k] <= G.day){
       delete t[k];
       if(inv && k !== 'pact' && !(k === 'trib' && t.vas)) toast((k === 'dem' ? 'De ontwapening van ' : k === 'trib' ? 'De herstelbetalingen van ' : k === 'dmz' ? 'De gedemilitariseerde grens van ' : 'De vazalstatus van ') + (c === me ? 'jouw land' : on) + ' is afgelopen', c === me ? 'good' : '', 'tre' + c);
       sheetSig = '';
     }
-    if(!t.dem && !t.trib && !t.dmz && !t.pact && !t.vas && !(t.reg && G.day - t.reg < 1825)){ delete G.tr[c]; continue; }
+    if(!t.dem && !t.trib && !t.dmz && !t.pact && !t.vas && !(t.reg && G.day - t.reg < 1825)){ fxeTrSet(c, fxeTrAll(c).filter(x => x !== t)); continue; }
     if(t.dmz && G.day % 2 === 0){ const r = dmzTick(c, t); if(c === me && r.moved) toast('Gedemilitariseerde grens: ' + r.moved + (r.moved === 1 ? ' divisie' : ' divisies') + ' teruggetrokken uit de grensstrook met ' + on, 'war', 'dmz'); }
   }
   nukeTick();
   udTick();
+}
+/* ================= reparaties: grondgebied, verdragen naast elkaar, herstel na ontmanteling, atoomproject ================= */
+// bij het begin van een oorlog: wat de ander op dat moment al heeft, hoort niet (meer) bij jouw grondgebied.
+// Anders staat een provincie in het gebied van beide landen en klopt de belofte 'terug uit jouw bezetting' niet.
+function fxeBaseSplit(a, b){
+  const ha = baseOf(a).filter(p => G.ctrl[p] !== b), hb = baseOf(b).filter(p => G.ctrl[p] !== a);
+  nat(a).base = ha; nat(b).base = hb;
+}
+// alle lopende verdragen van verliezer c: het jongste eerst, oudere (met een andere winnaar) hangen eraan via t.prev
+function fxeTrAll(c){ const out = []; for(let t = treatyOf(c); t; t = t.prev) out.push(t); return out; }
+function fxeTrSet(c, list){
+  list.forEach((t, i) => { if(list[i + 1]) t.prev = list[i + 1]; else delete t.prev; });
+  if(list.length) TRT()[c] = list[0]; else if(G.tr) delete G.tr[c];
+}
+function fxeTrDrop(c, t){
+  fxeTrSet(c, fxeTrAll(c).filter(x => x !== t));
+  if(t.dem && G.nations[c]){ let d = 0; for(const x of fxeTrAll(c)) if(x.dem > G.day) d = Math.max(d, x.dem); nat(c).demil = d; }   // ontwapening uit een ander verdrag blijft gelden
+  sheetSig = ''; stripSig = null;
+}
+// industrie ontmantelen: welk deel van elke fabriek van de verliezer verdwijnt (hooguit een kwart van wat hij nog heeft)
+function fxeRepCut(l, keep){
+  const ks = new Set(keep); let tot = 0;
+  for(const p of owned(l)) if(!ks.has(p)) tot += G.fac[p];
+  return tot > 0 ? Math.min(repAmount(l), tot * 0.25) / tot : 0;
+}
+// loopt het atoomproject vandaag? Onder de drempel van ATOM.fabs fabrieken ligt het stil: voor jou dezelfde regel als voor de AI
+function fxeAtomRun(c, n){
+  const ok = atomCan(c), a = n.atom;
+  if(c === G.player && !a.done && !ok !== !!a.low){
+    a.low = ok ? 0 : 1; sheetSig = '';
+    toast(ok ? 'Atoomproject hervat: je hebt weer ' + ATOM.fabs + ' fabrieken' : 'Atoomproject stilgelegd: minder dan ' + ATOM.fabs + ' fabrieken. Het gaat vanzelf verder zodra je er weer genoeg hebt', ok ? 'good' : 'war', 'atom');
+  }
+  return ok;
 }
 
 /* ================= kernwapen: atoomproject, kernbom, kernaanval, afschrikking ================= */
@@ -4887,6 +4941,7 @@ function nukeStrike(c, p){
     achAward('atom');
   } else if(v === me){ G.paused = true; }
   SUPCC = {day:-1, m:{}}; FTC = {day:-1, m:{}}; POWC = null; METC = {day:-1, m:{}}; overDirty = true; stripSig = null; sheetSig = '';
+  MM.msig = '';   // kaartmodus Industrie/Aanvoer: meteen opnieuw kleuren, ook op pauze
   fx(p, 'nuke');
   if(loud){
     nukeFlash(); sfx('nuke');
@@ -4931,6 +4986,12 @@ function nukeTick(){
   const me = G.player;
   if(G.rad) for(const p in G.rad) if(G.rad[p] <= G.day){ delete G.rad[p]; overDirty = true; }
   for(const c of CIDS){ const n = G.nations[c]; if(n.nkS){ n.nkS -= 0.0015; if(n.nkS <= 0) delete n.nkS; } }   // de schok ebt weg
+  // lopende dreigingen elke dag afhandelen: de inslag valt op de aangekondigde dag; een dreiging van een land dat niet meer bestaat vervalt
+  for(const c of MAJORS){
+    const n = G.nations[c]; if(!n.nkAim) continue;
+    if(c === me || !n.alive){ delete n.nkAim; overDirty = true; sheetSig = ''; }
+    else if(G.day % 5 && n.atom && n.atom.done) aiNuke(c, n);
+  }
   if(G.day % 5) return;
   for(const c of MAJORS){
     if(c === me || !alive(c)) continue;
@@ -4944,8 +5005,8 @@ function nukeTick(){
 /* ================= kleine landen: bonus voor de underdog en kansinschatting ================= */
 /* Alleen voor de speler. Hoe kleiner het gekozen land (fabrieken + bevolking), hoe groter de bonus; hij slinkt met de
    bevolking die je erbij verovert en is weg zodra je er 40 miljoen bij hebt (een land als Polen of Spanje).
-   De bonus zit in D(): alle plekken die de moeilijkheid gebruiken (productie, legerlimiet, integratie, agressie, hoe snel
-   de AI je aanvalt) krijgen hem vanzelf mee. Thuisverdediging en landingen staan in homeDef() en coastDef(). */
+   De bonus zit in D(): alle plekken die de moeilijkheid gebruiken (integratie, agressie, hoe snel de AI je aanvalt)
+   krijgen hem vanzelf mee; productie en legerlimiet krijgen een vast bedrag erbij (D().udPp, D().udCap). Thuisverdediging en landingen staan in homeDef() en coastDef(). */
 const UD = {ref:9, pop:40, pp:2.5, cap:7, res:3, def:0.4, hill:0.3, coast:0.35, integ:0.5, occ:0.2, ae:0.4, grace:2, prey:1, surr:0.15, score:0.5};
 const sIdx = c => CN[c].f + popE(c) / 10;                                   // grove maat voor de kracht van een land
 const udBase = c => clamp((UD.ref - sIdx(c)) / (UD.ref - 1), 0, 1);        // 1 = dwergstaat, 0 = middelgroot of groter
@@ -4960,12 +5021,10 @@ function dCalc(){
   DC = {g:G, day:G.day, d:G.diff, o:b, ud:0};
   if(!me || !G.nations || !G.nations[me]) return b;
   const ud = udNow(); if(ud <= 0) return b;
-  const n = nat(me);
-  let f = 0; for(const p of owned(me)) f += G.fac[p] * (P[p].c === me ? 1 : 0.5);
-  const capB = Math.max(4, (n.capB || 8) * (n.ws == null ? 1 : wsMul(me)));
   const o = Object.assign({}, b);
-  o.mePp = (b.mePp || 1) * (1 + UD.pp * ud / Math.max(0.5, f));    // werkplaatsen: een vaste hoeveelheid extra capaciteit
-  o.meCap = (b.meCap || 1) * (1 + UD.cap * ud / capB);             // volksleger: een vast aantal extra divisies
+  // een vast bedrag dat wordt opgeteld (geen factor): herstelbetalingen, tribuut, lend-lease, doelbeloningen en de luchtmacht groeien er niet door mee
+  o.udPp = UD.pp * ud * 0.6 * (b.mePp || 1);     // werkplaatsen: extra productie per dag (zie economy)
+  o.udCap = UD.cap * ud * (b.meCap || 1);        // volksleger: extra divisies op de legerlimiet (zie armyCap)
   o.integ = Math.round((b.integ || INTEG) * (1 - UD.integ * ud));
   o.occ = (b.occ || 0.3) + UD.occ * ud;
   o.ae = (b.ae || 1) * (1 - UD.ae * ud);
@@ -5534,10 +5593,45 @@ function isLand(x, y, back){
   if(i >= 0 && j >= 0 && i < LGRID.n && j < LGRID.n) for(const p of LGRID.cells[j*LGRID.n + i]){ const b = BBOX[p]; if(x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue; if(hitCtx.isPointInPath(PATH[p], x, y, 'evenodd')) return true; }
   return !!back && hitCtx.isPointInPath(BACK, x, y, 'evenodd');
 }
+// welke provincie ligt op dit punt? (zelfde rooster als isLand)
+function fxeProvAt(x, y){
+  isLand(-1, -1);
+  const L = LGRID, i = Math.floor(x/L.cw), j = Math.floor(y/L.ch);
+  if(i < 0 || j < 0 || i >= L.n || j >= L.n) return null;
+  for(const p of L.cells[j*L.n + i]){ const b = BBOX[p]; if(x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue; if(hitCtx.isPointInPath(PATH[p], x, y, 'evenodd')) return p; }
+  return null;
+}
+// eindpunt van een route: ligt het meer dan ~40 km buiten de eigen provincie, dan het dichtstbijzijnde punt op haar rand
+function fxeRouteEnd(p, x, y){
+  const hit = (qx, qy) => hitCtx.isPointInPath(PATH[p], qx, qy, 'evenodd');
+  if(hit(x, y)) return [x, y];
+  for(const rr of [14, 28, 40]) for(let i = 0; i < 12; i++) if(hit(x + rr/KM*Math.cos(i*Math.PI/6), y + rr/KM*Math.sin(i*Math.PI/6))) return [x, y];
+  let bx = x, by = y, bd = 1e18;
+  for(const ring of RINGS[p] || []) for(let i = 0; i < ring.length; i += 2){ const d = (ring[i] - x)**2 + (ring[i + 1] - y)**2; if(d < bd){ bd = d; bx = ring[i]; by = ring[i + 1]; } }
+  return [bx, by];
+}
+// loopt de boog voor meer dan de helft over land van een derde (of over land buiten de kaart), en is er een provincie die over land aan beide grenst?
+function fxeRouteOver(a, b, x1, y1, cx, cy, x2, y2){
+  let n = 0;
+  for(let k = 1; k <= 9; k++){ const t = k/10, u = 1 - t, x = u*u*x1 + 2*u*t*cx + t*t*x2, y = u*u*y1 + 2*u*t*cy + t*t*y2, q = fxeProvAt(x, y); if(q ? q !== a && q !== b : isLand(x, y, true)) n++; }
+  if(n < 5) return false;
+  const rt = new Set(ROUTES.map(r => ek(r[0], r[1])));
+  return ADJ[a].some(q => q !== b && ADJ[b].includes(q) && !rt.has(ek(a, q)) && !rt.has(ek(b, q)));
+}
+// de regels volgen de kaart: een landverbinding is geen landing (SEA), en een 'route' dwars over een derde provincie is helemaal geen verbinding
+function fxeRouteRules(){
+  if(!ROUTES.length) return;
+  for(const g of routeGeo()){
+    if(!g.land) continue;
+    const k = ek(g.a, g.b); SEA.delete(k); LONG.delete(k);
+    if(g.over){ ADJ[g.a] = ADJ[g.a].filter(q => q !== g.b); ADJ[g.b] = ADJ[g.b].filter(q => q !== g.a); delete RIV[k]; }
+  }
+}
 function routeGeo(){
   if(RGEO) return RGEO;
   RGEO = ROUTES.map(r => {
-    const x1 = r[2], y1 = r[3], x2 = r[4], y2 = r[5], dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), mx = (x1 + x2)/2, my = (y1 + y2)/2;
+    const [x1, y1] = fxeRouteEnd(r[0], r[2], r[3]), [x2, y2] = fxeRouteEnd(r[1], r[4], r[5]);   // een anker ver buiten de eigen provincie (open zee) gaat naar de kust
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), mx = (x1 + x2)/2, my = (y1 + y2)/2;
     let nx = len ? -dy/len : 0, ny = len ? dx/len : -1, cx = mx, cy = my;
     // bol naar de kant die van het land af wijst (weg van het midden tussen de twee provincies)
     const A = P[r[0]].a, B = P[r[1]].a; if(nx*((A[0] + B[0])/2 - mx) + ny*((A[1] + B[1])/2 - my) > 0){ nx = -nx; ny = -ny; }
@@ -5556,7 +5650,10 @@ function routeGeo(){
       land = !open(mx, my);
       for(let rr = 12; rr <= 36 && land; rr += 12) for(let i = 0; i < 12 && land; i++) if(open(mx + rr/KM*Math.cos(i*Math.PI/6), my + rr/KM*Math.sin(i*Math.PI/6))) land = false;
     }
-    return {a:r[0], b:r[1], land, x1, y1, x2, y2, cx, cy, len, km:len*KM, ux:len ? dx/len : 1, uy:len ? dy/len : 0, bb:[Math.min(x1, x2, cx), Math.min(y1, y2, cy), Math.max(x1, x2, cx), Math.max(y1, y2, cy)]};
+    // 'routes' die dwars over een derde provincie lopen terwijl je er ook gewoon over land komt: geen oversteek (en geen verbinding, zie fxeRouteRules)
+    const over = fxeRouteOver(r[0], r[1], x1, y1, cx, cy, x2, y2);
+    if(over) land = true;
+    return {a:r[0], b:r[1], land, over, x1, y1, x2, y2, cx, cy, len, km:len*KM, ux:len ? dx/len : 1, uy:len ? dy/len : 0, bb:[Math.min(x1, x2, cx), Math.min(y1, y2, cy), Math.max(x1, x2, cx), Math.max(y1, y2, cy)]};
   });
   return RGEO;
 }
@@ -5707,7 +5804,7 @@ function tweenView(cx, cy, k, instant){
 }
 function tweenStep(now){
   if(!TW) return false;
-  const a = Math.min(1, (now - TW.t0) / TW.ms), e = 1 - Math.pow(1 - a, 3);
+  const a = clamp((now - TW.t0) / TW.ms, 0, 1), e = 1 - Math.pow(1 - a, 3);   // nooit vóór het begin: een beeldtijd van vóór de start (na een hapering) zou de camera ver terug extrapoleren (zoom 0)
   const lk = Math.exp(Math.log(TW.from.k) + (Math.log(TW.to.k) - Math.log(TW.from.k)) * e);   // zoom logaritmisch
   V.k = lk; V.cx = TW.from.cx + (TW.to.cx - TW.from.cx) * e; V.cy = TW.from.cy + (TW.to.cy - TW.from.cy) * e;
   applyView();
@@ -6614,7 +6711,7 @@ function mapTick(t){
     const m = mapMode();
     if(m !== MM.lm){ MM.lm = m; renderModes(); }
     if(m === 'sup' || m === 'dip' || m === 'ind'){   // deze modi hangen af van de spelstand: af en toe verversen
-      const sig = Math.floor(G.day) + ':' + CTRLV + ':' + WARV;
+      const sig = Math.floor(G.day) + ':' + CTRLV + ':' + WARV + ':' + DIPV;   // ook bij een verdrag op pauze
       if(sig !== MM.msig && t - MM.mt > 1500){ MM.msig = sig; MM.mt = t; if(m === 'sup') computeSupply(); if(modeFills()){ DIRTYP.clear(); baseDirty = true; MM.full = true; } }
     }
   }
@@ -6971,7 +7068,7 @@ function renderStrip(){
   } else if(UI.loading || !DATA){
     h = '<div class="txt"><b>Kaart laden…</b></div>';
   } else if(!G){
-    const save = readSave();
+    const save = saveInfo();   // de gecachete samenvatting: niet bij elke render de hele save parsen
     const seg = '<div class="segrow">'
       + Object.keys(MAPS).map(m => '<button class="btn sm' + (MAPNAME === m ? ' pri' : '') + '" data-map="' + m + '">' + MAPS[m].name + '</button>').join('')
       + '<button class="btn sm" data-act="diff" title="Moeilijkheid">' + DIFF[UI.diff].name + '</button></div>';
@@ -6988,7 +7085,7 @@ function renderStrip(){
       h = '<div class="txt"><b>Kies je land</b><span class="mut">Tik een land op de kaart</span><span class="hint2">' + DIFF[UI.diff].name + ': ' + DIFF[UI.diff].desc + '</span></div><div class="acts">' + seg + '</div>';
       { const dl = dailyOf();
         h += '<div class="acts"><button class="btn sm' + (dailyDone() ? '' : ' pri') + '" data-act="daily" title="Elke dag hetzelfde land en niveau voor iedereen">' + ic('tijd') + 'Uitdaging van vandaag: ' + esc(dl.name) + ' (' + MAPS[dl.map].name + ') · ' + DIFF[dl.diff].name + (dailyDone() ? ' ✓' : '') + '</button></div>'; }
-      if(save && save.G && save.G.player && save.map && MAPS[save.map]) h += '<div class="acts"><button class="btn" data-act="resume">Doorgaan: ' + esc((CACHE[save.map] ? CACHE[save.map].countries[save.G.player].name : save.G.player)) + ', ' + fmtDate(save.G.day) + '</button></div>';
+      if(save) h += '<div class="acts"><button class="btn" data-act="resume">Doorgaan: ' + esc(save.name) + ', ' + fmtDate(save.day) + '</button></div>';
     }
   } else if(UI.intro){
     const [t, x, icons] = INTRO[UI.intro - 1];
@@ -7080,7 +7177,7 @@ $('strip').addEventListener('click', async e => {
     if(a === 'introNext' && UI.intro < INTRO.length) UI.intro++;
     else { UI.intro = 0; G.paused = false; try{ localStorage.setItem('ve_intro_seen', '1'); }catch(e){} }
   }
-  else if(a === 'cont'){ UI.winShown = false; G.paused = false; }
+  else if(a === 'cont'){ UI.winShown = false; if(cardOpen()) G.cardPause = true; else G.paused = false; }
   else if(a === 'cancelT'){ UI.target = null; }
   else if(a.startsWith('fs:')){
     const k = a.slice(3), me = G.player;
@@ -7215,7 +7312,7 @@ function negBlock(e){
     + (T ? (cur === kind ? termsH(T) : '<p class="tvs">' + termsView(T).txt + ' <span class="mut">Tik voor de details en de kaart.</span></p>') : '<p class="tvs mut">' + why + '</p>') + '</div>';
   let h = '<div class="neg">';
   h += optH('keep', 'check', 'Zij staan land af', dealTerms(e, 'keep'), d.occ.length ? nm + ' staat nog niets af: hun overgavemeter (' + pct(d.mE) + '%) moet boven de jouwe (' + pct(d.mM) + '%) komen.' : 'Je bezet nog niets van hun land.', ic('vrede') + 'Teken', 'pri');
-  h += optH('white', 'wit', 'Witte vrede', dealTerms(e, 'white'), nm + ' is aan de winnende hand en weigert een vrede zonder winst.', ic('wit') + 'Teken', '');
+  h += optH('white', 'wit', 'Witte vrede', dealTerms(e, 'white'), d.dur < WHITE_MIN ? 'Te vroeg: de oorlog duurt pas ' + Math.floor(d.dur) + (Math.floor(d.dur) === 1 ? ' dag' : ' dagen') + '. ' + nm + ' praat pas na ' + WHITE_MIN + ' dagen over een vrede zonder winst.' : nm + ' is aan de winnende hand en weigert een vrede zonder winst.', ic('wit') + 'Teken', '');
   if(d.give.length) h += optH('give', 'agr', 'Hun eis aanvaarden', dealTerms(e, 'give'), '', 'Accepteer', 'war');
   return h + '</div>';
 }
@@ -7362,7 +7459,7 @@ function renderSheet(){
       + '<p>' + ic('ster') + '<span><b>Sterren</b>: hoofdstad en wereldsteden 3, grote steden 2, de rest 1. Hoe meer sterren een land kwijt is, hoe voller zijn <b>overgavemeter</b>. Overzees gebied telt voor een vijfde.</span></p>'
       + '<p>' + ic('schild') + '<span><b>Laatste verzet</b>: bij 75% roept een land de noodtoestand uit: milities en steden +25% verdediging. Het einde is het zwaarst.</span></p>'
       + '<p>' + ic('vlag') + '<span><b>Overgave</b>: bij 100% legt het leger de wapens neer. Jij kiest: vredesconferentie (verdeel de buit) of doorvechten tot je alles hebt.</span></p>'
-      + '<p>' + ic('vrede') + '<span><b>Onderhandelen</b> kan altijd: een vijand staat af wat zijn meter aangeeft (op 40% houd je 40% van wat je bezet). Na elke vrede volgt een verdrag van een jaar.</span></p>'
+      + '<p>' + ic('vrede') + '<span><b>Onderhandelen</b> kan altijd: een vijand staat af wat zijn meter aangeeft (op 40% houd je 40% van wat je bezet). Een witte vrede (terug naar de oude grenzen) kan pas na ' + WHITE_MIN + ' dagen oorlog. Na elke vrede volgt een verdrag van een jaar.</span></p>'
       + rulesExtraH()
       + '<p>' + ic('schild') + '<span><b>Ingraven</b>: stilstaande troepen tot +20% verdediging.</span></p>'
       + '<p>' + ic('prov') + '<span><b>Bevoorrading</b>: afgesneden troepen (oranje) vechten op 65% en slijten.</span></p>'
@@ -7501,7 +7598,7 @@ function termsH(T, noTxt){
 }
 // ---- sanctieknop in de conferentie: naam, wat het voor dit land betekent, prijs ----
 function sancBtnH(c, k){
-  const S = SANC[k], e = c.e, on = !!c.s[k], v = termsView(Object.assign(confTerms(c), {s:{[k]:true}}));
+  const S = SANC[k], e = c.e, on = !!c.s[k], v = termsView(Object.assign(confTerms(c), {s:Object.assign({[k]:true}, k === 'trib' && c.s.rep ? {rep:true} : {})}));   // herstel naast ontmanteling: gerekend over de kleinere industrie
   let t, dis = false;
   if(k === 'rep') t = '+' + NF.format(repAmount(e)) + ' fabrieken voor jou, eenmalig';
   else if(k === 'trib') t = '+' + NF.format(Math.round(v.trib * 10) / 10) + ' productie per dag, 5 jaar (20% van de hunne)';
@@ -7513,8 +7610,9 @@ function sancBtnH(c, k){
   return '<button class="pchip wide sx' + (on ? ' on' : '') + '" data-cx="' + k + '"' + (dis ? ' disabled' : '') + '>' + ic(S.ic) + '<span><b>' + S.name + '</b><small>' + t + '</small></span><i>' + S.cost + '</i></button>';
 }
 // ---- lopende verdragen: bij het land in de contextstrook en in het overzicht ----
-function treatyFacts(c){
-  const t = treatyOf(c), me = G.player; if(!t) return [];
+function treatyFacts(c, only){
+  if(!only){ let all = []; for(const t of fxeTrAll(c)) all = all.concat(treatyFacts(c, t)); return all; }   // alle lopende verdragen van dit land (ook met een eerdere winnaar)
+  const t = only, me = G.player;
   const bn = t.by === me ? 'jou' : cname(t.by), out = [];
   if(t.vas > G.day) out.push(['vlag', 'Vazal van ' + bn + ' tot ' + dTxt(t.vas), 'Vazal: valt ' + bn + ' niet aan, doet niet mee aan coalities en draagt ' + Math.round(100 * (t.rate || 0.3)) + '% van zijn productie af']);
   if(t.dem > G.day) out.push(['schild', 'Ontwapend tot ' + dTxt(t.dem), 'Legerlimiet en luchtmacht gehalveerd: nu hooguit ' + armyCap(c) + ' divisies']);
@@ -7536,8 +7634,8 @@ function treatySecH(){
   const blk = (c, facts, note) => '<div class="trow2"><div class="wtop"><span class="cdot" style="background:' + colorOf(c) + '"></span><span class="wn">' + esc(cname(c)) + '</span>' + (note ? '<span class="wd">' + note + '</span>' : '') + '</div>'
     + facts.map(([icn, txt, tip]) => '<div class="tvr" title="' + esc(tip) + '">' + ic(icn) + '<span>' + esc(txt) + '</span></div>').join('') + '</div>';
   const mineT = treatyOf(me);
-  if(mineT) rows.push(blk(me, treatyFacts(me), 'opgelegd door ' + esc(cname(mineT.by))));
-  for(const c in (G.tr || {})) if(G.tr[c].by === me && alive(c)) rows.push(blk(c, treatyFacts(c), 'sinds ' + dTxt(G.tr[c].day)));
+  for(const t of fxeTrAll(me)) rows.push(blk(me, treatyFacts(me, t), 'opgelegd door ' + esc(cname(t.by))));
+  for(const c in (G.tr || {})) for(const t of fxeTrAll(c)) if(t.by === me && alive(c)) rows.push(blk(c, treatyFacts(c, t), 'sinds ' + dTxt(t.day)));
   const seen = new Set(Object.keys(G.tr || {}).filter(c => G.tr[c].by === me)); if(mineT) seen.add(mineT.by);
   const tr = [];
   for(const k in (G.truce || {})){ const [a, b] = k.split('|'); if(a !== me && b !== me) continue; const o = a === me ? b : a; if(!G.nations[o] || !alive(o) || atWar(me, o)) continue; const tl = truceLeft(me, o); if(tl > 0) tr.push([o, tl]); }
@@ -7560,7 +7658,7 @@ function peaceAlertsH(){
     if(m.atom && m.atom.done) have.push(cname(c));
   }
   if(have.length) h += '<div class="alert" title="Wie zelf een kernbom heeft, wordt alleen in uiterste nood getroffen">' + ic('nuke') + '<span>Atoommacht' + (have.length > 1 ? 'en' : '') + ': <b>' + esc(have.join(', ')) + '</b></span></div>';
-  if(n.atom && !n.atom.done) h += '<div class="alert own">' + ic('nuke') + '<span>Atoomproject' + (n.atom.on ? '' : ' (gepauzeerd)') + '</span><span class="num">' + Math.round(100 * n.atom.p / ATOM.cost) + '%</span></div>';
+  if(n.atom && !n.atom.done) h += '<div class="alert own">' + ic('nuke') + '<span>Atoomproject' + (!n.atom.on ? ' (gepauzeerd)' : atomCan(me) ? '' : ' (stilgelegd: minder dan ' + ATOM.fabs + ' fabrieken)') + '</span><span class="num">' + Math.round(100 * n.atom.p / ATOM.cost) + '%</span></div>';
   else if(n.nk > 0) h += '<div class="alert own">' + ic('nuke') + '<span>Kernbommen op voorraad</span><span class="num">' + n.nk + '</span></div>';
   const u0 = udBase(me);
   if(u0 > 0){
@@ -7593,7 +7691,7 @@ function nukeTilesH(n, full){
   if(a && a.done) sub = '<span class="st2 okc">voltooid</span>';
   else if(a){
     const rate = a.on ? n.ppd / (1 - ATOM.drain) * ATOM.drain : n.ppd * ATOM.drain;
-    sub = meter(a.p, ATOM.cost) + '<span class="st2">' + Math.round(100 * a.p / ATOM.cost) + '% · ' + (a.on ? '~' + Math.ceil((ATOM.cost - a.p) / Math.max(0.05, rate)) + ' d' : 'gepauzeerd') + '</span>';
+    sub = meter(a.p, ATOM.cost) + '<span class="st2">' + Math.round(100 * a.p / ATOM.cost) + '% · ' + (!a.on ? 'gepauzeerd' : atomCan(me) ? '~' + Math.ceil((ATOM.cost - a.p) / Math.max(0.05, rate)) + ' d' : NF.format(Math.floor(facTot(me) * 10) / 10) + '/' + ATOM.fabs + ' fabrieken · stilgelegd') + '</span>';
   }
   else if(atomCan(me)) sub = '<span class="st2">kost ' + Math.round(100 * ATOM.drain) + '% van je productie</span>';
   else { sub = '<span class="st2" style="color:var(--war)">' + NF.format(Math.floor(facTot(me) * 10) / 10) + '/' + ATOM.fabs + ' fabrieken</span>'; dis = true; }
@@ -7694,7 +7792,7 @@ function drawDeal(ctx, px){
   // besmet gebied blijft zichtbaar zolang het duurt
   if(G.rad){ const ps = Object.keys(G.rad).filter(p => G.rad[p] > G.day); if(ps.length){ fillP(ps, 'rgba(160,190,40,.2)', 'rgba(214,236,84,.85)', [2*px, 3*px]); ctx.fillStyle = dealPat('rad'); for(const p of ps) if(PATH[p]) ctx.fill(PATH[p], 'evenodd'); } }
   // gedemilitariseerde grenzen van verdragen waar jij partij bent
-  if(G.tr){ const me = G.player; for(const c in G.tr){ const t = G.tr[c]; if(t.dmz > G.day && (c === me || t.by === me)) dmzDraw(ctx, px, dmzStrip(c, t.by), 0.6); } }
+  if(G.tr){ const me = G.player; for(const c in G.tr) for(let t = G.tr[c]; t; t = t.prev){ if(t.dmz > G.day && (c === me || t.by === me)) dmzDraw(ctx, px, dmzStrip(c, t.by), 0.6); } }
   const m = dealMap(); if(!m) return;
   ctx.lineWidth = 1.6*px;
   for(const [p, col] of m.back){ if(!PATH[p]) continue; ctx.globalAlpha = .5; ctx.fillStyle = col; ctx.fill(PATH[p], 'evenodd'); ctx.globalAlpha = 1; ctx.fillStyle = dealPat('hatch'); ctx.fill(PATH[p], 'evenodd'); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.stroke(PATH[p]); }
@@ -7773,12 +7871,13 @@ function renderCard(){
   if(!G || G.over || !cardOpen()){
     if(!el.hidden){ el.hidden = true; cardSig = ''; UI.conf = null; overDirty = true; }
     UI.cardFit = null;
-    if(G && G.cardPause && !cardOpen()){ G.cardPause = false; G.paused = false; }
+    if(G && G.cardPause && !cardOpen()){ G.cardPause = false; if(!(G.won && UI.winShown)) G.paused = false; }
     return;
   }
   const cd = G.cards[0], me = G.player, e = cd.e;
   if(e && (!alive(e) || !atWar(me, e))){ G.cards.shift(); UI.conf = null; cardSig = ''; renderCard(); return; }
   if(cd.dip && !dipCardOk(cd)){ G.cards.shift(); cardSig = ''; renderCard(); return; }
+  if(cd.k === 'mysurr' && !enemiesOf(me).length){ G.cards.shift(); cardSig = ''; renderCard(); return; }   // verouderde capitulatiekaart (de oorlog is al voorbij)
   if(cd.k === 'conf' && !UI.conf) UI.conf = confInit(e);
   // de kaart schuift mee: het betrokken gebied komt in het vrije deel van het scherm, naast of boven de beslissing
   { const fk = cd.k + ':' + (e || cd.o || '') + ':' + cd.day; if(UI.cardFit !== fk){ UI.cardFit = fk; if(cd.k !== 'surr') fitDeal(); } }
@@ -7856,7 +7955,7 @@ $('card').addEventListener('click', e => {
 let endSig = '';
 function renderEnd(){
   const el = $('endcard');
-  const show = G && (G.over || (G.won && UI.winShown));
+  const show = G && (G.over || (G.won && UI.winShown && !cardOpen()));   // één venster tegelijk: eerst de openstaande beslissing, dan het eindverslag
   if(!show){ if(!el.hidden) el.hidden = true; endSig = ''; return; }
   const sc = score(), rk = rankOf(sc), best = bestOf(MAPNAME, G.player);
   const sh = Math.round(100*owned(G.player).length/PIDS.length);
@@ -7894,7 +7993,7 @@ $('endcard').addEventListener('click', e => {
     return;
   }
   else if(b.dataset.e === 'again'){ const c = G.player, d = G.diff; clearToasts(); newGame(c, d); onGameLoaded(true); }
-  else { UI.winShown = false; G.paused = false; }
+  else { UI.winShown = false; if(cardOpen()) G.cardPause = true; else G.paused = false; }   // doorspelen: met een open beslissing pas na die beslissing
   renderAll();
 });
 
@@ -7921,7 +8020,7 @@ const phead = (icon, t, close) => '<div class="tabs ptl"><span class="tab on">' 
 /* ---- logboek: elke melding met dag en soort; bewaard in G.log (begrensd), dus ook in het opgeslagen spel ---- */
 const LOG_MAX = 200;
 const LOG_SKIP = new Set(['sel', 'bad', 'mute', 'beslis', 'pts', 'odds', 'lag', 'err', 'save', 'fs', 'hud']);   // bedieningsfeedback: geen nieuws
-const LOG_KEEP = /oorlog|vrede|wapenstilstand|capitul|verdrag|coalitie|landen in|luchtlanding|raket|sabotage|blitz|mobilisatie|bunker/i;
+const LOG_KEEP = /oorlog|vrede|wapenstilstand|capitul|verdrag|coalitie|landen in|luchtlanding|raket|sabotage|blitz|mobilisatie|bunker|bondgeno|doorgang|lend-lease|geschonken|kern/i;
 const LOG_CAT = {dip:['Oorlog en vrede', 'oorlog'], front:['Front', 'zwaard'], prod:['Productie', 'fab'], info:['Overig', 'info']};
 // grote gebeurtenissen: een banier midden in beeld in plaats van een gewone melding
 const BIG = [
@@ -7938,6 +8037,7 @@ function logCat(msg, key){
   if(key && /^(cap|lost|kia|airloss|rebase|ls)/.test(key) && key !== 'cap-me') return 'front';
   if(/geïntegreerd|gereed|ontwikkeld/i.test(msg)) return 'prod';
   if(/oorlog|vrede|wapenstilstand|capitul|coalitie|rechtvaardigt|verdrag|veroverd|overgave/i.test(msg)) return 'dip';
+  if((key && /^(nuke|nkw)/.test(key)) || /werpt een kernbom|kernaanval|sabotage|raket/i.test(msg)) return 'front';   // vóór 'fabriek': de schade aan de industrie maakt er geen productienieuws van
   if(/fabriek/i.test(msg)) return 'prod';
   if(/ingenomen|verloren|gesneuveld|omsingeld|neergeschoten|landing|landen in|bunkerlinie|generaal|troepen|afgesneden|noodtoestand|raket|sabotage/i.test(msg)) return 'front';
   return 'info';
@@ -7959,7 +8059,7 @@ function logAdd(msg, kind, key){
   const skip = (key && LOG_SKIP.has(key)) || (byUser && !big && kind !== 'war' && !LOG_KEEP.test(msg));
   if(!skip){
     const L = G.log ||= [], d = Math.floor(G.day), last = L[L.length - 1];
-    if(key && last && last.y === key && d - last.d <= 3){ last.m = msg; last.d = d; }   // dezelfde melding, bijgewerkt (bv. "3 provincies ingenomen"): één regel
+    if(key && last && last.y === key && d - last.d <= 3 && (last.m === msg || (key === 'cap' && /^\d/.test(msg)))){ last.m = msg; last.d = d; }   // alleen een echte teller ("3 provincies ingenomen") of dezelfde tekst werkt de vorige regel bij; een andere melding met dezelfde sleutel krijgt een eigen regel (met haar eigen sprongdoel)
     else {
       const e = {d, k:kind || '', t:logCat(msg, key), m:msg}, r = logRef(msg, e.t);
       if(key) e.y = key;
@@ -8236,8 +8336,9 @@ function hudSheet(el){
       + hb('keys', 'toets', 'Sneltoetsen') + hb('intro', 'info', 'Snelstart')
       + hb('home', 'huis', 'Mijn land') + hb('full', 'scherm', 'Volledig scherm')
       + (UI.confirm === 'new' ? hb('new', 'vlag', 'Bevestig: nieuw', 'war') : hb('new', 'vlag', 'Nieuw spel'))
-      + hb('menu', 'deur', 'Hoofdmenu') + '</div>'
-      + '<p class="help" style="margin:.2rem 0 0">Het spel wordt vanzelf opgeslagen. Via het hoofdmenu kun je later verder met Doorgaan.</p>'
+      + (UI.confirm === 'menu' ? hb('menu', 'deur', 'Bevestig: spel gaat verloren', 'war') : hb('menu', 'deur', 'Hoofdmenu')) + '</div>'
+      + (saveFailed ? '<p class="help warc" style="margin:.2rem 0 0">Opslaan lukt niet (opslag vol of geblokkeerd in privémodus). Ga je naar het hoofdmenu of sluit je dit venster, dan is dit spel weg.</p>'
+        : '<p class="help" style="margin:.2rem 0 0">Het spel wordt vanzelf opgeslagen. Via het hoofdmenu kun je later verder met Doorgaan.</p>')
       + '<div class="sec">' + ic('wiel') + 'Instellingen</div>' + settingsH();
   }
   if(h === sheetSig || sheetPress) return true;
@@ -8249,13 +8350,16 @@ function hudSheet(el){
 function hudAct(a){
   if(a === 'logclr'){ G.log = []; newsSig = null; }
   else if(a === 'resume'){ UI.sheet = null; }
-  else if(a === 'save'){ autosave(); if(!saveFailed) toast('Spel opgeslagen', 'good', 'hud'); }
+  else if(a === 'save'){ if(autosave(true)) toast('Spel opgeslagen', 'good', 'hud'); }   // mislukt: autosave meldt het zelf, elke keer
   else if(a === 'keys'){ UI.keys = true; renderKeys(); }
   else if(a === 'intro'){ UI.intro = 1; UI.sheet = null; G.paused = true; stripSig = null; }
   else if(a === 'home'){ fitCountry(G.player); if(cw() < 900) UI.sheet = null; }
   else if(a === 'full'){ fullScreen(); }
   else if(a === 'new'){ if(UI.confirm === 'new'){ UI.confirm = null; toPick(); return; } UI.confirm = 'new'; }
-  else if(a === 'menu'){ toMenu(); return; }
+  else if(a === 'menu'){
+    if(UI.confirm !== 'menu' && !G.over && !autosave(true)){ UI.confirm = 'menu'; return; }   // opslaan lukt niet: eerst bevestigen, anders is het spel zonder waarschuwing weg
+    UI.confirm = null; UI.menuPage = 'main'; toPick(true); return;   // (al opgeslagen, dus niet via toMenu: dat zou de reservekopie overschrijven)
+  }
 }
 $('sheet').addEventListener('click', e => {
   if(!G) return;
@@ -8274,12 +8378,12 @@ let menuSig = null, menuSave;   // menuSave: samenvatting van het opgeslagen spe
 function saveInfo(){
   if(menuSave !== undefined) return menuSave;
   const s = readSave(), g = s && s.G;
-  menuSave = g && g.v === 5 && g.player && !g.over && MAPS[s.map] ? {c:g.player, day:g.day, map:s.map, diff:g.diff, name:((CACHE[s.map] && CACHE[s.map].countries[g.player]) || {}).name || g.player.toUpperCase()} : null;
+  menuSave = g && g.v === 5 && g.player && !g.over && MAPS[s.map] ? {c:g.player, day:g.day, map:s.map, diff:g.diff, name:((CACHE[s.map] && CACHE[s.map].countries[g.player]) || {}).name || s.name || fxeNames()[s.map + ':' + g.player] || g.player.toUpperCase()} : null;
   return menuSave;
 }
 function bestList(){
   let b = {}; try{ b = JSON.parse(localStorage.getItem('ve_best') || '{}'); }catch(e){}
-  return Object.keys(b).map(k => { const [m, c] = k.split(':'); return {m, c, s:b[k], name:m === MAPNAME && CN[c] ? CN[c].name : ((CACHE[m] && CACHE[m].countries[c]) || {}).name || c.toUpperCase()}; }).filter(x => MAPS[x.m] && x.s > 0).sort((x, y) => y.s - x.s);
+  return Object.keys(b).map(k => { const [m, c] = k.split(':'); return {m, c, s:b[k], name:m === MAPNAME && CN[c] ? CN[c].name : ((CACHE[m] && CACHE[m].countries[c]) || {}).name || fxeNames()[k] || c.toUpperCase()}; }).filter(x => MAPS[x.m] && x.s > 0).sort((x, y) => y.s - x.s);
 }
 const mbtn = (k, icon, t, sub, cls) => '<button class="mb' + (cls ? ' ' + cls : '') + '" data-m="' + k + '">' + ic(icon) + '<span><b>' + t + '</b><small>' + sub + '</small></span></button>';
 const HOW = [
@@ -8523,7 +8627,7 @@ function hudKey(e){
   if(dg && (e.shiftKey || e.ctrlKey) && !e.altKey && !e.metaKey){ if(UI.sel.size){ e.preventDefault(); groupSave(+dg[1]); } return; }
   if(e.ctrlKey || e.metaKey || e.altKey) return;   // sneltoetsen van de browser met rust laten
   if(e.code === 'Space'){ e.preventDefault(); if(tn === 'BUTTON') tg.blur(); togglePause(); }
-  else if(k >= '1' && k <= '4'){ G.speed = +k; if(!cardOpen()) G.paused = false; renderBar(); }
+  else if(k >= '1' && k <= '4'){ G.speed = +k; if(!cardOpen() && !UI.intro && !UI.winShown) G.paused = false; renderBar(); }   // achter het eindverslag of de Snelstart loopt het spel niet
   else if(k === '+' || k === '='){ setSpeed(G.speed + 1); }
   else if(k === '-' || k === '_'){ setSpeed(G.speed - 1); }
   else if(k === 'Escape'){
@@ -8616,15 +8720,18 @@ async function switchMap(name, force){
   stripSig = null; renderAll();
 }
 let saveFailed = false;
-function autosave(){
-  if(!G || G.over) return;
+function autosave(manual){   // geeft terug of het gelukt is
+  if(!G || G.over) return false;
+  menuSave = undefined;
   try{
     const cur = localStorage.getItem(SAVE_KEY);
     if(cur) localStorage.setItem(SAVE_KEY + '.bak', cur);   // vorige versie als reserve
-    localStorage.setItem(SAVE_KEY, JSON.stringify({map:MAPNAME, G}));
+    localStorage.setItem(SAVE_KEY, JSON.stringify({map:MAPNAME, name:CN[G.player].name, G}));   // name: het hoofdmenu kent de landnaam ook als deze kaart nog niet geladen is
     saveFailed = false;
+    return true;
   }catch(e){
-    if(!saveFailed){ saveFailed = true; toast('Opslaan lukt niet (opslag vol of geblokkeerd in privémodus): je voortgang blijft alleen in dit venster', 'war', 'save'); }
+    if(!saveFailed || manual){ saveFailed = true; sheetSig = ''; toast('Opslaan lukt niet (opslag vol of geblokkeerd in privémodus): je voortgang blijft alleen in dit venster', 'war', 'save'); }
+    return false;
   }
 }
 // is dit een bruikbaar opgeslagen spel voor de geladen kaart? Repareert kleine gebreken, weigert kapotte data
@@ -8673,12 +8780,13 @@ function toPick(menu){
   clearToasts();
   if(menu !== true) UI.menuPage = 'pick';
   G = null; UI.pick = null; UI.sheet = null; UI.target = null; UI.info = null; UI.confirm = null; UI.winShown = false; clearSel();
+  UI.mapMode = 'pol'; menuSave = undefined;   // de kaartmodus hoort bij het spel: menu, landkeuze en een nieuw spel beginnen in Politiek
   allFills(); fitAll(); stripSig = null; renderAll();
 }
 function onGameLoaded(focus){
   clearToasts(); warsChanged(); ownDirty = true; POWC = null; AIRBY = null;
   clearSel(); UI.info = null; UI.target = null; UI.sheet = null; UI.confirm = null; UI.winShown = false;
-  RZ = ZONE_KM / KM; computeSupply(true); polInit();
+  RZ = ZONE_KM / KM; computeSupply(true); polInit(); buildIdx();   // eenheid-indexen meteen opbouwen: limieten en tellers kloppen ook vóór de eerste dagtik
   allFills(); stripSig = null; sheetSig = '';
   if(focus) fitCountry(G.player);
   renderAll();
