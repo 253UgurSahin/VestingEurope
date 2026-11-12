@@ -1718,6 +1718,18 @@ body.ez.ez-warned #toasts{top:calc(var(--hud-h) + 2.6rem)}
 .ez-tile small{display:inline-flex;align-items:center;gap:.2rem}
 .ez-tile small .ez-ic{width:.75rem;height:.75rem;color:var(--dim)}
 @media (pointer:coarse){ .ezx-tag{width:1.3rem;height:1.3rem} .ezx-b{min-height:max(3rem, 44px)} }
+/* ---- snelheid 1×–4× en de houding van de generaal ---- */
+.ez-spds .kbtn{padding:.1rem .45rem;min-width:0;font-variant-numeric:tabular-nums}
+.ez-spds .kbtn + .kbtn{margin-left:-1px;border-radius:0}
+.ez-spds .kbtn:first-child{border-radius:var(--r-m) 0 0 var(--r-m)} .ez-spds .kbtn:last-child{border-radius:0 var(--r-m) var(--r-m) 0}
+#ezTop .ez-gbtn{padding:.1rem .55rem;gap:.3rem}
+#ezTop .ez-gbtn .ez-ic{width:.95rem;height:.95rem;color:var(--accent)}
+.ezx-houd{display:flex;align-items:center;gap:0;margin:0 0 .45rem}
+.ezx-houd > span{font:500 .7rem var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-right:.5rem}
+.ezx-houd .ez-seg{display:inline-flex;align-items:center;gap:.3rem;flex:1 1 0;justify-content:center}
+.ezx-houd .ez-seg .ez-ic{width:.85rem;height:.85rem}
+@media (max-width:699px){ #ezTop .ez-gbtn span{display:none} #ezTop .ez-spd{padding:0 .4rem} .ezx-houd > span{display:none} }
+@media (max-width:360px){ #ezTop .ez-spd{padding:0 .3rem;font-size:.75rem} }
 </style>
 <style id="skin">
 /* ================= strakke skin: rustig, compact, volwassen (overschrijft de basisstijl; nieuwe onderdelen horen in het eerste stijlblok) ================= */
@@ -3724,9 +3736,13 @@ function friendly(c, o){
   return !!((a && a[x]) || (t && t[x]));
 }
 const canEnter = (c, p) => { const o = G.ctrl[p]; return o === c || friendly(c, o) || atWar(c, o); };
-// mag c vanuit provincie p het land van 'own' binnenvallen? Vanuit eigen land altijd; vanuit bevriend land alleen als de
-// gastheer zelf met dat land in oorlog is (een gezamenlijke vijand). Doorgang door een neutraal land is geen uitvalsbasis.
-const dipBase = (c, p, own) => { const o = G.ctrl[p]; return o === c || (friendly(c, o) && atWar(o, own)); };
+// mag c vanuit provincie p het land van 'own' binnenvallen? Vanuit eigen land altijd, en vanuit het land van een bondgenoot of
+// van een land dat je doorgang geeft (doorgangsrecht is juist bedoeld om via dat land aan te vallen).
+const dipBase = (c, p, own) => { const o = G.ctrl[p]; return o === c || friendly(c, o); };
+// landen waarvan c het grondgebied als uitvalsbasis mag gebruiken (bondgenoten en doorgang; alleen voor de speler bijgehouden)
+function dipHosts(c){ if(c !== G.player) return []; const r = []; for(const x of Object.keys(G.ally || {}).concat(Object.keys(G.access || {}))) if(x !== c && G.nations[x] && alive(x) && friendly(c, x) && !atWar(c, x) && !r.includes(x)) r.push(x); return r; }
+// eigen provincies plus die van zulke gastlanden
+function baseProvs(c){ const hs = dipHosts(c); if(!hs.length) return owned(c); const r = owned(c).slice(); for(const h of hs) for(const p of owned(h)) r.push(p); return r; }
 // voor de kaart en de interface: hoe staat land c tegenover jou?
 function dipState(c){ const me = G.player; return c === me ? 'self' : atWar(me, c) ? 'war' : isAlly(c) ? 'ally' : hasAccess(c) ? 'access' : hasPact(c) ? 'pact' : 'neutral'; }
 function dipInit(){
@@ -4095,6 +4111,7 @@ function dipGuestsHome(){
   const me = G.player, auto = nat(me).auto;
   for(const u of G.units){
     if(u.gst || u.att || u.path.length || G.ctrl[u.loc] === u.c || (u.exp || -99) >= G.day - 8 || (u.c === me && (!auto || u.man || u.hold)) || !friendly(u.c, G.ctrl[u.loc])) continue;
+    if(u.c === me && (enemiesOf(me).length || prepOf(me)) && ADJ[u.loc].some(n => { const o = G.ctrl[n]; return atWar(me, o) || o === prepOf(me); })) continue;   // aan het front of klaar voor de opmars via doorgang of bondgenoot: blijven staan
     const c = u.c, prev = {[u.loc]: null}, q = [u.loc]; let goal = null;
     for(let i = 0; i < q.length && i < 600 && !goal; i++){
       const x = q[i];
@@ -4656,7 +4673,7 @@ function aiArmy(c){
   const {front, hosts} = frontOf(c);
   const mineL = n => { const o = G.ctrl[n]; return o === c || hosts.has(o); };
   const passL = hosts.size || (auto ? allyN() || Object.keys(G.access).length : friendly(c, G.player)) ? n => { const o = G.ctrl[n]; return o === c || friendly(c, o); } : n => G.ctrl[n] === c;
-  const tgt = (f, n) => { const o = G.ctrl[n]; return atWar(c, o) && (G.ctrl[f] === c || atWar(G.ctrl[f], o)); };   // mag je vanuit frontstuk f provincie n aanvallen?
+  const tgt = (f, n) => { const o = G.ctrl[n]; return atWar(c, o) && (G.ctrl[f] === c || atWar(G.ctrl[f], o) || dipBase(c, f, o)); };   // mag je vanuit frontstuk f provincie n aanvallen? (ook vanuit doorgang of bondgenoot)
   if(!front.length){ aiParas(c); if(auto) noFront(ens); aiGarrison(c, mine, own); return; }   // geen front: dan toch de gevaarlijke grenzen bewaken
   const frontSet = new Set(front);
   const BREAK = {}; for(const e of ens) BREAK[e] = meterOf(e);   // breekt de vijand? dan doordrukken
@@ -5062,11 +5079,11 @@ function aiArmy(c){
 function frontOf(c){
   const me = G.player, ens = enemiesOf(c), hosts = new Set();
   if(ens.length){
-    const cand = c === me ? Object.keys(G.ally || {}).concat(Object.keys(G.access || {})) : [me];
-    for(const x of cand) if(x !== c && G.nations[x] && alive(x) && friendly(c, x) && !atWar(c, x) && ens.some(e => atWar(x, e))) hosts.add(x);
+    if(c === me) for(const x of dipHosts(c)) hosts.add(x);   // bondgenoot of doorgang: hun grens met jouw vijand is ook jouw front
+    else for(const x of [me]) if(x !== c && G.nations[x] && alive(x) && friendly(c, x) && !atWar(c, x) && ens.some(e => atWar(x, e))) hosts.add(x);
   }
   const front = owned(c).filter(p => ADJ[p].some(n => atWar(c, G.ctrl[n])));
-  for(const h of hosts) for(const p of owned(h)) if(ADJ[p].some(n => { const o = G.ctrl[n]; return atWar(c, o) && atWar(h, o); })) front.push(p);
+  for(const h of hosts) for(const p of owned(h)) if(ADJ[p].some(n => atWar(c, G.ctrl[n]))) front.push(p);
   return {front, hosts};
 }
 // aanvalsmodifier van terrein, rivier en stad voor gewone infanterie (voor de keuze waar de generaal aanvalt)
@@ -5141,8 +5158,8 @@ function sendTo(c, movers, need){
    in de tweede linie erachter); overzee naar de havens met een zeeroute erheen, mariniers voorop. De rest bewaakt
    de andere gevaarlijke grenzen. Alles binnen de aanvoer, zodat niemand slijt. */
 function prepZones(c, x){
-  const B = new Map(), S = new Map();
-  for(const p of owned(c)){
+  const B = new Map(), S = new Map(), base = baseProvs(c), mine = new Set(base);
+  for(const p of base){
     let v = 0, sea = false;
     for(const n of ADJ[p]){
       if(G.ctrl[n] !== x) continue;
@@ -5152,9 +5169,9 @@ function prepZones(c, x){
     }
     if(v) B.set(p, {v, sea});
   }
-  for(const [p, b] of B) for(const n of ADJ[p]) if(G.ctrl[n] === c && !B.has(n) && !SEA.has(ek(p, n))) S.set(n, Math.max(S.get(n) || 0, b.v * 0.6));
+  for(const [p, b] of B) for(const n of ADJ[p]) if(mine.has(n) && !B.has(n) && !SEA.has(ek(p, n))) S.set(n, Math.max(S.get(n) || 0, b.v * 0.6));
   const T = new Map();   // derde linie: wat niet aan de grens past staat één stap verder klaar
-  for(const [p, v] of S) for(const n of ADJ[p]) if(G.ctrl[n] === c && !B.has(n) && !S.has(n) && !SEA.has(ek(p, n))) T.set(n, Math.max(T.get(n) || 0, v * 0.6));
+  for(const [p, v] of S) for(const n of ADJ[p]) if(mine.has(n) && !B.has(n) && !S.has(n) && !SEA.has(ek(p, n))) T.set(n, Math.max(T.get(n) || 0, v * 0.6));
   return {B, S, T};
 }
 // hoeveel divisies passen er in de opmarszones (binnen de aanvoer)?
@@ -9711,11 +9728,12 @@ function ezNbrs(){
   if(EZ.nbK === k && EZ.nbG === G) return EZ.nb;
   let nb = neighbors(me);
   if(!nb.length){ const s = new Set(); for(const p of owned(me)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && alive(o)) s.add(o); } nb = [...s]; }
+  { const s = new Set(nb), hs = dipHosts(me); for(const h of hs) for(const p of owned(h)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && o !== h && alive(o) && !SEA.has(ek(p, q))) s.add(o); } nb = [...s]; }   // via een bondgenoot of doorgang bereikbaar
   EZ.nbK = k; EZ.nbG = G;
   return EZ.nb = nb;
 }
 // grenst land c over land aan jou? (anders moet je over zee: dat is zwaarder)
-const ezLandNb = c => { const me = G.player; return owned(c).some(p => ADJ[p].some(q => G.ctrl[q] === me && !SEA.has(ek(p, q)))); };
+const ezLandNb = c => { const me = G.player, hs = dipHosts(me); return owned(c).some(p => ADJ[p].some(q => (G.ctrl[q] === me || hs.includes(G.ctrl[q])) && !SEA.has(ek(p, q)))); };
 // kun je bij land c komen? buren, en landen aan de overkant van een zeeroute
 const ezReach = c => ezNbrs().includes(c);
 // hoe sterk is land c tegenover jou als je het aanvalt? [verhouding, beschermer die dan meedoet]
@@ -10059,7 +10077,8 @@ function ezTopR(){
   ezPut(ch[2], 'stats', '<span class="ez-stat">' + ezIc('leger') + '<b>' + divs + '</b><small>' + (divs === 1 ? 'divisie' : 'divisies') + '</small></span><span class="ez-stat">' + ezIc('fab') + '<b>' + fabs + '</b><small>' + (fabs === 1 ? 'fabriek' : 'fabrieken') + '</small></span>');
   ezPut(ch[3], 'date', '<b>Dag ' + Math.floor(G.day) + '</b><small>jaar ' + (Math.floor(G.day / 365) + 1) + '</small>');
   ezPut(ch[4], 'clock', '<button type="button" class="kbtn big ez-play ' + (run ? 'gold' : 'go ez-blink') + '" data-eza="play" aria-label="' + (run ? 'Pauze: zet de tijd stil' : 'Start: laat de tijd lopen') + '">' + ezIc(run ? 'pauze' : 'speel') + '<span>' + (run ? 'Pauze' : 'Start') + '</span></button>'
-    + '<span class="ez-spds" role="group" aria-label="Hoe snel de tijd loopt"><button type="button" class="kbtn ez-spd ' + (G.speed < 2 ? 'gold' : 'ghost') + '" data-eza="slow" aria-pressed="' + (G.speed < 2) + '" aria-label="Langzaam"><span class="ez-w">Langzaam</span><span class="ez-n" aria-hidden="true">1×</span></button><button type="button" class="kbtn ez-spd ' + (G.speed >= 2 ? 'gold' : 'ghost') + '" data-eza="fast" aria-pressed="' + (G.speed >= 2) + '" aria-label="Snel"><span class="ez-w">Snel</span><span class="ez-n" aria-hidden="true">2×</span></button></span>');
+    + '<span class="ez-spds" role="group" aria-label="Snelheid">' + [1, 2, 3, 4].map(v => '<button type="button" class="kbtn ez-spd ' + (G.speed === v ? 'gold' : 'ghost') + '" data-eza="spd:' + v + '" aria-pressed="' + (G.speed === v) + '" title="Snelheid ' + v + ' (toets ' + v + ')" aria-label="Snelheid ' + v + '">' + v + '×</button>').join('') + '</span>'
+    + '<button type="button" class="kbtn ghost ez-gbtn" data-eza="gen" title="Generaal: ' + EZ_HOUD[genCfg().mode || 'bal'][1] + '. Tik om te wisselen (aanval, evenwicht, verdediging)." aria-label="Houding van de generaal: ' + EZ_HOUD[genCfg().mode || 'bal'][0] + '">' + ezIc(EZ_HOUD[genCfg().mode || 'bal'][2]) + '<span>' + EZ_HOUD[genCfg().mode || 'bal'][0] + '</span></button>');
   // waarschuwingen in gewone taal: je oorlogen, een geplande aanval en wat er echt misgaat
   const z = ezG(), w = [], ens = enemiesOf(me);
   for(const e of ens.slice(0, 3)) w.push('<button type="button" class="ez-pill war" data-eza="land:' + e + '" title="Oorlog met ' + ezNm(e) + ': ' + ezWarTxt(e) + '">' + ezIc('zwaard') + ezFlag(e) + '<span class="ezx-pnm">' + ezNm(e) + '</span><span class="ezx-pbar"><i style="width:' + pct(meterOf(e)) + '%"></i></span></button>');
@@ -10136,6 +10155,10 @@ function ezxActs(c){
     dip('ally', 'schild', 'Bondgenoot', 'Bondgenootschap: jullie vechten mee in elkaars oorlogen; doorgang inbegrepen', 'ally');
     if(!hasAccess(c)) dip('access', 'prov', 'Doorgang', 'Doorgangsrecht: je divisies mogen door hun land', 'access');
   }
+  { const cf = k => UI.confirm === k + ':' + c, X = (k, word, tip) => B.push(ezxB('data-dip="' + k + ':' + c + '"', 'wit', cf(k) ? 'Zeker?' : word, cf(k) ? 'Tik nog een keer om op te zeggen' : tip, false, cf(k) ? 'war on' : ''));
+    if(isAlly(c)) X('allyx', 'Opzeggen', 'Bondgenootschap opzeggen: relatie −25, daarna 90 dagen een niet-aanvalsverdrag');
+    else if(hasPact(c)){ const left = G.pact[c] - G.day; if(left > 60) X('pactx', 'Opzeggen', 'Niet-aanvalsverdrag opzeggen: vervalt na 60 dagen, relatie −15'); else B.push(ezxB('data-dip="pactx:' + c + '"', 'wit', 'Loopt af', 'Het verdrag loopt over ' + left + ' d vanzelf af', true)); }
+    if(hasAccess(c) && !isAlly(c)) X('accessx', 'Doorgang×', 'Doorgang opzeggen: je divisies keren terug, relatie −5'); }
   { const cdl = (G.dipCd['imp:' + c] || 0) - G.day, cap = ((G.relM[c] || {}).verb || 0) >= 40;
     B.push(ezxB('data-dip="imp:' + c + '"', 'steun', 'Relatie', cdl > 0 ? 'Gezanten onderweg, weer over ' + cdl + ' d' : cap ? 'Gezanten kunnen niet meer doen' : 'Relatie verbeteren: +12 · ' + DCP.imp + ' bevelpunten', cdl > 0 || cap || n.cp < DCP.imp)); }
   { const ev = dipEval('ask', c); B.push(ezxB('data-dip="ask:' + c + '"', 'fab', 'Steun', ev.ok ? 'Vraag steun: 10% van hun productie, 90 dagen' : evWhy(ev), !ev.ok)); }
@@ -10143,6 +10166,8 @@ function ezxActs(c){
   B.push(ezxB('data-dip="lend:' + c + ':' + (cur ? 0 : 20) + '"', 'fab', cur ? 'Stop hulp' : 'Lend-lease', cur ? 'Stop de lend-lease aan ' + cname(c) : can ? 'Lend-lease: 20% van je productie, 90 dagen' : 'Alleen aan bondgenoten en aan wie tegen jouw vijand vecht', !cur && !can, cur ? 'on' : ''));
   return B.join('');
 }
+// houding van de generaal: [kort woord, uitleg, icoon]
+const EZ_HOUD = {att:['Aanval', 'valt eerder en vaker aan, ook met kleinere overmacht', 'zwaard'], bal:['Evenwicht', 'valt aan waar het kan en houdt genoeg achter de hand', 'gen'], def:['Verdediging', 'houdt eigen land vast en valt alleen bij grote overmacht aan', 'schild']};
 function ezAtkRow(c){
   const me = G.player, z = ezG();
   let sub, btn = '', cls = '';
@@ -10193,7 +10218,8 @@ function ezSheetH(){
   const tip = t => '<div class="ez-tip">' + EZ_GEN + '<span>' + t + '</span></div>';
   if(k === 'atk'){
     const ens = enemiesOf(me), nb = ezNbrs().filter(c => !atWar(me, c)).sort((a, b) => (ezCanAtk(a) ? 1 : 0) - (ezCanAtk(b) ? 1 : 0) || ezFoe(a)[0] - ezFoe(b)[0]);
-    return head(ezIc('zwaard'), 'Aanvallen') + tip(UI.ezTut === 5 ? ezTutSay().t : ens.length ? 'Je bent al in oorlog. Rond die eerst af.' : 'Streepjes: hun sterkte tegenover jou. Tik op een land voor alle mogelijkheden.')
+    const hd = '<div class="ezx-houd" role="group" aria-label="Houding van de generaal"><span>Generaal</span>' + ['att', 'bal', 'def'].map(m => '<button type="button" class="ez-seg' + ((genCfg().mode || 'bal') === m ? ' on' : '') + '" data-eza="gen:' + m + '" title="' + EZ_HOUD[m][1] + '">' + ezIc(EZ_HOUD[m][2]) + EZ_HOUD[m][0] + '</button>').join('') + '</div>';
+    return head(ezIc('zwaard'), 'Aanvallen') + hd + tip(UI.ezTut === 5 ? ezTutSay().t : ens.length ? 'Je bent al in oorlog. Rond die eerst af.' : 'Streepjes: hun sterkte tegenover jou. Tik op een land voor alle mogelijkheden.')
       + '<div class="ez-list">' + ens.map(ezAtkRow).join('') + nb.map(ezAtkRow).join('') + (!ens.length && !nb.length ? '<p class="ez-p">Er is nu geen land binnen bereik.</p>' : '') + '</div>';
   }
   if(k === 'fr'){
@@ -10234,6 +10260,8 @@ function ezAct(a){
   if(k === 'play') togglePause();
   else if(k === 'slow') G.speed = 1;
   else if(k === 'fast') G.speed = 2;
+  else if(k === 'spd'){ G.speed = clamp(+v || 1, 1, 4); if(G.paused && !cardBlock()) G.paused = false; }
+  else if(k === 'gen'){ const g = genCfg(), o = ['att', 'bal', 'def'], m = v && EZ_HOUD[v] ? v : o[(o.indexOf(g.mode || 'bal') + 1) % 3]; g.mode = m; ezMsg('Generaal: ' + EZ_HOUD[m][1] + '.', 'good'); }
   else if(k === 'go'){ G.speed = 2; if(!cardBlock()) G.paused = false; }
   else if(k === 'menu'){ UI.ezSheet = null; UI.sheet = UI.sheet === 'set' ? null : 'set'; }
   else if(k === 'log'){ UI.ezSheet = null; UI.sheet = 'log'; }
