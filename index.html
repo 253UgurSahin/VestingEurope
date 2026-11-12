@@ -3500,6 +3500,11 @@ function warEnds(){
     if(m >= 0.75 && !n.ls) lastStand(c);
     else if(m >= 1 || (n.ls && m >= 0.6 && owned(c).length <= 1)){ if(c !== me) surrender(c); else if((G.mySurrCd || 0) <= G.day && !cardOpen()) surrender(c); }   // ook: alleen nog de laatste provincie
   }
+  // totale overwinning: er is geen ander land meer over (bondgenoten tellen niet als tegenstander)
+  if(!G.over && !G.total && alive(me) && !CIDS.some(c => c !== me && alive(c) && !isAlly(c))){
+    G.total = G.day; G.won = true; G.wonDay ||= G.day; G.paused = true; UI.winShown = true; saveBest();
+    toast('Totale overwinning: heel ' + MAPS[MAPNAME].name + ' is van jou', 'good', 'total'); flash('rgba(255,196,58,.5)'); sfx('win'); achOnWin(); achAward('total');
+  }
   if(!G.over && !G.won){
     const share = owned(me).length / PIDS.length;
     if(share >= winShare()){ G.won = true; G.wonDay = G.day; G.paused = true; UI.winShown = true; saveBest(); toast('Overwinning: je beheerst ' + winTxt() + ' van de kaart', 'good'); flash('rgba(255,196,58,.5)'); sfx('win'); achOnWin(); }
@@ -4576,6 +4581,7 @@ const ACH = [
   {id:'ind50',  t:'Industrieel',           d:'Beheer 50 fabrieken',                          ic:'fab'},
   {id:'calm',   t:'Diplomaat',             d:'Drie jaar zonder coalitie tegen je',           ic:'vrede'},
   {id:'winE',   t:'Overwinning',           d:'Win een spel (elk niveau)',                    ic:'medaille'},
+  {id:'total',  t:'Totale overwinning',    d:'Verover alles: geen ander land meer over',      ic:'ster'},
   {id:'winN',   t:'Strateeg',              d:'Win op Normaal of hoger',                      ic:'medaille'},
   {id:'winH',   t:'Meester',               d:'Win op Moeilijk of Zwaar',                     ic:'medaille'},
   {id:'small',  t:'David',                 d:'Win met een land van hoogstens 6 provincies',  ic:'schild'},
@@ -8955,8 +8961,8 @@ function renderEnd(){
   const sh = Math.round(100*owned(G.player).length/PIDS.length);
   const done = G.obj.filter(o => o.done).length;
   const win = G.won && !G.over;
-  const title = win ? 'Overwinning' : 'Capitulatie';
-  const sub = win ? 'Je beheerst ' + winTxt() + ' van de kaart' : esc(cname(G.player)) + ' geeft zich over · ' + fmtDate(G.day);
+  const title = win ? (G.total ? 'Totale overwinning' : 'Overwinning') : 'Capitulatie';
+  const sub = win ? (G.total ? 'Heel ' + MAPS[MAPNAME].name + ' is van jou · ' + fmtDate(G.total) : 'Je beheerst ' + winTxt() + ' van de kaart') : esc(cname(G.player)) + ' geeft zich over · ' + fmtDate(G.day);
   const h = '<div class="eh">' + ic(win ? 'ster' : 'vlag') + '<span>' + (win ? 'Eindverslag · zege' : 'Eindverslag · nederlaag') + '</span><i>' + fmtDay(G.day) + '</i></div>'
     + '<span class="eico">' + ic(win ? 'medaille' : 'dood') + '</span>'
     + '<span class="et">' + title + '</span><span class="esub">' + sub + '</span>'
@@ -8968,7 +8974,7 @@ function renderEnd(){
     + '<div>' + ic('dood') + '<span>Divisies verloren</span><b>' + G.stats.lost + '</b></div>'
     + ((G.newAch || []).length ? '<div>' + ic('ster') + '<span>Onderscheiding: ' + G.newAch.map(id => (ACH.find(z => z.id === id) || {}).t).filter(Boolean).join(', ') + '</span></div>' : '')
     + '</div><div class="ebtns">'
-    + (win ? '<button class="btn" data-e="cont">Doorspelen</button>' : '<button class="btn" data-e="again">' + ic('leger') + 'Opnieuw met ' + esc(cname(G.player)) + '</button>')
+    + (win ? '<button class="btn" data-e="cont">' + (G.total ? 'Bekijk je rijk' : 'Doorspelen') + '</button>' : '<button class="btn" data-e="again">' + ic('leger') + 'Opnieuw met ' + esc(cname(G.player)) + '</button>')
     + '<button class="btn pri" data-e="new">' + ic('vlag') + 'Nieuw spel</button></div>'
     + '<div class="ebtns2"><button class="btn sm ghost" data-e="share" title="Deel je score">' + ic('steun') + 'Deel je score</button><button class="btn sm ghost" data-e="menu">' + ic('deur') + 'Hoofdmenu</button></div>';
   if(h === endSig) return;
@@ -10097,10 +10103,10 @@ function ezEnd(){
   renderEnd(); if(el.hidden) return;
   const win = G.won && !G.over, sc = score(), rk = rankOf(sc);
   const medal = rk === 'Goud' ? ' Gouden medaille.' : rk === 'Zilver' ? ' Zilveren medaille.' : rk === 'Brons' ? ' Bronzen medaille.' : '';
-  const h = '<div class="ez-end">' + (win ? ezIc('ster', 'ez-endi') : '<span class="ez-endg">' + EZ_GEN + '</span>') + '<b class="ez-ct">' + (win ? 'Overwinning' : 'Je land is verslagen.') + '</b>'
-    + '<p class="ez-cp">' + (win ? 'Je hebt <b>' + ezShare() + '%</b> van ' + ezMapNm() + '.' : 'Je vijanden waren te sterk.') + '</p>'
+  const h = '<div class="ez-end">' + (win ? ezIc('ster', 'ez-endi') : '<span class="ez-endg">' + EZ_GEN + '</span>') + '<b class="ez-ct">' + (win ? (G.total ? 'Totale overwinning' : 'Overwinning') : 'Je land is verslagen.') + '</b>'
+    + '<p class="ez-cp">' + (win ? (G.total ? 'Heel ' + ezMapNm() + ' is van jou, op dag ' + G.total + '.' : 'Je hebt <b>' + ezShare() + '%</b> van ' + ezMapNm() + '.') : 'Je vijanden waren te sterk.') + '</p>'
     + '<p class="ez-cp">Je score: <b>' + sc + '</b> punten.' + medal + '</p><div class="ez-cb">'
-    + (win ? '<button type="button" class="kbtn go big wide" data-e="cont">Speel verder</button><button type="button" class="kbtn big wide" data-e="new">Nieuw spel</button>'
+    + (win ? '<button type="button" class="kbtn go big wide" data-e="cont">' + (G.total ? 'Bekijk je rijk' : 'Speel verder') + '</button><button type="button" class="kbtn big wide" data-e="new">Nieuw spel</button>'
       : '<button type="button" class="kbtn go big wide" data-e="again">Opnieuw met ' + ezNm(G.player) + '</button><button type="button" class="kbtn big wide" data-e="new">Kies een ander land</button>')
     + '<button type="button" class="kbtn ghost wide" data-e="menu">Hoofdmenu</button></div></div>';
   if(EZ.endS !== h || !el.querySelector('.ez-end')){ EZ.endS = h; el.innerHTML = h; }
@@ -10111,7 +10117,7 @@ function ezTopR(){
   const ch = T.children, sh = owned(me).length / PIDS.length, pc = pct(sh / winShare()), run = !G.paused;
   ezPut(ch[0], 'me', ezFlag(me) + '<b>' + ezNm(me) + '</b>');
   ezPut(ch[1], 'goal', '<div class="ez-goalbar" role="progressbar" aria-label="Hoe dicht je bij de overwinning bent" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc + '"><i style="width:' + pc + '%"></i></div>'
-    + '<span class="ez-goaltxt">' + (G.won ? 'Gewonnen. Je kunt doorspelen.' : '<b>' + ezShare() + '%</b> van ' + ezMapNm() + ' · doel <b>' + ezGoal() + '%</b>') + '</span>');
+    + '<span class="ez-goaltxt">' + (G.total ? 'Totale overwinning: heel ' + ezMapNm() + ' is van jou' : G.won ? 'Gewonnen. Je kunt doorspelen.' : '<b>' + ezShare() + '%</b> van ' + ezMapNm() + ' · doel <b>' + ezGoal() + '%</b>') + '</span>');
   const divs = ezDivs(), fabs = Math.round(slotTot(me)[0]);
   ezPut(ch[2], 'stats', '<span class="ez-stat">' + ezIc('leger') + '<b>' + divs + '</b><small>' + (divs === 1 ? 'divisie' : 'divisies') + '</small></span><span class="ez-stat">' + ezIc('fab') + '<b>' + fabs + '</b><small>' + (fabs === 1 ? 'fabriek' : 'fabrieken') + '</small></span>');
   ezPut(ch[3], 'date', '<b>Dag ' + Math.floor(G.day) + '</b><small>jaar ' + (Math.floor(G.day / 365) + 1) + '</small>');
