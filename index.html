@@ -2826,6 +2826,7 @@ function dailyTick(){
   buildIdx();
   airTick();
   battles();
+  encircleTick();
   warEnds();
   if(G.over) return;
   peaceTick();   // lopende verdragen (ontwapening, herstel, grensstrook), atoomprojecten en kerndreiging
@@ -2934,6 +2935,7 @@ function economy(initOnly){
     if(SUP[u.loc] === 0){ if(u.hp > 30) u.hp = Math.max(30, u.hp - 1.5); continue; }   // afgesneden: slijtage
     if(u.att || u.hp >= 100 || contested.has(u.loc)) continue;
     if(G.ctrl[u.loc] !== u.c){ if(!ov && friendly(u.c, G.ctrl[u.loc])) u.hp = Math.min(100, u.hp + 1.5); continue; }   // te gast in bevriend land: traag herstel
+    if((u.enc || 0) > 10) continue;   // ingesloten: geen herstel (zie encircleTick)
     u.hp = Math.min(100, u.hp + (P[u.loc].c === u.c ? 4 : 2.5));                       // bevoorraad: herstel
   }
 }
@@ -3294,6 +3296,39 @@ function aePreview(prev, ps, extra){
   return {v:r.v, top:Math.min(100, top), who};
 }
 // laatste verzet: bij 75% roept een land de noodtoestand uit, één keer per oorlog
+/* ---- omsingeling: wie volledig is ingesloten door vijandelijk land (geen eigen of bevriende buurprovincie over land), krijgt geen
+   aanvoer, versterkingen of rust meer. Divisies daar verliezen elke dag kracht (tot 25%) en hun ingraving; zo valt een ingesloten
+   restant uiteindelijk ook als het in het begin te sterk was. Over zee bevoorraden kan alleen via een eigen haven met een zeeroute. ---- */
+function encircleTick(){
+  if(!G.units.length) return;
+  const seen = {};
+  for(const u of G.units){
+    const c = u.c, p = u.loc; if(u.att || u.path.length) continue;
+    const k = c + '|' + p; let enc = seen[k];
+    if(enc === undefined){
+      enc = false;
+      if(enemiesOf(c).length && (G.ctrl[p] === c || friendly(c, G.ctrl[p]))){
+        let nb = 0, foe = 0;
+        for(const q of ADJ[p]){ const o = G.ctrl[q]; if(SEA.has(ek(p, q))){ if(o === c) { nb = -1; break; } continue; } nb++; if(atWar(c, o)) foe++; }
+        enc = nb > 0 && foe === nb;
+      }
+      seen[k] = enc;
+    }
+    if(!enc) continue;
+    u.enc = (u.enc || 0) + 1;
+    if(u.enc > 10 && u.hp > 25){ u.hp = Math.max(25, u.hp - 1.2); u.ent = 0; }   // eerst tien dagen voorraad, daarna slijten
+  }
+  for(const u of G.units) if(u.enc && !seen[u.c + '|' + u.loc]) u.enc = 0;
+  // na twee maanden uitgehongerd (op de bodem en 70 dagen ingesloten): de ingesloten troepen geven zich over
+  const gone = {};
+  for(const u of G.units) if((u.enc || 0) >= 70 && u.hp <= 26){
+    const by = ADJ[u.loc].map(q => G.ctrl[q]).find(o => atWar(u.c, o)); if(!by) continue;
+    u.dead = true; kill(by, u.c); (gone[u.loc] ||= {c:u.c, by, n:0}).n++;
+  }
+  for(const p in gone){ const g = gone[p], me = G.player;
+    if(g.c === me || g.by === me || isAlly(g.by)) toast((g.c === me ? 'Je ingesloten troepen in ' : 'Ingesloten troepen van ' + cname(g.c) + ' in ') + P[p].n + ' geven zich over: ' + g.n + (g.n === 1 ? ' divisie' : ' divisies'), g.c === me ? 'war' : 'good', 'enc' + p); }
+  if(Object.keys(gone).length){ G.units = G.units.filter(u => !u.dead); for(const id of [...UI.sel]) if(!unitById(id)) UI.sel.delete(id); buildIdx(); }
+}
 function lastStand(c){
   const n = nat(c), me = G.player;
   n.ls = G.day; n.lsT = G.day + 60;
@@ -4763,7 +4798,7 @@ function aiArmy(c){
   for(const f of front){
     const here = [];
     for(const u of IDX[f] || []) if(u.c === c && !u.att && !u.path.length && u.hp > 50 && u.t !== 'para' && !(auto && (u.man || u.hold || u.gst))) here.push(u);
-    if(!here.length) continue;
+    if(!here.length){ avail.set(f, {here, keep:new Set()}); continue; }   // ook zonder gezonde troepen: een lege vijandelijke provincie ernaast kan nog bezet worden
     // houders blijven staan: genoeg verdediging tegen wat er tegenover ligt
     const keep = new Set(); let kd = 0;
     if(SUP[f] !== 0) for(const h of here.filter(x => x.t === 'inf' || x.t === 'aa').sort((a,b) => defPlain(b, f) - defPlain(a, f))){ if(kd >= threat[f]*(defensive ? 1 : 0.6)) break; keep.add(h); kd += defPlain(h, f); }   // afgesneden: niemand blijft achter, alles breekt uit
@@ -4781,7 +4816,7 @@ function aiArmy(c){
   // lege provincies: snel bezetten, pantser eerst; vanaf een grote stapel met twee man
   for(const pl of plans){
     if(pl.ti.cnt) continue;
-    const fs = pl.fs.map(f => [f, avail.get(f).here.filter(x => !used.has(x))]).sort((a,b) => b[1].length - a[1].length);
+    const fs = pl.fs.map(f => { const h = avail.get(f).here; return [f, (h.length ? h : (IDX[f] || []).filter(u => u.c === c && !u.att && !u.path.length && u.hp > 15 && u.t !== 'art' && !(auto && (u.man || u.hold || u.gst)))).filter(x => !used.has(x))]; }).sort((a,b) => b[1].length - a[1].length);   // een lege provincie mag ook een verzwakte divisie bezetten
     const k = fs.length && fs[0][1].length >= 16 ? 2 : 1;
     let sent = 0;
     for(const [f, pool0] of fs){
@@ -4836,6 +4871,7 @@ function aiArmy(c){
   // ter plaatse minstens de helft van de stelling zijn. Wie niet sterker is belegert niet: dat kost meer dan het oplevert
   const strong = pwr > 1.6;
   const siegeOk = N.stall >= 12 && !(gc && gc.mode === 'def') && !defensive && pwr > 1.2; let siege = null;
+  const starved = n => { const d = defendersAt(n, c); return d.length > 0 && d.every(v => (v.enc || 0) > 10); };   // ingesloten stelling: slijt elke dag, herstelt niet
   for(const pl of plans.filter(pl => pl.ti.cnt).sort((a,b) => (focus ? (G.ctrl[b.n] === focus) - (G.ctrl[a.n] === focus) : 0) || a.ti.d/a.tm/(1 + 0.3*(a.ti.st - 1)) - b.ti.d/b.tm/(1 + 0.3*(b.ti.st - 1)))){   // terrein, rivier en stad meegewogen
     const t = pl.ti, cs = cands(pl);
     const eng = engaged[pl.n] || 0;
@@ -4847,8 +4883,9 @@ function aiArmy(c){
     if(!cs.some(([x]) => x.t !== 'art') || !(total > min || (eng && total > t.d*0.9*lan))){
       // belegering: al weken geen aanval mogelijk, maar wel duidelijk meer divisies rond de stelling dan erin: dan toch, de reserves lossen af.
       // Ook wie het front houdt telt mee en doet mee (ook als er verder niemand vrij is: een klein leger bestaat soms alleen uit houders)
-      if(siegeOk && !eng){ const ca = cands(pl, true), m = Math.min(t.cnt, t.W); let ta = 0; for(const [, v] of ca) ta += v;
-        if(ca.some(([x]) => x.t !== 'art') && ((strong && ca.length >= 1.6*m + 1 && ta > t.d*0.3*lan) || (ca.length >= m + 2 && ta > t.d*0.5)) && (!siege || ta/t.d > siege.r)) siege = {pl, cs: ca, r: ta/t.d}; }
+      const sv = !eng && !(gc && gc.mode === 'def') && N.stall >= 8 && starved(pl.n);   // ingesloten: uitslijten mag ook met een kleinere overmacht
+      if((siegeOk || sv) && !eng){ const ca = cands(pl, true), m = Math.min(t.cnt, t.W); let ta = 0; for(const [, v] of ca) ta += v;
+        if(ca.some(([x]) => x.t !== 'art') && ((strong && ca.length >= 1.6*m + 1 && ta > t.d*0.3*lan) || (ca.length >= m + 2 && ta > t.d*0.5) || (sv && ca.length >= 3 && ta > t.d*0.3)) && (!siege || ta/t.d > siege.r)) siege = {pl, cs: ca, r: ta/t.d}; }
       continue;
     }
     // 2:1 geeft veel minder eigen verlies: eerst één doel goed, met wat overblijft het volgende
@@ -9728,7 +9765,9 @@ function ezNbrs(){
   if(EZ.nbK === k && EZ.nbG === G) return EZ.nb;
   let nb = neighbors(me);
   if(!nb.length){ const s = new Set(); for(const p of owned(me)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && alive(o)) s.add(o); } nb = [...s]; }
-  { const s = new Set(nb), hs = dipHosts(me); for(const h of hs) for(const p of owned(h)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && o !== h && alive(o) && !SEA.has(ek(p, q))) s.add(o); } nb = [...s]; }   // via een bondgenoot of doorgang bereikbaar
+  { const s = new Set(nb), hs = dipHosts(me); for(const h of hs) for(const p of owned(h)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && o !== h && alive(o) && !SEA.has(ek(p, q))) s.add(o); }
+    for(const p of owned(me)) for(const q of ADJ[p]){ const o = G.ctrl[q]; if(o !== me && alive(o) && LONG.has(ek(p, q))) s.add(o); }   // ook over een lange zeeroute (zwaarder: zie ezFoe)
+    nb = [...s]; }   // via een bondgenoot of doorgang bereikbaar
   EZ.nbK = k; EZ.nbG = G;
   return EZ.nb = nb;
 }
