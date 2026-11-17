@@ -2090,6 +2090,47 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
 .spd .tstat{gap:.3rem} .spd .tstat .ic{width:.8rem;height:.8rem}
 .spq{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .6rem;margin-top:.3rem;font:500 .8rem var(--f-ui)}
 .spq span{display:inline-flex;align-items:center;gap:.2rem} .spq .ic{width:.9rem;height:.9rem;color:var(--dim)}
+
+/* ================= HOI4-achtig: korrel, klinknagels, stencilkoppen, telegrampapier, stoffen vlaggen ================= */
+:root{
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .3  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+  --mottle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 .9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)' opacity='.13'/%3E%3C/svg%3E");
+  --rivet:radial-gradient(circle at 50% 45%, #E3C77A 0 .7px, #9C7F38 1.3px, #2B230F 2px, rgba(0,0,0,0) 2.6px);
+  --weave:repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 2px), repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 2px);
+}
+/* panelen: gegoten staal met korrel en vier klinknagels (dicht: de kaart schijnt er niet door) */
+.glass,#ezSheet,#pickcard,#menu .mpanel,#armypanel{background-color:var(--plate);
+  background-image:var(--rivet),var(--rivet),var(--rivet),var(--rivet),var(--metal),var(--mottle),var(--grain);
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,repeat,repeat;
+  background-size:7px 7px,7px 7px,7px 7px,7px 7px,100% 100%,400px 400px,180px 180px;
+  background-position:3px 3px,right 3px top 3px,left 3px bottom 3px,right 3px bottom 3px,0 0,0 0,0 0}
+#hud,#ezTop,#bar,#ezNav,.abc,.toast,#minimap,#mapmodes{background-image:var(--metal),var(--grain);background-size:100% 100%,180px 180px;background-repeat:no-repeat,repeat}
+/* koppen in sjabloonletter met een messing lijn eronder */
+.ez-sh{padding-bottom:.35rem;border-bottom:1px solid transparent;border-image:linear-gradient(90deg, rgba(201,164,74,.55), rgba(201,164,74,0) 85%) 1}
+.ez-sh > b,.tab.on span,#armypanel .apg b,.pkh .hn b,#endcard b:first-of-type{font-family:var(--f-stencil);font-weight:400;letter-spacing:.07em}
+.sec{font-family:var(--f-ui)}
+/* portretten: messing lijst, licht verzonken */
+.gport{box-shadow:0 0 0 1px #000, 0 0 0 2px #8E7330, 0 0 0 3px rgba(0,0,0,.6), 0 3px 6px rgba(0,0,0,.55);filter:sepia(.25) saturate(.9)}
+/* vlaggen: stof met plooien en weefsel */
+.hflag,.ez-flag{background-image:linear-gradient(100deg, rgba(255,255,255,.2) 0, rgba(0,0,0,.08) 28%, rgba(255,255,255,.12) 52%, rgba(0,0,0,.22) 78%, rgba(255,255,255,.06) 100%),var(--weave)}
+/* beslissingen en meldingskaarten: telegrampapier, donkere inkt */
+#card{--ink:#2A2416;--dim:#5C5239;--a1:rgba(60,45,15,.06);--a2:rgba(60,45,15,.11);--a3:rgba(60,45,15,.18);--a4:rgba(60,45,15,.3);--pbg:#DCCFA9;--pbg-h:#E6DAB6;--accent:#7A5A14;--ok:#4F6A22;
+  background-color:#D9CCA4;color:var(--ink);border-color:#6B5A34;
+  background-image:linear-gradient(180deg, rgba(255,255,240,.35), rgba(0,0,0,0) 30%, rgba(80,55,10,.12)),var(--mottle),var(--grain);
+  background-size:100% 100%,400px 400px,180px 180px;background-repeat:no-repeat,repeat,repeat;
+  box-shadow:inset 0 0 0 1px rgba(255,250,230,.4), inset 0 0 2.2rem rgba(90,60,15,.25), var(--shadow)}
+#card .btn,#card .kbtn{color:var(--ink);background-color:rgba(255,250,230,.35);border-color:rgba(60,45,15,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+#card .btn.pri,#card .kbtn.gold{color:var(--accent-ink)}
+#card .btn.war,#card .kbtn.war,#card .kbtn.go{color:#FBF4E4}
+#card .ez-ct,#card .ct b{font-family:var(--f-stencil);font-weight:400;color:#3A2C10}
+#card .ic{color:inherit}
+#card.ntf-top.mini{box-shadow:inset 0 0 0 1px rgba(255,250,230,.4), var(--shadow-s)}
+/* ---- strategische stand: vloten en luchtmacht in de legerbalk ---- */
+.abc.fl{--ac:#8FB0C8}
+.apic{display:grid;place-items:center;width:1.9rem;height:2.15rem;flex:none;background:#1E2A36;box-shadow:0 0 0 1px #000, 0 0 0 2px #8E7330} .apic .ic{width:1.2rem;height:1.2rem;color:#D8E2EA}
+#armypanel .apic{width:2.75rem;height:3.1rem} #armypanel .apic .ic{width:1.7rem;height:1.7rem}
+.apw{display:flex;gap:.35rem;align-items:flex-start;margin:.45rem 0 0;font-size:.74rem;line-height:1.35} .apw .ic{flex:none;width:.95rem;height:.95rem;color:var(--war)}
+.apfr .gseg small{color:var(--dim);font-size:.68rem;margin-left:.15rem}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2669,7 +2710,7 @@ function atkMods(u, from, t){
 function seaMul(u, from, t){
   if(!from || u.air || !SEA.has(ek(from, t))) return 1;
   const mf = frOf(u).mar;
-  return (LONG.has(ek(from, t)) ? 0.45 + 0.65*mf : 0.6 + 0.5*mf) * (G.ctrl[t] === G.player ? coastDef(t) : 1);
+  return (LONG.has(ek(from, t)) ? 0.45 + 0.65*mf : 0.6 + 0.5*mf) * (G.ctrl[t] === G.player ? coastDef(t) : 1) * navMul(u.c, from, t);
 }
 /* ---- frontbreedte (zoals HOI4): per gevecht vechten maar zoveel divisies tegelijk; de rest is reserve en valt in
    als de voorste linie breekt. ---- */
@@ -2892,6 +2933,7 @@ function dailyTick(){
   airTick();
   battles();
   encircleTick();
+  if(G.navy && G.day % 2 === 0) navTick();   // strategische stand: marine
   warEnds();
   if(G.over) return;
   peaceTick();   // lopende verdragen (ontwapening, herstel, grensstrook), atoomprojecten en kerndreiging
@@ -2953,7 +2995,7 @@ function economy(initOnly){
       if(c === G.player) toast('Fabriek geschrapt: geen bouwplek vrij. Verover of integreer land voor nieuwe plekken' + (head.p && nx ? ' · de voortgang gaat naar het volgende item' : ''), 'war', 'noslot');
       head = n.q[0];
     }
-    const amt = c === G.player && stratOn() ? stratEconomy(n) : n.ppd;   // strategische stand: alleen het civiele deel gaat naar de wachtrij
+    const amt = c === G.player && stratOn() ? stratEconomy(n) : n.ppd * (1 - navRaid(c));   // konvooiverlies door onderzeeboten (strategische stand)   // strategische stand: alleen het civiele deel gaat naar de wachtrij
     if(head){
       const it = ITEMS[head.k], cost = itemCost(c, head.k);
       head.p = Math.min(cost, head.p + amt);
@@ -7171,6 +7213,11 @@ const SIL = {
   fi:   {p:'M12 1.8l1.4 5.8 8.4 4.3v2l-8.4-1.9-.6 6.2 3.1 2.3v1.7L12 21.1l-3.9 1.1v-1.7l3.1-2.3-.6-6.2-8.4 1.9v-2l8.4-4.3z'},
   cas:  {p:'M12 2.2l1.3 4.6h8.2v2.6l-7.9 1.5-.5 6.2 2.8 2.1v1.6L12 19.8l-3.9 1v-1.6l2.8-2.1-.5-6.2-7.9-1.5V6.8h8.2zM5 12.2a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 1 0-3.2 0zM15.8 12.2a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 1 0-3.2 0z'},
   bo:   {p:'M11 1.8h2l.7 17.4L12 21.6l-1.7-2.4zM1.2 10h21.6v2.6H1.2zM4.2 8.2h1.9v4.6H4.2zM7.6 8.2h1.9v4.6H7.6zM14.5 8.2h1.9v4.6h-1.9zM17.9 8.2h1.9v4.6h-1.9zM7.6 18.2h8.8v1.9H7.6z'},
+  dd:   {p:'M1.5 14.6h21l-2.6 4.4H4.6zM8 10.6h6.4v4H8zM14.8 12h3.4v2.6h-3.4zM10.2 7.4h1.6v3.2h-1.6zM4.2 12.6h3.2v2H4.2zM2.4 12.1h2.4v.9H2.4z'},
+  cr:   {p:'M1 14.6h22l-3 4.8H4zM6.6 10.2h9.6v4.4H6.6zM9.4 6.8h4.2v3.4H9.4zM10.9 3.6h1.2v3.2h-1.2zM2.8 12.4h3.6v2.2H2.8zM16.8 12.4h3.8v2.2h-3.8zM1 12h2.6v.9H1zM20.4 12H23v.9h-2.6z'},
+  bb:   {p:'M.8 14.4h22.4l-3.2 5.2H4zM5.6 9.8h12.8v4.6H5.6zM8.8 6.2h6.4v3.6H8.8zM11.4 2.6h1.2v3.6h-1.2zM2 11.9h4.4v2.5H2zM17.6 11.9H22v2.5h-4.4zM.6 11.2h3v.9h-3zM20.4 11.2h3v.9h-3zM7.4 8.4h2.6v1.4H7.4z'},
+  sub:  {p:'M1.6 14.6c0-1.7 1.8-2.7 4.4-2.7h12c2.6 0 4.4 1 4.4 2.7s-1.8 2.7-4.4 2.7H6c-2.6 0-4.4-1-4.4-2.7zM9.6 8.4h3.8l.9 3.5H8.8zM11.1 5.4h1.1v3h-1.1zM12.2 5.4h2v.9h-2z'},
+  vloot:{p:'M11 2.4h2v2.3a2 2 0 1 1-2 0zM8 7.4h8V9H8zM11.1 9h1.8v10.5c2.9-.3 5-2.3 5.5-5h-2l3-3.6 3 3.6h-2c-.6 4.3-4.1 7.4-8.4 7.6-4.3-.2-7.8-3.3-8.4-7.6h-2l3-3.6 3 3.6h-2c.5 2.7 2.6 4.7 5.5 5z'},
   // economie & acties
   fab:  {p:'M2.5 21V10.5l5.5 3.4v-3.4l5.5 3.4V7.6l2.2-2.1h1.8V3h2.8v18z', d:'M5 16h2v2H5zM9.5 16h2v2h-2zM14 16h2v2h-2z'},
   rocket:{p:'M12 1.8c2.8 2.3 3.9 5.8 3.9 9.6v6.4H8.1v-6.4c0-3.8 1.1-7.3 3.9-9.6zM8.1 12.6 4.8 16.4v3l3.3-1.6zM15.9 12.6l3.3 3.8v3l-3.3-1.6zM10.3 18.4h3.4L12 22.6z', d:'M10.6 8.6a1.4 1.4 0 1 0 2.8 0 1.4 1.4 0 1 0-2.8 0z'},
@@ -7609,7 +7656,7 @@ function renderOver(){
     ctx.restore();
   }
   drawMarks(ctx, u1);   // kerndreiging en besmetting
-  if(stratOn()) drawArmies(ctx, u1);   // strategische stand: slagplannen
+  if(stratOn()){ drawArmies(ctx, u1); drawFleets(ctx, u1); }   // strategische stand: slagplannen
   drawFx();
 }
 /* ================= kaartmodi, minimap en kaart-extra's in de bovenlaag ================= */
@@ -10715,6 +10762,7 @@ function stratInit(){
     if(us.length >= 6) G.armies.push(stratNewArmy(us.slice(h).map(u => u.id)));
   }
   const n = nat(me); if(!n.auto){ n.auto = true; for(const u of G.units) if(u.c === me){ u.man = false; u.g = null; } }
+  navInit();
   stratSync();
 }
 function stratSync(){
@@ -10795,8 +10843,8 @@ function drawArmies(ctx, u1){
    uit de voorraad (20 dagen); herstel na gevechten kost ook uitrusting, dus bij een tekort blijven divisies verzwakt. */
 const EQ = {gun:['Infanteriewapens', 12, 'inf'], art:['Artillerie', 18, 'art'], mot:['Vrachtwagens', 20, 'mot'], tank:['Pantser', 34, 'tank'], aa:['Luchtafweer', 15, 'aa']};
 const BATEQ = {inf:{gun:1}, mar:{gun:1.7}, para:{gun:2}, art:{art:1}, mot:{mot:1}, tank:{tank:1}, aa:{aa:1}};
-const LINE_K = {gun:'Infanteriewapens', art:'Artillerie', mot:'Vrachtwagens', tank:'Pantser', aa:'Luchtafweer', fi:'Jagers', cas:'Grondaanval', bo:'Bommenwerpers', civ:'Civiel: bouw en onderzoek'};
-const LINE_IC = {gun:'inf', art:'art', mot:'mot', tank:'tank', aa:'aa', fi:'fi', cas:'cas', bo:'bo', civ:'fab'};
+const LINE_K = {gun:'Infanteriewapens', art:'Artillerie', mot:'Vrachtwagens', tank:'Pantser', aa:'Luchtafweer', fi:'Jagers', cas:'Grondaanval', bo:'Bommenwerpers', dd:'Torpedobootjagers', cr:'Kruisers', bb:'Slagschepen', sub:'Onderzeeboten', civ:'Civiel: bouw en onderzoek'};
+const LINE_IC = {gun:'inf', art:'art', mot:'mot', tank:'tank', aa:'aa', fi:'fi', cas:'cas', bo:'bo', dd:'dd', cr:'cr', bb:'bb', sub:'sub', civ:'fab'};
 const TRAIN_D = 20;
 const stratF = () => Math.max(1, Math.round(slotTot(G.player)[0]));
 function stratProdInit(){
@@ -10819,13 +10867,14 @@ function stratTrain(tp){ if(stratCanTrain(tp)) return false; const need = eqNeed
 // per dag (vanuit economy): verdeelt de productie over de lijnen; geeft het civiele deel terug voor de wachtrij
 function stratEconomy(n){
   stratProdInit(); stratFit();
-  const me = G.player, F = stratF(), per = n.ppd / F; let civ = 0;
+  const me = G.player, F = stratF(), per = n.ppd * (1 - navRaid(me)) / F; let civ = 0;
   G.short = {};
   for(const L of G.lines){
     if(!L.f) continue;
     const out = per * L.f * L.eff; L.eff = Math.min(1, L.eff + 0.01);
     if(L.k === 'civ') civ += out;
     else if(EQ[L.k]) G.stock[L.k] = (G.stock[L.k] || 0) + out / EQ[L.k][1];
+    else if(NSHIP[L.k]){ const cost = NSHIP[L.k][1]; L.p = Math.min(cost * 3, (L.p || 0) + out); while(L.p >= cost){ L.p -= cost; navAddShip(L.k); } }
     else if(ITEMS[L.k]){ const cost = itemCost(me, L.k); L.p = Math.min(cost * 3, (L.p || 0) + out); if(L.p >= cost && (ACNT[me] || 0) < airCap(me)){ L.p -= cost; complete(me, L.k); ACNT[me] = (ACNT[me] || 0) + 1; } }
   }
   // opleiding: na twintig dagen staat de divisie klaar
@@ -10853,9 +10902,14 @@ function stratAutoProd(){
     const want = {gun:0.3, art:0.15, tank:f >= 3 ? 0.12 : 0.04, mot:f >= 4 ? 0.07 : 0.03, aa:0.04, fi:0.1, cas:war ? 0.06 : 0.03, civ:war ? 0.12 : 0.3};
     // tekort aan iets: die lijn krijgt er wat bij
     for(const e in G.short || {}) if(want[e] != null) want[e] += 0.08;
+    if(G.navy && navCoast(me).length){   // marine: jagers en onderzeeboten; zware schepen alleen voor grote industrielanden
+      const navW = enemiesOf(me).some(e => navCoast(e).length) ? 1.6 : 1;
+      want.dd = 0.035 * navW; want.sub = 0.035 * navW; if(f >= 4) want.cr = 0.025 * navW; if(f >= 7) want.bb = 0.02 * navW;
+      if(navRaid(me) > 0.03) want.dd += 0.06;
+    }
     let sum = 0; for(const k in want) sum += want[k];
-    const alloc = {}; let used = 0; for(const k in want){ alloc[k] = Math.floor(F * want[k] / sum); used += alloc[k]; }
-    for(const k of ['gun', 'civ', 'art', 'fi']) if(used < F){ alloc[k]++; used++; }
+    const alloc = {}, rest = []; let used = 0; for(const k in want){ const x = F * want[k] / sum; alloc[k] = Math.floor(x); used += alloc[k]; rest.push([k, x - alloc[k]]); }
+    rest.sort((a, b) => b[1] - a[1]); for(const [k] of rest) if(used < F){ alloc[k]++; used++; }
     for(const k in alloc){ let L = G.lines.find(x => x.k === k); if(!L && alloc[k] > 0){ L = {k, f:0, eff:0.3, p:0}; G.lines.push(L); } if(L) L.f = alloc[k]; }
     G.lines = G.lines.filter(L => L.f > 0);
     const n = nat(me);
@@ -10874,7 +10928,7 @@ function stratProdH(){
   let h = '<div class="spt"><span class="spf" title="Fabrieken: elke fabriek levert ' + NF.format(per) + ' productie per dag">' + ic('fab') + '<b>' + used + '/' + F + '</b><small>fabrieken in gebruik</small></span>'
     + '<label class="spa" title="De generaal verdeelt de fabrieken en traint divisies zodra de voorraad het toelaat"><input type="checkbox" data-sp="auto"' + (auto ? ' checked' : '') + '> Generaal regelt de productie</label></div>';
   h += '<div class="sec">Productielijnen</div><div class="spl">' + G.lines.map((L, i) => {
-    const out = per * L.f * L.eff, unit = EQ[L.k] ? NF.format(out / EQ[L.k][1] * 30) + '/mnd' : ITEMS[L.k] ? NF.format(out * 30 / itemCost(me, L.k)) + ' eskader/mnd' : NF.format(out) + '/dag';
+    const out = per * L.f * L.eff, unit = EQ[L.k] ? NF.format(out / EQ[L.k][1] * 30) + '/mnd' : ITEMS[L.k] ? NF.format(out * 30 / itemCost(me, L.k)) + ' eskader/mnd' : NSHIP[L.k] ? NF.format(out * 30 / NSHIP[L.k][1]) + ' schip/mnd' : NF.format(out) + '/dag';
     return '<div class="spr"><span class="spi">' + ic(LINE_IC[L.k]) + '</span><span class="spn"><b>' + LINE_K[L.k] + '</b><small><i class="speb"><i style="width:' + Math.round(L.eff*100) + '%"></i></i>' + Math.round(L.eff*100) + '% · ' + unit + '</small></span>'
       + '<button class="btn sm" data-sp="f:' + i + ':-1"' + (L.f ? '' : ' disabled') + ' aria-label="Een fabriek minder">−</button><b class="spc">' + L.f + '</b><button class="btn sm" data-sp="f:' + i + ':1"' + (used < F ? '' : ' disabled') + ' aria-label="Een fabriek meer">+</button></div>'; }).join('')
     + '</div><div class="spadd">' + Object.keys(LINE_K).filter(k => !G.lines.some(L => L.k === k) && (k !== 'tank' || true)).map(k => '<button class="btn sm" data-sp="add:' + k + '" title="Nieuwe lijn: ' + LINE_K[k] + '">' + ic(LINE_IC[k]) + '+</button>').join('') + '</div>';
@@ -10899,12 +10953,243 @@ $('sheet').addEventListener('click', e => {
 });
 $('sheet').addEventListener('change', e => { const i = e.target.closest('[data-sp="auto"]'); if(i && G){ G.prodAuto = i.checked; sheetSig = ''; renderAll(); } });
 
+/* ---- strategische stand: marine ----
+   De zee is verdeeld in zeegebieden (zeeroutes die dicht bij elkaar liggen). Elk land heeft een vloot (torpedobootjagers, kruisers,
+   slagschepen, onderzeeboten); jouw schepen zitten in vloten met een admiraal. Wie in een zeegebied sterker is (schepen plus vliegtuigen
+   in de buurt), heeft overwicht: landingen en oversteken daar gaan beter (of slechter). Onderzeeboten vallen konvooien aan en kosten
+   de vijand productie; torpedobootjagers beschermen ze. Zonder ingrijpen kiest elke admiraal zelf zijn zeegebied en taak. */
+const NSHIP = {dd:['Torpedobootjagers', 14, 1, 'Snel en goedkoop; beschermt konvooien tegen onderzeeboten'], cr:['Kruisers', 34, 2.5, 'Middelzwaar; de kern van een vloot'], bb:['Slagschepen', 90, 6, 'Zwaar en duur; beslist zeeslagen'], sub:['Onderzeeboten', 12, 1.5, 'Valt konvooien aan; kost de vijand productie']};
+const ADM_TR = {agr:['Agressief', '+15% in zeeslagen', 'zwaard'], kon:['Konvooijager', 'onderzeeboten +40%', 'sub'], esc:['Escorteleider', 'konvooibescherming +60%', 'schild'], vuur:['Vuursteun', 'landingen in zijn zeegebied +8%', 'mar']};
+const NMODE = {auto:['Auto', 'De admiraal kiest zelf zeegebied en taak', 'gen'], sup:['Overwicht', 'Vecht om het zeegebied: dekt landingen en oversteken', 'zwaard'], raid:['Konvooien', 'Onderzeeboten vallen vijandelijke konvooien aan', 'sub'], esc:['Escorte', 'Beschermt je eigen konvooien in al je zeegebieden', 'schild']};
+const ADM_NM = ['Doorman', 'Van Ghent', 'Tromp', 'Evertsen', 'De Ruyter', 'Kortenaer', 'Helfrich', 'Karel', 'Van Galen', 'Piet Hein', 'Banckert', 'Van Speijk'];
+const NAV_MUL = {gb:3, gbr:3, usa:2.4, jpn:2.6, fr:1.5, fra:1.5, it:1.4, ita:1.4, de:0.7, deu:0.7, su:0.6, rus:0.6, nl:1.3, nld:1.3, es:0.9, esp:0.9};
+let NZ = null, NZ_MAP = null, NZOF = new Map(), NZNEAR = {}, ZP = null;
+const shipPow = s => (s.dd || 0) * 1 + (s.cr || 0) * 2.5 + (s.bb || 0) * 6 + (s.sub || 0) * 1.5;
+const shipN = s => (s.dd || 0) + (s.cr || 0) + (s.bb || 0) + (s.sub || 0);
+function navZones(){
+  if(NZ && NZ_MAP === MAPNAME) return NZ;
+  NZ_MAP = MAPNAME; NZ = []; NZOF = new Map(); NZNEAR = {}; ZP = null;
+  const R = 430 / KM;
+  ROUTES.forEach((r, i) => {
+    if(!SEA.has(ek(r[0], r[1]))) return;
+    const mx = (r[2] + r[4]) / 2, my = (r[3] + r[5]) / 2;
+    let z = null, bd = R; for(const q of NZ){ const d = Math.hypot(q.x - mx, q.y - my); if(d < bd){ bd = d; z = q; } }
+    if(!z){ z = {id:NZ.length, x:mx, y:my, n:0, r:[], cs:{}, ps:new Set()}; NZ.push(z); }
+    z.x = (z.x * z.n + mx) / (z.n + 1); z.y = (z.y * z.n + my) / (z.n + 1); z.n++; z.r.push(i);
+    for(const p of [r[0], r[1]]){ z.ps.add(p); z.cs[P[p].c] = (z.cs[P[p].c] || 0) + 1; }
+    NZOF.set(ek(r[0], r[1]), z.id);
+  });
+  for(const z of NZ) z.nm = 'Zee bij ' + Object.entries(z.cs).sort((a, b) => b[1] - a[1]).slice(0, 2).map(e => CN[e[0]] ? cname(e[0]) : e[0]).join(' en ');
+  return NZ;
+}
+// zeegebied het dichtst bij een provincie (voor vliegtuigen), binnen 650 km
+function navNear(p){
+  if(p in NZNEAR) return NZNEAR[p];
+  const a = P[p].a; let best = -1, bd = 650 / KM; for(const z of navZones()){ const d = Math.hypot(z.x - a[0], z.y - a[1]); if(d < bd){ bd = d; best = z.id; } }
+  return NZNEAR[p] = best;
+}
+const navCoast = c => navZones().filter(z => { for(const p of z.ps) if(G.ctrl[p] === c) return true; return false; });
+function navAdm(){
+  const used = new Set((G.fleets || []).map(f => f.adm.nm)), pool = ADM_NM.filter(n => !used.has(n)), k = (G.fid || 0) * 5 + G.day + G.nid;
+  const nm = pool.length ? pool[k % pool.length] : 'Reserve', tk = Object.keys(ADM_TR);
+  return {nm, sk:1 + (k % 3), tr:tk[(k * 7 + nm.length) % tk.length], xp:0};
+}
+function navNewFleet(ships, mode){ G.fid = (G.fid || 0) + 1; return {id:G.fid, nm:G.fid + 'e Vloot', adm:navAdm(), ships:Object.assign({dd:0, cr:0, bb:0, sub:0}, ships), mode:mode || 'auto', zone:null, col:'#8FB0C8'}; }
+function navInit(){
+  if(G.navy) return;
+  navZones(); G.navy = {}; G.raid = {}; G.fleets = [];
+  for(const c in G.nations){
+    if(!alive(c) || !navCoast(c).length) continue;
+    const f = Math.max(1, CN[c].f || 1), m = NAV_MUL[c] || 0.8;
+    const s = {dd:Math.round(f * 0.5 * m), cr:Math.round(f * 0.2 * m), bb:Math.round(f * 0.06 * m), sub:Math.round(f * 0.25 * m)};
+    if(c === G.player){
+      G.fleets.push(navNewFleet({dd:s.dd, cr:s.cr, bb:s.bb}, 'auto'));
+      if(s.sub >= 1){ const u = navNewFleet({sub:s.sub}, 'auto'); u.nm = 'Onderzeedienst'; G.fleets.push(u); }
+    } else G.navy[c] = s;
+  }
+}
+// kracht per zeegebied per land (schepen + vliegtuigen in de buurt), en de konvooi-cijfers
+function navCalc(){
+  const Z = navZones(), zp = Z.map(() => ({})), zr = Z.map(() => ({})), zd = Z.map(() => ({}));
+  const zw = {}, zc = {};   // zeegebieden van een land, en hoeveel kustprovincies het daaraan heeft
+  const cp = new Set(); for(const z of Z) for(const p of z.ps){ const o = G.ctrl[p]; if(o){ ((zw[o] ||= new Set())).add(z.id); if(!cp.has(p)){ cp.add(p); zc[o] = (zc[o] || 0) + 1; } } }
+  for(const c in G.navy){
+    const s = G.navy[c], zs = zw[c]; if(!zs || !zs.size) continue;
+    const ws = [...zs].map(id => { let w = 1; for(const p of Z[id].ps){ const o = G.ctrl[p]; if(o !== c && atWar(c, o)){ w = 4; break; } } return [id, w]; });
+    const tot = ws.reduce((t, x) => t + x[1], 0), pw = shipPow(s);
+    for(const [id, w] of ws){ const sh = w / tot; zp[id][c] = (zp[id][c] || 0) + pw * sh; zr[id][c] = (zr[id][c] || 0) + (s.sub || 0) * 1.5 * sh; zd[id][c] = (zd[id][c] || 0) + (s.dd || 0) * sh; }
+  }
+  const me = G.player, mz = zw[me] ? [...zw[me]] : [];
+  for(const f of G.fleets || []){
+    const pw = shipPow(f.ships) * (1 + 0.04 * f.adm.sk) * (f.adm.tr === 'agr' ? 1.15 : 1), z = f.zone;
+    if(f.mode === 'esc' || (f.mode === 'auto' && f.task === 'esc')){ for(const id of mz){ zp[id][me] = (zp[id][me] || 0) + pw * 0.3 / mz.length; zd[id][me] = (zd[id][me] || 0) + (f.ships.dd || 0) * 2 * (f.adm.tr === 'esc' ? 1.6 : 1) / mz.length; } continue; }
+    if(z == null || !Z[z]) continue;
+    const raid = f.mode === 'raid' || (f.mode === 'auto' && f.task === 'raid');
+    zp[z][me] = (zp[z][me] || 0) + pw * (raid ? 0.4 : 1);
+    if(raid) zr[z][me] = (zr[z][me] || 0) + (f.ships.sub || 0) * 1.5 * (f.adm.tr === 'kon' ? 1.4 : 1);
+    zd[z][me] = (zd[z][me] || 0) + (f.ships.dd || 0);
+  }
+  const am = G.airMode === 'zee' ? 2.2 : G.airMode === 'leger' ? 0.3 : 1;   // jouw luchtmacht: taak zee telt dubbel boven zee, taak leger nauwelijks
+  for(const w of G.air){ const id = navNear(w.base); if(id < 0) continue; zp[id][w.c] = (zp[id][w.c] || 0) + w.hp / 100 * (w.t === 'fi' ? 0.6 : w.t === 'cas' ? 1 : 1.2) * (w.c === me ? am : 1); }
+  return ZP = {zp, zr, zd, zw, zc};
+}
+// overwicht van de kant van a tegen x in zeegebied z (0..1), of null als er niemand is
+function navSup(a, x, z){
+  if(!ZP) navCalc(); const zp = ZP.zp[z]; if(!zp) return null;
+  let A = 0, X = 0; for(const n in zp){ if(n === a || (atWar(n, x) && !atWar(n, a))) A += zp[n]; else if(n === x || (atWar(n, a) && !atWar(n, x))) X += zp[n]; }
+  return A + X < 0.5 ? null : A / (A + X);
+}
+// landing of oversteek: met overwicht tot +45%, zonder tot −45%
+function navMul(a, from, t){
+  if(!G.navy) return 1;
+  const z = NZOF.get(ek(from, t)); if(z == null) return 1;
+  const s = navSup(a, G.ctrl[t], z); if(s == null) return 1;
+  let m = 0.55 + 0.9 * s;
+  if(a === G.player && (G.fleets || []).some(f => f.zone === z && f.adm.tr === 'vuur')) m *= 1.08;
+  return m;
+}
+const navRaid = c => G.raid ? (G.raid[c] || 0) : 0;
+function navAddShip(t){
+  const me = G.player; G.fleets ||= [];
+  let f = t === 'sub' ? G.fleets.find(x => (x.ships.sub || 0) >= shipN(x.ships) * 0.6) : G.fleets.find(x => (x.ships.sub || 0) < shipN(x.ships) * 0.6 || !shipN(x.ships));
+  if(!f){ f = navNewFleet({}, 'auto'); if(t === 'sub') f.nm = 'Onderzeedienst'; G.fleets.push(f); toast(f.nm + ' opgericht onder admiraal ' + f.adm.nm, 'good', 'fleet'); }
+  f.ships[t] = (f.ships[t] || 0) + 1;
+}
+// elke twee dagen: admiraals kiezen, zeeslagen, konvooien, scheepsbouw van de computerlanden
+function navTick(){
+  const Z = navZones(), me = G.player;
+  for(const c in G.navy) if(!alive(c)) delete G.navy[c];
+  // admiraals (taak Auto): onderzeeboten op konvooien, de rest waar de vijand is of waar een leger overzee moet
+  let calc = navCalc();
+  const myZ = calc.zw[me] ? [...calc.zw[me]] : [], taken = {};
+  const goals = new Set((G.armies || []).map(a => a.goal).filter(Boolean));
+  for(const f of G.fleets){
+    if(f.mode !== 'auto'){ f.task = f.mode; continue; }
+    const subs = (f.ships.sub || 0) >= shipN(f.ships) * 0.6;
+    let best = null, bs = 0;
+    for(const z of Z){
+      let ownC = 0, enC = 0, enP = 0, goal = 0;
+      for(const p of z.ps){ const o = G.ctrl[p]; if(o === me) ownC++; else if(atWar(me, o)){ enC++; if(goals.has(p)) goal = 1; } }
+      for(const n in calc.zp[z.id]) if(atWar(me, n)) enP += calc.zp[z.id][n];
+      if(!ownC && !(subs && enC)) continue;
+      let s = subs ? enC * 2 / (1 + (Object.entries(calc.zd[z.id]).filter(([n]) => atWar(me, n)).reduce((t, x) => t + x[1], 0))) : (enC ? 2 + enC + enP * 0.3 : 0) + goal * 10 + ownC * 0.05;
+      s /= 1 + (taken[z.id] || 0);
+      if(s > bs){ bs = s; best = z.id; }
+    }
+    if(best == null && !subs) best = myZ[0] ?? null;
+    f.zone = best; f.task = subs ? 'raid' : 'sup'; if(best != null) taken[best] = (taken[best] || 0) + 1;
+  }
+  calc = navCalc();
+  // zeeslagen
+  const loss = {}, myLoss = {};
+  Z.forEach((z, id) => {
+    const zp = calc.zp[id], ns = Object.keys(zp).filter(n => zp[n] > 0.05); if(ns.length < 2) return;
+    for(const c of ns){
+      let E = 0; for(const x of ns) if(atWar(c, x)) E += zp[x];
+      if(!E) continue;
+      const fr = 0.03 * E / (E + zp[c]);
+      if(c === me){ myLoss[id] = fr; } else if(G.navy[c]){ const tot = shipPow(G.navy[c]) || 1, own = Math.min(1, zp[c] / tot); loss[c] = (loss[c] || 0) + fr * own; }
+      if(c === me){ const T = (G.navT ||= {}); if(T[id] == null || G.day - T[id] > 25){ T[id] = G.day; toast('Zeeslag: ' + Z[id].nm, 'war', 'zee' + id); } }
+    }
+  });
+  const K = {dd:1.2, cr:1, bb:0.6, sub:0.8};
+  for(const c in loss){ const s = G.navy[c]; for(const t in K) s[t] = Math.max(0, (s[t] || 0) * (1 - Math.min(0.5, loss[c]) * K[t])); }
+  for(const f of G.fleets){
+    const fr = myLoss[f.zone]; if(!fr || f.mode === 'esc' || f.task === 'esc') continue;
+    const hide = f.task === 'raid' ? 0.4 : 1;   // onderzeeboten op konvooijacht ontlopen de grote slag
+    for(const t in K) f.ships[t] = Math.max(0, (f.ships[t] || 0) * (1 - fr * hide * K[t]));
+    f.adm.xp += 2; if(f.adm.sk < 5 && f.adm.xp >= 40 * f.adm.sk){ f.adm.xp = 0; f.adm.sk++; toast(f.nm + ': admiraal ' + f.adm.nm + ' bevorderd', 'good', 'promo' + f.id); }
+  }
+  G.fleets = G.fleets.filter(f => { if(shipN(f.ships) >= 0.3) return true; toast(f.nm + ' is vernietigd', 'war', 'sunk' + f.id); if(UI.fleet === f.id) UI.fleet = null; return false; });
+  // konvooien: onderzeeboten van de vijand in je zeegebieden tegen je escorte
+  for(const c in G.nations){
+    if(!alive(c)) continue;
+    const zs = calc.zw[c]; if(!zs || !enemiesOf(c).length){ if(G.raid[c]) G.raid[c] *= 0.8; continue; }
+    let R = 0, E = 0; for(const id of zs){ for(const n in calc.zr[id]) if(atWar(c, n)) R += calc.zr[id][n]; E += calc.zd[id][c] || 0; }
+    const dep = clamp(2 * (calc.zc[c] || 0) / Math.max(1, owned(c).length), 0.15, 1);   // hoe afhankelijk van de zee: eilanden en kustlanden het meest
+    const tgt = Math.min(0.3, 0.04 * R / (1 + 0.15 * E)) * dep;
+    G.raid[c] = (G.raid[c] || 0) * 0.7 + tgt * 0.3;
+    if(R > 0 && E > 0 && G.navy){   // escorte jaagt op onderzeeboten
+      const fr = 0.02 * E / (E + R);
+      for(const n of enemiesOf(c)){ if(G.navy[n]) G.navy[n].sub = Math.max(0, (G.navy[n].sub || 0) * (1 - fr)); else if(n === me) for(const f of G.fleets) if(f.task === 'raid') f.ships.sub *= 1 - fr; }
+    }
+  }
+  // scheepsbouw van de computerlanden: een klein deel van de productie gaat naar de werven
+  for(const c in G.navy){
+    const n = nat(c); n.yard = (n.yard || 0) + n.ppd * 2 * (enemiesOf(c).length ? 0.05 : 0.03) * (NAV_MUL[c] || 0.8);
+    const s = G.navy[c], pick = s.dd < s.cr * 2.5 ? 'dd' : s.sub < s.dd * 0.5 ? 'sub' : s.bb < s.cr * 0.3 && (CN[c].f || 0) >= 5 ? 'bb' : 'cr';
+    if(n.yard >= NSHIP[pick][1]){ n.yard -= NSHIP[pick][1]; s[pick] = (s[pick] || 0) + 1; }
+  }
+  ZP = null;
+}
+// kaart: per betwist zeegebied een balk met het overwicht; jouw vloten als anker met het aantal schepen
+function drawFleets(ctx, u1){
+  if(!G.navy) return;
+  if(!ZP) navCalc();
+  const Z = navZones(), me = G.player, en = enemiesOf(me);
+  ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 ' + (10*u1).toFixed(1) + 'px ' + FONT_UI;
+  if(en.length) for(const z of Z){
+    let A = 0, X = 0; const zp = ZP.zp[z.id];
+    for(const n in zp){ if(n === me || (!atWar(n, me) && en.some(e => atWar(n, e)))) A += zp[n]; else if(atWar(n, me)) X += zp[n]; }
+    if(!X || A + X < 0.5) continue;
+    const s = A / (A + X), [x, y] = toScreen(z.x, z.y), w = 46*u1, h = 5*u1;
+    ctx.fillStyle = 'rgba(10,10,6,.8)'; ctx.fillRect(x - w/2 - 1, y + 9*u1 - 1, w + 2, h + 2);
+    ctx.fillStyle = '#B9472F'; ctx.fillRect(x - w/2, y + 9*u1, w, h); ctx.fillStyle = '#93AC59'; ctx.fillRect(x - w/2, y + 9*u1, w * s, h);
+  }
+  const at = {};
+  for(const f of G.fleets){
+    if(f.zone == null || !Z[f.zone]) continue;
+    const z = Z[f.zone], k = at[z.id] = (at[z.id] || 0) + 1, [x0, y0] = toScreen(z.x, z.y), x = x0 + (k - 1) * 34*u1 - 0*u1, y = y0 - 4*u1, w = 32*u1, h = 15*u1;
+    ctx.fillStyle = UI.fleet === f.id ? '#C9A44A' : '#1E2A36'; ctx.strokeStyle = 'rgba(10,10,6,.9)'; ctx.lineWidth = 1.5;
+    ctx.fillRect(x - w/2, y - h/2, w, h); ctx.strokeRect(x - w/2, y - h/2, w, h);
+    ctx.fillStyle = UI.fleet === f.id ? '#1E1806' : '#D8E2EA'; ctx.fillText((f.task === 'raid' ? '▾' : '⚓') + ' ' + Math.round(shipN(f.ships)), x, y + 0.5);
+  }
+  ctx.restore();
+}
+// luchtmacht: één kaart met de eskaders per soort en een taak voor de generaal
+const AMODE = {auto:['Auto', 'De generaal verdeelt de eskaders over front en zee', 'gen'], leger:['Leger', 'Eskaders blijven boven het front bij je legers; boven zee tellen ze nauwelijks mee', 'leger'], zee:['Zee', 'Jagers en bommenwerpers boven zee: telt dubbel voor het overwicht op zee', 'vloot']};
+function airPanelH(){
+  const me = G.player, by = {fi:[0, 0], cas:[0, 0], bo:[0, 0]};
+  for(const w of G.air) if(w.c === me && by[w.t]){ by[w.t][0]++; by[w.t][1] += w.hp; }
+  const m = G.airMode || 'auto', nm = {fi:'Jagers', cas:'Grondaanval', bo:'Bommenwerpers'};
+  return '<div class="aph"><span class="apic">' + ic('fi') + '</span><div class="apg"><small>Luchtmacht</small><b>' + (ACNT[me] || 0) + ' / ' + airCap(me) + ' eskaders</b></div><button type="button" class="xclose" data-army="close" aria-label="Sluiten">×</button></div>'
+    + '<div class="apu">' + Object.keys(by).map(t => '<span title="' + nm[t] + (by[t][0] ? ', sterkte ' + Math.round(by[t][1] / by[t][0]) + '%' : '') + '">' + ic(t) + by[t][0] + '</span>').join('') + '</div>'
+    + '<div class="sec">Taak</div><div class="gsegs">' + Object.keys(AMODE).map(k => '<button type="button" class="gseg' + (m === k ? ' on' : '') + '" data-army="am:' + k + '" title="' + AMODE[k][1] + '">' + ic(AMODE[k][2]) + AMODE[k][0] + '</button>').join('') + '</div>'
+    + '<p class="mut apw">Nieuwe eskaders komen van de productielijnen Jagers, Grondaanval en Bommenwerpers.</p>';
+}
+// paneel van één vloot (in plaats van het legerpaneel)
+function fleetPanelH(f){
+  const me = G.player, a = f.adm, tr = ADM_TR[a.tr], Z = navZones();
+  if(!ZP) navCalc();
+  const zs = (ZP.zw[me] ? [...ZP.zw[me]] : []).concat(Z.filter(z => [...z.ps].some(p => atWar(me, G.ctrl[p]))).map(z => z.id));
+  const uz = [...new Set(zs)].map(id => [id, navSup(me, enemiesOf(me)[0] || me, id)]).sort((x, y) => (y[1] != null) - (x[1] != null)).slice(0, 10);
+  const sup = id => { let A = 0, X = 0; const zp = ZP.zp[id]; for(const n in zp){ if(n === me) A += zp[n]; else if(atWar(n, me)) X += zp[n]; } return X ? Math.round(100 * A / (A + X)) + '%' : ''; };
+  return '<div class="aph">' + genPort({col:f.col, gen:a, navy:1}, 44) + '<div class="apg"><small>Admiraal' + (a.sk > 1 ? ' · ' + a.sk + '★' : '') + '</small><b>' + esc(a.nm) + '</b><span class="aptr" title="' + esc(tr[1]) + '">' + ic(tr[2]) + tr[0] + '</span><span class="apxp" title="Ervaring tot de volgende bevordering"><i style="width:' + (a.sk >= 5 ? 100 : Math.min(100, Math.round(100 * a.xp / (40 * a.sk)))) + '%"></i></span></div>'
+    + '<div class="apn"><b style="color:' + f.col + '">' + esc(f.nm) + '</b><small>' + (f.zone != null && Z[f.zone] ? esc(Z[f.zone].nm) : 'in de haven') + '</small></div><button type="button" class="xclose" data-army="close" aria-label="Sluiten">×</button></div>'
+    + '<div class="apu">' + Object.keys(NSHIP).map(t => '<span title="' + NSHIP[t][0] + ': ' + NSHIP[t][3] + '">' + ic(t) + Math.round(f.ships[t] || 0) + '</span>').join('') + '</div>'
+    + '<div class="sec">Taak</div><div class="gsegs">' + Object.keys(NMODE).map(m => '<button type="button" class="gseg' + (f.mode === m ? ' on' : '') + '" data-army="fm:' + m + '" title="' + NMODE[m][1] + '">' + ic(NMODE[m][2]) + NMODE[m][0] + '</button>').join('') + '</div>'
+    + (f.mode === 'auto' || f.mode === 'esc' ? '' : '<div class="sec">Zeegebied<span class="sr">overwicht</span></div><div class="apfr">' + uz.map(([id]) => '<button type="button" class="gseg' + (f.zone === id ? ' on' : '') + '" data-army="fz:' + id + '">' + ic('vloot') + esc(Z[id].nm.replace('Zee bij ', '')) + (sup(id) ? ' <small>' + sup(id) + '</small>' : '') + '</button>').join('') + '</div>')
+    + '<div class="sec">Vloot</div><div class="apdv"><button type="button" class="btn sm" data-army="fsplit"' + (shipN(f.ships) >= 2 ? '' : ' disabled') + ' title="De helft van de schepen vormt een nieuwe vloot">' + ic('vloot') + 'Splitsen</button>'
+    + '<button type="button" class="btn sm" data-army="fadm" title="Andere admiraal (5 bevelpunten)"' + (nat(me).cp >= 5 ? '' : ' disabled') + '>' + ic('gen') + 'Wissel admiraal</button>'
+    + (G.fleets.length > 1 ? '<button type="button" class="btn sm ghost" data-army="fdel" title="Samenvoegen met de eerste andere vloot">' + ic('wit') + 'Samenvoegen</button>' : '') + '</div>'
+    + (navRaid(me) > 0.01 ? '<p class="mut apw">' + ic('sub') + 'Vijandelijke onderzeeboten kosten je ' + Math.round(navRaid(me) * 100) + '% productie. Zet een vloot met torpedobootjagers op Escorte.</p>' : '');
+}
+function fleetClick(v){
+  const f = (G.fleets || []).find(x => x.id === UI.fleet), me = G.player; if(!f) return;
+  if(v.startsWith('fm:')){ f.mode = v.slice(3); if(f.mode === 'sup' || f.mode === 'raid'){ if(f.zone == null){ if(!ZP) navCalc(); const z = ZP.zw[me] ? [...ZP.zw[me]][0] : null; f.zone = z ?? null; } } f.task = f.mode === 'auto' ? f.task : f.mode; }
+  else if(v.startsWith('fz:')){ f.zone = +v.slice(3); if(f.mode === 'auto') f.mode = 'sup'; }
+  else if(v === 'fsplit'){ const h = {}; for(const t in f.ships){ h[t] = Math.floor((f.ships[t] || 0) / 2); f.ships[t] -= h[t]; } const n = navNewFleet(h, f.mode); n.zone = f.zone; G.fleets.push(n); UI.fleet = n.id; toast(n.nm + ' opgericht onder admiraal ' + n.adm.nm, 'good', 'fleet'); }
+  else if(v === 'fadm'){ const n = nat(me); if(n.cp >= 5){ n.cp -= 5; f.adm = navAdm(); toast(f.nm + ': admiraal ' + f.adm.nm + ' (' + ADM_TR[f.adm.tr][0] + ')', 'good', 'fleet'); } }
+  else if(v === 'fdel' && G.fleets.length > 1){ const o = G.fleets.find(x => x !== f); for(const t in f.ships) o.ships[t] = (o.ships[t] || 0) + (f.ships[t] || 0); G.fleets = G.fleets.filter(x => x !== f); UI.fleet = o.id; }
+  ZP = null;
+}
+
 /* ---- strategische stand: legerbalk onderaan en het paneel van één leger ---- */
 const AB = {bar:null, pan:null, sig:'', psig:''};
 // portret: een silhouet met pet in de kleur van het leger, met de rangsterren eronder
 const genPort = (a, sz) => '<svg class="gport" viewBox="0 0 40 46" width="' + sz + '" height="' + Math.round(sz*1.15) + '" aria-hidden="true"><rect x="0" y="0" width="40" height="46" rx="2" fill="#2A2C22"/><rect x="1.5" y="1.5" width="37" height="43" rx="1" fill="none" stroke="' + a.col + '" stroke-width="1.6"/>'
-  + '<path d="M8 44c1-8 5-12 12-12s11 4 12 12z" fill="#55583F"/><path d="M15 33l5 5 5-5" fill="none" stroke="#C9A44A" stroke-width="1.4"/><circle cx="20" cy="22" r="7" fill="#C9B79A"/>'
-  + '<path d="M10 17c2-6 18-6 20 0l-2 2H12z" fill="#4A4D36"/><rect x="11" y="17" width="18" height="2.6" fill="#2A2C22"/><circle cx="20" cy="13.6" r="1.6" fill="#C9A44A"/>'
+  + '<path d="M8 44c1-8 5-12 12-12s11 4 12 12z" fill="' + (a.navy ? '#22304A' : '#55583F') + '"/><path d="M15 33l5 5 5-5" fill="none" stroke="#C9A44A" stroke-width="1.4"/><circle cx="20" cy="22" r="7" fill="#C9B79A"/>'
+  + '<path d="M10 17c2-6 18-6 20 0l-2 2H12z" fill="' + (a.navy ? '#E8E4D8' : '#4A4D36') + '"/><rect x="11" y="17" width="18" height="2.6" fill="#2A2C22"/><circle cx="20" cy="13.6" r="1.6" fill="#C9A44A"/>'
   + Array.from({length:a.gen.sk}, (_, i) => '<path transform="translate(' + (20 - (a.gen.sk - 1)*3.4 + i*6.8 - 2.6) + ' 39.5) scale(.22)" d="M12 1.8 15 8.6 22.2 9.3 16.7 14.2 18.3 21.4 12 17.6 5.7 21.4 7.3 14.2 1.8 9.3 9 8.6z" fill="#E2C46A"/>').join('') + '</svg>';
 function renderArmies(){
   const on = stratOn() && !G.over && hudMode() === 'game';
@@ -10916,9 +11201,14 @@ function renderArmies(){
   const h = G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
       return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
         + genPort(a, 30) + '<span class="abt"><b>' + esc(a.nm) + '</b><small>' + ic(EZ_HOUD[a.mode][2]) + a.ids.length + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '</small></span></button>'; }).join('')
+    + (G.fleets || []).map(f => '<button type="button" class="abc fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen' + (f.zone != null && navZones()[f.zone] ? ' · ' + navZones()[f.zone].nm : '')) + '">' + genPort({col:f.col, gen:f.adm, navy:1}, 30) + '<span class="abt"><b>' + esc(f.nm) + '</b><small>' + ic(f.task === 'raid' ? 'sub' : 'vloot') + Math.round(shipN(f.ships)) + '</small></span></button>').join('')
+    + '<button type="button" class="abc air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[G.player] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '">' + '<span class="apic">' + ic('fi') + '</span><span class="abt"><b>Lucht</b><small>' + ic(AMODE[G.airMode || 'auto'][2]) + (ACNT[G.player] || 0) + '</small></span></button>'
     + '<button type="button" class="abc abn" data-army="new" title="Nieuw leger uit je selectie (of leeg)">' + ic('leger') + '<span class="abt"><b>+ Leger</b></span></button>';
   if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; }
   AB.bar.hidden = false;
+  const fl = (G.fleets || []).find(x => x.id === UI.fleet);
+  if(UI.airp && !UI.sheet){ const fh = airPanelH(); if(fh !== AB.psig){ AB.psig = fh; AB.pan.innerHTML = fh; } AB.pan.hidden = false; return; }
+  if(fl && !UI.sheet){ const fh = fleetPanelH(fl); if(fh !== AB.psig){ AB.psig = fh; AB.pan.innerHTML = fh; } AB.pan.hidden = false; return; }
   const a = G.armies.find(x => x.id === UI.army);
   if(!a || UI.sheet || (UI.armyGoal && innerWidth < 900)){ AB.pan.hidden = true; AB.psig = ''; return; }   // telefoon: tijdens het aanwijzen van een doel de kaart vrijhouden
   const me = G.player, by = {}; for(const id of a.ids){ const u = unitById(id); if(u) by[u.t] = (by[u.t] || 0) + 1; }
@@ -10944,8 +11234,12 @@ function armyClick(e){
   sfx('tap');
   const v = b.dataset.army, me = G.player, a = G.armies.find(x => x.id === UI.army);
   if(v === 'new'){ const ids = [...UI.sel].map(unitById).filter(u => u && u.c === me).map(u => u.id); for(const x of G.armies) x.ids = x.ids.filter(id => !ids.includes(id)); const na = stratNewArmy(ids); G.armies.push(na); UI.army = na.id; clearSel(); toast(na.nm + ' opgericht onder ' + GEN_RK[na.gen.sk - 1] + ' ' + na.gen.nm + (ids.length ? ' (' + ids.length + ' divisies)' : '; selecteer divisies en kies Selectie erbij'), 'good', 'army'); }
-  else if(v === 'close') UI.army = null;
-  else if(/^\d+$/.test(v)) UI.army = UI.army === +v ? null : +v;
+  else if(v === 'close'){ UI.army = null; UI.fleet = null; UI.airp = false; }
+  else if(v === 'air'){ UI.airp = !UI.airp; UI.army = null; UI.fleet = null; }
+  else if(v.startsWith('am:')){ G.airMode = v.slice(3); ZP = null; }
+  else if(/^\d+$/.test(v)){ UI.army = UI.army === +v ? null : +v; UI.fleet = null; UI.airp = false; }
+  else if(v.startsWith('fl:')){ const id = +v.slice(3); UI.fleet = UI.fleet === id ? null : id; UI.army = null; UI.airp = false; }
+  else if(/^f(m:|z:|split|adm|del)/.test(v)) fleetClick(v);
   else if(a){
     if(v.startsWith('mode:')) a.mode = v.slice(5);
     else if(v.startsWith('front:')){ a.front = v.slice(6) || null; a.goal = null; }
