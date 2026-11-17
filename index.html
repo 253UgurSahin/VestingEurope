@@ -2037,7 +2037,7 @@ p.help.fux-long{display:none} p.help.fux-long.fux-open{display:block}
 html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ================= strategische stand: legerbalk en legerpaneel ================= */
-#armybar{position:fixed;z-index:19;left:var(--pl);bottom:calc(.6rem + var(--sab));display:flex;gap:.3rem;max-width:min(60vw, 46rem);overflow-x:auto;scrollbar-width:none;padding:.1rem}
+#armybar{position:fixed;z-index:19;left:var(--pl);bottom:calc(.6rem + var(--sab));display:flex;flex-wrap:wrap-reverse;align-items:stretch;gap:.3rem;max-width:calc(100vw - var(--pl) - var(--pr) - 17rem);padding:.1rem}   /* alles in beeld: past het niet, dan een tweede rij erboven */
 #armybar::-webkit-scrollbar{display:none}
 #armybar[hidden],#armypanel[hidden]{display:none}
 .abc{flex:none;display:flex;align-items:center;gap:.4rem;padding:.25rem .55rem .25rem .25rem;border:1px solid rgba(0,0,0,.55);border-radius:var(--r-m);background:var(--pbg);background-image:var(--metal);color:var(--ink);cursor:pointer;box-shadow:var(--brassline), var(--shadow-s);text-align:left}
@@ -2050,7 +2050,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
 .abt small .ic{width:.75rem;height:.75rem}
 .abf{display:inline-block;width:.75rem;height:.5rem;box-shadow:0 0 0 1px rgba(0,0,0,.6);vertical-align:middle}
 .abn{color:var(--dim)} .abn .ic{width:1.1rem;height:1.1rem;color:var(--accent);margin-left:.2rem}
-#armypanel{position:fixed;z-index:19;left:var(--pl);bottom:calc(.6rem + var(--sab) + 3.4rem);width:min(23rem, calc(100vw - 16px));max-height:calc(100vh - var(--hud-h) - 9rem);overflow-y:auto;padding:.55rem .65rem .65rem}
+#armypanel{position:fixed;z-index:19;left:var(--pl);bottom:calc(.9rem + var(--sab) + var(--abh, 3.2rem));width:min(23rem, calc(100vw - 16px));max-height:calc(100vh - var(--hud-h) - 9rem);overflow-y:auto;padding:.55rem .65rem .65rem}
 .aph{display:flex;align-items:center;gap:.55rem;padding-bottom:.45rem;border-bottom:1px solid rgba(201,164,74,.25)}
 .apg{display:grid;gap:.1rem;flex:1;min-width:0}
 .apg small{font:500 .62rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
@@ -2067,8 +2067,9 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
 .apgo,.apdv{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem}
 .apgo > span{display:inline-flex;align-items:center;gap:.3rem;font:500 .85rem var(--f-ui);flex:1} .apgo .ic{width:.9rem;height:.9rem;color:var(--accent)}
 @media (max-width:899px){
-  #armybar{left:0;right:0;max-width:none;bottom:calc(3.5rem + var(--sab));padding:0 8px}
-  #armypanel{left:6px;right:6px;width:auto;bottom:calc(3.5rem + var(--sab) + 3.2rem);max-height:52vh}
+  #armybar{left:0;right:0;max-width:none;bottom:calc(3.5rem + var(--sab));padding:0 6px;gap:.2rem}
+  #armypanel{left:6px;right:6px;width:auto;bottom:calc(3.8rem + var(--sab) + var(--abh, 3.2rem));max-height:46vh}
+  #armybar .abc{flex:1 1 auto;padding:.2rem .35rem;min-height:0;gap:.25rem} #armybar .gport,#armybar .apic{display:none} #armybar .abt{min-width:0}
   body.strat #strip{margin-bottom:3.2rem}
 }
 
@@ -8206,7 +8207,7 @@ const FS = [
   {k:'gen', t:'Zet de generaal aan', s:'Hij regelt de rest', ic:'gen', done: () => !!nat(G.player).auto}
 ];
 const fsDone = () => FS.every(f => f.done());
-const fsOpen = () => G && !G.over && !UI.winShown && !UI.target && !UI.selAir.size && !UI.sel.size && !UI.info && !cardBlock() && !G.fsHide && G.day < 365 && !fsDone();
+const fsOpen = () => G && !G.over && !stratOn() && !UI.winShown && !UI.target && !UI.selAir.size && !UI.sel.size && !UI.info && !cardBlock() && !G.fsHide && G.day < 365 && !fsDone();
 function fsH(){
   const n = FS.filter(f => f.done()).length;
   return '<div class="fsrow"><span class="fst"><b>Eerste stappen</b><small>' + n + '/' + FS.length + '</small></span>'
@@ -11438,6 +11439,7 @@ function renderArmies(){
     + '<button type="button" class="abc abn" data-army="new" title="Nieuw leger uit je selectie (of leeg)">' + ic('leger') + '<span class="abt"><b>+ Leger</b></span></button>';
   if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; }
   AB.bar.hidden = false;
+  { const bh = AB.bar.offsetHeight; if(bh !== AB.bh){ AB.bh = bh; document.documentElement.style.setProperty('--abh', bh + 'px'); } }   // het paneel staat net boven de balk, ook als die twee rijen hoog is
   const fl = (G.fleets || []).find(x => x.id === UI.fleet);
   if(UI.airp && !UI.sheet){ const fh = airPanelH(); if(fh !== AB.psig){ AB.psig = fh; AB.pan.innerHTML = fh; } AB.pan.hidden = false; return; }
   if(fl && !UI.sheet){ const fh = fleetPanelH(fl); if(fh !== AB.psig){ AB.psig = fh; AB.pan.innerHTML = fh; } AB.pan.hidden = false; return; }
