@@ -2035,6 +2035,42 @@ p.help.fux-long{display:none} p.help.fux-long.fux-open{display:block}
 
 /* geen browserzoom: knijpen zoomt de kaart (die regelt dat zelf), de rest van de pagina scrollt alleen */
 html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* ================= strategische stand: legerbalk en legerpaneel ================= */
+#armybar{position:fixed;z-index:19;left:var(--pl);bottom:calc(.6rem + var(--sab));display:flex;gap:.3rem;max-width:min(60vw, 46rem);overflow-x:auto;scrollbar-width:none;padding:.1rem}
+#armybar::-webkit-scrollbar{display:none}
+#armybar[hidden],#armypanel[hidden]{display:none}
+.abc{flex:none;display:flex;align-items:center;gap:.4rem;padding:.25rem .55rem .25rem .25rem;border:1px solid rgba(0,0,0,.55);border-radius:var(--r-m);background:var(--pbg);background-image:var(--metal);color:var(--ink);cursor:pointer;box-shadow:var(--brassline), var(--shadow-s);text-align:left}
+.abc:hover{border-color:var(--ac,var(--accent))}
+.abc.on{border-color:var(--ac,var(--accent));box-shadow:inset 0 -2px 0 var(--ac,var(--accent)), var(--shadow-s)}
+.abc .gport{flex:none;display:block}
+.abt{display:grid;line-height:1.1}
+.abt b{font:500 .72rem var(--f-ui);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.abt small{display:flex;align-items:center;gap:.2rem;font:500 .7rem var(--f-ui);color:var(--dim);font-variant-numeric:tabular-nums}
+.abt small .ic{width:.75rem;height:.75rem}
+.abf{display:inline-block;width:.75rem;height:.5rem;box-shadow:0 0 0 1px rgba(0,0,0,.6);vertical-align:middle}
+.abn{color:var(--dim)} .abn .ic{width:1.1rem;height:1.1rem;color:var(--accent);margin-left:.2rem}
+#armypanel{position:fixed;z-index:19;left:var(--pl);bottom:calc(.6rem + var(--sab) + 3.4rem);width:min(23rem, calc(100vw - 16px));max-height:calc(100vh - var(--hud-h) - 9rem);overflow-y:auto;padding:.55rem .65rem .65rem}
+.aph{display:flex;align-items:center;gap:.55rem;padding-bottom:.45rem;border-bottom:1px solid rgba(201,164,74,.25)}
+.apg{display:grid;gap:.1rem;flex:1;min-width:0}
+.apg small{font:500 .62rem var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.apg b{font:600 1rem var(--f-ui);letter-spacing:.04em}
+.aptr{display:inline-flex;align-items:center;gap:.25rem;font:500 .72rem var(--f-ui);color:var(--dim)} .aptr .ic{width:.8rem;height:.8rem;color:var(--accent)}
+.apxp{display:block;height:3px;background:rgba(255,255,255,.1);width:8rem} .apxp i{display:block;height:100%;background:var(--accent)}
+.apn{display:grid;text-align:right} .apn b{font:600 .85rem var(--f-ui);letter-spacing:.08em;text-transform:uppercase} .apn small{font-size:.72rem;color:var(--dim)}
+.apu{display:flex;flex-wrap:wrap;gap:.2rem .6rem;margin:.45rem 0 .1rem;font:500 .8rem var(--f-ui);font-variant-numeric:tabular-nums}
+.apu span{display:inline-flex;align-items:center;gap:.2rem} .apu .ic{width:.95rem;height:.95rem;color:var(--dim)}
+#armypanel .sec{margin:.6rem 0 .3rem}
+#armypanel .gsegs{display:flex;gap:0} #armypanel .gsegs .gseg{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
+#armypanel .gseg .ic{width:.85rem;height:.85rem}
+.apfr{display:flex;flex-wrap:wrap;gap:.2rem} .apfr .gseg{display:inline-flex;align-items:center;gap:.3rem;padding:0 .5rem}
+.apgo,.apdv{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem}
+.apgo > span{display:inline-flex;align-items:center;gap:.3rem;font:500 .85rem var(--f-ui);flex:1} .apgo .ic{width:.9rem;height:.9rem;color:var(--accent)}
+@media (max-width:899px){
+  #armybar{left:0;right:0;max-width:none;bottom:calc(3.5rem + var(--sab));padding:0 8px}
+  #armypanel{left:6px;right:6px;width:auto;bottom:calc(3.5rem + var(--sab) + 3.2rem);max-height:52vh}
+  body.strat #strip{margin-bottom:3.2rem}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2579,8 +2615,8 @@ function manCap(pe){ const e = Math.min(pe, 300) + 0.15*Math.max(0, pe - 300); r
 function armyCap(c){ const n = nat(c), me = c === G.player; return Math.round((((n.capB || 8) * (n.ws == null ? 1 : wsMul(c)) * ((n.mobil || 0) > G.day ? 1.3 : 1) + (n.capX || 0)) * (me ? (D().meCap || 1) : (D().aiCap || 1)) + (me ? D().udCap || 0 : 0)) * ((n.demil || 0) > G.day ? 0.5 : 1)); }   // udCap: vaste bonus voor kleine landen
 function unitsQueued(c){ return nat(c).q.filter(q => (ITEMS[q.k] || {}).kind === 'unit').length; }
 const meB = c => c === G.player ? (D().meCbt || 1) : 1;   // hulp voor de speler op lagere niveaus
-const atkPlain = u => tstat(u.c, u.tp).a * u.hp/100 * supMul(u) * meB(u.c);
-const defPlain = (u,p) => tstat(u.c, u.tp).d * u.hp/100 * supMul(u) * meB(u.c) * (1 + 0.2*(G.forts[p]||0)) * (1 + (u.ent||0)/100) * 1.3 * (STAR[p] >= 2 && (G.nations[u.c].lsT || 0) > G.day ? 1.2 : 1) * (u.c === G.player ? homeDef(p) : 1);
+const atkPlain = u => tstat(u.c, u.tp).a * u.hp/100 * supMul(u) * meB(u.c) * genMul(u, true, u.loc);
+const defPlain = (u,p) => tstat(u.c, u.tp).d * u.hp/100 * supMul(u) * meB(u.c) * genMul(u, false, p) * (1 + 0.2*(G.forts[p]||0)) * (1 + (u.ent||0)/100) * 1.3 * (STAR[p] >= 2 && (G.nations[u.c].lsT || 0) > G.day ? 1.2 : 1) * (u.c === G.player ? homeDef(p) : 1);
 /* ---- terrein & rivieren: de aanvaller betaalt (pantser extra in bergen, moeras en steden) ---- */
 const TER_NM = {m:'bergen', h:'heuvels', d:'woestijn', w:'moeras'};
 /* ---- rollen: wat een divisie kan, volgt uit haar bataljons (de ontwerper doet er dus toe) ----
@@ -2846,7 +2882,7 @@ function dailyTick(){
     const n = nat(c);
     if(c === G.player){
       const gc = genCfg();
-      if(n.auto && (G.day + i) % 2 === 0){ if(gc.prod && n.q.length < 2) aiProduce(c); aiArmy(c); }
+      if(n.auto && (G.day + i) % 2 === 0){ if(gc.prod && n.q.length < 2) aiProduce(c); if(stratOn()) stratArmies(); else aiArmy(c); }
       if((G.day + i) % 4 === 0) decongest(c);   // zonder generaal alleen troepen zonder bevel van jou (net gebouwd)
       if(n.auto && gc.act && (G.day + i) % 3 === 0 && n.cp >= 55) aiSpecials(c);   // houdt 25+ bevel over voor oorlogsdoelen
       if(n.auto && gc.air && (G.day + i) % 2 === 0) aiAir(c);
@@ -4810,6 +4846,7 @@ function aiArmy(c){
   const defensive = gc && gc.mode === 'def' ? true : gc && gc.mode === 'att' ? false : armyPow(c) < enP * 0.9;
   const pwr = armyPow(c) / Math.max(1, enP);   // krachtsverhouding met alle vijanden samen: wie het front houdt valt alleen mee aan als je duidelijk sterker bent (1,2x)
   if(focus) for(const f of front) if(ADJ[f].some(n => G.ctrl[n] === focus)) opp[f] = opp[f] * 3 + 1;   // hoofddoel: daar de kansen
+  if(gc && gc.goal && P[gc.goal]) for(const f of front) opp[f] = (opp[f] + 0.2) * (1 + 3 * 300 / (300 + distKm(f, gc.goal)));   // slagplan: de aanval gaat richting het doel
   const avail = new Map();   // frontstuk -> vrije troepen en wie blijft staan
   for(const f of front){
     const here = [];
@@ -5135,7 +5172,8 @@ function frontOf(c){
     if(c === me) for(const x of dipHosts(c)) hosts.add(x);   // bondgenoot of doorgang: hun grens met jouw vijand is ook jouw front
     else for(const x of [me]) if(x !== c && G.nations[x] && alive(x) && friendly(c, x) && !atWar(c, x) && ens.some(e => atWar(x, e))) hosts.add(x);
   }
-  const front = owned(c).filter(p => ADJ[p].some(n => atWar(c, G.ctrl[n])));
+  let front = owned(c).filter(p => ADJ[p].some(n => atWar(c, G.ctrl[n])));
+  if(FRONT_ONLY && c === G.player){ const f2 = front.filter(p => ADJ[p].some(n => G.ctrl[n] === FRONT_ONLY)); if(f2.length) front = f2; }   // strategische stand: elk leger houdt zijn eigen front
   for(const h of hosts) for(const p of owned(h)) if(ADJ[p].some(n => atWar(c, G.ctrl[n]))) front.push(p);
   return {front, hosts};
 }
@@ -7012,6 +7050,7 @@ function onProvince(p, e){
   if(!G){ UI.pick = P[p].c; renderAll(); return; }
   if(G.over) return;
   if(SET.easy){ ezProvince(p); return; }   // eenvoudige stand: het kaartje van dit land
+  if(UI.armyGoal){ stratGoalAt(p); return; }   // strategische stand: doel van het slagplan
   if(UI.target){
     if(UI.target === 'drop'){
       let n = 0;
@@ -7550,6 +7589,7 @@ function renderOver(){
     ctx.restore();
   }
   drawMarks(ctx, u1);   // kerndreiging en besmetting
+  if(stratOn()) drawArmies(ctx, u1);   // strategische stand: slagplannen
   drawFx();
 }
 /* ================= kaartmodi, minimap en kaart-extra's in de bovenlaag ================= */
@@ -8544,7 +8584,7 @@ $('sheet').addEventListener('click', e => {
   sheetSig = ''; sheetPress = false; renderAll();
 });
 
-function renderAll(){ renderBar(); renderStrip(); renderSheet(); renderEnd(); renderCard(); overC.classList.toggle('targeting', !!UI.target); overDirty = true; }
+function renderAll(){ renderBar(); renderStrip(); renderSheet(); renderEnd(); renderCard(); renderArmies(); overC.classList.toggle('targeting', !!(UI.target || UI.armyGoal)); overDirty = true; }
 /* ================= vrede, kernwapen en kleine landen: interface ================= */
 SIL.nuke = {p:'M16.9 20.49A9.8 9.8 0 0 1 7.1 20.49L10.3 14.94A3.4 3.4 0 0 0 13.7 14.94ZM2.2 12A9.8 9.8 0 0 1 7.1 3.51L10.3 9.06A3.4 3.4 0 0 0 8.6 12ZM16.9 3.51A9.8 9.8 0 0 1 21.8 12L15.4 12A3.4 3.4 0 0 0 13.7 9.06ZM10.1 12a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 1 0-3.8 0z'};
 SHORT.nuke = 'Vernietigt een provincie; de wereld schrikt'; SICON.nuke = 'nuke';
@@ -9826,8 +9866,9 @@ function ezApply(){
   clearSel(); UI.info = null; UI.target = null; UI.confirm = null; UI.intro = 0; UI.editT = null;
   if(UI.sheet && UI.sheet !== 'set' && UI.sheet !== 'log') UI.sheet = null;
 }
-function ezSetMode(on){
-  SET.easy = !!on; saveSettings(); baseDirty = true;   // de kaart tekent in de eenvoudige stand rustiger
+function ezSetMode(v){
+  const on = v === true || v === 1; SET.strat = v === 2; SET.easy = on; saveSettings(); baseDirty = true;   // de kaart tekent in de eenvoudige stand rustiger
+  if(SET.strat && G && !G.over) stratInit();
   UI.ezSheet = null; UI.ezFull = false; ezTutOff();
   if(G && !G.over && on) ezApply();
   if(!G && !UI.dailyKey) UI.diff = on ? 0 : 1;   // landkeuze: Eenvoudig begint op Makkelijk
@@ -10365,7 +10406,7 @@ addEventListener('pointercancel', () => { EZ.press = false; });
 document.addEventListener('click', e => {
   const t = e.target.closest ? e.target : null; if(!t) return;
   const m = t.closest('[data-ezmode]');
-  if(m){ sfx('tap'); ezSetMode(m.dataset.ezmode === '1'); return; }
+  if(m){ sfx('tap'); ezSetMode(+m.dataset.ezmode); return; }
   const b = t.closest('[data-eza]');
   if(b){ if(b.getAttribute('aria-disabled') === 'true'){ const s = b.querySelector('span'); if(s) ezMsg(s.textContent, ''); return; } sfx('tap'); ezAct(b.dataset.eza); return; }
   const d = t.closest('#ezSheet [data-dip]');
@@ -10574,7 +10615,8 @@ function ezSay(msg, kind, key){
 }
 
 /* ---- instellingen en landkeuze ---- */
-const ezModeH = cls => [[1, 'Eenvoudig'], [0, 'Volledig']].map(([v, l]) => '<button type="button" class="' + cls + (!!SET.easy === !!v ? ' on' : '') + '" data-ezmode="' + v + '" aria-pressed="' + (!!SET.easy === !!v) + '">' + l + '</button>').join('');
+const styleOf = () => SET.easy ? 1 : SET.strat ? 2 : 0;   // 1 eenvoudig · 0 volledig · 2 strategisch (legers, productielijnen, marine)
+const ezModeH = cls => [[1, 'Eenvoudig', 'Leger en productie lopen automatisch; jij kiest de grote zetten'], [0, 'Volledig', 'Alle panelen, de generaal stuurt het leger'], [2, 'Strategisch', 'Zoals Hearts of Iron: legers met generaals, fronten en slagplannen, productielijnen, marine']].map(([v, l, t]) => '<button type="button" class="' + cls + (styleOf() === v ? ' on' : '') + '" data-ezmode="' + v + '" aria-pressed="' + (styleOf() === v) + '" title="' + t + '">' + l + '</button>').join('');
 const ezSetH = () => '<div class="gord"><span class="gl">Speelstijl</span><span class="gsegs">' + ezModeH('gseg') + '</span></div><p class="help" style="margin:.1rem 0 0">Eenvoudig: leger en productie lopen automatisch, met advies. Volledig: je regelt alles zelf.</p>';
 // in de volledige stand: dezelfde keuze bovenaan de rij met kaart en niveau
 const ezPickFull = h => h.replace('<div class="gord"><span class="gl">Kaart</span>', '<div class="gord"><span class="gl">Speelstijl</span><span class="gsegs">' + ezModeH('gseg') + '</span></div>$&');
@@ -10623,6 +10665,166 @@ function ezPick(el){
   pickSig = h; const st = el.scrollTop; el.innerHTML = h; el.hidden = false; el.dataset.c = c || ''; el.scrollTop = keep ? st : 0;
   if(c && !keep && c !== pickFitted && (cw() < 900 || toScreen(P[CN[c].cap].a[0], P[CN[c].cap].a[1])[0] > cw() - el.offsetWidth - 40)) pickFit(c);
   pickFitted = c;
+}
+
+/* ================= strategische stand: legers met generaals, fronten en slagplannen ================= */
+/* Zoals in Hearts of Iron: je divisies zitten in legers. Elk leger heeft een generaal (vaardigheid 1-5, één eigenschap, ervaring),
+   een houding (aanval, evenwicht, verdediging), een front (het land waartegen het vecht of zich opstelt) en eventueel een slagplan:
+   een doelprovincie waar de aanval naartoe gaat. De generaal-AI voert elk leger apart uit. Nieuwe divisies gaan naar het kleinste leger. */
+let FRONT_ONLY = null, ARMYOF = new Map();
+const GEN_NM = ['Van Dijk', 'De Wit', 'Bakker', 'Visser', 'Smit', 'Mulder', 'De Boer', 'Hendriks', 'Dekker', 'Brouwer', 'Kramer', 'Vermeulen', 'Peeters', 'Jacobs', 'Willems', 'Claes', 'Maes', 'Janssens', 'Wouters', 'Dubois', 'Lambert', 'Moreau', 'Schulz', 'Keller', 'Brandt', 'Weber', 'Novak', 'Horvat', 'Kowalski', 'Nowak', 'Rossi', 'Bianchi', 'Ortega', 'Navarro', 'Lindqvist', 'Berg', 'Hansen', 'Larsen', 'Murphy', 'Kelly', 'Walsh', 'Hughes', 'Grant', 'Sinclair'];
+const GEN_TR = {off:['Offensief', '+10% aanval', 'zwaard'], def:['Verdediger', '+10% verdediging', 'schild'], pan:['Pantserleider', 'pantser en gemotoriseerd +12% aanval', 'tank'], log:['Logisticus', 'herstel +50%, minder slijtage', 'prov'], ber:['Bergstrijder', '+15% in bergen en heuvels', 'berg']};
+const GEN_RK = ['Kolonel', 'Generaal-majoor', 'Luitenant-generaal', 'Generaal', 'Veldmaarschalk'];
+const ARMY_COL = ['#D6B35C', '#8FB0C8', '#C77B5A', '#9BBF6A', '#B48AC8', '#D0C08A', '#7FB8A8', '#C88A8A'];
+const stratOn = () => !!(G && SET.strat && !SET.easy && G.armies);
+function stratGen(){
+  const used = new Set((G.armies || []).map(a => a.gen.nm)), pool = GEN_NM.filter(n => !used.has(n)), k = (G.aid || 0) * 7 + G.nid + G.day;
+  const nm = pool.length ? pool[k % pool.length] : 'Reserve', tk = Object.keys(GEN_TR);
+  return {nm, sk:1 + (k % 3), tr:tk[(k * 3 + nm.length) % tk.length], xp:0};
+}
+function stratNewArmy(ids){ G.aid = (G.aid || 0) + 1; return {id:G.aid, nm:G.aid + 'e Leger', gen:stratGen(), ids:ids.slice(), front:null, goal:null, mode:'bal', col:ARMY_COL[(G.aid - 1) % ARMY_COL.length]}; }
+function stratInit(){
+  if(!G) return;
+  G.armies ||= [];
+  const me = G.player;
+  if(!G.armies.length){   // begin: twee legers, verdeeld van west naar oost
+    const us = G.units.filter(u => u.c === me).sort((a, b) => P[a.loc].a[0] - P[b.loc].a[0]), h = Math.ceil(us.length / 2);
+    G.armies.push(stratNewArmy(us.slice(0, h).map(u => u.id)));
+    if(us.length >= 6) G.armies.push(stratNewArmy(us.slice(h).map(u => u.id)));
+  }
+  const n = nat(me); if(!n.auto){ n.auto = true; for(const u of G.units) if(u.c === me){ u.man = false; u.g = null; } }
+  stratSync();
+}
+function stratSync(){
+  if(!G || !G.armies) return;
+  const me = G.player, mineU = new Map(); for(const u of G.units) if(u.c === me) mineU.set(u.id, u);
+  const seen = new Set();
+  for(const a of G.armies) a.ids = a.ids.filter(id => { if(!mineU.has(id) || seen.has(id)) return false; seen.add(id); return true; });
+  if(!G.armies.length) G.armies.push(stratNewArmy([]));
+  for(const [id] of mineU) if(!seen.has(id)){ let m = G.armies[0]; for(const a of G.armies) if(a.ids.length < m.ids.length) m = a; m.ids.push(id); }
+  ARMYOF = new Map(); for(const a of G.armies) for(const id of a.ids) ARMYOF.set(id, a);
+  for(const a of G.armies){
+    if(a.front && (!G.nations[a.front] || !alive(a.front))){ a.front = null; a.goal = null; }
+    if(a.goal && G.ctrl[a.goal] === me){ toast(a.nm + ': doel ' + P[a.goal].n + ' bereikt', 'good', 'goal' + a.id); a.goal = null; }
+  }
+}
+// gevechtswaarde: vaardigheid +3% per niveau, eigenschap erbovenop
+function genMul(u, att, p){
+  if(!SET.strat || SET.easy || u.c !== G.player || !ARMYOF.size) return 1;
+  const a = ARMYOF.get(u.id); if(!a) return 1;
+  const g = a.gen; let m = 1 + 0.03 * g.sk;
+  if(att && g.tr === 'off') m += 0.1;
+  if(!att && g.tr === 'def') m += 0.1;
+  if(att && g.tr === 'pan' && (u.t === 'tank' || u.t === 'mot')) m += 0.12;
+  if(g.tr === 'ber' && p && (TER[p] === 'm' || TER[p] === 'h')) m += 0.15;
+  return m;
+}
+// elke twee dagen: per leger de generaal-AI, met de eigen houding, het eigen front en het slagplan
+function stratArmies(){
+  const me = G.player; stratSync();
+  const saveU = UBY[me], saveG = G.gen, base = Object.assign({}, genCfg());
+  try{
+    for(const a of G.armies){
+      if(!a.ids.length) continue;
+      UBY[me] = a.ids.map(unitById).filter(Boolean);
+      const atw = !!(a.front && atWar(me, a.front));
+      G.gen = Object.assign({}, base, {mode:a.mode, focus:atw ? a.front : null, prep:!atw && a.front ? a.front : null, goal:atw ? a.goal : null});
+      FRONT_ONLY = atw ? a.front : null;
+      aiArmy(me);
+    }
+  } finally { UBY[me] = saveU; G.gen = saveG; FRONT_ONLY = null; }
+  // ervaring: wie vecht, leert; bij genoeg ervaring een bevordering
+  const fought = new Set(); for(const b of G.battles) for(const u of IDX[b.t] || []) if(u.c === me && ARMYOF.has(u.id)) fought.add(ARMYOF.get(u.id));
+  for(const b of G.battles){ if(b.att !== me) continue; for(const u of IDX[b.from] || []) if(u.att === b.t && ARMYOF.has(u.id)) fought.add(ARMYOF.get(u.id)); }
+  for(const a of fought){ const g = a.gen; g.xp += 2; if(g.sk < 5 && g.xp >= 40 * g.sk){ g.xp = 0; g.sk++; toast(a.nm + ': ' + g.nm + ' bevorderd tot ' + GEN_RK[g.sk - 1], 'good', 'promo' + a.id); } }
+}
+function stratGoalAt(p){
+  const a = (G.armies || []).find(x => x.id === UI.army); UI.armyGoal = false;
+  if(!a){ renderAll(); return; }
+  if(G.ctrl[p] === G.player){ toast('Kies een vijandelijke provincie als doel', '', 'goal'); renderAll(); return; }
+  a.goal = p; if(!a.front || G.ctrl[p] !== a.front) a.front = G.ctrl[p];
+  sfx('order'); toast(a.nm + ': slagplan naar ' + P[p].n + (atWar(G.player, a.front) ? '' : ' (eerst in oorlog komen: tot dan stelt het leger zich op aan de grens)'), 'good', 'goal');
+  overDirty = true; stripSig = null; renderAll();
+}
+// kaart: per leger een pijl van het zwaartepunt van zijn divisies naar het doel
+function drawArmies(ctx, u1){
+  for(const a of G.armies){
+    if(!a.goal || !a.ids.length) continue;
+    let x = 0, y = 0, n = 0; for(const id of a.ids){ const u = unitById(id); if(!u) continue; x += P[u.loc].a[0]; y += P[u.loc].a[1]; n++; }
+    if(!n) continue;
+    const A = toScreen(x/n, y/n), B = toScreen(P[a.goal].a[0], P[a.goal].a[1]), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy); if(L < 20) continue;
+    const ux = dx/L, uy = dy/L, hw = 9*u1, hl = 16*u1, mx = (A[0] + B[0])/2 - uy*L*0.12, my = (A[1] + B[1])/2 + ux*L*0.12;
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for(const [w, col] of [[9*u1, 'rgba(10,10,6,.55)'], [5.5*u1, a.col]]){
+      ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.quadraticCurveTo(mx, my, B[0] - ux*hl*0.8, B[1] - uy*hl*0.8); ctx.stroke();
+    }
+    const bx = B[0] - ux*hl, by = B[1] - uy*hl;
+    ctx.beginPath(); ctx.moveTo(B[0], B[1]); ctx.lineTo(bx - uy*hw, by + ux*hw); ctx.lineTo(bx + uy*hw, by - ux*hw); ctx.closePath();
+    ctx.fillStyle = a.col; ctx.fill(); ctx.lineWidth = 1.5*u1; ctx.strokeStyle = 'rgba(10,10,6,.8)'; ctx.stroke();
+    ctx.font = '600 ' + (11*u1).toFixed(1) + 'px ' + FONT_UI; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(10,10,6,.85)'; ctx.strokeText(a.nm.toUpperCase(), A[0], A[1] - 16*u1); ctx.fillStyle = a.col; ctx.fillText(a.nm.toUpperCase(), A[0], A[1] - 16*u1);
+    ctx.restore();
+  }
+}
+
+/* ---- strategische stand: legerbalk onderaan en het paneel van één leger ---- */
+const AB = {bar:null, pan:null, sig:'', psig:''};
+// portret: een silhouet met pet in de kleur van het leger, met de rangsterren eronder
+const genPort = (a, sz) => '<svg class="gport" viewBox="0 0 40 46" width="' + sz + '" height="' + Math.round(sz*1.15) + '" aria-hidden="true"><rect x="0" y="0" width="40" height="46" rx="2" fill="#2A2C22"/><rect x="1.5" y="1.5" width="37" height="43" rx="1" fill="none" stroke="' + a.col + '" stroke-width="1.6"/>'
+  + '<path d="M8 44c1-8 5-12 12-12s11 4 12 12z" fill="#55583F"/><path d="M15 33l5 5 5-5" fill="none" stroke="#C9A44A" stroke-width="1.4"/><circle cx="20" cy="22" r="7" fill="#C9B79A"/>'
+  + '<path d="M10 17c2-6 18-6 20 0l-2 2H12z" fill="#4A4D36"/><rect x="11" y="17" width="18" height="2.6" fill="#2A2C22"/><circle cx="20" cy="13.6" r="1.6" fill="#C9A44A"/>'
+  + Array.from({length:a.gen.sk}, (_, i) => '<path transform="translate(' + (20 - (a.gen.sk - 1)*3.4 + i*6.8 - 2.6) + ' 39.5) scale(.22)" d="M12 1.8 15 8.6 22.2 9.3 16.7 14.2 18.3 21.4 12 17.6 5.7 21.4 7.3 14.2 1.8 9.3 9 8.6z" fill="#E2C46A"/>').join('') + '</svg>';
+function renderArmies(){
+  const on = stratOn() && !G.over && hudMode() === 'game';
+  if(!AB.bar){ AB.bar = document.createElement('nav'); AB.bar.id = 'armybar'; AB.bar.setAttribute('aria-label', 'Legers'); document.body.appendChild(AB.bar); AB.pan = document.createElement('section'); AB.pan.id = 'armypanel'; AB.pan.className = 'glass'; AB.pan.setAttribute('aria-label', 'Leger'); document.body.appendChild(AB.pan);
+    AB.bar.addEventListener('click', armyClick); AB.pan.addEventListener('click', armyClick); }
+  document.body.classList.toggle('strat', on);
+  if(!on){ AB.bar.hidden = AB.pan.hidden = true; return; }
+  stratSync();
+  const h = G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
+      return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
+        + genPort(a, 30) + '<span class="abt"><b>' + esc(a.nm) + '</b><small>' + ic(EZ_HOUD[a.mode][2]) + a.ids.length + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '</small></span></button>'; }).join('')
+    + '<button type="button" class="abc abn" data-army="new" title="Nieuw leger uit je selectie (of leeg)">' + ic('leger') + '<span class="abt"><b>+ Leger</b></span></button>';
+  if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; }
+  AB.bar.hidden = false;
+  const a = G.armies.find(x => x.id === UI.army);
+  if(!a || UI.sheet || (UI.armyGoal && innerWidth < 900)){ AB.pan.hidden = true; AB.psig = ''; return; }   // telefoon: tijdens het aanwijzen van een doel de kaart vrijhouden
+  const me = G.player, by = {}; for(const id of a.ids){ const u = unitById(id); if(u) by[u.t] = (by[u.t] || 0) + 1; }
+  const fronts = [...new Set(enemiesOf(me).concat(neighbors(me)))].filter(c => alive(c) && c !== me && !isAlly(c)).sort((x, y) => atWar(me, y) - atWar(me, x));
+  const g = a.gen, tr = GEN_TR[g.tr], sel = [...UI.sel].map(unitById).filter(u => u && u.c === me).length;
+  const ph = '<div class="aph">' + genPort(a, 44) + '<div class="apg"><small>' + GEN_RK[g.sk - 1] + '</small><b>' + esc(g.nm) + '</b><span class="aptr" title="' + esc(tr[1]) + '">' + ic(tr[2]) + tr[0] + '</span><span class="apxp" title="Ervaring tot de volgende bevordering"><i style="width:' + (g.sk >= 5 ? 100 : Math.min(100, Math.round(100 * g.xp / (40 * g.sk)))) + '%"></i></span></div>'
+    + '<div class="apn"><b style="color:' + a.col + '">' + esc(a.nm) + '</b><small>' + a.ids.length + ' divisies</small></div><button type="button" class="xclose" data-army="close" aria-label="Sluiten">×</button></div>'
+    + '<div class="apu">' + Object.entries(by).map(([t, k]) => '<span title="' + esc((BAT[t] || {}).name || t) + '">' + ic(t) + k + '</span>').join('') + '</div>'
+    + '<div class="sec">Houding</div><div class="gsegs">' + ['att', 'bal', 'def'].map(m => '<button type="button" class="gseg' + (a.mode === m ? ' on' : '') + '" data-army="mode:' + m + '" title="' + EZ_HOUD[m][1] + '">' + ic(EZ_HOUD[m][2]) + EZ_HOUD[m][0] + '</button>').join('') + '</div>'
+    + '<div class="sec">Front</div><div class="apfr"><button type="button" class="gseg' + (!a.front ? ' on' : '') + '" data-army="front:" title="Geen vast front: het leger helpt waar het nodig is">Overal</button>'
+    + fronts.slice(0, 10).map(c => '<button type="button" class="gseg' + (a.front === c ? ' on' : '') + '" data-army="front:' + c + '" title="' + esc(cname(c)) + (atWar(me, c) ? ' (in oorlog)' : ' (opstellen aan de grens)') + '"><i class="abf" style="background:' + colorOf(c) + '"></i>' + esc(cname(c)) + (atWar(me, c) ? ic('zwaard') : '') + '</button>').join('') + '</div>'
+    + '<div class="sec">Slagplan</div><div class="apgo">' + (a.goal ? '<span>' + ic('doel') + esc(P[a.goal].n) + '</span><button type="button" class="btn sm" data-army="goal:">Wis</button>' : '<span class="mut">Geen doel</span>')
+    + '<button type="button" class="btn sm' + (UI.armyGoal ? ' pri' : '') + '" data-army="goal">' + ic('doel') + (UI.armyGoal ? 'Tik op de kaart…' : 'Doel aanwijzen') + '</button></div>'
+    + '<div class="sec">Divisies</div><div class="apdv"><button type="button" class="btn sm" data-army="add"' + (sel ? '' : ' disabled') + ' title="Zet de geselecteerde divisies in dit leger">' + ic('leger') + 'Selectie erbij' + (sel ? ' (' + sel + ')' : '') + '</button>'
+    + '<button type="button" class="btn sm" data-army="pick" title="Selecteer de divisies van dit leger op de kaart">' + ic('prov') + 'Toon</button>'
+    + '<button type="button" class="btn sm" data-army="gen" title="Andere generaal (5 bevelpunten)"' + (nat(me).cp >= 5 ? '' : ' disabled') + '>' + ic('gen') + 'Wissel generaal</button>'
+    + (G.armies.length > 1 ? '<button type="button" class="btn sm ghost" data-army="del" title="Leger opheffen: de divisies gaan naar het kleinste andere leger">' + ic('wit') + 'Opheffen</button>' : '') + '</div>';
+  if(ph !== AB.psig){ AB.psig = ph; AB.pan.innerHTML = ph; }
+  AB.pan.hidden = false;
+}
+function armyClick(e){
+  const b = e.target.closest('[data-army]'); if(!b || !G || b.disabled) return;
+  sfx('tap');
+  const v = b.dataset.army, me = G.player, a = G.armies.find(x => x.id === UI.army);
+  if(v === 'new'){ const ids = [...UI.sel].map(unitById).filter(u => u && u.c === me).map(u => u.id); for(const x of G.armies) x.ids = x.ids.filter(id => !ids.includes(id)); const na = stratNewArmy(ids); G.armies.push(na); UI.army = na.id; clearSel(); toast(na.nm + ' opgericht onder ' + GEN_RK[na.gen.sk - 1] + ' ' + na.gen.nm + (ids.length ? ' (' + ids.length + ' divisies)' : '; selecteer divisies en kies Selectie erbij'), 'good', 'army'); }
+  else if(v === 'close') UI.army = null;
+  else if(/^\d+$/.test(v)) UI.army = UI.army === +v ? null : +v;
+  else if(a){
+    if(v.startsWith('mode:')) a.mode = v.slice(5);
+    else if(v.startsWith('front:')){ a.front = v.slice(6) || null; a.goal = null; }
+    else if(v === 'goal') UI.armyGoal = !UI.armyGoal;
+    else if(v === 'goal:') a.goal = null;
+    else if(v === 'add'){ const ids = [...UI.sel].map(unitById).filter(u => u && u.c === me).map(u => u.id); for(const x of G.armies) x.ids = x.ids.filter(id => !ids.includes(id)); a.ids.push(...ids); for(const id of ids){ const u = unitById(id); if(u){ u.man = false; u.hold = false; } } clearSel(); }
+    else if(v === 'pick'){ UI.sel = new Set(a.ids); fitSel && fitSel(); }
+    else if(v === 'gen'){ const n = nat(me); if(n.cp >= 5){ n.cp -= 5; a.gen = stratGen(); toast(a.nm + ': nieuwe bevelhebber ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' (' + GEN_TR[a.gen.tr][0] + ')', 'good', 'army'); } }
+    else if(v === 'del' && G.armies.length > 1){ G.armies = G.armies.filter(x => x !== a); const m = G.armies.reduce((p, x) => x.ids.length < p.ids.length ? x : p); m.ids.push(...a.ids); UI.army = null; }
+  }
+  stratSync(); AB.sig = ''; AB.psig = ''; overDirty = true; stripSig = null; renderAll();
 }
 
 /* ================= laden, opslaan, wisselen ================= */
@@ -10709,6 +10911,7 @@ function onGameLoaded(focus){
   allFills(); stripSig = null; sheetSig = '';
   if(focus) fitCountry(G.player);
   renderAll();
+  if(SET.strat && !SET.easy) stratInit();
   if(ezLoaded()) return;   // eenvoudige stand: generaal aan, uitleg bij het eerste spel
   if(G.day === 0) toast('Welkom in ' + cname(G.player) + '. Begin met de eerste stappen onderaan', '');
 }
