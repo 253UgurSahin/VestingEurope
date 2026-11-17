@@ -2142,6 +2142,20 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
 .rst .tn{flex:1;min-width:0;font:500 .78rem var(--f-ui);letter-spacing:.03em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rst.on{border-color:rgba(201,164,74,.6)}
 .rpip{display:flex;flex-direction:column;gap:2px} .rpip i{display:block;width:.45rem;height:.22rem;background:rgba(255,255,255,.14)} .rpip i.on{background:var(--accent)}
+/* ---- legerkaarten: naam met front, samenstelling per soort, aantal divisies en sterkte ---- */
+.abc{padding:.3rem .6rem .3rem .3rem;align-items:center;min-height:3.1rem}
+.abt{display:grid;gap:.18rem;line-height:1.1;min-width:7.5rem}
+.abh{display:flex;align-items:center;gap:.3rem;white-space:nowrap}
+.abh b{font:600 .78rem var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ac,var(--ink))}
+.abh .abf{display:inline-block;width:.85rem;height:.6rem;box-shadow:0 0 0 1px rgba(0,0,0,.7)}
+.abh .ic{width:.8rem;height:.8rem;color:var(--war)}
+.abh em{margin-left:auto;font-style:normal;display:inline-flex} .abh em .ic{color:var(--dim)}
+.abm{display:flex;align-items:center;gap:.15rem .45rem;flex-wrap:nowrap;white-space:nowrap;font:600 .8rem var(--f-ui);color:var(--ink);font-variant-numeric:tabular-nums}
+.abm > span{display:inline-flex;align-items:center;gap:.12rem} .abm .ic{width:.95rem;height:.95rem;color:var(--ink)}
+.abm .abn2{margin-left:auto;padding-left:.35rem;font:500 .66rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.abs{display:block;height:3px;background:rgba(0,0,0,.5)} .abs i{display:block;height:100%}
+.abc.air .apic,.abc.fl .gport{align-self:center}
+@media (max-width:899px){ .abt{min-width:6.2rem} .abm{gap:.1rem .3rem;font-size:.74rem} .abm .ic{width:.82rem;height:.82rem} .abm .abn2{display:none} .abc{min-height:2.8rem} }
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -7593,6 +7607,11 @@ function renderOver(){
     if(g.oos){   // afgesneden van bevoorrading
       rrect(ctx, x0 - 3, -14, g.w + 6, 28, 2); ctx.setLineDash([3, 2.5]); ctx.strokeStyle = '#F0962E'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]);
     }
+    if(g.c === me && ARMYOF.size && stratOn()){   // strategische stand: een lipje in de kleur van het leger, met het nummer
+      const cnt = new Map(); for(const id of g.ids){ const ar = ARMYOF.get(id); if(ar) cnt.set(ar, (cnt.get(ar) || 0) + 1); }
+      let ar = null, bn = 0; for(const [k, v] of cnt) if(v > bn){ bn = v; ar = k; }
+      if(ar){ rrect(ctx, x0 - 8, -11, 9, 22, 1.5); ctx.fillStyle = ar.col; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(16,15,8,.9)'; ctx.stroke(); ctx.fillStyle = '#14130C'; ctx.font = '700 10px ' + FONT_UI; ctx.textAlign = 'center'; ctx.fillText(String(ar.id), x0 - 3.5, 0.5); }
+    }
     ctx.font = '700 12.5px ' + FONT_UI; ctx.textAlign = 'left';
     g.types.forEach((t, i) => {
       const sx = x0 + 2 + i*SEG;
@@ -11246,6 +11265,13 @@ const genPort = (a, sz) => '<svg class="gport" viewBox="0 0 40 46" width="' + sz
   + '<path d="M8 44c1-8 5-12 12-12s11 4 12 12z" fill="' + (a.navy ? '#22304A' : '#55583F') + '"/><path d="M15 33l5 5 5-5" fill="none" stroke="#C9A44A" stroke-width="1.4"/><circle cx="20" cy="22" r="7" fill="#C9B79A"/>'
   + '<path d="M10 17c2-6 18-6 20 0l-2 2H12z" fill="' + (a.navy ? '#E8E4D8' : '#4A4D36') + '"/><rect x="11" y="17" width="18" height="2.6" fill="#2A2C22"/><circle cx="20" cy="13.6" r="1.6" fill="#C9A44A"/>'
   + Array.from({length:a.gen.sk}, (_, i) => '<path transform="translate(' + (20 - (a.gen.sk - 1)*3.4 + i*6.8 - 2.6) + ' 39.5) scale(.22)" d="M12 1.8 15 8.6 22.2 9.3 16.7 14.2 18.3 21.4 12 17.6 5.7 21.4 7.3 14.2 1.8 9.3 9 8.6z" fill="#E2C46A"/>').join('') + '</svg>';
+// legerkaart: samenstelling per troepsoort, totaal en gemiddelde sterkte
+function armyMix(a){
+  const by = {}; let hp = 0, n = 0; for(const id of a.ids){ const u = unitById(id); if(!u) continue; by[u.t] = (by[u.t] || 0) + 1; hp += u.hp; n++; }
+  const nm = t => (BAT[t] || {}).name || t, st = n ? Math.round(hp / n) : 0;
+  return '<span class="abm">' + UTYPES.filter(t => by[t]).map(t => '<span title="' + esc(nm(t)) + '">' + ic(t) + by[t] + '</span>').join('') + '<span class="abn2">' + n + (n === 1 ? ' divisie' : ' divisies') + '</span></span>'
+    + '<span class="abs" title="Gemiddelde sterkte ' + st + '%"><i style="width:' + st + '%;background:' + hpCol(st) + '"></i></span>';
+}
 function renderArmies(){
   const on = stratOn() && !G.over && hudMode() === 'game';
   if(!AB.bar){ AB.bar = document.createElement('nav'); AB.bar.id = 'armybar'; AB.bar.setAttribute('aria-label', 'Legers'); document.body.appendChild(AB.bar); AB.pan = document.createElement('section'); AB.pan.id = 'armypanel'; AB.pan.className = 'glass'; AB.pan.setAttribute('aria-label', 'Leger'); document.body.appendChild(AB.pan);
@@ -11255,9 +11281,9 @@ function renderArmies(){
   stratSync();
   const h = G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
       return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
-        + genPort(a, 30) + '<span class="abt"><b>' + esc(a.nm) + '</b><small>' + ic(EZ_HOUD[a.mode][2]) + a.ids.length + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '</small></span></button>'; }).join('')
-    + (G.fleets || []).map(f => '<button type="button" class="abc fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen' + (f.zone != null && navZones()[f.zone] ? ' · ' + navZones()[f.zone].nm : '')) + '">' + genPort({col:f.col, gen:f.adm, navy:1}, 30) + '<span class="abt"><b>' + esc(f.nm) + '</b><small>' + ic(f.task === 'raid' ? 'sub' : 'vloot') + Math.round(shipN(f.ships)) + '</small></span></button>').join('')
-    + '<button type="button" class="abc air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[G.player] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '">' + '<span class="apic">' + ic('fi') + '</span><span class="abt"><b>Lucht</b><small>' + ic(AMODE[G.airMode || 'auto'][2]) + (ACNT[G.player] || 0) + '</small></span></button>'
+        + genPort(a, 30) + '<span class="abt"><span class="abh"><b>' + esc(a.nm) + '</b>' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '" title="Front: ' + esc(cname(a.front)) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '<em>' + ic(EZ_HOUD[a.mode][2]) + '</em></span>' + armyMix(a) + '</span></button>'; }).join('')
+    + (G.fleets || []).map(f => '<button type="button" class="abc fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen' + (f.zone != null && navZones()[f.zone] ? ' · ' + navZones()[f.zone].nm : '')) + '">' + genPort({col:f.col, gen:f.adm, navy:1}, 30) + '<span class="abt"><span class="abh"><b>' + esc(f.nm) + '</b><em>' + ic(NMODE[f.task || f.mode] ? NMODE[f.task || f.mode][2] : 'vloot') + '</em></span><span class="abm">' + Object.keys(NSHIP).filter(t => f.ships[t] >= 0.5).map(t => '<span title="' + NSHIP[t][0] + '">' + ic(t) + Math.round(f.ships[t]) + '</span>').join('') + '<span class="abn2">' + Math.round(shipN(f.ships)) + ' schepen</span></span></span></button>').join('')
+    + (() => { const by = {fi:0, cas:0, bo:0}; for(const w of G.air) if(w.c === G.player && by[w.t] != null) by[w.t]++; return '<button type="button" class="abc air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[G.player] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '"><span class="apic">' + ic('fi') + '</span><span class="abt"><span class="abh"><b>Luchtmacht</b><em>' + ic(AMODE[G.airMode || 'auto'][2]) + '</em></span><span class="abm">' + Object.keys(by).filter(t => by[t]).map(t => '<span>' + ic(t) + by[t] + '</span>').join('') + '<span class="abn2">' + (ACNT[G.player] || 0) + ' eskaders</span></span></span></button>'; })()
     + '<button type="button" class="abc abn" data-army="new" title="Nieuw leger uit je selectie (of leeg)">' + ic('leger') + '<span class="abt"><b>+ Leger</b></span></button>';
   if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; }
   AB.bar.hidden = false;
