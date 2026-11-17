@@ -2070,7 +2070,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
   #armybar{left:0;right:0;max-width:none;bottom:calc(3.5rem + var(--sab));padding:0 6px;gap:.2rem}
   #armypanel{left:6px;right:6px;width:auto;bottom:calc(3.8rem + var(--sab) + var(--abh, 3.2rem));max-height:46vh}
   #armybar .abc{flex:1 1 auto;padding:.2rem .35rem;min-height:0;gap:.25rem} #armybar .gport,#armybar .apic{display:none} #armybar .abt{min-width:0}
-  body.strat #strip{margin-bottom:3.2rem}
+  body.strat #strip{margin-bottom:calc(var(--abh, 3rem) + .3rem)}
 }
 
 /* ---- strategische stand: productielijnen ---- */
@@ -2193,6 +2193,21 @@ button.scrr{cursor:pointer} button.scrr:hover{border-color:var(--ac,var(--accent
 .apgo small{color:var(--dim)}
 .abc.self{border-style:dashed;border-color:var(--ac,var(--accent))}
 .apw span{min-width:0}
+
+/* ---- strategische stand: kop van een scherm, knoppen in het provinciekaartje ---- */
+.shk{display:flex;align-items:center;gap:.5rem;margin:0 0 .45rem;padding-bottom:.4rem;border-bottom:1px solid transparent;border-image:linear-gradient(90deg, rgba(201,164,74,.55), rgba(201,164,74,0) 85%) 1}
+.shk .ic{width:1.1rem;height:1.1rem;color:var(--accent)} .shk b{flex:1;font:400 1.02rem var(--f-stencil);letter-spacing:.08em;text-transform:uppercase}
+body.strat #strip{margin-bottom:calc(var(--abh, 3rem) + .5rem)}
+.aolbl{display:inline-flex;align-items:center;gap:.25rem;font:600 .72rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)} .aolbl .ic{width:.9rem;height:.9rem}
+.btn.aob{gap:.3rem;padding:0 .45rem 0 .2rem;border-color:var(--ac)} .aob .abno{display:grid;place-items:center;min-width:1.15rem;height:1.15rem;background:var(--ac);color:#14130C;font:700 .72rem var(--f-ui);font-style:normal}
+@media (min-width:900px){ body.strat #dock #sheet{max-height:calc(100vh - var(--hud-h) - var(--sat) - var(--bar-h) - 2.4rem - var(--abh, 3rem))} }
+.spd .tsw{display:block;font-size:.66rem;line-height:1.2;white-space:normal;color:var(--war);opacity:1}
+.tile.spd:disabled{opacity:.75} .tile.spd:disabled .tico,.tile.spd:disabled .tn{opacity:.6}
+.spd .tstat i{font-style:normal;display:inline-flex;align-items:center;gap:.1rem} .spd .tstat .warc{color:var(--war)} .spd .tstat .warc .ic{color:var(--war)}
+.spd .tstat .sho{display:inline-flex;align-items:center;gap:.1rem;color:var(--war)} .spd .tstat .sho .ic{color:var(--war)}
+.tile.spd{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:.15rem .4rem;padding:.35rem .45rem;text-align:left}
+.tile.spd .tn{min-width:0;text-align:left;font:500 .78rem var(--f-ui);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.spd .tstat{grid-column:1 / -1;justify-content:flex-start}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -8244,6 +8259,22 @@ function readSave(){
   for(const k of [SAVE_KEY, SAVE_KEY + '.bak']){ try{ const s = localStorage.getItem(k); if(s){ const o = JSON.parse(s); if(o && o.G && o.map) return o; } }catch(e){} }
   return null;
 }
+// provinciekaartje (strategische stand): de knoppen die je hier echt nodig hebt
+function stratStripH(p, c){
+  const me = G.player; let h = '';
+  const ars = (G.armies || []).filter(a => a.ids.length);
+  if(c !== me && atWar(me, c) && ars.length){
+    h += '<span class="aolbl">' + ic('doel') + 'Stuur</span>' + ars.slice(0, 6).map(a => '<button class="btn sm aob" data-act="ao:' + a.id + ':' + p + '" style="--ac:' + a.col + '" title="' + esc(a.nm + (a.ctl === 'zelf' ? ': gaat er meteen heen' : ': slagplan, de generaal voert het uit') + ' (' + a.ids.length + ' divisies)') + '"><i class="abno">' + a.id + '</i>' + a.ids.length + '</button>').join('')
+      + (ars.length > 1 ? '<button class="btn sm war" data-act="aoall:' + p + '" title="Alle legers op dit doel">' + ic('oorlog') + 'Alle</button>' : '');
+    let nb = null; for(const q of owned(me)) for(const n of ADJ[q]) if(n === p && SEA.has(ek(q, n))){ const b = navBlock(me, q, n); if(b && !ADJ[p].some(x => G.ctrl[x] === me && !SEA.has(ek(x, p)))) nb = b; }
+    if(nb) h += '<span class="chip2 hot" title="' + esc(nb) + '">' + ic('vloot') + 'geen zeeoverwicht</span>';
+  }
+  if(c === me){
+    const lv = infLv(p), q = (G.ib || []).some(b => b.p === p);
+    h += lv < 5 ? '<button class="btn two" data-act="infq:' + p + '" title="Wegen en spoor: sneller rijden en meer aanvoer">' + ic('prov') + '<span>' + (q ? 'Wegen in aanleg' : 'Wegen ' + lv + '→' + (lv + 1)) + '<small>' + (q ? 'tik om te schrappen' : 'infrastructuur') + '</small></span></button>' : '<span class="chip2" title="Beste wegen">' + ic('prov') + 'wegen 5</span>';
+  }
+  return h;
+}
 function renderStrip(){
   const el = $('strip');
   let h = '';
@@ -8336,6 +8367,7 @@ function renderStrip(){
         h += '<button class="btn two' + (UI.confirm === 'war:' + c ? ' war' : '') + '" data-act="war:' + c + '" title="Verrassingsaanval: meteen oorlog, maar veel agressie en −10% oorlogssteun.">' + ic('oorlog') + '<span>' + (UI.confirm === 'war:' + c ? 'Bevestig' : 'Verrassing') + '<small>nu · −10% steun</small></span></button>';
       }
     }
+    if(stratOn()) h += stratStripH(p, c);   // strategische stand: legers hierheen sturen, wegen aanleggen
     if(c !== me && alive(c)) h += dipStripH(c);
     h += '<button class="btn sm ghost" data-act="clear" aria-label="Sluiten">×</button></div>';
   }
@@ -8413,6 +8445,10 @@ $('strip').addEventListener('click', async e => {
     else UI.confirm = a;
   }
   else if(a.startsWith('decl:')){ declare(G.player, a.slice(5)); }
+  else if(a.startsWith('ao:')){ const [, id, p] = a.split(':'), ar = G.armies.find(x => x.id === +id); if(ar){ if(ar.ctl === 'zelf') armyOrder(ar, p); else { ar.goal = p; ar.front = G.ctrl[p]; sfx('order'); toast(ar.nm + ': slagplan naar ' + P[p].n + ' · de generaal voert het uit', 'good', 'goal'); } UI.info = null; overDirty = true; AB.sig = ''; } }
+  else if(a.startsWith('aoall:')){ const p = a.slice(6); for(const ar of G.armies){ if(!ar.ids.length) continue; if(ar.ctl === 'zelf') armyOrder(ar, p); else { ar.goal = p; ar.front = G.ctrl[p]; } } sfx('order'); toast('Alle legers: aanval op ' + P[p].n, 'good', 'goal'); UI.info = null; overDirty = true; AB.sig = ''; }
+  else if(a.startsWith('infq:')){ infraClick(a.slice(5)); }
+  else if(a.startsWith('sto:') || a === 'snew'){ const ids = [...UI.sel].map(unitById).filter(u => u && u.c === G.player && !u.air).map(u => u.id); if(ids.length){ for(const x of G.armies) x.ids = x.ids.filter(id => !ids.includes(id)); let ar; if(a === 'snew'){ ar = stratNewArmy(ids); G.armies.push(ar); } else { ar = G.armies.find(x => x.id === +a.slice(4)); ar && ar.ids.push(...ids); } if(ar){ for(const id of ids){ const u = unitById(id); if(u && ar.ctl !== 'zelf'){ u.man = false; u.hold = false; } } stratSync(); toast(ids.length + ' divisies naar ' + ar.nm, 'good', 'army'); UI.army = ar.id; clearSel(); AB.sig = ''; AB.psig = ''; overDirty = true; } } }
   else if(a.startsWith('fabq:')){
     const p = a.slice(5), n = nat(G.player);
     if(n.q.length < 10 && G.ctrl[p] === G.player){ n.q.push({k:'fab', p:0, at:p}); qSig = null; toast('Fabriek in de wachtrij · ' + P[p].n, 'good'); }
@@ -8513,7 +8549,8 @@ function renderSheet(){
   const dd = k => Math.ceil(itemCost(me,k) / Math.max(0.1, n.ppd));
   const tsub = k => ic('tijd') + dd(k) + ' d';
   const divs = UCNT[me] != null ? UCNT[me] : G.units.filter(u => u.c === me).length, cap = armyCap(me);
-  let h = '<div class="tabs" role="tablist">'
+  const st0 = stratOn() && SCR_TABS.find(t => t[0] === UI.sheet);   // strategische stand: de balk heeft de knoppen al, hier alleen een kop
+  let h = st0 ? '<div class="shk">' + ic(st0[2]) + '<b>' + st0[1] + '</b><button class="xclose" data-tab="" aria-label="Sluiten">×</button></div>' : '<div class="tabs" role="tablist">'
     + (stratOn() ? SCR_TABS : [['prod','Productie','fab'],['spec','Acties','bevel'],['dip','Diplomatie','vrede'],['info','Overzicht','vlag']]).map(([k,l,i]) => '<button class="tab' + (UI.sheet === k ? ' on' : '') + '" role="tab" aria-selected="' + (UI.sheet === k) + '" data-tab="' + k + '">' + ic(i) + '<span>' + l + '</span></button>').join('')
     + '<button class="xclose" data-tab="" aria-label="Sluiten">×</button></div>';
   if(UI.sheet === 'prod' && UI.editT != null){
@@ -9434,8 +9471,9 @@ function armyPanelH(){
   }
   h += '<button class="btn sm" data-act="split"' + (us.length > 1 ? '' : ' disabled') + ' title="Splits: de helft van elke soort blijft geselecteerd">' + ic('deel') + 'Splits</button>';
   h += '<button class="btn sm" data-act="center" title="Kaart naar de selectie">' + ic('doel') + 'Toon' + kb('C') + '</button>';
-  h += '<button class="btn sm" data-act="selview" title="Selecteer al je divisies die nu in beeld zijn">' + ic('oog') + 'In beeld' + kb('V') + '</button>';
-  h += '<button class="btn sm" data-act="grp"' + (gk ? ' disabled' : '') + ' title="Sla deze selectie op als legergroep (Shift+1…9). Alt+cijfer of de knop rechtsboven selecteert haar weer">' + ic('leger') + (gk ? 'Groep ' + gk : 'Groep +') + '</button>';
+  if(stratOn()) h += '<span class="aolbl">' + ic('leger') + 'In leger</span>' + G.armies.slice(0, 6).map(a => '<button class="btn sm aob" data-act="sto:' + a.id + '" style="--ac:' + a.col + '" title="Zet deze divisies in ' + esc(a.nm) + '"><i class="abno">' + a.id + '</i></button>').join('') + '<button class="btn sm" data-act="snew" title="Nieuw leger van deze divisies, met een eigen generaal">+ Leger</button>';
+  else h += '<button class="btn sm" data-act="selview" title="Selecteer al je divisies die nu in beeld zijn">' + ic('oog') + 'In beeld' + kb('V') + '</button>';
+  if(!stratOn()) h += '<button class="btn sm" data-act="grp"' + (gk ? ' disabled' : '') + ' title="Sla deze selectie op als legergroep (Shift+1…9). Alt+cijfer of de knop rechtsboven selecteert haar weer">' + ic('leger') + (gk ? 'Groep ' + gk : 'Groep +') + '</button>';
   h += '<button class="btn sm' + (disbOk(us) ? ' war' : '') + '" data-act="disband" title="Ontbinden: deze divisies verdwijnen voorgoed en maken ruimte onder je legerlimiet">' + ic('prul') + (disbOk(us) ? 'Bevestig: ' + us.length + ' weg' : 'Ontbind') + '</button>';
   return h + '</div>';
 }
@@ -11011,6 +11049,16 @@ function stratAutoProd(){
     if(!stratTrain(pick) && !(pick !== 'inf' && stratTrain('inf'))) break;
   }
 }
+function trainH(){
+  stratProdInit();
+  const me = G.player; let h = '';
+  const tps = ['inf', 'art', 'mot', 'tank', 'mar', 'para'].concat((G.tmpl || []).map((t, i) => 'p' + i));
+  h += '<div class="sec">Divisies trainen<span class="sr">' + ((UCNT[me] || 0) + G.train.length) + '/' + armyCap(me) + '</span></div><div class="sptr">' + tps.map(tp => {
+    const why = stratCanTrain(tp), need = eqNeed(tp), nm = tp[0] === 'p' && tp.length <= 3 ? ((G.tmpl[+tp.slice(1)] || {}).name || 'Ontwerp') : FIXT[tp].name;
+    return '<button class="tile spd" data-sp="train:' + tp + '"' + (why ? ' disabled' : '') + ' title="' + esc(why || 'Trainen: ' + TRAIN_D + ' dagen') + '"><span class="tico">' + ic(domOfKey(tp)) + '</span><span class="tn">' + esc(nm) + '</span>' + '<span class="tstat">' + (why && why.startsWith('Legerlimiet') ? '<span class="sho">' + ic('leger') + 'limiet</span>' : Object.keys(need).map(e => (G.stock[e] || 0) < need[e] - 1e-9 ? '<span class="sho">' + ic(EQ[e][2]) + Math.floor(G.stock[e] || 0) + '/' + Math.ceil(need[e]) + '</span>' : ic(EQ[e][2]) + Math.ceil(need[e])).join(' ')) + '</span>' + '</button>'; }).join('') + '</div>';
+  if(G.train.length) h += '<div class="spq">' + G.train.map(t => '<span>' + ic(domOfKey(t.tp)) + t.d + ' d</span>').join('') + '</div>';
+  return h;
+}
 function stratProdH(){
   stratProdInit();
   const me = G.player, n = nat(me), F = stratF(); let used = 0; for(const L of G.lines) used += L.f;
@@ -11023,11 +11071,6 @@ function stratProdH(){
       + '<button class="btn sm" data-sp="f:' + i + ':-1"' + (L.f ? '' : ' disabled') + ' aria-label="Een fabriek minder">−</button><b class="spc">' + L.f + '</b><button class="btn sm" data-sp="f:' + i + ':1"' + (used < F ? '' : ' disabled') + ' aria-label="Een fabriek meer">+</button></div>'; }).join('')
     + '</div><div class="spadd">' + Object.keys(LINE_K).filter(k => !G.lines.some(L => L.k === k) && (k !== 'tank' || true)).map(k => '<button class="btn sm" data-sp="add:' + k + '" title="Nieuwe lijn: ' + LINE_K[k] + '">' + ic(LINE_IC[k]) + '+</button>').join('') + '</div>';
   h += '<div class="sec">Voorraad</div><div class="spst">' + Object.keys(EQ).map(e => '<span class="' + ((G.short || {})[e] ? 'warc' : '') + '" title="' + EQ[e][0] + ((G.short || {})[e] ? ': tekort, divisies herstellen trager' : '') + '">' + ic(EQ[e][2]) + '<b>' + Math.floor(G.stock[e] || 0) + '</b></span>').join('') + '</div>';
-  const tps = ['inf', 'art', 'mot', 'tank', 'mar', 'para'].concat((G.tmpl || []).map((t, i) => 'p' + i));
-  h += '<div class="sec">Divisies trainen<span class="sr">' + ((UCNT[me] || 0) + G.train.length) + '/' + armyCap(me) + '</span></div><div class="sptr">' + tps.map(tp => {
-    const why = stratCanTrain(tp), need = eqNeed(tp), nm = tp[0] === 'p' && tp.length <= 3 ? ((G.tmpl[+tp.slice(1)] || {}).name || 'Ontwerp') : FIXT[tp].name;
-    return '<button class="tile spd" data-sp="train:' + tp + '"' + (why ? ' disabled' : '') + ' title="' + esc(why || 'Trainen: ' + TRAIN_D + ' dagen') + '"><span class="tico">' + ic(domOfKey(tp)) + '</span><span class="tn">' + esc(nm) + '</span><span class="tstat">' + Object.keys(need).map(e => ic(EQ[e][2]) + Math.ceil(need[e])).join(' ') + '</span></button>'; }).join('') + '</div>';
-  if(G.train.length) h += '<div class="spq">' + G.train.map(t => '<span>' + ic(domOfKey(t.tp)) + t.d + ' d</span>').join('') + '</div>';
   h += resH() + infraH();
   h += '<div class="sec">Civiele wachtrij<span class="sr">fabrieken</span></div><div class="spq">' + (n.q.length ? n.q.slice(0, 6).map(q => '<span>' + ic(ITEMS[q.k] && ITEMS[q.k].kind === 'fab' ? 'fab' : 'tech') + Math.round(100 * q.p / itemCost(me, q.k)) + '%</span>').join('') : '<span class="mut">leeg</span>')
     + '<button class="btn sm" data-sp="fab"' + (fabSpots(me) > 0 && n.q.length < 10 ? '' : ' disabled') + '>' + ic('fab') + '+ Fabriek</button></div>';
@@ -11419,6 +11462,7 @@ function armyScrH(){
   h += '<div class="sec">Legers<span class="sr">tik voor bevelen</span></div><div class="scrl">' + G.armies.map(a => { const atw = a.front && atWar(me, a.front);
     return '<button class="scrr" data-scr="army:' + a.id + '" style="--ac:' + a.col + '">' + genPort(a, 34) + '<span class="scrn"><b>' + esc(a.nm) + '</b><small>' + GEN_RK[a.gen.sk - 1] + ' ' + esc(a.gen.nm) + ' · ' + GEN_TR[a.gen.tr][0] + '</small></span>'
       + '<span class="scrc">' + armyMix(a) + '</span><span class="scrf">' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' + esc(cname(a.front)) + (atw ? ic('zwaard') : '') : '<span class="mut">overal</span>') + (a.goal ? '<small>' + ic('doel') + esc(P[a.goal].n) + '</small>' : '') + '</span></button>'; }).join('') + '</div>';
+  h += trainH();
   h += '<div class="sec">Uitrusting</div>' + lineCtl(['gun', 'art', 'mot', 'tank', 'aa']);
   return h;
 }
