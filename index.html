@@ -6488,6 +6488,7 @@ function renderBase(coarse){
   const px = V.k, mode = UI.mapMode || 'pol';
   const vx0 = V.cx - bw/2*V.k, vx1 = V.cx + bw/2*V.k, vy0 = V.cy - bh/2*V.k, vy1 = V.cy + bh/2*V.k;
   drawSea(ctx, s, tx, ty, px, vx0, vy0, vx1, vy1);
+  drawSeaZones(ctx);   // strategische stand: zeegebieden als vlakken
   // ingezoomd (en niet te veel kaart in beeld): scherpe data; anders vereenvoudigde versie per zoomniveau
   const hd = !coarse && !!HD && V.k < 0.8 && (vx1 - vx0)*(vy1 - vy0) < 1.4e6;   // tijdens slepen/zoomen altijd de vereenvoudigde vormen: de scherpe versie volgt als je loslaat
   const lv = hd ? 0 : Math.min(LOD_STEP.length - 1, lodLevel() + (coarse ? 1 : 0)), LP = lodPaths(lv);
@@ -7133,7 +7134,7 @@ const ptrUp = e => {
   if(h.air) onAirGroup(h.air, e);
   else if(h.ctr) onCounter(h.ctr, e);
   else if(h.p) onProvince(h.p, e);
-  else onSea();
+  else onSea(e);
 };
 overC.addEventListener('pointerup', ptrUp);
 overC.addEventListener('pointercancel', ptrUp);
@@ -7161,8 +7162,10 @@ function boxSelect(b){
   }
   UI.sel = new Set(ids); UI.selAir = new Set(); UI.info = null; renderAll();
 }
-function onSea(){
+function onSea(e){
   if(!G){ UI.pick = null; renderAll(); return; }
+  if(e && G.navy && stratOn() && !UI.target && !UI.sel.size && !UI.selAir.size){ const [mx, my] = toMap(e.clientX, e.clientY), z = seaAt(mx, my); if(z >= 0){ UI.seaz = UI.seaz === z ? null : z; UI.info = null; stripSig = null; renderAll(); return; } }   // strategische stand: kaartje van het zeegebied
+  UI.seaz = null;
   if(UI.target){ UI.target = null; renderAll(); return; }
   if(SET.easy) UI.ezSheet = null;
   clearSel(); UI.info = null; renderAll();
@@ -7191,6 +7194,7 @@ function onAirGroup(key, e){
   UI.sel = new Set(); UI.info = null; renderAll();
 }
 function onProvince(p, e){
+  if(G) UI.seaz = null;
   if(!G){ UI.pick = P[p].c; renderAll(); return; }
   if(G.over) return;
   if(SET.easy){ ezProvince(p); return; }   // eenvoudige stand: het kaartje van dit land
@@ -7758,7 +7762,9 @@ const MODES = [
   {k:'sup', n:'Aanvoer', key:'7', d:'M12 2.2 21.5 7v10L12 21.8 2.5 17V7zM12 4.6 6 7.6l6 3 6-3zM4.5 9.2v6.6l6.5 3.3v-6.6zM13 12.5v6.6l6.5-3.3V9.2z'},
   {k:'dip', n:'Diplomatie', key:'8', d:'M5 2h10l4.5 4.5V22H5zM7.6 8h8.8v1.4H7.6zM7.6 11h8.8v1.4H7.6zM7.6 14h5.6v1.4H7.6z'},
   {k:'ind', n:'Industrie', key:'9', d:'M2.5 21V10.5l5.5 3.4v-3.4l5.5 3.4V7.6l2.2-2.1h1.8V3h2.8v18z'},
-  {k:'inf', n:'Infrastructuur', key:'0', d:'M9.6 2h1.8l-1 20H6.8zM12.6 2h1.8l3.2 20h-3.6zM11.2 4h1.6v2.4h-1.6zM11 9h2v3h-2zM10.7 14.6h2.6v3.6h-2.6z'}
+  {k:'zee', n:'Zee', key:'z', strat:1, d:'M1 14.6h22l-3 4.8H4zM6.6 10.2h9.6v4.4H6.6zM9.4 6.8h4.2v3.4H9.4zM10.9 3.6h1.2v3.2h-1.2z'},
+  {k:'air', n:'Lucht', key:'u', strat:1, d:'M12 1.8l1.4 5.8 8.4 4.3v2l-8.4-1.9-.6 6.2 3.1 2.3v1.7L12 21.1l-3.9 1.1v-1.7l3.1-2.3-.6-6.2-8.4 1.9v-2l8.4-4.3z'},
+  {k:'inf', n:'Infrastructuur', key:'0', strat:1, d:'M9.6 2h1.8l-1 20H6.8zM12.6 2h1.8l3.2 20h-3.6zM11.2 4h1.6v2.4h-1.6zM11 9h2v3h-2zM10.7 14.6h2.6v3.6h-2.6z'}
 ];
 const TER_COL = {'':'#63824F', h:'#8E8757', m:'#7F7167', d:'#C6AB6C', w:'#4A7F7A'};
 const DIP_COL = {me:'#4FAE6C', war:'#C9483A', ally:'#4C8FD6', access:'#4FA8A0', pact:'#8E73C8', truce:'#C9B24A', fear:'#B5803C', neu:'#59646D'};
@@ -7777,6 +7783,8 @@ function mapRel(c){
 function modeFill(m, p, c){
   const j = JIT[p];
   if(m === 'ter') return shade(TER_COL[TER[p] || ''], j*0.8);
+  if(m === 'zee') return shade(mixHex(colorOf(c), '#34362F', 0.7), j*0.4);
+  if(m === 'air') return G && G.player ? airFill(p, c, j) : shade(colorOf(c), j);
   if(m === 'inf') return shade(INF_COL[infLv(p)], j*0.5 + (G && c === G.player ? 0.04 : -0.2) + (G && (G.ib || []).some(b => b.p === p) ? 0.18 : 0));
   const me = G.player, occ = P[p].c !== c;
   if(m === 'dip') return shade(DIP_COL[mapRel(c)], j*0.6 + (occ ? -0.14 : 0));
@@ -7796,7 +7804,7 @@ function modeFill(m, p, c){
 }
 function modeFills(){ let ch = false; for(const p of PIDS){ const f = modeFill(mapMode(), p, G ? G.ctrl[p] : P[p].c); if(f !== FILL[p]){ FILL[p] = f; ch = true; } } return ch; }
 function setMode(m){
-  if(!G || !MODES.some(x => x.k === m)) return;
+  if(!G || !MODES.some(x => x.k === m && (!x.strat || stratOn()))) return;
   UI.mapMode = m; if(m === 'sup') computeSupply();
   modeFills(); DIRTYP.clear(); baseDirty = true; MM.full = true; MM.msig = ''; renderModes();
 }
@@ -7805,6 +7813,8 @@ function legendH(m){
   if(m === 'ter') return sw(TER_COL[''], 'vlak') + sw(TER_COL.h, 'heuvels') + sw(TER_COL.m, 'bergen') + sw(TER_COL.d, 'woestijn') + sw(TER_COL.w, 'moeras');
   if(m === 'sup') return sw('#86D692', 'veel aanvoer') + sw('#2C5338', 'weinig') + sw('#E0792A', 'afgesneden') + sw('#D98484', 'vijand') + '<span class="mleg">getal = divisies</span>';
   if(m === 'dip') return ['me', 'war', 'ally', 'access', 'pact', 'truce', 'fear', 'neu'].map(k => sw(DIP_COL[k], DIP_NM[k])).join('');
+  if(m === 'zee') return sw('#7FB060', 'jouw overwicht') + sw('#C25A44', 'vijand sterker') + '<span class="mleg">tik op zee: vloot sturen · landen kan vanaf 50%</span>';
+  if(m === 'air') return sw('#9BD06A', 'jouw jagers sterker') + sw('#E2735E', 'vijand sterker') + '<span class="mleg">groen: parachutisten kunnen springen</span>';
   if(m === 'inf') return [5, 4, 3, 2, 1].map(l => sw(INF_COL[l], 'niveau ' + l)).join('') + '<span class="mleg">tik op een eigen provincie: wegen aanleggen</span>';
   if(m === 'ind') return sw('#F5B93F', 'veel fabrieken') + sw('#5A4827', 'weinig') + sw('#324988', 'vrije bouwplek') + '<span class="mleg">getal = fabrieken/plekken</span>';
   return '<span class="mleg"><i class="hat"></i>vijand</span><span class="mleg"><i class="rte"></i>oversteek</span><span class="mleg"><i class="riv"></i>rivier</span>';
@@ -7812,7 +7822,7 @@ function legendH(m){
 function renderModes(){
   const el = $('mapmodes'); if(!el) return;
   const m = mapMode();
-  el.innerHTML = '<div class="mmrow">' + MODES.map(x => '<button class="mmb' + (x.k === m ? ' on' : '') + '" type="button" data-mode="' + x.k + '" title="' + x.n + ' (' + x.key + ')" aria-label="Kaartmodus ' + x.n + '" aria-pressed="' + (x.k === m) + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="' + x.d + '"/></svg><kbd>' + x.key + '</kbd></button>').join('')
+  el.innerHTML = '<div class="mmrow">' + MODES.filter(x => !x.strat || stratOn()).map(x => '<button class="mmb' + (x.k === m ? ' on' : '') + '" type="button" data-mode="' + x.k + '" title="' + x.n + ' (' + x.key + ')" aria-label="Kaartmodus ' + x.n + '" aria-pressed="' + (x.k === m) + '"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="' + x.d + '"/></svg><kbd>' + x.key + '</kbd></button>').join('')
     + '<button class="mmb mmx" type="button" data-mmopen="1" aria-label="Kaartmodi"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5 22 8l-10 5.5L2 8zM4.6 11.6 12 15.7l7.4-4.1L22 13l-10 5.5L2 13zM4.6 16.1 12 20.2l7.4-4.1L22 17.5 12 23 2 17.5z"/></svg></button></div>'
     + '<div id="mapleg"><b>' + MODES.find(x => x.k === m).n + '</b>' + legendH(m) + '</div>';
   $('minimap').classList.toggle('off', !!UI.miniOff);
@@ -8328,6 +8338,8 @@ function renderStrip(){
       + '<div class="acts"><button class="btn sm" data-act="airhome" title="Terug naar de basis">' + ic('stad') + 'Basis</button><button class="btn sm pri" data-act="clear">' + ic('check') + 'Klaar</button></div>';
   } else if(UI.sel.size){
     h = armyPanelH();   // legerpaneel: zie het blok "spelschil"
+  } else if(UI.seaz != null && G.navy && stratOn()){
+    h = seaCardH(UI.seaz);
   } else if(UI.info){
     const p = UI.info, c = G.ctrl[p], core = P[p].c, me = G.player;
     const TI = {m:'berg', h:'heuvel', d:'woest', w:'moeras'};
@@ -8367,7 +8379,7 @@ function renderStrip(){
         h += '<button class="btn two' + (UI.confirm === 'war:' + c ? ' war' : '') + '" data-act="war:' + c + '" title="Verrassingsaanval: meteen oorlog, maar veel agressie en −10% oorlogssteun.">' + ic('oorlog') + '<span>' + (UI.confirm === 'war:' + c ? 'Bevestig' : 'Verrassing') + '<small>nu · −10% steun</small></span></button>';
       }
     }
-    if(stratOn()) h += stratStripH(p, c);   // strategische stand: legers hierheen sturen, wegen aanleggen
+    if(stratOn()) h += stratStripH(p, c) + airChipsH(p);   // strategische stand: legers hierheen sturen, wegen aanleggen
     if(c !== me && alive(c)) h += dipStripH(c);
     h += '<button class="btn sm ghost" data-act="clear" aria-label="Sluiten">×</button></div>';
   }
@@ -8448,6 +8460,9 @@ $('strip').addEventListener('click', async e => {
   else if(a.startsWith('ao:')){ const [, id, p] = a.split(':'), ar = G.armies.find(x => x.id === +id); if(ar){ if(ar.ctl === 'zelf') armyOrder(ar, p); else { ar.goal = p; ar.front = G.ctrl[p]; sfx('order'); toast(ar.nm + ': slagplan naar ' + P[p].n + ' · de generaal voert het uit', 'good', 'goal'); } UI.info = null; overDirty = true; AB.sig = ''; } }
   else if(a.startsWith('aoall:')){ const p = a.slice(6); for(const ar of G.armies){ if(!ar.ids.length) continue; if(ar.ctl === 'zelf') armyOrder(ar, p); else { ar.goal = p; ar.front = G.ctrl[p]; } } sfx('order'); toast('Alle legers: aanval op ' + P[p].n, 'good', 'goal'); UI.info = null; overDirty = true; AB.sig = ''; }
   else if(a.startsWith('infq:')){ infraClick(a.slice(5)); }
+  else if(a.startsWith('sz:') || a.startsWith('szr:')){ const [k, fid, z] = a.split(':'), f = G.fleets.find(x => x.id === +fid); if(f){ f.zone = +z; f.mode = k === 'szr' ? 'raid' : 'sup'; f.task = f.mode; ZP = null; sfx('order'); toast(f.nm + ' gaat naar ' + navZones()[+z].nm + (k === 'szr' ? ' (konvooien)' : ' (overwicht)'), 'good', 'fleet'); overDirty = true; baseDirty = true; AB.sig = ''; } }
+  else if(a.startsWith('afi:') || a.startsWith('acas:')){ const [k, p] = a.split(':'), t = k === 'afi' ? 'fi' : 'cas'; UI.selAir = new Set(G.air.filter(w => w.c === G.player && w.t === t).map(w => w.id)); orderAir(p); UI.selAir = new Set(); overDirty = true; }
+  else if(a.startsWith('apara:')){ const p = a.slice(6); let n = 0; for(const u of (UBY[G.player] || []).filter(u => u.t === 'para')) if(canDrop(u, p)){ doDrop(u, p); n++; } if(n) toast(n + ' divisies parachutisten landen in ' + P[p].n, 'good'); }
   else if(a.startsWith('sto:') || a === 'snew'){ const ids = [...UI.sel].map(unitById).filter(u => u && u.c === G.player && !u.air).map(u => u.id); if(ids.length){ for(const x of G.armies) x.ids = x.ids.filter(id => !ids.includes(id)); let ar; if(a === 'snew'){ ar = stratNewArmy(ids); G.armies.push(ar); } else { ar = G.armies.find(x => x.id === +a.slice(4)); ar && ar.ids.push(...ids); } if(ar){ for(const id of ids){ const u = unitById(id); if(u && ar.ctl !== 'zelf'){ u.man = false; u.hold = false; } } stratSync(); toast(ids.length + ' divisies naar ' + ar.nm, 'good', 'army'); UI.army = ar.id; clearSel(); AB.sig = ''; AB.psig = ''; overDirty = true; } } }
   else if(a.startsWith('fabq:')){
     const p = a.slice(5), n = nat(G.player);
@@ -11267,18 +11282,20 @@ function navTick(){
     if(n.yard >= NSHIP[pick][1]){ n.yard -= NSHIP[pick][1]; s[pick] = (s[pick] || 0) + 1; }
   }
   ZP = null;
+  const mm = mapMode(); if(mm === 'zee' || mm === 'air'){ modeFills(); baseDirty = true; MM.full = true; }
 }
 // kaart: per betwist zeegebied een balk met het overwicht; jouw vloten als anker met het aantal schepen
 function drawFleets(ctx, u1){
   if(!G.navy) return;
   if(!ZP) navCalc();
+  navGrid(); drawSeaNames(ctx, u1);
   const Z = navZones(), me = G.player, en = enemiesOf(me);
   ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 ' + (10*u1).toFixed(1) + 'px ' + FONT_UI;
   if(en.length) for(const z of Z){
     let A = 0, X = 0; const zp = ZP.zp[z.id];
     for(const n in zp){ if(n === me || (!atWar(n, me) && en.some(e => atWar(n, e)))) A += zp[n]; else if(atWar(n, me)) X += zp[n]; }
     if(!X || A + X < 0.5) continue;
-    const s = A / (A + X), [x, y] = toScreen(z.x, z.y), w = 46*u1, h = 5*u1;
+    const s = A / (A + X), [x, y] = toScreen(z.lx ?? z.x, z.ly ?? z.y), w = 46*u1, h = 5*u1;
     ctx.fillStyle = 'rgba(10,10,6,.8)'; ctx.fillRect(x - w/2 - 1, y + 9*u1 - 1, w + 2, h + 2);
     ctx.fillStyle = '#B9472F'; ctx.fillRect(x - w/2, y + 9*u1, w, h); ctx.fillStyle = '#93AC59'; ctx.fillRect(x - w/2, y + 9*u1, w * s, h);
   }
@@ -11289,8 +11306,7 @@ function drawFleets(ctx, u1){
       const enC = [...z.ps].some(p => atWar(me, G.ctrl[p])); if(!enC || A + X < 0.5) continue;
       ctx.strokeStyle = A / (A + X) >= 0.5 ? 'rgba(147,172,89,.85)' : 'rgba(205,70,50,.85)';
       for(const i of z.r){ const r = ROUTES[i]; const a = toScreen(r[2], r[3]), b = toScreen(r[4], r[5]); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
-      const [x, y] = toScreen(z.x, z.y); ctx.setLineDash([]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(10,10,6,.85)'; ctx.fillStyle = '#E7E2CF';
-      const t = z.nm.replace('Zee bij ', '').toUpperCase() + ' · ' + Math.round(100 * A / (A + X)) + '%'; ctx.strokeText(t, x, y - 2*u1); ctx.fillText(t, x, y - 2*u1);
+      ctx.setLineDash([7*u1, 5*u1]);
       ctx.lineWidth = 3.2*u1; ctx.setLineDash([7*u1, 5*u1]);
     }
     ctx.setLineDash([]);
@@ -11298,7 +11314,7 @@ function drawFleets(ctx, u1){
   const at = {};
   for(const f of G.fleets){
     if(f.zone == null || !Z[f.zone]) continue;
-    const z = Z[f.zone], k = at[z.id] = (at[z.id] || 0) + 1, [x0, y0] = toScreen(z.x, z.y), x = x0 + (k - 1) * 34*u1 - 0*u1, y = y0 - 4*u1, w = 32*u1, h = 15*u1;
+    const z = Z[f.zone], k = at[z.id] = (at[z.id] || 0) + 1, [x0, y0] = toScreen(z.lx ?? z.x, z.ly ?? z.y), x = x0 + (k - 1) * 34*u1 - 0*u1, y = y0 - 4*u1, w = 32*u1, h = 15*u1;
     ctx.fillStyle = UI.fleet === f.id ? '#C9A44A' : '#1E2A36'; ctx.strokeStyle = 'rgba(10,10,6,.9)'; ctx.lineWidth = 1.5;
     ctx.fillRect(x - w/2, y - h/2, w, h); ctx.strokeRect(x - w/2, y - h/2, w, h);
     ctx.fillStyle = UI.fleet === f.id ? '#1E1806' : '#D8E2EA'; ctx.fillText((f.task === 'raid' ? '▾' : '⚓') + ' ' + Math.round(shipN(f.ships)), x, y + 0.5);
@@ -11537,6 +11553,115 @@ function stratWarn(){
     const fr = frontier(me, 3), any = fr.some(p => atWar(me, G.ctrl[p]) && paraAir(me, p));
     if(!any) say('pa', 'Parachutisten wachten: nergens luchtoverwicht. Bouw jagers of zet de luchtmacht op Leger.');
   }
+}
+
+/* ---- strategische stand: zeegebieden als vlakken op het water, kaartmodi Zee en Lucht, kaartje van een zeegebied ----
+   Het water wordt in een rooster verdeeld: elk zeevakje hoort bij het dichtstbijzijnde zeegebied (binnen 650 km). Zo krijgt elk
+   gebied een eigen vlak met een grens, een naam op het water en een kleur naar wie er het overwicht heeft. */
+let NZG = null;
+function navGrid(){
+  if(NZG && NZG.map === MAPNAME && NZG.d === DATA) return NZG;
+  const Z = navZones(), gw = MAPNAME === 'world' ? 1400 : 900, sc = gw / W, gh = Math.ceil(H * sc);
+  const c = document.createElement('canvas'); c.width = gw; c.height = gh; const x = c.getContext('2d');
+  x.setTransform(sc, 0, 0, sc, 0, 0); x.fillStyle = '#000'; for(const p of PIDS) x.fill(PATH[p], 'evenodd'); if(BACK) x.fill(BACK, 'evenodd');
+  const d = x.getImageData(0, 0, gw, gh).data, id = new Int16Array(gw * gh).fill(-1), R = 650 / KM, acc = Z.map(() => [0, 0, 0]);
+  const bx = Z.map(z => [z.x - R, z.x + R, z.y - R, z.y + R]);
+  for(let j = 0; j < gh; j++){ const my = (j + 0.5) / sc;
+    for(let i = 0; i < gw; i++){ const k = j * gw + i; if(d[k * 4 + 3] > 90) continue; const mx = (i + 0.5) / sc; let b = -1, bd = R;
+      for(let q = 0; q < Z.length; q++){ const B = bx[q]; if(mx < B[0] || mx > B[1] || my < B[2] || my > B[3]) continue; const dd = Math.hypot(Z[q].x - mx, Z[q].y - my); if(dd < bd){ bd = dd; b = q; } }
+      id[k] = b; if(b >= 0){ acc[b][0] += mx; acc[b][1] += my; acc[b][2]++; } } }
+  for(const z of Z){ const a = acc[z.id]; z.cells = a[2]; z.lx = a[2] ? a[0] / a[2] : z.x; z.ly = a[2] ? a[1] / a[2] : z.y;
+    if(a[2]){ const k = Math.floor(z.ly * sc) * gw + Math.floor(z.lx * sc); if(id[k] !== z.id){   // zwaartepunt op land of in een ander gebied: het dichtstbijzijnde vakje van het eigen gebied
+      let bd = 1e18, bk = -1; for(let q = 0; q < id.length; q++) if(id[q] === z.id){ const dx = (q % gw) / sc - z.lx, dy = Math.floor(q / gw) / sc - z.ly, d2 = dx*dx + dy*dy; if(d2 < bd){ bd = d2; bk = q; } }
+      if(bk >= 0){ z.lx = (bk % gw + 0.5) / sc; z.ly = (Math.floor(bk / gw) + 0.5) / sc; } } } }
+  NZG = {map:MAPNAME, d:DATA, gw, gh, sc, id, cv:document.createElement('canvas'), sig:''}; NZG.cv.width = gw; NZG.cv.height = gh;
+  return NZG;
+}
+const seaAt = (mx, my) => { const g = navGrid(), i = Math.floor(mx * g.sc), j = Math.floor(my * g.sc); return i < 0 || j < 0 || i >= g.gw || j >= g.gh ? -1 : g.id[j * g.gw + i]; };
+// zijden in een zeegebied: jij plus wie met jouw vijanden vecht, tegen je vijanden
+function seaSides(id){
+  if(!ZP) navCalc();
+  const me = G.player, en = enemiesOf(me), zp = ZP.zp[id] || {}; let A = 0, X = 0, N = 0;
+  for(const n in zp){ if(n === me || (!atWar(n, me) && en.some(e => atWar(n, e)))) A += zp[n]; else if(atWar(n, me)) X += zp[n]; else N += zp[n]; }
+  return {A, X, N};
+}
+function navPaint(){
+  const g = navGrid(), Z = navZones(), zm = mapMode() === 'zee';
+  const col = Z.map((z, i) => {
+    if(!zm) return [0, 0, 0, 0];   // gewone kaart: alleen de grenzen tussen de gebieden
+    const {A, X, N} = seaSides(z.id);
+    if(A + X < 0.5) return [0, 0, 0, 0];   // geen oorlog op dit water: niet kleuren
+    const s = A / (A + X); return s >= 0.5 ? [110, 165, 85, Math.round(55 + 60 * s)] : [190, 70, 55, Math.round(55 + 60 * (1 - s))];
+  });
+  const sig = (zm ? 'z' : 'p') + col.map(c => c.join(',')).join('|'); if(sig === g.sig) return g.cv; g.sig = sig;
+  const x = g.cv.getContext('2d'), im = x.createImageData(g.gw, g.gh), o = im.data, id = g.id, gw = g.gw;
+  for(let k = 0; k < id.length; k++){
+    const v = id[k]; if(v < 0) continue;
+    const r = id[k + 1], dn = id[k + gw], bord = (k % gw < gw - 1 && r >= 0 && r !== v) || (dn !== undefined && dn >= 0 && dn !== v);
+    const c = bord ? [225, 232, 220, zm ? 120 : 55] : col[v]; o[k*4] = c[0]; o[k*4+1] = c[1]; o[k*4+2] = c[2]; o[k*4+3] = c[3];
+  }
+  x.putImageData(im, 0, 0); return g.cv;
+}
+// in renderBase, direct na de zee (de kaart staat dan in kaartcoördinaten)
+function drawSeaZones(ctx){
+  if(!G || !G.navy || SET.easy) return;
+  const cv = navPaint(); ctx.save(); ctx.imageSmoothingEnabled = true; ctx.drawImage(cv, 0, 0, W, H); ctx.restore();
+}
+// namen op het water (bovenlaag)
+function drawSeaNames(ctx, u1){
+  const Z = navZones(), zm = mapMode() === 'zee';
+  ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const g = navGrid(), taken = [];
+  for(const z of [...Z].sort((a, b) => (b.cells || 0) - (a.cells || 0))){
+    const rad = Math.sqrt((z.cells || 0) / Math.PI) / g.sc / V.k;   // straal van het gebied op het scherm
+    if(rad < (zm ? 34 : 60)) continue;
+    const [x, y] = toScreen(z.lx, z.ly); if(x < -80 || y < -40 || x > CW + 80 || y > CH + 40) continue;
+    const nm = z.nm.replace('Zee bij ', '').toUpperCase();
+    ctx.font = 'italic 500 ' + (10.5*u1).toFixed(1) + 'px ' + FONT_UI; const tw = ctx.measureText(nm).width / 2 + 6, r = [x - tw, y - 28*u1, x + tw, y];
+    if(taken.some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1])) continue; taken.push(r);
+    ctx.font = 'italic 500 ' + (10.5*u1).toFixed(1) + 'px ' + FONT_UI; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(10,14,14,.7)'; ctx.fillStyle = zm ? '#EDEBDD' : 'rgba(200,215,210,.75)';
+    ctx.strokeText(nm, x, y - 20*u1); ctx.fillText(nm, x, y - 20*u1);
+    if(zm){ const {A, X} = seaSides(z.id); if(A + X >= 0.5){ const t = Math.round(100 * A / (A + X)) + '%'; ctx.font = '700 ' + (12*u1).toFixed(1) + 'px ' + FONT_UI; ctx.strokeText(t, x, y - 8*u1); ctx.fillStyle = A / (A + X) >= 0.5 ? '#B8D88A' : '#F09A86'; ctx.fillText(t, x, y - 8*u1); } }
+  }
+  ctx.restore();
+}
+// kaartje van een zeegebied: wie is er sterk, waar zijn je vloten, en stuur er een vloot heen
+function seaCardH(id){
+  const me = G.player, z = navZones()[id]; if(!z) return '';
+  if(!ZP) navCalc();
+  const {A, X} = seaSides(id), s = A + X >= 0.5 ? A / (A + X) : null, zp = ZP.zp[id] || {};
+  const pw = Object.entries(zp).filter(e => e[1] >= 0.3).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  let chips = '<span class="chip2 ' + (s == null ? '' : s >= 0.5 ? 'good' : 'hot') + '" title="Overwicht: jij en wie met jouw vijanden vecht, tegen je vijanden. Landingen over deze zee kunnen vanaf 50%.">' + ic('vloot') + (s == null ? 'niemand' : Math.round(s * 100) + '% overwicht') + '</span>'
+    + pw.map(([n, v]) => '<span class="chip2' + (atWar(me, n) ? ' hot' : '') + '" title="Vloot en vliegtuigen in de buurt"><span class="cdot" style="background:' + colorOf(n) + '"></span>' + esc(n === me ? 'Jij' : cname(n)) + ' ' + Math.round(v) + '</span>').join('');
+  let h = '<div class="sel"><span class="sb"><b>' + esc(z.nm) + '</b></span><span class="chips">' + chips + '</span></div><div class="acts">';
+  const here = (G.fleets || []).filter(f => f.zone === id && f.mode !== 'esc');
+  if(here.length) h += '<span class="chip2 good">' + ic('vloot') + here.map(f => esc(f.nm)).join(', ') + '</span>';
+  for(const f of (G.fleets || []).filter(f => !(f.zone === id && f.mode === 'sup'))){
+    const subs = (f.ships.sub || 0) >= shipN(f.ships) * 0.6;
+    h += '<button class="btn two" data-act="' + (subs ? 'szr:' : 'sz:') + f.id + ':' + id + '" title="' + esc(f.nm + (subs ? ': konvooien aanvallen in dit gebied' : ': overwicht bevechten in dit gebied')) + '">' + ic(subs ? 'sub' : 'vloot') + '<span>' + esc(f.nm) + ' hierheen<small>' + Math.round(shipN(f.ships)) + ' schepen · ' + (subs ? 'konvooien' : 'overwicht') + '</small></span></button>';
+  }
+  if(!(G.fleets || []).length) h += '<span class="chip2">Geen vloot: bouw schepen in Marine</span>';
+  return h + '<button class="btn sm ghost" data-act="clear" aria-label="Sluiten">×</button></div>';
+}
+// kaartmodus Lucht: groen waar jouw jagers sterker zijn (parachutisten kunnen springen), rood waar die van de vijand dat zijn
+function airFill(p, c, j){
+  const me = G.player, en = enemiesOf(me);
+  if(c !== me && !atWar(me, c)) return shade('#3A3D38', j*0.4);
+  let fo = cover(me, p, 'fi'), fe = 0; for(const e of en) fe = Math.max(fe, cover(e, p, 'fi'));
+  if(fo + fe < 0.05) return shade(c === me ? '#4A5045' : '#55443E', j*0.4);
+  const t = clamp((fo - fe) / Math.max(1, fo + fe), -1, 1);
+  return shade(t > 0 ? mixHex('#4E6B3A', '#9BD06A', t) : mixHex('#6B3A33', '#E2735E', -t), j*0.3);
+}
+function airChipsH(p){
+  const me = G.player, c = G.ctrl[p]; if(c !== me && !atWar(me, c)) return '';
+  let fo = cover(me, p, 'fi'), fe = 0; for(const e of enemiesOf(me)) fe = Math.max(fe, cover(e, p, 'fi'));
+  let h = '<span class="chip2 ' + (fo > fe ? 'good' : fe > fo ? 'hot' : '') + '" title="Jagers boven deze provincie: jij tegen de vijand. Parachutisten springen alleen waar jij sterker bent.">' + ic('fi') + NF.format(Math.round(fo * 10) / 10) + ' · ' + NF.format(Math.round(fe * 10) / 10) + '</span>';
+  const fi = G.air.filter(w => w.c === me && w.t === 'fi'), cas = G.air.filter(w => w.c === me && w.t === 'cas');
+  if(fi.length) h += '<button class="btn sm" data-act="afi:' + p + '" title="Alle jagers: luchtoverwicht boven ' + esc(P[p].n) + '">' + ic('fi') + 'Jagers hier</button>';
+  if(cas.length && c !== me) h += '<button class="btn sm" data-act="acas:' + p + '" title="Grondaanval: steun voor je divisies hier">' + ic('cas') + 'Grondsteun</button>';
+  const paras = (UBY[me] || []).filter(u => u.t === 'para' && canDrop(u, p));
+  if(c !== me && (UBY[me] || []).some(u => u.t === 'para')) h += paras.length ? '<button class="btn sm pri" data-act="apara:' + p + '">' + ic('para') + 'Parachutisten</button>' : '<span class="chip2" title="Parachutisten: binnen ' + PARA_KM + ' km, klaar, en jouw jagers sterker">' + ic('para') + (fo > fe ? 'te ver / niet klaar' : 'geen luchtoverwicht') + '</span>';
+  return h;
 }
 
 /* ---- strategische stand: legerbalk onderaan en het paneel van één leger ---- */

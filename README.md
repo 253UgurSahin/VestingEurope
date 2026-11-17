@@ -19,6 +19,7 @@ Open daarna http://localhost:8000.
   - *Legers met generaals*: rang, eigenschap en ervaring; per leger een houding, een front en een slagplan (pijl naar een doelprovincie).
   - *Productielijnen en uitrusting*: fabrieken op lijnen (wapens, artillerie, vrachtwagens, pantser, luchtafweer, vliegtuigen, schepen, civiel); divisies trainen 20 dagen uit de voorraad; herstel kost uitrusting.
   - *Marine*: zeegebieden, vloten met admiraals (taak Auto, Overwicht, Konvooien of Escorte); overwicht op zee maakt landingen en oversteken sterker of zwakker; onderzeeboten kosten de vijand productie.
+  - *Zee en lucht op de kaart*: het water is verdeeld in zeegebieden met grenzen en namen; kaartmodus Zee kleurt ze naar overwicht (landen kan vanaf 50%); tik op zee voor het kaartje van dat gebied en stuur er een vloot heen. Kaartmodus Lucht toont waar jouw jagers sterker zijn (daar kunnen parachutisten springen); vanuit een provincie stuur je jagers, grondsteun of parachutisten.
   - *Luchtmacht*: één kaart met de eskaders en een taak (Auto, Leger of Zee).
   - *Schermen*: aparte schermen Leger, Lucht en Marine (overzicht plus de productielijnen voor dat onderdeel); bovenaan Productie een balk met de verdeling van je fabrieken.
   - *Infrastructuur*: wegen van niveau 1 tot 5 per provincie (sneller rijden, meer aanvoer); kaartmodus Infrastructuur, tik op een eigen provincie om aan te leggen; de generaal legt zelf wegen naar het front.
