@@ -2208,6 +2208,47 @@ body.strat #strip{margin-bottom:calc(var(--abh, 3rem) + .5rem)}
 .tile.spd{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:.15rem .4rem;padding:.35rem .45rem;text-align:left}
 .tile.spd .tn{min-width:0;text-align:left;font:500 .78rem var(--f-ui);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile.spd .tstat{grid-column:1 / -1;justify-content:flex-start}
+
+/* ================= strategische stand: nieuwe indeling (zoals HOI4) =================
+   Bovenaan één brede balk met grote vlag en middelen als platen; links een vaste rij grote knoppen; schermen openen ernaast over
+   de volle hoogte; waarschuwingen als ronde knoppen onder de balk; legers, vloten en luchtmacht onderaan. */
+@media (min-width:900px){
+  body.strat{--rail:5.2rem;--side:min(31rem, 38vw)}
+  /* topbalk */
+  body.strat #hud{height:calc(var(--hud-h) + var(--sat) + .5rem);padding-left:0;background:linear-gradient(180deg,#2B2D22,#1A1B14);border-bottom:2px solid #8E7330;box-shadow:0 .3rem 1rem rgba(0,0,0,.55)}
+  body.strat{--hud-h:3.1rem}
+  body.strat #hudNat{width:var(--rail);justify-content:center;padding:0;background:rgba(0,0,0,.25);border-right:1px solid rgba(201,164,74,.3)}
+  body.strat #hudNat .hn{display:none}
+  body.strat #hudNat .hflag{width:3.6rem;height:2.4rem;box-shadow:0 0 0 1px #000, 0 0 0 2px #C9A44A, 0 3px 8px rgba(0,0,0,.6)}
+  body.strat #hud #status{margin-left:.4rem}
+  body.strat .hc{padding:0 .85rem;margin:.35rem 0;border-left:0;border-right:1px solid rgba(201,164,74,.18);box-shadow:none;background:none}
+  body.strat .hc .ic{width:1.3rem;height:1.3rem}
+  body.strat .hc b{font-size:1.25rem}
+  /* knoppenrij links */
+  body.strat #dock #bar{position:fixed;left:0;top:calc(var(--hud-h) + var(--sat) + .5rem);bottom:0;width:var(--rail);display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:1px;padding:.35rem 0;border:0;border-right:1px solid rgba(201,164,74,.35);border-radius:0;overflow-y:auto;scrollbar-width:none;background:linear-gradient(90deg,#24261D,#1C1D16);box-shadow:.3rem 0 1rem rgba(0,0,0,.4)}
+  body.strat #bar .ib{width:100%;min-width:0;height:auto;min-height:3.5rem;padding:.4rem .15rem .35rem;gap:.25rem;border:0;border-radius:0;background:none;box-shadow:none;flex-direction:column}
+  body.strat #bar .ib .ic,body.strat #bar .ib svg{width:1.55rem;height:1.55rem}
+  body.strat #bar .ib .lbl{font:500 .6rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase}
+  body.strat #bar .ib:hover:not(:disabled){background:rgba(201,164,74,.08)}
+  body.strat #bar .ib.on{background:linear-gradient(90deg, rgba(201,164,74,.28), rgba(201,164,74,.08));color:#F3E6BE;box-shadow:inset 3px 0 0 #C9A44A}
+  body.strat #bar .ib .hk{display:none}
+  body.strat #bar #playBtn,body.strat #bar #date,body.strat #bar #speedBtn,body.strat #bar .sep,body.strat #bar #warBtn{display:none}
+  /* schermen: volle hoogte naast de knoppenrij */
+  body.strat #dock #sheet{left:var(--rail);top:calc(var(--hud-h) + var(--sat) + .5rem);bottom:0;max-height:none;height:auto;width:var(--side);border-radius:0;border:0;border-right:1px solid rgba(201,164,74,.35);box-shadow:.4rem 0 1.4rem rgba(0,0,0,.55);padding:.7rem .9rem 1rem}
+  body.strat.has-sheet #dock{padding-left:calc(var(--rail) + var(--side) + .8rem)}
+  body.strat #dock{padding-left:calc(var(--rail) + .8rem)}
+  /* legers, paneel, waarschuwingen naast de rij */
+  body.strat #armybar,body.strat #armypanel{left:calc(var(--rail) + .6rem)}
+  body.strat.has-sheet #armybar,body.strat.has-sheet #armypanel{left:calc(var(--rail) + var(--side) + .6rem)}
+  body.strat #armybar{max-width:calc(100vw - var(--rail) - 18rem)}
+  body.strat.has-sheet #armybar{max-width:calc(100vw - var(--rail) - var(--side) - 18rem)}
+  body.strat #alerts{left:calc(var(--rail) + .6rem);right:auto;top:calc(var(--hud-h) + var(--sat) + 1.1rem);flex-direction:row;max-width:50vw}
+  body.strat.has-sheet #alerts{left:calc(var(--rail) + var(--side) + .6rem)}
+  body.strat .al{width:2.6rem;height:2.6rem;min-width:2.6rem;padding:0;border-radius:50%;background:radial-gradient(circle at 50% 35%, #3A3C2E, #1B1C15);border:2px solid var(--ac,#8E7330);box-shadow:0 .2rem .6rem rgba(0,0,0,.55)}
+  body.strat .al .ic{width:1.25rem;height:1.25rem}
+  body.strat .al b{position:absolute;right:-.3rem;top:-.3rem;min-width:1.05rem;height:1.05rem;display:grid;place-items:center;border-radius:.6rem;background:var(--ac,#8E7330);color:#14130C;font-size:.66rem;padding:0 .2rem}
+  body.strat .al.war{animation:none}
+}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2245,6 +2286,8 @@ body.strat #strip{margin-bottom:calc(var(--abh, 3rem) + .5rem)}
     <button class="warpill" id="warBtn" type="button" aria-label="Oorlogen" hidden></button>
     <span class="sep"></span>
     <button class="ib wl" data-sheet="prod" type="button" aria-label="Productie"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 21V10.5l5.5 3.4v-3.4l5.5 3.4V7.6l2.2-2.1h1.8V3h2.8v18z"/><path class="icd" d="M5 16h2v2H5zM9.5 16h2v2h-2zM14 16h2v2h-2z"/></svg><span class="lbl">Productie</span></button>
+    <button class="ib wl so" data-sheet="res" type="button" aria-label="Onderzoek"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M8.6 2.5h6.8v1.8h-1.1v5.1l5.4 10a1.8 1.8 0 0 1-1.6 2.6H5.9a1.8 1.8 0 0 1-1.6-2.6l5.4-10V4.3H8.6z"/></svg><span class="lbl">Onderzoek</span></button>
+    <button class="ib wl so" data-sheet="build" type="button" aria-label="Bouwen"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M9.6 2h1.8l-1 20H6.8zM12.6 2h1.8l3.2 20h-3.6zM11.2 4h1.6v2.4h-1.6zM11 9h2v3h-2zM10.7 14.6h2.6v3.6h-2.6z"/></svg><span class="lbl">Bouwen</span></button>
     <button class="ib wl so" data-sheet="army" type="button" aria-label="Leger"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h18v12H3zM5 8v8h14V8zM5 8l14 8M19 8 5 16"/><path fill="currentColor" d="M4.6 7.2 19.4 15.6l-.8 1.4L3.8 8.6zM19.4 8.6 4.6 17l-.8-1.4L18.6 7.2z"/></svg><span class="lbl">Leger</span></button>
     <button class="ib wl so" data-sheet="air" type="button" aria-label="Luchtmacht"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.8l1.4 5.8 8.4 4.3v2l-8.4-1.9-.6 6.2 3.1 2.3v1.7L12 21.1l-3.9 1.1v-1.7l3.1-2.3-.6-6.2-8.4 1.9v-2l8.4-4.3z"/></svg><span class="lbl">Lucht</span></button>
     <button class="ib wl so" data-sheet="navy" type="button" aria-label="Marine"><svg class="ic" viewBox="0 0 24 24"><path fill="currentColor" d="M1 14.6h22l-3 4.8H4zM6.6 10.2h9.6v4.4H6.6zM9.4 6.8h4.2v3.4H9.4zM10.9 3.6h1.2v3.2h-1.2zM2.8 12.4h3.6v2.2H2.8zM16.8 12.4h3.8v2.2h-3.8z"/></svg><span class="lbl">Marine</span></button>
@@ -8558,7 +8601,7 @@ function renderSheet(){
   if(!G || !UI.sheet || G.over){ el.hidden = true; sheetSig = ''; return; }
   if(SET.easy && UI.sheet !== 'set' && UI.sheet !== 'log'){ UI.sheet = null; el.hidden = true; sheetSig = ''; return; }   // eenvoudige stand: alleen menu en logboek
   if(hudSheet(el)) return;   // logboek en menu: zie het blok "spelschil"
-  if((UI.sheet === 'army' || UI.sheet === 'air' || UI.sheet === 'navy') && !stratOn()) UI.sheet = 'prod';   // die schermen horen bij de strategische stand
+  if(['army', 'air', 'navy', 'res', 'build'].includes(UI.sheet) && !stratOn()) UI.sheet = 'prod';   // die schermen horen bij de strategische stand
   const n = nat(G.player), me = G.player;
   const full = n.q.length >= 10;
   const dd = k => Math.ceil(itemCost(me,k) / Math.max(0.1, n.ppd));
@@ -8586,6 +8629,10 @@ function renderSheet(){
     h += '<div class="foot"><button class="btn pri" data-act="tdone">' + ic('check') + 'Klaar</button></div>';
   } else if(UI.sheet === 'prod' && stratOn()){
     h += stratProdH();
+  } else if(UI.sheet === 'res' && stratOn()){
+    h += resH();
+  } else if(UI.sheet === 'build' && stratOn()){
+    h += buildH();
   } else if(UI.sheet === 'army' && stratOn()){
     h += armyScrH();
   } else if(UI.sheet === 'air' && stratOn()){
@@ -9364,6 +9411,17 @@ function trendTick(){
 function trendH(i, v, eps){ const s = TREND[0]; if(!s || !G || G.day - s[0] < 10) return ''; const dv = v - s[i]; return Math.abs(dv) < eps ? '' : '<i class="tr ' + (dv > 0 ? 'up' : 'dn') + '">' + (dv > 0 ? '▲' : '▼') + '</i>'; }
 
 /* ---- waarschuwingen (rechtsboven onder de wachtrij) en legergroepen ---- */
+// strategische stand: waarschuwingen die je met één tik oplost (zoals de ronde knoppen in Hearts of Iron)
+function stratAlerts(){
+  const me = G.player, out = [];
+  if(G.res && G.res.slots.length < resSlots()) out.push({ic:'tech', cls:'ok', go:'res', n:resSlots() - G.res.slots.length, t:'Onderzoeksplaats vrij\nKlik: kies een onderwerp'});
+  if(G.lines){ const F = stratF(); let used = 0; for(const L of G.lines) used += L.f; if(used < F) out.push({ic:'fab', cls:'warn', go:'prod', n:F - used, t:(F - used) + ' fabrieken staan stil\nKlik: zet ze op een productielijn'}); }
+  const sh = Object.keys(G.short || {}).filter(e => EQ[e]); if(sh.length) out.push({ic:EQ[sh[0]][2], cls:'warn', go:'army', t:'Tekort aan ' + sh.map(e => EQ[e][0].toLowerCase()).join(', ') + ': divisies herstellen niet volledig\nKlik: meer fabrieken op uitrusting'});
+  for(const a of G.armies || []) if(a.warn) out.push({ic:'vloot', cls:'war', army:a.id, t:a.nm + ': ' + a.warn + '\nKlik: open het leger'});
+  if(navRaid(me) > 0.04) out.push({ic:'sub', cls:'war', go:'navy', t:'Vijandelijke onderzeeboten kosten je ' + Math.round(navRaid(me) * 100) + '% productie\nKlik: zet een vloot op Escorte'});
+  if(!G.armies.some(a => a.ids.length) && (UCNT[me] || 0)) out.push({ic:'leger', cls:'warn', go:'army', t:'Je divisies zitten in geen enkel leger'});
+  return out;
+}
 function alertsOf(){
   const me = G.player, n = nat(me), out = [];
   for(const x of Object.keys(G.aiJust || {})) if(CN[x] && alive(x) && !atWar(x, me)) out.push({ic:'oorlog', cls:'war', dot:colorOf(x), c:x, t:cname(x) + ' bereidt een oorlog tegen je voor' + (G.aiJust[x] > G.day ? ' (nog ' + Math.ceil(G.aiJust[x] - G.day) + ' dagen)' : '') + '\nKlik: toon het land'});
@@ -9375,6 +9433,7 @@ function alertsOf(){
   if(crowd) out.push({ic:'leger', cls:'warn', n:crowd, p:cp, t:'Te veel troepen in ' + crowd + (crowd === 1 ? ' provincie' : ' provincies') + ': meer dan de aanvoer aankan, ze slijten en herstellen niet\nKlik: toon de provincie'});
   if(n.q.some(q => q.wait)) out.push({ic:'fab', cls:'warn', go:'prod', t:'De productie wacht: legerlimiet of luchtmachtlimiet bereikt, of geen bouwplek vrij'});
   if(n.cp >= 95) out.push({ic:'bevel', cls:'ok', go:'spec', t:'Bevelpunten vol: gebruik een speciale actie (A)'});
+  if(stratOn()) out.push(...stratAlerts());
   return out;
 }
 let alSig = '';
@@ -9401,7 +9460,9 @@ $('alerts').addEventListener('click', e => {
   if(g){ groupPick(+g.dataset.grp); return; }
   const a = b && (UI.alerts || [])[+b.dataset.al]; if(!a) return;
   sfx('tap');
-  if(a.go){ UI.sheet = a.go; sheetSig = ''; }
+  if(a.army){ UI.army = a.army; UI.fleet = null; UI.airp = false; UI.sheet = null; AB.psig = ''; }
+  else if(a.fleet){ UI.fleet = a.fleet; UI.army = null; UI.airp = false; UI.sheet = null; AB.psig = ''; }
+  else if(a.go){ UI.sheet = a.go; sheetSig = ''; }
   else if(a.ids){ UI.sel = new Set(a.ids.filter(id => unitById(id))); UI.selAir = new Set(); UI.info = null; UI.target = null; fitSel(); }
   else if(a.p){ jumpTo(a.p); clearSel(); UI.info = a.p; UI.confirm = null; }
   else if(a.c){ fitCountry(a.c); const p = owned(a.c).includes(CN[a.c].cap) ? CN[a.c].cap : owned(a.c)[0]; if(p){ clearSel(); UI.info = p; UI.confirm = null; } }
@@ -11074,6 +11135,14 @@ function trainH(){
   if(G.train.length) h += '<div class="spq">' + G.train.map(t => '<span>' + ic(domOfKey(t.tp)) + t.d + ' d</span>').join('') + '</div>';
   return h;
 }
+function buildH(){
+  stratProdInit();
+  const me = G.player, n = nat(me); let h = '';
+  h += infraH();
+  h += '<div class="sec">Civiele wachtrij<span class="sr">fabrieken</span></div><div class="spq">' + (n.q.length ? n.q.slice(0, 6).map(q => '<span>' + ic(ITEMS[q.k] && ITEMS[q.k].kind === 'fab' ? 'fab' : 'tech') + Math.round(100 * q.p / itemCost(me, q.k)) + '%</span>').join('') : '<span class="mut">leeg</span>')
+    + '<button class="btn sm" data-sp="fab"' + (fabSpots(me) > 0 && n.q.length < 10 ? '' : ' disabled') + '>' + ic('fab') + '+ Fabriek</button></div>';
+  return h;
+}
 function stratProdH(){
   stratProdInit();
   const me = G.player, n = nat(me), F = stratF(); let used = 0; for(const L of G.lines) used += L.f;
@@ -11086,9 +11155,6 @@ function stratProdH(){
       + '<button class="btn sm" data-sp="f:' + i + ':-1"' + (L.f ? '' : ' disabled') + ' aria-label="Een fabriek minder">−</button><b class="spc">' + L.f + '</b><button class="btn sm" data-sp="f:' + i + ':1"' + (used < F ? '' : ' disabled') + ' aria-label="Een fabriek meer">+</button></div>'; }).join('')
     + '</div><div class="spadd">' + Object.keys(LINE_K).filter(k => !G.lines.some(L => L.k === k) && (k !== 'tank' || true)).map(k => '<button class="btn sm" data-sp="add:' + k + '" title="Nieuwe lijn: ' + LINE_K[k] + '">' + ic(LINE_IC[k]) + '+</button>').join('') + '</div>';
   h += '<div class="sec">Voorraad</div><div class="spst">' + Object.keys(EQ).map(e => '<span class="' + ((G.short || {})[e] ? 'warc' : '') + '" title="' + EQ[e][0] + ((G.short || {})[e] ? ': tekort, divisies herstellen trager' : '') + '">' + ic(EQ[e][2]) + '<b>' + Math.floor(G.stock[e] || 0) + '</b></span>').join('') + '</div>';
-  h += resH() + infraH();
-  h += '<div class="sec">Civiele wachtrij<span class="sr">fabrieken</span></div><div class="spq">' + (n.q.length ? n.q.slice(0, 6).map(q => '<span>' + ic(ITEMS[q.k] && ITEMS[q.k].kind === 'fab' ? 'fab' : 'tech') + Math.round(100 * q.p / itemCost(me, q.k)) + '%</span>').join('') : '<span class="mut">leeg</span>')
-    + '<button class="btn sm" data-sp="fab"' + (fabSpots(me) > 0 && n.q.length < 10 ? '' : ' disabled') + '>' + ic('fab') + '+ Fabriek</button></div>';
   return h;
 }
 $('sheet').addEventListener('click', e => {
@@ -11462,7 +11528,7 @@ function distH(){
   return '<div class="dist" role="img" aria-label="Verdeling van ' + F + ' fabrieken">' + G.lines.filter(L => L.f).map(L => '<span style="flex:' + L.f + ';background:' + (col[L.k] || '#666') + '" title="' + esc(LINE_K[L.k] + ': ' + L.f + ' fabrieken') + '">' + ic(LINE_IC[L.k]) + '<b>' + L.f + '</b></span>').join('')
     + (F - used > 0 ? '<span class="free" style="flex:' + (F - used) + '" title="' + (F - used) + ' fabrieken vrij">' + (F - used) + '</span>' : '') + '</div>';
 }
-const SCR_TABS = [['prod', 'Productie', 'fab'], ['army', 'Leger', 'leger'], ['air', 'Lucht', 'fi'], ['navy', 'Marine', 'vloot'], ['spec', 'Acties', 'bevel'], ['dip', 'Diplomatie', 'vrede'], ['info', 'Overzicht', 'vlag']];
+const SCR_TABS = [['prod', 'Productie', 'fab'], ['res', 'Onderzoek', 'tech'], ['build', 'Bouwen', 'prov'], ['army', 'Leger', 'leger'], ['air', 'Lucht', 'fi'], ['navy', 'Marine', 'vloot'], ['spec', 'Acties', 'bevel'], ['dip', 'Diplomatie', 'vrede'], ['info', 'Overzicht', 'vlag']];
 function lineCtl(keys){   // de productielijnen voor dit onderdeel, met − en +
   const F = stratF(); let used = 0; for(const L of G.lines) used += L.f;
   return '<div class="spl">' + keys.map(k => { const i = G.lines.findIndex(L => L.k === k), L = G.lines[i];
