@@ -2188,6 +2188,11 @@ button.scrr{cursor:pointer} button.scrr:hover{border-color:var(--ac,var(--accent
 .ck.empty{opacity:.55} .ck.empty .abs{display:none}
 .ck.abn{display:grid;place-items:center;min-width:1.9rem;font:600 1.05rem var(--f-ui);color:var(--dim)}
 .ck.on{background-color:var(--pbg-h)}
+/* ---- zelf besturen ---- */
+.aphint{display:flex;gap:.4rem;align-items:flex-start;margin:.3rem 0 .35rem;padding:.4rem .5rem;border:1px solid rgba(201,164,74,.45);background:rgba(201,164,74,.08);font-size:.8rem;line-height:1.35} .aphint .ic{flex:none;width:1rem;height:1rem;color:var(--accent);margin-top:.1rem}
+.apgo small{color:var(--dim)}
+.abc.self{border-style:dashed;border-color:var(--ac,var(--accent))}
+.apw span{min-width:0}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2994,6 +2999,7 @@ function dailyTick(){
   battles();
   encircleTick();
   if(G.navy && G.day % 2 === 0) navTick();   // strategische stand: marine
+  if(G.navy && stratOn() && G.day % 5 === 0) stratWarn();   // strategische stand: de generaal waarschuwt als iets niet kan
   if(G.res && stratOn() && alive(G.player)) resTick();   // strategische stand: onderzoek
   warEnds();
   if(G.over) return;
@@ -3310,7 +3316,7 @@ function battles(){
 // verloren divisies tellen voor de oorlogspunten van de winnaar en drukken de steun van de verliezer
 function kill(k, v){ const key = k + '>' + v; (G.kill ||= {})[key] = (G.kill[key] || 0) + 1; const n = G.nations[v]; if(n) n.ws = clamp(n.ws - 10 / Math.max(10, armyCap(v)), 0, 100); }
 function canDrop(u, p){
-  return u.t === 'para' && !u.att && !u.path.length && (u.dropCd||0) <= G.day && atWar(u.c, G.ctrl[p]) && distKm(u.loc, p) <= PARA_KM && dipBase(u.c, u.loc, G.ctrl[p]);   // ook door de lucht: een neutraal doorgangsland is geen uitvalsbasis
+  return u.t === 'para' && !u.att && !u.path.length && (u.dropCd||0) <= G.day && atWar(u.c, G.ctrl[p]) && distKm(u.loc, p) <= PARA_KM && dipBase(u.c, u.loc, G.ctrl[p]) && (!G.navy || paraAir(u.c, p));   // ook door de lucht: een neutraal doorgangsland is geen uitvalsbasis
 }
 function doDrop(u, p){
   u.dropCd = G.day + 30;
@@ -5523,7 +5529,7 @@ function aiParas(c){
       const s = ds.length ? (attacking.has(p) ? 1.5 : 0) : 2 + G.fac[p]*2 + (CN[G.ctrl[p]] && CN[G.ctrl[p]].cap === p ? 6 : 0);
       if(s > bs){ bs = s; best = p; }
     }
-    if(best && Math.random() < 0.6) doDrop(u, best);
+    if(best && (Math.random() < 0.6 || (c === G.player && G.navy))) doDrop(u, best);   // strategische stand: de generaal zet ze altijd in
   }
 }
 // luchtmacht als één vuist: jagers samen boven het brandpunt (gebundeld winnen ze het luchtgevecht), grondaanval alleen waar
@@ -7174,13 +7180,14 @@ function onProvince(p, e){
   if(G.over) return;
   if(SET.easy){ ezProvince(p); return; }   // eenvoudige stand: het kaartje van dit land
   if(UI.armyGoal){ stratGoalAt(p); return; }   // strategische stand: doel van het slagplan
+  if(stratOn() && UI.army && !UI.sheet && !UI.target && !UI.sel.size && mapMode() !== 'inf'){ const a = G.armies.find(x => x.id === UI.army); if(a && a.ctl === 'zelf'){ armyOrder(a, p); return; } }   // zelf bestuurd leger: tik = bevel
   if(stratOn() && mapMode() === 'inf' && G.ctrl[p] === G.player && !UI.target && !UI.sel.size){ infraClick(p); return; }   // strategische stand: wegen aanleggen
   if(UI.target){
     if(UI.target === 'drop'){
       let n = 0;
       for(const id of UI.sel){ const u = unitById(id); if(u && canDrop(u, p)){ doDrop(u, p); n++; } }
       if(n){ toast(n + (n === 1 ? ' divisie parachutisten' : ' divisies parachutisten') + ' landen in ' + P[p].n, 'good'); UI.target = null; renderAll(); }
-      else toast('Kies een gemarkeerde vijandelijke provincie binnen ' + PARA_KM + ' km', 'war', 'bad');
+      else toast(G.navy && atWar(G.player, G.ctrl[p]) && !paraAir(G.player, p) ? 'Geen luchtoverwicht boven ' + P[p].n + ': je jagers moeten daar sterker zijn dan die van de vijand' : 'Kies een gemarkeerde vijandelijke provincie binnen ' + PARA_KM + ' km', 'war', 'bad');
       return;
     }
     if(validTarget(G.player, UI.target, p)){ doSpecial(G.player, UI.target, p); UI.target = null; renderAll(); }
@@ -7218,6 +7225,7 @@ function orderMove(p){
     const o = battleOdds(goers, p);
     toast((o.n ? 'Aanval ' : 'Opmars naar ') + P[p].n + ': ' + oddsTxt(o), !o.n || o.r >= 1 ? 'good' : 'war', 'odds');
   }
+  if(G.navy) outer: for(const u of goers){ let pr = u.loc; for(const q of u.path){ if(SEA.has(ek(pr, q)) && G.ctrl[q] !== G.player && atWar(G.player, G.ctrl[q])){ const b = navBlock(G.player, pr, q); if(b){ toast(b, 'war', 'seablk'); break outer; } } pr = q; } }
   if(!ok && fail){
     const c = G.ctrl[p];
     toast(c !== G.player && !atWar(G.player, c) ? 'Je bent niet in oorlog met ' + cname(c) + ': vraag doorgangsrecht via Diplomatie' : dipWhyNot(p) || 'Daar kunnen je divisies niet komen', 'war', 'bad');
@@ -7638,7 +7646,8 @@ function renderOver(){
     rrect(ctx, x0, -11, g.w, 22, 1.5); ctx.fillStyle = col; ctx.fill();
     ctx.fillStyle = 'rgba(255,250,225,.12)'; ctx.fillRect(x0 + 1, -10, g.w - 2, 1.2);   // licht van boven
     rrect(ctx, x0, -11, g.w, 22, 1.5);
-    ctx.lineWidth = g.sel ? 2.2 : foe ? 1.8 : 1.2; ctx.strokeStyle = g.sel ? '#D9B95E' : foe ? '#D8553D' : 'rgba(16,15,8,.9)'; ctx.stroke();
+    const gsel = g.sel || (UI.army && g.c === me && ARMYOF.size && g.ids.some(id => (ARMYOF.get(id) || {}).id === UI.army));   // strategische stand: de fiches van het geopende leger lichten op
+    ctx.lineWidth = gsel ? 2.2 : foe ? 1.8 : 1.2; ctx.strokeStyle = gsel ? '#D9B95E' : foe ? '#D8553D' : 'rgba(16,15,8,.9)'; ctx.stroke();
     if(foe){ ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,220,200,.35)'; rrect(ctx, x0 + 1.5, -9.5, g.w - 3, 19, 1); ctx.stroke(); }
     if(g.oos){   // afgesneden van bevoorrading
       rrect(ctx, x0 - 3, -14, g.w + 6, 28, 2); ctx.setLineDash([3, 2.5]); ctx.strokeStyle = '#F0962E'; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]);
@@ -10853,6 +10862,7 @@ function stratSync(){
   for(const a of G.armies){
     if(a.front && (!G.nations[a.front] || !alive(a.front))){ a.front = null; a.goal = null; }
     if(a.goal && G.ctrl[a.goal] === me){ toast(a.nm + ': doel ' + P[a.goal].n + ' bereikt', 'good', 'goal' + a.id); a.goal = null; }
+    if(a.ord && a.ids.every(id => { const u = mineU.get(id); return !u || (!u.path.length && !u.att); })) a.ord = null;
   }
 }
 // gevechtswaarde: vaardigheid +3% per niveau, eigenschap erbovenop
@@ -10872,7 +10882,7 @@ function stratArmies(){
   const saveU = UBY[me], saveG = G.gen, base = Object.assign({}, genCfg());
   try{
     for(const a of G.armies){
-      if(!a.ids.length) continue;
+      if(!a.ids.length || a.ctl === 'zelf') continue;   // zelf bestuurd: de generaal blijft eraf
       UBY[me] = a.ids.map(unitById).filter(Boolean);
       const atw = !!(a.front && atWar(me, a.front));
       G.gen = Object.assign({}, base, {mode:a.mode, focus:atw ? a.front : null, prep:!atw && a.front ? a.front : null, goal:atw ? a.goal : null});
@@ -10896,10 +10906,11 @@ function stratGoalAt(p){
 // kaart: per leger een pijl van het zwaartepunt van zijn divisies naar het doel
 function drawArmies(ctx, u1){
   for(const a of G.armies){
-    if(!a.goal || !a.ids.length) continue;
+    const tg = a.ctl === 'zelf' ? a.ord : a.goal;
+    if(!tg || !P[tg] || !a.ids.length) continue;
     let x = 0, y = 0, n = 0; for(const id of a.ids){ const u = unitById(id); if(!u) continue; x += P[u.loc].a[0]; y += P[u.loc].a[1]; n++; }
     if(!n) continue;
-    const A = toScreen(x/n, y/n), B = toScreen(P[a.goal].a[0], P[a.goal].a[1]), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy); if(L < 20) continue;
+    const A = toScreen(x/n, y/n), B = toScreen(P[tg].a[0], P[tg].a[1]), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy); if(L < 20) continue;
     const ux = dx/L, uy = dy/L, hw = 9*u1, hl = 16*u1, mx = (A[0] + B[0])/2 - uy*L*0.12, my = (A[1] + B[1])/2 + ux*L*0.12;
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for(const [w, col] of [[9*u1, 'rgba(10,10,6,.55)'], [5.5*u1, a.col]]){
@@ -10996,7 +11007,7 @@ function stratAutoProd(){
   }
   // trainen: infanterie als basis, pantser/artillerie/gemotoriseerd zodra die uitrusting er ruim is
   for(let i = 0; i < 4; i++){
-    const st = G.stock, pick = (st.tank || 0) >= 8 && (st.mot || 0) >= 3 ? 'tank' : (st.art || 0) >= 7 && (st.gun || 0) >= 6 ? 'art' : (st.mot || 0) >= 8 && (st.tank || 0) >= 2 ? 'mot' : 'inf';
+    const st = G.stock, paraW = f >= 3 && (UBY[me] || []).filter(u => u.t === 'para').length + G.train.filter(t => t.tp === 'para').length < 1 + Math.floor(F / 12), pick = paraW && (st.gun || 0) >= 6 ? 'para' : (st.tank || 0) >= 8 && (st.mot || 0) >= 3 ? 'tank' : (st.art || 0) >= 7 && (st.gun || 0) >= 6 ? 'art' : (st.mot || 0) >= 8 && (st.tank || 0) >= 2 ? 'mot' : 'inf';
     if(!stratTrain(pick) && !(pick !== 'inf' && stratTrain('inf'))) break;
   }
 }
@@ -11130,12 +11141,13 @@ function navSup(a, x, z){
   let A = 0, X = 0; for(const n in zp){ if(n === a || (atWar(n, x) && !atWar(n, a))) A += zp[n]; else if(n === x || (atWar(n, a) && !atWar(n, x))) X += zp[n]; }
   return A + X < 0.5 ? null : A / (A + X);
 }
-// landing of oversteek: met overwicht tot +45%, zonder tot −45%
+// landing of oversteek: onder 50% overwicht strandt ze; daarboven tot +15%
 function navMul(a, from, t){
   if(!G.navy) return 1;
   const z = NZOF.get(ek(from, t)); if(z == null) return 1;
   const s = navSup(a, G.ctrl[t], z); if(s == null) return 1;
-  let m = 0.55 + 0.9 * s;
+  if(s < 0.5) return 0.12;   // zonder overwicht: de landing strandt
+  let m = 0.85 + 0.3 * s;   // met overwicht: gewoon, tot +15% bij volledige beheersing
   if(a === G.player && (G.fleets || []).some(f => f.zone === z && f.adm.tr === 'vuur')) m *= 1.08;
   return m;
 }
@@ -11153,14 +11165,14 @@ function navTick(){
   // admiraals (taak Auto): onderzeeboten op konvooien, de rest waar de vijand is of waar een leger overzee moet
   let calc = navCalc();
   const myZ = calc.zw[me] ? [...calc.zw[me]] : [], taken = {};
-  const goals = new Set((G.armies || []).map(a => a.goal).filter(Boolean));
+  const goals = new Set((G.armies || []).map(a => a.ctl === 'zelf' ? a.ord : a.goal).filter(Boolean)), gOwn = new Set([...goals].map(p => G.ctrl[p]).filter(o => o && atWar(me, o)));
   for(const f of G.fleets){
     if(f.mode !== 'auto'){ f.task = f.mode; continue; }
     const subs = (f.ships.sub || 0) >= shipN(f.ships) * 0.6;
     let best = null, bs = 0;
     for(const z of Z){
       let ownC = 0, enC = 0, enP = 0, goal = 0;
-      for(const p of z.ps){ const o = G.ctrl[p]; if(o === me) ownC++; else if(atWar(me, o)){ enC++; if(goals.has(p)) goal = 1; } }
+      for(const p of z.ps){ const o = G.ctrl[p]; if(o === me) ownC++; else if(atWar(me, o)){ enC++; if(goals.has(p) || gOwn.has(o)) goal = 1; } }
       for(const n in calc.zp[z.id]) if(atWar(me, n)) enP += calc.zp[z.id][n];
       if(!ownC && !(subs && enC)) continue;
       let s = subs ? enC * 2 / (1 + (Object.entries(calc.zd[z.id]).filter(([n]) => atWar(me, n)).reduce((t, x) => t + x[1], 0))) : (enC ? 2 + enC + enP * 0.3 : 0) + goal * 10 + ownC * 0.05;
@@ -11226,6 +11238,19 @@ function drawFleets(ctx, u1){
     const s = A / (A + X), [x, y] = toScreen(z.x, z.y), w = 46*u1, h = 5*u1;
     ctx.fillStyle = 'rgba(10,10,6,.8)'; ctx.fillRect(x - w/2 - 1, y + 9*u1 - 1, w + 2, h + 2);
     ctx.fillStyle = '#B9472F'; ctx.fillRect(x - w/2, y + 9*u1, w, h); ctx.fillStyle = '#93AC59'; ctx.fillRect(x - w/2, y + 9*u1, w * s, h);
+  }
+  if(en.length){   // oversteken: groen = je hebt overwicht (landing kan), rood = niet
+    ctx.lineWidth = 3.2*u1; ctx.setLineDash([7*u1, 5*u1]);
+    for(const z of Z){
+      let A = 0, X = 0; const zp = ZP.zp[z.id]; for(const n in zp){ if(n === me || (!atWar(n, me) && en.some(e => atWar(n, e)))) A += zp[n]; else if(atWar(n, me)) X += zp[n]; }
+      const enC = [...z.ps].some(p => atWar(me, G.ctrl[p])); if(!enC || A + X < 0.5) continue;
+      ctx.strokeStyle = A / (A + X) >= 0.5 ? 'rgba(147,172,89,.85)' : 'rgba(205,70,50,.85)';
+      for(const i of z.r){ const r = ROUTES[i]; const a = toScreen(r[2], r[3]), b = toScreen(r[4], r[5]); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+      const [x, y] = toScreen(z.x, z.y); ctx.setLineDash([]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(10,10,6,.85)'; ctx.fillStyle = '#E7E2CF';
+      const t = z.nm.replace('Zee bij ', '').toUpperCase() + ' · ' + Math.round(100 * A / (A + X)) + '%'; ctx.strokeText(t, x, y - 2*u1); ctx.fillText(t, x, y - 2*u1);
+      ctx.lineWidth = 3.2*u1; ctx.setLineDash([7*u1, 5*u1]);
+    }
+    ctx.setLineDash([]);
   }
   const at = {};
   for(const f of G.fleets){
@@ -11422,6 +11447,54 @@ function navyScrH(){
   return h;
 }
 
+/* ---- strategische stand: zelf besturen, overwicht als voorwaarde, waarschuwingen van de generaal ---- */
+// zee: aanvallen over zee (landing) kan alleen met minstens 50% overwicht in dat zeegebied (zoals in Hearts of Iron)
+function navBlock(c, from, t){
+  if(!G.navy) return '';
+  const z = NZOF.get(ek(from, t)); if(z == null) return '';
+  const s = navSup(c, G.ctrl[t], z);
+  return s != null && s < 0.5 ? 'Landing op ' + P[t].n + ' kan niet: zeeoverwicht ' + Math.round(s * 100) + '% in ' + navZones()[z].nm + ' (nodig 50%). Zet een vloot op Overwicht daar, of bouw schepen.' : '';
+}
+// lucht: parachutisten springen alleen waar jouw jagers sterker zijn dan die van de vijand
+function paraAir(c, p){
+  const o = G.ctrl[p], fe = cover(o, p, 'fi'), fo = cover(c, p, 'fi');
+  return fo > fe || (fe === 0 && airSupGlobal(c, o) > 0.5);
+}
+// het hele leger gaat naar provincie p (of valt die aan)
+function armyOrder(a, p){
+  const us = a.ids.map(unitById).filter(u => u && !u.air);
+  if(!us.length){ toast(a.nm + ' heeft geen divisies', '', 'ord'); return; }
+  UI.sel = new Set(us.map(u => u.id)); orderMove(p); UI.sel = new Set();
+  a.ord = p; AB.psig = ''; overDirty = true; renderAll();
+}
+function armyOrdH(a){
+  const busy = a.ids.map(unitById).filter(u => u && (u.path.length || u.att)).length;
+  return '<p class="aphint">' + ic('doel') + '<span><b>Tik op de kaart</b>: het hele leger gaat erheen, of valt aan als het vijandelijk is.</span></p>'
+    + '<div class="apgo">' + (a.ord && P[a.ord] ? '<span>' + ic('doel') + esc(P[a.ord].n) + (busy ? ' <small>(' + busy + ' onderweg)</small>' : '') + '</span>' : '<span class="mut">Geen bevel</span>')
+    + '<button type="button" class="btn sm" data-army="halt" title="Alle divisies stoppen en houden positie">' + ic('stop') + 'Halt</button></div>';
+}
+const armyWarnH = a => a.warn ? '<p class="mut apw">' + ic('oorlog') + '<span>' + esc(a.warn) + '</span></p>' : '';
+// de generaal kijkt of plannen kunnen; zo niet: waarschuwen (eens per maand) en het in het legerpaneel laten staan
+function stratWarn(){
+  const me = G.player, T = (G.warnT ||= {});
+  const say = (k, msg) => { if((T[k] || -99) + 30 <= G.day){ T[k] = G.day; toast(msg, 'war', k); } };
+  for(const a of G.armies || []){
+    a.warn = '';
+    const tgOwner = a.ctl === 'zelf' ? (a.ord && G.ctrl[a.ord]) : a.goal ? G.ctrl[a.goal] : a.front;
+    if(!tgOwner || tgOwner === me || !atWar(me, tgOwner)) continue;
+    const land = owned(me).some(p => ADJ[p].some(n => G.ctrl[n] === tgOwner && !SEA.has(ek(p, n))));
+    if(land) continue;
+    let best = null, why = '';
+    for(const p of owned(me)) for(const n of ADJ[p]) if(G.ctrl[n] === tgOwner && SEA.has(ek(p, n))){ const b = navBlock(me, p, n); if(!b){ best = n; break; } why = why || b; }
+    if(!best && why){ a.warn = why; say('nw' + a.id, a.nm + ': ' + why); }
+  }
+  const paras = (UBY[me] || []).filter(u => u.t === 'para');
+  if(paras.length && enemiesOf(me).length){
+    const fr = frontier(me, 3), any = fr.some(p => atWar(me, G.ctrl[p]) && paraAir(me, p));
+    if(!any) say('pa', 'Parachutisten wachten: nergens luchtoverwicht. Bouw jagers of zet de luchtmacht op Leger.');
+  }
+}
+
 /* ---- strategische stand: legerbalk onderaan en het paneel van één leger ---- */
 const AB = {bar:null, pan:null, sig:'', psig:''};
 // portret: een silhouet met pet in de kleur van het leger, met de rangsterren eronder
@@ -11441,7 +11514,7 @@ function armyMix(a){
 function armyBarCmp(){
   const me = G.player;
   const ar = G.armies.map(a => { let hp = 0, n = 0; for(const id of a.ids){ const u = unitById(id); if(u){ hp += u.hp; n++; } } const st = n ? Math.round(hp / n) : 0, atw = a.front && atWar(me, a.front);
-    return '<button type="button" class="abc ck' + (UI.army === a.id ? ' on' : '') + (n ? '' : ' empty') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + n + ' divisies' + (n ? ', sterkte ' + st + '%' : '') + (a.front ? ' · front: ' + cname(a.front) : '') + (a.goal ? ' · doel: ' + P[a.goal].n : '')) + '">'
+    return '<button type="button" class="abc ck' + (UI.army === a.id ? ' on' : '') + (n ? '' : ' empty') + (a.ctl === 'zelf' ? ' self' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + n + ' divisies' + (n ? ', sterkte ' + st + '%' : '') + (a.front ? ' · front: ' + cname(a.front) : '') + (a.goal ? ' · doel: ' + P[a.goal].n : '')) + '">'
       + '<i class="abno">' + a.id + '</i><span class="ckb"><b>' + n + '</b>' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' : '') + (atw ? ic('zwaard') : '') + (a.goal ? ic('doel') : '') + '</span><span class="abs"><i style="width:' + st + '%;background:' + hpCol(st) + '"></i></span></button>'; }).join('');
   const fl = (G.fleets || []).map(f => '<button type="button" class="abc ck fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen') + '"><i class="abno">' + ic(f.task === 'raid' ? 'sub' : 'vloot') + '</i><span class="ckb"><b>' + Math.round(shipN(f.ships)) + '</b></span></button>').join('');
   const air = '<button type="button" class="abc ck air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[me] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '"><i class="abno">' + ic('fi') + '</i><span class="ckb"><b>' + (ACNT[me] || 0) + '</b></span></button>';
@@ -11456,7 +11529,7 @@ function renderArmies(){
   stratSync();
   const nC = G.armies.length + (G.fleets || []).length + 2, cmp = nC * (innerWidth < 900 ? 125 : 178) > (innerWidth < 900 ? innerWidth - 12 : innerWidth - 300);   // past het niet op één rij: compacte blokjes
   const h = cmp ? armyBarCmp() : G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
-      return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
+      return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + (a.ctl === 'zelf' ? ' self' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
         + genPort(a, 30) + '<span class="abt"><span class="abh"><b>' + esc(a.nm) + '</b>' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '" title="Front: ' + esc(cname(a.front)) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '<em>' + ic(EZ_HOUD[a.mode][2]) + '</em></span>' + armyMix(a) + '</span></button>'; }).join('')
     + (G.fleets || []).map(f => '<button type="button" class="abc fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen' + (f.zone != null && navZones()[f.zone] ? ' · ' + navZones()[f.zone].nm : '')) + '">' + genPort({col:f.col, gen:f.adm, navy:1}, 30) + '<span class="abt"><span class="abh"><b>' + esc(f.nm) + '</b><em>' + ic(NMODE[f.task || f.mode] ? NMODE[f.task || f.mode][2] : 'vloot') + '</em></span><span class="abm">' + Object.keys(NSHIP).filter(t => f.ships[t] >= 0.5).map(t => '<span title="' + NSHIP[t][0] + '">' + ic(t) + Math.round(f.ships[t]) + '</span>').join('') + '<span class="abn2">' + Math.round(shipN(f.ships)) + ' schepen</span></span></span></button>').join('')
     + (() => { const by = {fi:0, cas:0, bo:0}; for(const w of G.air) if(w.c === G.player && by[w.t] != null) by[w.t]++; return '<button type="button" class="abc air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[G.player] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '"><span class="apic">' + ic('fi') + '</span><span class="abt"><span class="abh"><b>Luchtmacht</b><em>' + ic(AMODE[G.airMode || 'auto'][2]) + '</em></span><span class="abm">' + Object.keys(by).filter(t => by[t]).map(t => '<span>' + ic(t) + by[t] + '</span>').join('') + '<span class="abn2">' + (ACNT[G.player] || 0) + ' eskaders</span></span></span></button>'; })()
@@ -11475,11 +11548,15 @@ function renderArmies(){
   const ph = '<div class="aph">' + genPort(a, 44) + '<div class="apg"><small>' + GEN_RK[g.sk - 1] + '</small><b>' + esc(g.nm) + '</b><span class="aptr" title="' + esc(tr[1]) + '">' + ic(tr[2]) + tr[0] + '</span><span class="apxp" title="Ervaring tot de volgende bevordering"><i style="width:' + (g.sk >= 5 ? 100 : Math.min(100, Math.round(100 * g.xp / (40 * g.sk)))) + '%"></i></span></div>'
     + '<div class="apn"><b style="color:' + a.col + '">' + esc(a.nm) + '</b><small>' + a.ids.length + ' divisies</small></div><button type="button" class="xclose" data-army="close" aria-label="Sluiten">×</button></div>'
     + '<div class="apu">' + Object.entries(by).map(([t, k]) => '<span title="' + esc((BAT[t] || {}).name || t) + '">' + ic(t) + k + '</span>').join('') + '</div>'
+    + '<div class="sec">Bevel</div><div class="gsegs apctl"><button type="button" class="gseg' + (a.ctl !== 'zelf' ? ' on' : '') + '" data-army="ctl:gen" title="De generaal voert dit leger: houding, front en slagplan kies jij">' + ic('gen') + 'Generaal</button><button type="button" class="gseg' + (a.ctl === 'zelf' ? ' on' : '') + '" data-army="ctl:zelf" title="Jij geeft de bevelen: tik op de kaart en het hele leger gaat erheen of valt aan">' + ic('doel') + 'Zelf</button></div>'
+    + (a.ctl === 'zelf' ? armyOrdH(a) : ''
     + '<div class="sec">Houding</div><div class="gsegs">' + ['att', 'bal', 'def'].map(m => '<button type="button" class="gseg' + (a.mode === m ? ' on' : '') + '" data-army="mode:' + m + '" title="' + EZ_HOUD[m][1] + '">' + ic(EZ_HOUD[m][2]) + EZ_HOUD[m][0] + '</button>').join('') + '</div>'
     + '<div class="sec">Front</div><div class="apfr"><button type="button" class="gseg' + (!a.front ? ' on' : '') + '" data-army="front:" title="Geen vast front: het leger helpt waar het nodig is">Overal</button>'
     + fronts.slice(0, 10).map(c => '<button type="button" class="gseg' + (a.front === c ? ' on' : '') + '" data-army="front:' + c + '" title="' + esc(cname(c)) + (atWar(me, c) ? ' (in oorlog)' : ' (opstellen aan de grens)') + '"><i class="abf" style="background:' + colorOf(c) + '"></i>' + esc(cname(c)) + (atWar(me, c) ? ic('zwaard') : '') + '</button>').join('') + '</div>'
     + '<div class="sec">Slagplan</div><div class="apgo">' + (a.goal ? '<span>' + ic('doel') + esc(P[a.goal].n) + '</span><button type="button" class="btn sm" data-army="goal:">Wis</button>' : '<span class="mut">Geen doel</span>')
     + '<button type="button" class="btn sm' + (UI.armyGoal ? ' pri' : '') + '" data-army="goal">' + ic('doel') + (UI.armyGoal ? 'Tik op de kaart…' : 'Doel aanwijzen') + '</button></div>'
+    )
+    + armyWarnH(a)
     + '<div class="sec">Divisies</div><div class="apdv"><button type="button" class="btn sm" data-army="add"' + (sel ? '' : ' disabled') + ' title="Zet de geselecteerde divisies in dit leger">' + ic('leger') + 'Selectie erbij' + (sel ? ' (' + sel + ')' : '') + '</button>'
     + '<button type="button" class="btn sm" data-army="pick" title="Selecteer de divisies van dit leger op de kaart">' + ic('prov') + 'Toon</button>'
     + '<button type="button" class="btn sm" data-army="gen" title="Andere generaal (5 bevelpunten)"' + (nat(me).cp >= 5 ? '' : ' disabled') + '>' + ic('gen') + 'Wissel generaal</button>'
@@ -11499,7 +11576,9 @@ function armyClick(e){
   else if(v.startsWith('fl:')){ const id = +v.slice(3); UI.fleet = UI.fleet === id ? null : id; UI.army = null; UI.airp = false; }
   else if(/^f(m:|z:|split|adm|del)/.test(v)) fleetClick(v);
   else if(a){
-    if(v.startsWith('mode:')) a.mode = v.slice(5);
+    if(v.startsWith('ctl:')){ a.ctl = v.slice(4); if(a.ctl === 'gen'){ a.ord = null; for(const id of a.ids){ const u = unitById(id); if(u){ u.man = false; u.hold = false; } } } toast(a.nm + (a.ctl === 'zelf' ? ': jij hebt het bevel. Tik op de kaart om het leger te sturen' : ': de generaal neemt het bevel over'), 'good', 'ctl'); }
+    else if(v === 'halt'){ for(const id of a.ids){ const u = unitById(id); if(u && !u.air){ u.path = []; u.att = null; u.prog = 0; u.hold = true; u.man = true; } } a.ord = null; }
+    else if(v.startsWith('mode:')) a.mode = v.slice(5);
     else if(v.startsWith('front:')){ a.front = v.slice(6) || null; a.goal = null; }
     else if(v === 'goal') UI.armyGoal = !UI.armyGoal;
     else if(v === 'goal:') a.goal = null;
