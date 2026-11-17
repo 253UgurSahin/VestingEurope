@@ -2176,6 +2176,18 @@ button.scrr{cursor:pointer} button.scrr:hover{border-color:var(--ac,var(--accent
 .scrz .scrn{flex:0 1 11rem}
 @media (max-width:520px){ .scrr{flex-wrap:wrap} .scrf{justify-items:start;text-align:left} }
 @media (max-width:899px){ body.strat #bar .ib{min-width:0;padding-left:.15rem;padding-right:.15rem} body.strat #bar .ib .lbl{font-size:.56rem;letter-spacing:0} }
+/* ---- compacte legerbalk: blokjes met legernummer ---- */
+#armybar.cmp{gap:.45rem;align-items:flex-end}
+.ckg{display:flex;flex-wrap:wrap;gap:.2rem;padding:.2rem;border:1px solid rgba(0,0,0,.5);background:rgba(20,21,15,.82);box-shadow:var(--brassline), var(--shadow-s)}
+#armybar .abc.ck{flex:none;min-height:0;display:grid;grid-template-columns:auto auto;align-items:center;gap:.1rem .3rem;padding:.2rem .35rem .25rem .2rem;box-shadow:none}
+.ck .abno{display:grid;place-items:center;min-width:1.35rem;height:1.35rem;padding:0 .15rem;background:var(--ac,#8FB0C8);color:#14130C;font:700 .78rem var(--f-ui);font-style:normal;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
+.ck.fl .abno,.ck.air .abno{background:#1E2A36;color:#D8E2EA} .ck .abno .ic{width:.9rem;height:.9rem}
+.ckb{display:inline-flex;align-items:center;gap:.2rem} .ckb b{font:600 .9rem var(--f-ui);font-variant-numeric:tabular-nums;min-width:1ch}
+.ckb .abf{display:inline-block;width:.7rem;height:.5rem;box-shadow:0 0 0 1px rgba(0,0,0,.7)} .ckb .ic{width:.75rem;height:.75rem;color:var(--war)}
+.ck .abs{grid-column:1 / -1;height:2px}
+.ck.empty{opacity:.55} .ck.empty .abs{display:none}
+.ck.abn{display:grid;place-items:center;min-width:1.9rem;font:600 1.05rem var(--f-ui);color:var(--dim)}
+.ck.on{background-color:var(--pbg-h)}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -11424,6 +11436,17 @@ function armyMix(a){
   return '<span class="abm">' + UTYPES.filter(t => by[t]).map(t => '<span title="' + esc(nm(t)) + '">' + ic(t) + by[t] + '</span>').join('') + '<span class="abn2">' + n + (n === 1 ? ' divisie' : ' divisies') + '</span></span>'
     + '<span class="abs" title="Gemiddelde sterkte ' + st + '%"><i style="width:' + st + '%;background:' + hpCol(st) + '"></i></span>';
 }
+// compacte legerbalk (veel legers): per leger een blokje met het nummer in de legerkleur (zoals het lipje op de fiches),
+// het aantal divisies, het front en de sterkte; daarna vloten, luchtmacht en '+'
+function armyBarCmp(){
+  const me = G.player;
+  const ar = G.armies.map(a => { let hp = 0, n = 0; for(const id of a.ids){ const u = unitById(id); if(u){ hp += u.hp; n++; } } const st = n ? Math.round(hp / n) : 0, atw = a.front && atWar(me, a.front);
+    return '<button type="button" class="abc ck' + (UI.army === a.id ? ' on' : '') + (n ? '' : ' empty') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + n + ' divisies' + (n ? ', sterkte ' + st + '%' : '') + (a.front ? ' · front: ' + cname(a.front) : '') + (a.goal ? ' · doel: ' + P[a.goal].n : '')) + '">'
+      + '<i class="abno">' + a.id + '</i><span class="ckb"><b>' + n + '</b>' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '"></i>' : '') + (atw ? ic('zwaard') : '') + (a.goal ? ic('doel') : '') + '</span><span class="abs"><i style="width:' + st + '%;background:' + hpCol(st) + '"></i></span></button>'; }).join('');
+  const fl = (G.fleets || []).map(f => '<button type="button" class="abc ck fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen') + '"><i class="abno">' + ic(f.task === 'raid' ? 'sub' : 'vloot') + '</i><span class="ckb"><b>' + Math.round(shipN(f.ships)) + '</b></span></button>').join('');
+  const air = '<button type="button" class="abc ck air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[me] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '"><i class="abno">' + ic('fi') + '</i><span class="ckb"><b>' + (ACNT[me] || 0) + '</b></span></button>';
+  return '<span class="ckg" aria-label="Legers">' + ar + '<button type="button" class="abc ck abn" data-army="new" title="Nieuw leger uit je selectie" aria-label="Nieuw leger">+</button></span><span class="ckg" aria-label="Marine en luchtmacht">' + fl + air + '</span>';
+}
 function renderArmies(){
   const on = stratOn() && !G.over && hudMode() === 'game';
   if(!AB.bar){ AB.bar = document.createElement('nav'); AB.bar.id = 'armybar'; AB.bar.setAttribute('aria-label', 'Legers'); document.body.appendChild(AB.bar); AB.pan = document.createElement('section'); AB.pan.id = 'armypanel'; AB.pan.className = 'glass'; AB.pan.setAttribute('aria-label', 'Leger'); document.body.appendChild(AB.pan);
@@ -11431,13 +11454,14 @@ function renderArmies(){
   document.body.classList.toggle('strat', on);
   if(!on){ AB.bar.hidden = AB.pan.hidden = true; return; }
   stratSync();
-  const h = G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
+  const nC = G.armies.length + (G.fleets || []).length + 2, cmp = nC * (innerWidth < 900 ? 125 : 178) > (innerWidth < 900 ? innerWidth - 12 : innerWidth - 300);   // past het niet op één rij: compacte blokjes
+  const h = cmp ? armyBarCmp() : G.armies.map(a => { const atw = a.front && atWar(G.player, a.front);
       return '<button type="button" class="abc' + (UI.army === a.id ? ' on' : '') + '" data-army="' + a.id + '" style="--ac:' + a.col + '" title="' + esc(a.nm + ' · ' + GEN_RK[a.gen.sk - 1] + ' ' + a.gen.nm + ' · ' + a.ids.length + ' divisies' + (a.front ? ' · front: ' + cname(a.front) : '')) + '">'
         + genPort(a, 30) + '<span class="abt"><span class="abh"><b>' + esc(a.nm) + '</b>' + (a.front ? '<i class="abf" style="background:' + colorOf(a.front) + '" title="Front: ' + esc(cname(a.front)) + '"></i>' + (atw ? ic('zwaard') : '') : '') + (a.goal ? ic('doel') : '') + '<em>' + ic(EZ_HOUD[a.mode][2]) + '</em></span>' + armyMix(a) + '</span></button>'; }).join('')
     + (G.fleets || []).map(f => '<button type="button" class="abc fl' + (UI.fleet === f.id ? ' on' : '') + '" data-army="fl:' + f.id + '" title="' + esc(f.nm + ' · admiraal ' + f.adm.nm + ' · ' + Math.round(shipN(f.ships)) + ' schepen' + (f.zone != null && navZones()[f.zone] ? ' · ' + navZones()[f.zone].nm : '')) + '">' + genPort({col:f.col, gen:f.adm, navy:1}, 30) + '<span class="abt"><span class="abh"><b>' + esc(f.nm) + '</b><em>' + ic(NMODE[f.task || f.mode] ? NMODE[f.task || f.mode][2] : 'vloot') + '</em></span><span class="abm">' + Object.keys(NSHIP).filter(t => f.ships[t] >= 0.5).map(t => '<span title="' + NSHIP[t][0] + '">' + ic(t) + Math.round(f.ships[t]) + '</span>').join('') + '<span class="abn2">' + Math.round(shipN(f.ships)) + ' schepen</span></span></span></button>').join('')
     + (() => { const by = {fi:0, cas:0, bo:0}; for(const w of G.air) if(w.c === G.player && by[w.t] != null) by[w.t]++; return '<button type="button" class="abc air' + (UI.airp ? ' on' : '') + '" data-army="air" title="Luchtmacht: ' + (ACNT[G.player] || 0) + ' eskaders · taak ' + AMODE[G.airMode || 'auto'][0] + '"><span class="apic">' + ic('fi') + '</span><span class="abt"><span class="abh"><b>Luchtmacht</b><em>' + ic(AMODE[G.airMode || 'auto'][2]) + '</em></span><span class="abm">' + Object.keys(by).filter(t => by[t]).map(t => '<span>' + ic(t) + by[t] + '</span>').join('') + '<span class="abn2">' + (ACNT[G.player] || 0) + ' eskaders</span></span></span></button>'; })()
     + '<button type="button" class="abc abn" data-army="new" title="Nieuw leger uit je selectie (of leeg)">' + ic('leger') + '<span class="abt"><b>+ Leger</b></span></button>';
-  if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; }
+  if(h !== AB.sig){ AB.sig = h; AB.bar.innerHTML = h; AB.bar.classList.toggle('cmp', cmp); }
   AB.bar.hidden = false;
   { const bh = AB.bar.offsetHeight; if(bh !== AB.bh){ AB.bh = bh; document.documentElement.style.setProperty('--abh', bh + 'px'); } }   // het paneel staat net boven de balk, ook als die twee rijen hoog is
   const fl = (G.fleets || []).find(x => x.id === UI.fleet);
