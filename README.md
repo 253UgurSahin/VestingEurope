@@ -14,7 +14,13 @@ Open daarna http://localhost:8000.
 
 ## Wat zit erin
 
-- **Twee speelstijlen**: *Eenvoudig* (standaard) en *Volledig*, te kiezen bij de landkeuze en in Menu → Instellingen. In de eenvoudige stand lopen leger en productie automatisch, zie je alleen de voortgang naar de overwinning, je divisies en je fabrieken, en kies je via Aanvallen, Diplomatie en Productie. Een adviesregel noemt steeds een aanbevolen zet en leidt je door je eerste spel. De volledige stand toont alles hieronder.
+- **Drie speelstijlen**: *Eenvoudig* (standaard), *Volledig* en *Strategisch*, te kiezen bij de landkeuze en in Menu → Instellingen. In de eenvoudige stand lopen leger en productie automatisch, zie je alleen de voortgang naar de overwinning, je divisies en je fabrieken, en kies je via Aanvallen, Diplomatie en Productie. Een adviesregel noemt steeds een aanbevolen zet en leidt je door je eerste spel. De volledige stand toont alles hieronder.
+- **Strategisch** (zoals Hearts of Iron, maar compact; de generaal regelt alles zelf tenzij je ingrijpt):
+  - *Legers met generaals*: rang, eigenschap en ervaring; per leger een houding, een front en een slagplan (pijl naar een doelprovincie).
+  - *Productielijnen en uitrusting*: fabrieken op lijnen (wapens, artillerie, vrachtwagens, pantser, luchtafweer, vliegtuigen, schepen, civiel); divisies trainen 20 dagen uit de voorraad; herstel kost uitrusting.
+  - *Marine*: zeegebieden, vloten met admiraals (taak Auto, Overwicht, Konvooien of Escorte); overwicht op zee maakt landingen en oversteken sterker of zwakker; onderzeeboten kosten de vijand productie.
+  - *Luchtmacht*: één kaart met de eskaders en een taak (Auto, Leger of Zee).
+  - *Onderzoek*: acht richtingen met drie niveaus en twee onderzoeksplaatsen (drie vanaf 20 fabrieken); geen focusboom.
 - **Vormgeving**: militair (veldgrijs en messing, stafkaart met raster, NAVO-tekens op de fiches; plaatjes kan ook in de instellingen) en compact, met een schaal die de schermhoogte volgt (telefoon tot 5K2K). Meldingen staan bovenaan, één tegelijk, en alleen wat jou direct raakt; de rest staat in het logboek. Beslissingen verschijnen ook bovenaan: dringende (overgave, eigen capitulatie, kernaanval) open en met pauze, voorstellen als één regel die je openklapt en die na 14 dagen vervalt.
 - **Twee kaarten**: Europa (285 provincies, 38 landen) en de wereld (1576 provincies, 175 landen). Elk land heeft een kleur die duidelijk verschilt van zijn buren; rivieren, steden, terrein en **oversteekplaatsen** (zeeroutes met ankers en veertekens) staan op de kaart.
 - **Kaartmodi** (toetsen 5–9): politiek, terrein, aanvoer, diplomatie, industrie. Minimap rechtsonder.
