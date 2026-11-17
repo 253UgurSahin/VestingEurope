@@ -2071,6 +2071,25 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
   #armypanel{left:6px;right:6px;width:auto;bottom:calc(3.5rem + var(--sab) + 3.2rem);max-height:52vh}
   body.strat #strip{margin-bottom:3.2rem}
 }
+
+/* ---- strategische stand: productielijnen ---- */
+.spt{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin:.2rem 0}
+.spf{display:inline-flex;align-items:center;gap:.35rem} .spf b{font:500 1.05rem var(--f-ui);font-variant-numeric:tabular-nums} .spf small{color:var(--dim);font-size:.72rem} .spf .ic{color:var(--accent)}
+.spa{display:inline-flex;align-items:center;gap:.35rem;font:500 .76rem var(--f-ui);letter-spacing:.04em;color:var(--dim);cursor:pointer}
+.spl{display:grid;gap:.2rem}
+.spr{display:flex;align-items:center;gap:.4rem;padding:.25rem .4rem;border:1px solid rgba(0,0,0,.4);border-radius:var(--r-m);background:var(--a1);background-image:linear-gradient(180deg, rgba(255,250,225,.04), rgba(0,0,0,.08))}
+.spi{display:grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:var(--r-s);background:rgba(0,0,0,.3);flex:none} .spi .ic{width:1.1rem;height:1.1rem;color:var(--accent)}
+.spn{flex:1;min-width:0;display:grid;line-height:1.15} .spn b{font:500 .82rem var(--f-ui);letter-spacing:.04em} .spn small{display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.speb{display:inline-block;width:2.4rem;height:3px;background:rgba(255,255,255,.12)} .speb i{display:block;height:100%;background:var(--ok)}
+.spr .btn.sm{min-height:1.7rem;min-width:1.7rem;padding:0 .4rem}
+.spc{min-width:1.4rem;text-align:center;font:600 .95rem var(--f-ui);font-variant-numeric:tabular-nums}
+.spadd{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.3rem} .spadd .btn{padding:0 .45rem}
+.spst{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font:500 .9rem var(--f-ui);font-variant-numeric:tabular-nums}
+.spst span{display:inline-flex;align-items:center;gap:.25rem} .spst .ic{width:1rem;height:1rem;color:var(--dim)} .spst .warc,.spst .warc .ic{color:var(--war)}
+.sptr{display:grid;grid-template-columns:repeat(auto-fill, minmax(9.5rem, 1fr));gap:.25rem}
+.spd .tstat{gap:.3rem} .spd .tstat .ic{width:.8rem;height:.8rem}
+.spq{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .6rem;margin-top:.3rem;font:500 .8rem var(--f-ui)}
+.spq span{display:inline-flex;align-items:center;gap:.2rem} .spq .ic{width:.9rem;height:.9rem;color:var(--dim)}
 </style>
 
 <div id="stage"><canvas id="base" aria-hidden="true"></canvas><canvas id="over" role="application" aria-label="Speelkaart met provincies"></canvas></div>
@@ -2882,7 +2901,7 @@ function dailyTick(){
     const n = nat(c);
     if(c === G.player){
       const gc = genCfg();
-      if(n.auto && (G.day + i) % 2 === 0){ if(gc.prod && n.q.length < 2) aiProduce(c); if(stratOn()) stratArmies(); else aiArmy(c); }
+      if(n.auto && (G.day + i) % 2 === 0){ if(stratOn()){ if(G.prodAuto !== false) stratAutoProd(); stratArmies(); } else { if(gc.prod && n.q.length < 2) aiProduce(c); aiArmy(c); } }
       if((G.day + i) % 4 === 0) decongest(c);   // zonder generaal alleen troepen zonder bevel van jou (net gebouwd)
       if(n.auto && gc.act && (G.day + i) % 3 === 0 && n.cp >= 55) aiSpecials(c);   // houdt 25+ bevel over voor oorlogsdoelen
       if(n.auto && gc.air && (G.day + i) % 2 === 0) aiAir(c);
@@ -2934,9 +2953,10 @@ function economy(initOnly){
       if(c === G.player) toast('Fabriek geschrapt: geen bouwplek vrij. Verover of integreer land voor nieuwe plekken' + (head.p && nx ? ' · de voortgang gaat naar het volgende item' : ''), 'war', 'noslot');
       head = n.q[0];
     }
+    const amt = c === G.player && stratOn() ? stratEconomy(n) : n.ppd;   // strategische stand: alleen het civiele deel gaat naar de wachtrij
     if(head){
       const it = ITEMS[head.k], cost = itemCost(c, head.k);
-      head.p = Math.min(cost, head.p + n.ppd);
+      head.p = Math.min(cost, head.p + amt);
       head.wait = false;
       if(head.p >= cost){
         if(it.kind === 'unit' && (UCNT[c] || 0) >= armyCap(c)) head.wait = 'cap';
@@ -2982,7 +3002,7 @@ function economy(initOnly){
     if(u.att || u.hp >= 100 || contested.has(u.loc)) continue;
     if(G.ctrl[u.loc] !== u.c){ if(!ov && friendly(u.c, G.ctrl[u.loc])) u.hp = Math.min(100, u.hp + 1.5); continue; }   // te gast in bevriend land: traag herstel
     if((u.enc || 0) > 10) continue;   // ingesloten: geen herstel (zie encircleTick)
-    u.hp = Math.min(100, u.hp + (P[u.loc].c === u.c ? 4 : 2.5));                       // bevoorraad: herstel
+    u.hp = Math.min(100, u.hp + stratHeal(u, P[u.loc].c === u.c ? 4 : 2.5));                       // bevoorraad: herstel (strategische stand: kost uitrusting)
   }
 }
 function complete(c, k, at){
@@ -8385,6 +8405,8 @@ function renderSheet(){
       + '</div>' + roleH(ts.fr, T.comp)
       + '<p class="help" style="margin:.35rem 0 0">De divisie is zo snel als het traagste bataljon. Wijzigingen gelden meteen ook voor je bestaande divisies van dit ontwerp.</p></div>';
     h += '<div class="foot"><button class="btn pri" data-act="tdone">' + ic('check') + 'Klaar</button></div>';
+  } else if(UI.sheet === 'prod' && stratOn()){
+    h += stratProdH();
   } else if(UI.sheet === 'prod'){
     const facT = facTot(me), [su, st] = slotTot(me), wings = ACNT[me] || 0, acap = airCap(me);
     h += '<div class="flow2" title="Fabrieken maken productie; de wachtrij bouwt één ding tegelijk; je leger groeit tot de legerlimiet (mankracht)">'
@@ -10766,6 +10788,116 @@ function drawArmies(ctx, u1){
     ctx.restore();
   }
 }
+
+/* ---- strategische stand: productielijnen en uitrusting ----
+   Je fabrieken staan op lijnen. Een lijn voor uitrusting vult de voorraad; een lijn voor vliegtuigen levert eskaders; de civiele lijn
+   bouwt fabrieken en onderzoek (de gewone wachtrij). Een nieuwe lijn begint op 30% efficiëntie en groeit naar 100%. Divisies train je
+   uit de voorraad (20 dagen); herstel na gevechten kost ook uitrusting, dus bij een tekort blijven divisies verzwakt. */
+const EQ = {gun:['Infanteriewapens', 12, 'inf'], art:['Artillerie', 18, 'art'], mot:['Vrachtwagens', 20, 'mot'], tank:['Pantser', 34, 'tank'], aa:['Luchtafweer', 15, 'aa']};
+const BATEQ = {inf:{gun:1}, mar:{gun:1.7}, para:{gun:2}, art:{art:1}, mot:{mot:1}, tank:{tank:1}, aa:{aa:1}};
+const LINE_K = {gun:'Infanteriewapens', art:'Artillerie', mot:'Vrachtwagens', tank:'Pantser', aa:'Luchtafweer', fi:'Jagers', cas:'Grondaanval', bo:'Bommenwerpers', civ:'Civiel: bouw en onderzoek'};
+const LINE_IC = {gun:'inf', art:'art', mot:'mot', tank:'tank', aa:'aa', fi:'fi', cas:'cas', bo:'bo', civ:'fab'};
+const TRAIN_D = 20;
+const stratF = () => Math.max(1, Math.round(slotTot(G.player)[0]));
+function stratProdInit(){
+  G.stock ||= {gun:30, art:8, mot:4, tank:2, aa:2};
+  G.train ||= [];
+  if(!G.lines){ const F = stratF(); G.lines = [{k:'gun', f:Math.max(1, Math.round(F*0.35)), eff:1, p:0}, {k:'art', f:Math.max(1, Math.round(F*0.15)), eff:1, p:0}, {k:'fi', f:Math.max(0, Math.round(F*0.1)), eff:1, p:0}, {k:'civ', f:Math.max(1, Math.round(F*0.3)), eff:1, p:0}]; stratFit(); }
+}
+function stratFit(){   // meer toegewezen dan er fabrieken zijn: van onderen af inkorten
+  const F = stratF(); let tot = 0; for(const L of G.lines) tot += L.f;
+  for(let i = G.lines.length - 1; i >= 0 && tot > F; i--){ const d = Math.min(G.lines[i].f, tot - F); G.lines[i].f -= d; tot -= d; }
+}
+const eqNeed = tp => { const c = compByKey(tp), r = {}; for(const b in c) for(const e in BATEQ[b] || {}) r[e] = (r[e] || 0) + c[b] * BATEQ[b][e]; return r; };
+function stratCanTrain(tp){
+  const me = G.player, need = eqNeed(tp);
+  if((UCNT[me] || 0) + G.train.length >= armyCap(me)) return 'Legerlimiet bereikt (' + armyCap(me) + ')';
+  for(const e in need) if((G.stock[e] || 0) < need[e] - 1e-9) return 'Te weinig ' + EQ[e][0].toLowerCase() + ': ' + Math.floor(G.stock[e] || 0) + ' van ' + Math.ceil(need[e]);
+  return '';
+}
+function stratTrain(tp){ if(stratCanTrain(tp)) return false; const need = eqNeed(tp); for(const e in need) G.stock[e] -= need[e]; G.train.push({tp, d:TRAIN_D}); return true; }
+// per dag (vanuit economy): verdeelt de productie over de lijnen; geeft het civiele deel terug voor de wachtrij
+function stratEconomy(n){
+  stratProdInit(); stratFit();
+  const me = G.player, F = stratF(), per = n.ppd / F; let civ = 0;
+  G.short = {};
+  for(const L of G.lines){
+    if(!L.f) continue;
+    const out = per * L.f * L.eff; L.eff = Math.min(1, L.eff + 0.01);
+    if(L.k === 'civ') civ += out;
+    else if(EQ[L.k]) G.stock[L.k] = (G.stock[L.k] || 0) + out / EQ[L.k][1];
+    else if(ITEMS[L.k]){ const cost = itemCost(me, L.k); L.p = Math.min(cost * 3, (L.p || 0) + out); if(L.p >= cost && (ACNT[me] || 0) < airCap(me)){ L.p -= cost; complete(me, L.k); ACNT[me] = (ACNT[me] || 0) + 1; } }
+  }
+  // opleiding: na twintig dagen staat de divisie klaar
+  for(const t of G.train) t.d--;
+  while(G.train.length && G.train[0].d <= 0 && (UCNT[me] || 0) < armyCap(me)){ const t = G.train.shift(); complete(me, t.tp); UCNT[me] = (UCNT[me] || 0) + 1; }
+  return civ;
+}
+// herstel kost uitrusting naar rato van het ontwerp; een tekort remt het herstel
+function stratHeal(u, amt){
+  if(!stratOn() || u.c !== G.player || !G.stock) return amt;
+  const a = ARMYOF.get(u.id); if(a && a.gen.tr === 'log') amt *= 1.5;
+  amt = Math.min(amt, 100 - u.hp); if(amt <= 0) return 0;
+  const need = eqNeed(u.tp); let f = 1;
+  for(const e in need){ const v = need[e] * amt / 100; if(v > 0) f = Math.min(f, (G.stock[e] || 0) / v); }
+  f = clamp(f, 0, 1);
+  for(const e in need){ G.stock[e] = Math.max(0, (G.stock[e] || 0) - need[e] * amt / 100 * f); if(f < 1) (G.short ||= {})[e] = 1; }
+  return amt * f;
+}
+// de generaal regelt de productie (instelbaar): lijnen in verhouding, en traint divisies zodra de voorraad het toelaat
+function stratAutoProd(){
+  stratProdInit();
+  const me = G.player, F = stratF(), war = enemiesOf(me).length > 0, f = nat(me).f || 0;
+  if((G.prodT || 0) <= G.day){
+    G.prodT = G.day + 6;
+    const want = {gun:0.3, art:0.15, tank:f >= 3 ? 0.12 : 0.04, mot:f >= 4 ? 0.07 : 0.03, aa:0.04, fi:0.1, cas:war ? 0.06 : 0.03, civ:war ? 0.12 : 0.3};
+    // tekort aan iets: die lijn krijgt er wat bij
+    for(const e in G.short || {}) if(want[e] != null) want[e] += 0.08;
+    let sum = 0; for(const k in want) sum += want[k];
+    const alloc = {}; let used = 0; for(const k in want){ alloc[k] = Math.floor(F * want[k] / sum); used += alloc[k]; }
+    for(const k of ['gun', 'civ', 'art', 'fi']) if(used < F){ alloc[k]++; used++; }
+    for(const k in alloc){ let L = G.lines.find(x => x.k === k); if(!L && alloc[k] > 0){ L = {k, f:0, eff:0.3, p:0}; G.lines.push(L); } if(L) L.f = alloc[k]; }
+    G.lines = G.lines.filter(L => L.f > 0);
+    const n = nat(me);
+    if(!n.q.some(q => q.k === 'fab') && fabSpots(me) > 0 && n.q.length < 3) n.q.push({k:'fab', p:0});
+  }
+  // trainen: infanterie als basis, pantser/artillerie/gemotoriseerd zodra die uitrusting er ruim is
+  for(let i = 0; i < 4; i++){
+    const st = G.stock, pick = (st.tank || 0) >= 8 && (st.mot || 0) >= 3 ? 'tank' : (st.art || 0) >= 7 && (st.gun || 0) >= 6 ? 'art' : (st.mot || 0) >= 8 && (st.tank || 0) >= 2 ? 'mot' : 'inf';
+    if(!stratTrain(pick) && !(pick !== 'inf' && stratTrain('inf'))) break;
+  }
+}
+function stratProdH(){
+  stratProdInit();
+  const me = G.player, n = nat(me), F = stratF(); let used = 0; for(const L of G.lines) used += L.f;
+  const per = n.ppd / F, auto = G.prodAuto !== false;
+  let h = '<div class="spt"><span class="spf" title="Fabrieken: elke fabriek levert ' + NF.format(per) + ' productie per dag">' + ic('fab') + '<b>' + used + '/' + F + '</b><small>fabrieken in gebruik</small></span>'
+    + '<label class="spa" title="De generaal verdeelt de fabrieken en traint divisies zodra de voorraad het toelaat"><input type="checkbox" data-sp="auto"' + (auto ? ' checked' : '') + '> Generaal regelt de productie</label></div>';
+  h += '<div class="sec">Productielijnen</div><div class="spl">' + G.lines.map((L, i) => {
+    const out = per * L.f * L.eff, unit = EQ[L.k] ? NF.format(out / EQ[L.k][1] * 30) + '/mnd' : ITEMS[L.k] ? NF.format(out * 30 / itemCost(me, L.k)) + ' eskader/mnd' : NF.format(out) + '/dag';
+    return '<div class="spr"><span class="spi">' + ic(LINE_IC[L.k]) + '</span><span class="spn"><b>' + LINE_K[L.k] + '</b><small><i class="speb"><i style="width:' + Math.round(L.eff*100) + '%"></i></i>' + Math.round(L.eff*100) + '% · ' + unit + '</small></span>'
+      + '<button class="btn sm" data-sp="f:' + i + ':-1"' + (L.f ? '' : ' disabled') + ' aria-label="Een fabriek minder">−</button><b class="spc">' + L.f + '</b><button class="btn sm" data-sp="f:' + i + ':1"' + (used < F ? '' : ' disabled') + ' aria-label="Een fabriek meer">+</button></div>'; }).join('')
+    + '</div><div class="spadd">' + Object.keys(LINE_K).filter(k => !G.lines.some(L => L.k === k) && (k !== 'tank' || true)).map(k => '<button class="btn sm" data-sp="add:' + k + '" title="Nieuwe lijn: ' + LINE_K[k] + '">' + ic(LINE_IC[k]) + '+</button>').join('') + '</div>';
+  h += '<div class="sec">Voorraad</div><div class="spst">' + Object.keys(EQ).map(e => '<span class="' + ((G.short || {})[e] ? 'warc' : '') + '" title="' + EQ[e][0] + ((G.short || {})[e] ? ': tekort, divisies herstellen trager' : '') + '">' + ic(EQ[e][2]) + '<b>' + Math.floor(G.stock[e] || 0) + '</b></span>').join('') + '</div>';
+  const tps = ['inf', 'art', 'mot', 'tank', 'mar', 'para'].concat((G.tmpl || []).map((t, i) => 'p' + i));
+  h += '<div class="sec">Divisies trainen<span class="sr">' + ((UCNT[me] || 0) + G.train.length) + '/' + armyCap(me) + '</span></div><div class="sptr">' + tps.map(tp => {
+    const why = stratCanTrain(tp), need = eqNeed(tp), nm = tp[0] === 'p' && tp.length <= 3 ? ((G.tmpl[+tp.slice(1)] || {}).name || 'Ontwerp') : FIXT[tp].name;
+    return '<button class="tile spd" data-sp="train:' + tp + '"' + (why ? ' disabled' : '') + ' title="' + esc(why || 'Trainen: ' + TRAIN_D + ' dagen') + '"><span class="tico">' + ic(domOfKey(tp)) + '</span><span class="tn">' + esc(nm) + '</span><span class="tstat">' + Object.keys(need).map(e => ic(EQ[e][2]) + Math.ceil(need[e])).join(' ') + '</span></button>'; }).join('') + '</div>';
+  if(G.train.length) h += '<div class="spq">' + G.train.map(t => '<span>' + ic(domOfKey(t.tp)) + t.d + ' d</span>').join('') + '</div>';
+  h += '<div class="sec">Civiele wachtrij<span class="sr">fabrieken en onderzoek</span></div><div class="spq">' + (n.q.length ? n.q.slice(0, 6).map(q => '<span>' + ic(ITEMS[q.k] && ITEMS[q.k].kind === 'fab' ? 'fab' : 'tech') + Math.round(100 * q.p / itemCost(me, q.k)) + '%</span>').join('') : '<span class="mut">leeg</span>')
+    + '<button class="btn sm" data-sp="fab"' + (fabSpots(me) > 0 && n.q.length < 10 ? '' : ' disabled') + '>' + ic('fab') + '+ Fabriek</button></div>';
+  return h;
+}
+$('sheet').addEventListener('click', e => {
+  const b = e.target.closest('[data-sp]'); if(!b || !G || b.disabled || b.tagName === 'INPUT') return;
+  sfx('tap'); const v = b.dataset.sp.split(':'), me = G.player;
+  if(v[0] === 'f'){ const L = G.lines[+v[1]], F = stratF(); let used = 0; for(const x of G.lines) used += x.f; const d = +v[2]; if(L && (d < 0 ? L.f > 0 : used < F)){ L.f += d; G.prodAuto = false; } }
+  else if(v[0] === 'add'){ G.lines.push({k:v[1], f:0, eff:0.3, p:0}); G.prodAuto = false; }
+  else if(v[0] === 'train'){ if(stratTrain(v[1])) toast('Divisie in opleiding: klaar over ' + TRAIN_D + ' dagen', 'good', 'train'); }
+  else if(v[0] === 'fab'){ const n = nat(me); n.q.push({k:'fab', p:0}); }
+  sheetSig = ''; renderAll();
+});
+$('sheet').addEventListener('change', e => { const i = e.target.closest('[data-sp="auto"]'); if(i && G){ G.prodAuto = i.checked; sheetSig = ''; renderAll(); } });
 
 /* ---- strategische stand: legerbalk onderaan en het paneel van één leger ---- */
 const AB = {bar:null, pan:null, sig:'', psig:''};
